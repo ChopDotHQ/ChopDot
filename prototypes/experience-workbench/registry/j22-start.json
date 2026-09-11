@@ -1,16 +1,23 @@
 {
   "journey": "22",
   "name": "QR Flows",
-  "version": "v1",
+  "status": "current",
   "approval": "not-reviewed",
+  "version": "v1",
   "stage": "definition",
-  "prototype_built": false,
+  "goal": "Scan, identify, join, receive, or pay using QR.",
+  "entry": "Invite, You, receive, or settlement",
+  "exit": "Person, group, or payment journey",
+  "next": [
+    "04",
+    "09",
+    "14"
+  ],
   "spec_path": "journeys/22-qr-flows/spec.md",
   "decision_history_path": "journeys/22-qr-flows/source/decision-history.md",
   "state_inventory_path": "journeys/22-qr-flows/STATE_INVENTORY.md",
   "edge_cases_path": "journeys/22-qr-flows/EDGE_CASES.md",
+  "prototype_built": false,
   "golden_count_before": 21,
-  "human_approval_required": true,
-  "typography_note": "TYPO-01 deferred",
-  "prototype_only": true
+  "typography_note": "TYPO-01 deferred"
 }

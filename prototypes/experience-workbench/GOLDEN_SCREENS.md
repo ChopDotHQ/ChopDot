@@ -20,9 +20,10 @@
 18. Activity & Notifications — v1.1 · Design Approved
 19. Insights — v1.1 · Design Approved
 20. Payment Methods — v1 · Design Approved
+21. Wallet & Crypto — v1 · Design Approved
 
-Journey 20 — Payment Methods V1 is Golden #20. Its exact reviewed artifact is checksum-locked; the HTML was not changed during freeze.
+Journey 21 — Wallet & Crypto V1 is Golden #21. Exact approved HTML SHA-256: `28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6`; the approved HTML was not changed during freeze.
 
-Current journey: Journey 21 — Wallet & Crypto V1 definition. No review candidate exists yet.
+Current journey: Journey 22 — QR Flows V1 definition. No review candidate exists yet.
 
 TYPO-01 remains deferred.

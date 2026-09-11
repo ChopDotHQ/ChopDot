@@ -505,10 +505,15 @@
       "17",
       "27"
     ],
-    "status": "current",
-    "approval": "not-reviewed",
+    "status": "golden",
+    "approval": "design-approved",
     "version": "v1",
-    "spec_path": "journeys/21-wallet-crypto/spec.md"
+    "spec_path": "journeys/21-wallet-crypto/spec.md",
+    "prototype_path": "journeys/21-wallet-crypto/v1-candidate.html",
+    "prototype_sha256": "28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6",
+    "qa_path": "journeys/21-wallet-crypto/review-v1/VISUAL_QA.md",
+    "golden_number": 21,
+    "approved_on": "2026-09-11"
   },
   {
     "id": "22",
@@ -524,8 +529,10 @@
       "09",
       "14"
     ],
-    "status": "not-started",
-    "approval": "not-reviewed"
+    "status": "current",
+    "approval": "not-reviewed",
+    "version": "v1",
+    "spec_path": "journeys/22-qr-flows/spec.md"
   },
   {
     "id": "23",

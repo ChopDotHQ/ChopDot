@@ -1,0 +1,28 @@
+{
+  "checkpoint": "2026-09-11-j21-v1-golden-j22-start",
+  "j21": {
+    "status": "golden",
+    "version": "v1",
+    "golden_number": 21,
+    "prototype_path": "journeys/21-wallet-crypto/v1-candidate.html",
+    "prototype_sha256": "28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6",
+    "qa_path": "journeys/21-wallet-crypto/review-v1/VISUAL_QA.md",
+    "reviewed_source_head": "02f578af1924c2ac10c9c914ba7c0e9760a5c9bb",
+    "exact_qa_run": "34582530711",
+    "evidence_artifact": "10192244431",
+    "evidence_artifact_sha256": "b30ac6530fe987a11af13fda3291d6ad1fae9917c4151a2c8e483ebbafb8be2c",
+    "human_approval_comment_id": "5634082954",
+    "html_change_authorized": false
+  },
+  "j22": {
+    "status": "current",
+    "version": "v1",
+    "stage": "definition",
+    "prototype_built": false,
+    "spec_path": "journeys/22-qr-flows/spec.md",
+    "decision_history_path": "journeys/22-qr-flows/source/decision-history.md"
+  },
+  "golden_count": 21,
+  "remaining_overall": 7,
+  "typography_note": "TYPO-01 deferred"
+}

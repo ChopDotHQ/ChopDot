@@ -4,25 +4,19 @@ Always read `registry/progress.json` first. It is the canonical current-journey/
 
 ## Shared process
 
-Before doing journey work, read:
-
-1. `DESIGN_CONTRACT.md` — stable shared product/UX rules and context-bundle rule.
-2. `WORKFLOW.md` — Candidate → mechanical QA → independent review → human approval → Golden freeze.
-3. `REVIEW_PROTOCOL.md` — five independent review lenses and evidence requirements.
-4. `shared/improvements.md` — cross-journey issues that must not be silently fixed inside a journey.
-5. The current journey's spec, state inventory, edge cases, decision history, and only the relevant adjacent Goldens.
+Read `DESIGN_CONTRACT.md`, `WORKFLOW.md`, `REVIEW_PROTOCOL.md`, `shared/improvements.md`, then the current journey definition bundle and only relevant adjacent Goldens.
 
 ## Current authority
 
-28 registered journeys; 20 Goldens; 8 remaining.
+28 registered journeys; 21 Goldens; 7 remaining.
 
-Journey 20 — Payment Methods V1 is Golden #20. Exact approved artifact SHA-256: `02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab`. Direct visual review and explicit Devinson approval were recorded before freeze; HTML changes after approval are not authorized.
+Journey 21 — Wallet & Crypto V1 is Golden #21. Exact approved artifact SHA-256: `28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6`. Human approval is issue #38 comment `5634082954`; HTML changes after approval are not authorized.
 
-Journey 21 — Wallet & Crypto V1 is **current at definition stage**. Read `journeys/21-wallet-crypto/spec.md`, `source/decision-history.md`, `STATE_INVENTORY.md`, `EDGE_CASES.md`, and relevant adjacent Goldens before building. No J21 review candidate exists yet.
+Journey 22 — QR Flows V1 is **current at definition stage**. No J22 candidate or human approval exists.
 
 ## Preserve
 
-All 20 Golden artifact checksums must pass. `registry/goldens.manifest.json` is generated from the journey and lock registries and must not become a competing approval authority. TYPO-01 remains deferred.
+All 21 Golden artifact checksums must pass. `registry/goldens.manifest.json` is generated and must not become competing approval authority. TYPO-01 remains deferred.
 
 <!-- JOURNEY_DECISION_HISTORY:START -->
 ## Decision history

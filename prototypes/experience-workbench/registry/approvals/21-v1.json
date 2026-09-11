@@ -1,0 +1,48 @@
+{
+  "journey": "21",
+  "name": "Wallet & Crypto",
+  "version": "v1",
+  "golden_number": 21,
+  "approval": "design-approved",
+  "approved_on": "2026-09-11",
+  "reviewed_source": "Journey 21 Wallet & Crypto V1 exact independently cleared evidence plus explicit human approval on issue #38 comment 5634082954",
+  "reviewed_source_head": "02f578af1924c2ac10c9c914ba7c0e9760a5c9bb",
+  "product_candidate_parent": "33d8bc7be1dd266117623baaf6bc36c76f4bcb6f",
+  "candidate_branch": "ux/experience-workbench-j21-v1-candidate",
+  "exact_qa_run": "34582530711",
+  "review_artifact_id": "10192244431",
+  "review_artifact_sha256": "b30ac6530fe987a11af13fda3291d6ad1fae9917c4151a2c8e483ebbafb8be2c",
+  "e2e_run": "34582530761",
+  "prototype_path": "journeys/21-wallet-crypto/v1-candidate.html",
+  "prototype_sha256": "28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6",
+  "visual_qa_path": "journeys/21-wallet-crypto/review-v1/VISUAL_QA.md",
+  "html_change_authorized": false,
+  "human_approval_surface": "issue #38",
+  "human_approval_comment_id": "5634082954",
+  "review_evidence": {
+    "states": 47,
+    "screenshots": 94,
+    "interaction_paths": 34,
+    "page_errors": 0,
+    "console_errors": 0,
+    "external_runtime_network_requests": 0,
+    "visual_clearance": true,
+    "human_approval": true,
+    "synthetic_no_real_wallet": true
+  },
+  "approved_policy": {
+    "wallet_execution_downstream_of_product_authority": true,
+    "connected_wallet_not_saved_receiving_destination": true,
+    "connected_wallet_not_public_profile_field": true,
+    "exact_account_network_revalidated_at_signing": true,
+    "signature_submission_finality_distinct_recoverable_states": true
+  },
+  "next_journey": "22",
+  "deferred_note": {
+    "id": "TYPO-01",
+    "status": "deferred",
+    "change_now": false,
+    "note": "Shared typography/readability remains deferred."
+  },
+  "prototype_only": true
+}

@@ -1,10 +1,10 @@
 {
-  "schema_version": 17,
+  "schema_version": 18,
   "updated_on": "2026-09-11",
   "registered_journeys": 28,
-  "golden_count": 20,
-  "current_journey": "21",
-  "remaining_overall": 8,
+  "golden_count": 21,
+  "current_journey": "22",
+  "remaining_overall": 7,
   "remaining_core_including_entry": [],
   "remaining_in_app_money_loop": [],
   "map_source": "registry/journeys.json",
@@ -13,9 +13,9 @@
   "payment_contract_version": "1.2",
   "storage_contract_version": "1.0",
   "paused_after_freeze": false,
-  "last_approved_journey": "20",
+  "last_approved_journey": "21",
   "last_approved_version": "v1",
-  "last_approved_sha256": "02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab",
-  "next_action": "Journey 21 exact evidence head 02f578af1924c2ac10c9c914ba7c0e9760a5c9bb is independently GOLDEN-READY with candidate HTML SHA-256 28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6, exact QA 34582530711, and evidence artifact 10192244431 / digest b30ac6530fe987a11af13fda3291d6ad1fae9917c4151a2c8e483ebbafb8be2c. All five review lenses are cleared and the corrected exact evidence is self-consistent; candidate HTML is unchanged from product-cleared parent 33d8bc7be1dd266117623baaf6bc36c76f4bcb6f. Surface this exact candidate to Devinson for explicit human approval. Human approval remains false: do not freeze, advance Journey 22, merge protected branches, or deploy until Devinson explicitly approves this exact candidate.",
+  "last_approved_sha256": "28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6",
+  "next_action": "Journey 22 QR Flows V1 is current at definition stage. Builder may define and build only from the canonical J22 bundle; Reviewer remains no-op until exact candidate evidence exists.",
   "typography_note": "TYPO-01 deferred"
 }
