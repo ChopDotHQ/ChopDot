@@ -50,6 +50,8 @@ const states = [
   'connect-rejected',
   'cancelled',
   'action-review',
+  'insufficient-fee',
+  'insufficient-asset',
   'stale-review',
   'signature-pending',
   'signature-rejected',
@@ -92,6 +94,8 @@ const expectedSemantics = {
   'switch-unknown-handoff': ['Settle Up', 'Still checking the wallet switch', '12.50 DOT', 'Maya', 'Polkadot', 'Switch unknown', 'No fresh switch, signature, or payment route'],
   'switch-reconciling': ['Checking the original wallet switch', 'cannot sign, submit, or start another switch', 'trusted provider result'],
   'action-review': ['Check exactly what you will sign', '12.50 DOT', 'Maya', '5F3sa2…Demo9', 'Polkadot', 'revalidated'],
+  'insufficient-fee': ['Not enough DOT for the network fee', '12.50 DOT', 'Maya', '5F3sa2…Demo9', 'Polkadot', '12.51 DOT', '0.02 DOT', 'will not reduce the payment', 'balance must be rechecked'],
+  'insufficient-asset': ['Not enough DOT for this payment', '12.50 DOT', 'Maya', '5F3sa2…Demo9', 'Polkadot', '10.80 DOT', 'will not silently lower the amount', 'No payment was signed or submitted'],
   'stale-review': ['Review expired', 'will not request a signature', 'settlement itself is unchanged'],
   'signature-pending': ['Approve this exact action in your wallet', 'Nothing has been submitted'],
   'signature-rejected': ['Nothing was signed or sent', 'no transaction'],
@@ -292,6 +296,20 @@ try {
         }
         if (metrics.anchors.includes('#switch-pending')) errors.push(`${viewport.name}/${state}: reconciliation must not create a new switch prompt`);
       }
+      if (state === 'action-review') {
+        for (const required of ['#insufficient-fee', '#insufficient-asset']) {
+          if (!metrics.anchors.includes(required)) errors.push(`${viewport.name}/${state}: exact review must expose bounded balance-block demo ${required}`);
+        }
+      }
+      if (state === 'insufficient-fee' || state === 'insufficient-asset') {
+        for (const required of ['#action-review', '#connected']) {
+          if (!metrics.anchors.includes(required)) errors.push(`${viewport.name}/${state}: balance blocker must preserve ${required} recheck/return route`);
+        }
+        for (const forbidden of ['#signature-pending', '#signature-pending-switched', '#signed', '#submission-pending', '#finalized']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: insufficient balance must not bypass recheck into ${forbidden}`);
+        }
+        if (!metrics.text.includes('12.50 DOT') || !metrics.text.includes('Maya') || !metrics.text.includes('Polkadot')) errors.push(`${viewport.name}/${state}: balance blocker lost exact settlement scope`);
+      }
       if (state === 'submission-unknown') {
         for (const required of ['#submission-reconciling', '#settlement-unknown-handoff']) {
           if (!metrics.anchors.includes(required)) errors.push(`${viewport.name}/${state}: missing required recovery route ${required}`);
@@ -451,6 +469,23 @@ try {
     if (switchHandoffBypass !== 0) errors.push(`${viewport.name}: unresolved switch handoff exposes ${switchHandoffBypass} fresh switch/execution bypass route(s)`);
     interactionResults.push({viewport: viewport.name, path: 'switch-unknown-reconcile-still-unknown-to-settlement', finalHash: await page.evaluate(() => location.hash)});
 
+    // Balance blockers are reached from the exact action review, never from an altered settlement instruction.
+    for (const balanceState of ['#insufficient-fee', '#insufficient-asset']) {
+      await page.goto(`${pathToFileURL(candidatePath).href}#action-review`, {waitUntil: 'load'});
+      const balanceLink = page.locator(`.screen:visible a[href="${balanceState}"]`).first();
+      if (!(await balanceLink.isVisible())) {
+        errors.push(`${viewport.name}: exact review cannot reach ${balanceState}`);
+        continue;
+      }
+      await balanceLink.click();
+      await page.waitForFunction(target => location.hash === target, balanceState);
+      const executionBypass = await page.locator('.screen:visible a[href="#signature-pending"], .screen:visible a[href="#signature-pending-switched"], .screen:visible a[href="#signed"], .screen:visible a[href="#submission-pending"], .screen:visible a[href="#finalized"]').count();
+      if (executionBypass !== 0) errors.push(`${viewport.name}: ${balanceState} exposes ${executionBypass} execution bypass route(s)`);
+      const recheck = page.locator('.screen:visible a[href="#action-review"]').first();
+      if (!(await recheck.isVisible())) errors.push(`${viewport.name}: ${balanceState} does not preserve exact-review recheck`);
+      interactionResults.push({viewport: viewport.name, path: `balance-block-${balanceState.slice(1)}`, finalHash: await page.evaluate(() => location.hash)});
+    }
+
     const executionPath = ['#action-review', '#signature-pending', '#signed', '#submission-pending', '#finalized', '#result-handoff'];
     await page.goto(`${pathToFileURL(candidatePath).href}${executionPath[0]}`, {waitUntil: 'load'});
     for (const next of executionPath.slice(1)) {
@@ -497,7 +532,7 @@ const summary = {
     path: path.relative(repoRoot, candidatePath),
     sha256: candidateSha256,
   },
-  scope: 'J21 reviewer repair: switch accepted/rejected/failed now return with distinct wallet-session truth instead of generic cancellation; accepted preserves the newly revalidated session and requires fresh review, rejected preserves the prior known session, and failed blocks fresh connect/switch/sign until trusted wallet-context recheck; all previously built J21 states are rechecked',
+  scope: 'J21 bounded balance-block increment: insufficient native network-fee balance and insufficient transfer-asset balance now block signing without mutating the exact upstream settlement amount, asset, recipient, account, or network; all previously built J21 states are rechecked',
   counts: {
     states: states.length,
     viewports: viewports.length,
@@ -515,15 +550,15 @@ const summary = {
   errors,
   review_status: errors.length ? 'MECHANICAL_QA_FAILED' : 'BOUNDED_SLICE_QA_PASSED',
   limitations: [
-    'This evidence verifies the reviewer-requested switch accepted/rejected/failed caller-return repair plus all previously built J21 states; it is not yet a complete Journey 21 review bundle.',
-    'Insufficient native-fee balance, insufficient transfer-asset balance, disconnect, offline, loading, and load/provider-error states remain intentionally open for later bounded Builder increments.',
+    'This evidence verifies the insufficient native-fee and insufficient transfer-asset balance increment plus all previously built J21 states; it is not yet a complete Journey 21 review bundle.',
+    'Disconnect, offline, loading, and load/provider-error states remain intentionally open for later bounded Builder increments.',
     'It does not provide independent UX judgment or human approval.',
-    'No real wallet, signature, chain submission, funds, or network finality is exercised; all product states are synthetic prototype states.',
+    'No real wallet, signature, chain submission, funds, balance read, fee quote, or network finality is exercised; all product states and balances are synthetic prototype states.',
   ],
 };
 
 await writeFile(path.join(evidenceRoot, 'QA_SUMMARY.json'), `${JSON.stringify(summary, null, 2)}\n`);
-await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 switch-return reviewer repair — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
+await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 balance-block increment — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
 
 console.log(JSON.stringify({head, candidateSha256, states: states.length, screenshots: pages.length, failures: errors.length}, null, 2));
 if (errors.length) {
