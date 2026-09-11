@@ -1,11 +1,11 @@
 {
-  "checkpoint": "2026-09-11-j21-v1-revise-evidence-contract-only",
-  "purpose": "Preserve Golden #20 authority and record the latest exact Journey 21 independent review after all registered V1 product-state clusters cleared, without granting human approval or Golden authority while the exact-head evidence metadata remains self-contradictory.",
-  "canonical_exact_head_verified": true,
+  "checkpoint": "2026-09-11-j21-v1-golden-ready-awaiting-human",
+  "purpose": "Preserve Golden #20 authority and reconcile Journey 21 to the exact independently cleared GOLDEN-READY evidence head without granting human approval, Golden authority, Journey 22 advancement, protected-branch merge, or deployment authority.",
+  "canonical_exact_head_verified": false,
   "canonical_exact_head_verified_run": "34580582758",
   "canonical_verified_transition_source": "69fa673309dcbcc7129957d70ae509d693cfc296",
-  "canonical_materialized_head": "69fa673309dcbcc7129957d70ae509d693cfc296",
-  "canonical_exact_head_note": "Prototype workbench gate 34580582758 cleanly validated the reconciled authority state at 69fa673309dcbcc7129957d70ae509d693cfc296: materialize/validate passed and the generated-file commit step also passed with no further generated-state change required. The earlier run 34580128606 had already passed materialize/validate but lost only a concurrent generated-commit race; it is no longer the verification authority.",
+  "canonical_materialized_head": "c96f23cd799b25a57a3a2ab9809cad3342a24d43",
+  "canonical_exact_head_note": "The prior canonical state was cleanly gate-verified before this GOLDEN-READY authority reconciliation. The reconciled resulting state must pass a fresh Prototype workbench gate before canonical_exact_head_verified may return to true; no human approval is inferred while that gate runs.",
   "journey_20": {
     "version": "v1",
     "golden_number": 20,
@@ -25,22 +25,21 @@
   "journey_21": {
     "version": "v1",
     "approval": "not-reviewed",
-    "stage": "independent-review",
+    "stage": "human-review",
     "prototype_built": true,
     "candidate_branch": "ux/experience-workbench-j21-v1-candidate",
-    "reviewed_source_head": "33d8bc7be1dd266117623baaf6bc36c76f4bcb6f",
+    "reviewed_source_head": "02f578af1924c2ac10c9c914ba7c0e9760a5c9bb",
+    "product_candidate_parent": "33d8bc7be1dd266117623baaf6bc36c76f4bcb6f",
     "prototype_path": "journeys/21-wallet-crypto/v1-candidate.html",
     "prototype_sha256": "28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6",
-    "exact_qa_run": "34578308443",
-    "evidence_artifact": "10190581438",
-    "evidence_artifact_sha256": "d935fca967ba8c35bb7728ca78b3a6648a72ae1d3a1b43f86a974bd1bf962d66",
-    "review_status": "REVISE",
+    "exact_qa_run": "34582530711",
+    "evidence_artifact": "10192244431",
+    "evidence_artifact_sha256": "b30ac6530fe987a11af13fda3291d6ad1fae9917c4151a2c8e483ebbafb8be2c",
+    "review_status": "GOLDEN-READY",
     "mechanical_review": "pass",
     "direct_visual_review": "pass",
     "human_approval": false,
-    "blockers": [
-      "Exact-head evidence metadata is stale and self-contradictory: QA_SUMMARY.json and VISUAL_QA.md still describe the prior balance-block slice and claim Disconnect, Offline, Loading, and Load/provider-error remain open even though this exact 47-state candidate implements and tests them. Repair only the QA evidence metadata/generator text, preserve candidate HTML, regenerate exact-head evidence, then obtain evidence-only independent re-review."
-    ],
+    "blockers": [],
     "spec_path": "journeys/21-wallet-crypto/spec.md"
   },
   "golden_count": 20,
@@ -49,6 +48,6 @@
   "current_journey": "21",
   "all_prior_golden_artifacts_preserved": true,
   "typography_note": "TYPO-01 deferred",
-  "gate_requirement": "Builder must change only J21 QA evidence metadata/generator text so the exact bundle truthfully describes the current full 47-state candidate and retains the synthetic/no-real-wallet limitation. Candidate HTML is to remain unchanged. Regenerate exact-head evidence and obtain evidence-only independent re-review. GOLDEN-READY still requires one exact self-consistent evidence package across all five lenses; only explicit Devinson approval of that exact candidate may authorize freeze.",
+  "gate_requirement": "Journey 21 exact evidence head 02f578af1924c2ac10c9c914ba7c0e9760a5c9bb is GOLDEN-READY only: surface the exact candidate SHA-256 28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6 and exact evidence to Devinson for explicit human approval. Do not freeze or advance until that exact approval is recorded. After approval, verify checksum/evidence, freeze without changing approved HTML, update approval/progress/generated surfaces, run the full resulting-state gate, and only then advance to the next registered journey.",
   "prototype_only": true
 }
