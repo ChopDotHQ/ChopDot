@@ -31,6 +31,12 @@ const states = [
   'connection-unknown-handoff',
   'connect-reconciling',
   'connected',
+  'disconnect',
+  'disconnect-handoff',
+  'loading',
+  'offline',
+  'load-error',
+  'wallet-state-unavailable-handoff',
   'wrong-network',
   'network-mismatch-handoff',
   'switch-account-review',
@@ -77,6 +83,12 @@ const expectedSemantics = {
   'connection-unknown-handoff': ['Settle Up', 'Still checking the wallet connection', '12.50 DOT', 'Maya', 'Polkadot', 'Connection unknown', 'fresh Connect remains blocked'],
   'connect-reconciling': ['Checking the existing wallet session', 'cannot sign, submit, or move money', 'trusted provider/session result'],
   'connected': ['Wallet connected', '5F3sa2…Demo9', 'Polkadot', 'not added to Payment Methods', 'not authorized or sent'],
+  'disconnect': ['Wallet disconnected', '12.50 DOT', 'Maya', 'Polkadot', 'Saved Payment Methods', 'settlement history', 'source expenses', 'balances', 'No payment was signed or sent'],
+  'disconnect-handoff': ['Settle Up', 'Wallet is disconnected', '12.50 DOT', 'Maya', 'Polkadot', 'Not signed or sent', 'did not remove a saved receiving destination'],
+  'loading': ['Checking wallet state', '12.50 DOT', 'Maya', 'Polkadot', 'does not assume an account, network, signature, submission, or finality result'],
+  'offline': ['You’re offline', '12.50 DOT', 'Maya', 'Polkadot', 'cannot connect, sign, or submit', 'No wallet state or network finality is inferred'],
+  'load-error': ['Wallet state could not be loaded', '12.50 DOT', 'Maya', 'Polkadot', 'No connected, disconnected, submitted, or finalized state is being inferred'],
+  'wallet-state-unavailable-handoff': ['Settle Up', 'Wallet status is unavailable', '12.50 DOT', 'Maya', 'Polkadot', 'No connected, disconnected, submitted, or finalized state is assumed'],
   'wrong-network': ['This network does not match', 'settlement expects Polkadot', 'will not continue with the old review'],
   'network-mismatch-handoff': ['Settle Up', 'Wallet stays on a different network', '12.50 DOT', 'Maya', 'Required network', 'Polkadot', 'Wallet network', 'Other network', 'No action review, signature, or payment route'],
   'switch-account-review': ['Switch the signing account?', '5F3sa2…Demo9', 'Polkadot', 'Maya', '12.50 DOT', 'review the exact payment again'],
@@ -205,6 +217,35 @@ try {
       }
       if (state === 'connected') {
         if (!metrics.anchors.includes('#switch-account-review')) errors.push(`${viewport.name}/${state}: connected wallet must enter explicit account-switch review before a switch prompt`);
+        if (!metrics.anchors.includes('#disconnect')) errors.push(`${viewport.name}/${state}: connected wallet must expose an explicit session disconnect`);
+      }
+      if (state === 'disconnect') {
+        if (metrics.anchors.length !== 1 || !metrics.anchors.includes('#disconnect-handoff')) errors.push(`${viewport.name}/${state}: disconnect must return only through the explicit disconnected handoff`);
+        for (const forbidden of ['#action-review', '#action-review-switched', '#signature-pending', '#signature-pending-switched', '#signed', '#submission-pending', '#finalized']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: disconnect must not expose execution route ${forbidden}`);
+        }
+      }
+      if (state === 'disconnect-handoff') {
+        if (metrics.anchors.length !== 0) errors.push(`${viewport.name}/${state}: disconnected caller return must expose no wallet execution route`);
+        if (/Wallet setup was cancelled/iu.test(metrics.text)) errors.push(`${viewport.name}/${state}: disconnect must not be rewritten as cancellation`);
+      }
+      if (state === 'loading') {
+        if (metrics.anchors.length !== 1 || !metrics.anchors.includes('#wallet-state-unavailable-handoff')) errors.push(`${viewport.name}/${state}: loading must preserve only a safe caller return while state is unknown`);
+        for (const forbidden of ['#chooser', '#connect-pending', '#connected', '#action-review', '#signature-pending', '#signed', '#submission-pending', '#finalized']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: loading must not invent/bypass wallet state through ${forbidden}`);
+        }
+      }
+      if (state === 'offline' || state === 'load-error') {
+        for (const required of ['#loading', '#wallet-state-unavailable-handoff']) {
+          if (!metrics.anchors.includes(required)) errors.push(`${viewport.name}/${state}: unavailable wallet state must preserve ${required}`);
+        }
+        for (const forbidden of ['#chooser', '#connect-pending', '#connected', '#action-review', '#action-review-switched', '#signature-pending', '#signature-pending-switched', '#signed', '#submission-pending', '#finalized']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: unavailable wallet state must not expose execution route ${forbidden}`);
+        }
+      }
+      if (state === 'wallet-state-unavailable-handoff') {
+        if (metrics.anchors.length !== 0) errors.push(`${viewport.name}/${state}: unavailable caller return must expose no wallet execution route`);
+        if (/Wallet connected|Network finality verified|Settlement complete/iu.test(metrics.text)) errors.push(`${viewport.name}/${state}: unavailable caller return fabricated wallet/finality success`);
       }
       if (state === 'wrong-network') {
         for (const required of ['#switch-network-review', '#network-mismatch-handoff']) {
@@ -371,6 +412,42 @@ try {
       if (bypassCount !== 0) errors.push(`${viewport.name}: timeout return exposes ${bypassCount} fresh connection/cancel bypass route(s)`);
     }
     interactionResults.push({viewport: viewport.name, path: 'timeout-return-keeps-connect-blocked', finalHash: await page.evaluate(() => location.hash)});
+
+    const disconnectPath = ['#connected', '#disconnect', '#disconnect-handoff'];
+    await page.goto(`${pathToFileURL(candidatePath).href}${disconnectPath[0]}`, {waitUntil: 'load'});
+    for (const next of disconnectPath.slice(1)) {
+      const link = page.locator(`.screen:visible a[href="${next}"]`).first();
+      if (!(await link.isVisible())) {
+        errors.push(`${viewport.name}: disconnect path cannot reach ${next}`);
+        break;
+      }
+      await link.click();
+      await page.waitForFunction(target => location.hash === target, next);
+    }
+    const disconnectedBypass = await page.locator('.screen:visible a[href="#connected"], .screen:visible a[href="#action-review"], .screen:visible a[href="#signature-pending"], .screen:visible a[href="#signed"], .screen:visible a[href="#submission-pending"]').count();
+    if (disconnectedBypass !== 0) errors.push(`${viewport.name}: disconnected caller return exposes ${disconnectedBypass} execution bypass route(s)`);
+    interactionResults.push({viewport: viewport.name, path: 'disconnect-preserves-settlement-without-execution', finalHash: await page.evaluate(() => location.hash)});
+
+    for (const unavailableState of ['#offline', '#load-error']) {
+      await page.goto(`${pathToFileURL(candidatePath).href}${unavailableState}`, {waitUntil: 'load'});
+      const retry = page.locator('.screen:visible a[href="#loading"]').first();
+      if (!(await retry.isVisible())) {
+        errors.push(`${viewport.name}: ${unavailableState} cannot reach read-only loading recovery`);
+      } else {
+        await retry.click();
+        await page.waitForFunction(() => location.hash === '#loading');
+      }
+      const loadingBypass = await page.locator('.screen:visible a[href="#chooser"], .screen:visible a[href="#connected"], .screen:visible a[href="#action-review"], .screen:visible a[href="#signature-pending"], .screen:visible a[href="#signed"], .screen:visible a[href="#submission-pending"], .screen:visible a[href="#finalized"]').count();
+      if (loadingBypass !== 0) errors.push(`${viewport.name}: loading recovery exposes ${loadingBypass} execution/finality bypass route(s)`);
+      const safeReturn = page.locator('.screen:visible a[href="#wallet-state-unavailable-handoff"]').first();
+      if (!(await safeReturn.isVisible())) {
+        errors.push(`${viewport.name}: loading recovery has no safe caller return`);
+      } else {
+        await safeReturn.click();
+        await page.waitForFunction(() => location.hash === '#wallet-state-unavailable-handoff');
+      }
+      interactionResults.push({viewport: viewport.name, path: `${unavailableState.slice(1)}-read-only-recovery`, finalHash: await page.evaluate(() => location.hash)});
+    }
 
     const accountSwitchPath = ['#connected', '#switch-account-review', '#switch-pending', '#switch-accepted', '#action-review-switched', '#signature-pending-switched', '#signed'];
     await page.goto(`${pathToFileURL(candidatePath).href}${accountSwitchPath[0]}`, {waitUntil: 'load'});
