@@ -21,9 +21,10 @@
 19. Insights — v1.1 · Design Approved
 20. Payment Methods — v1 · Design Approved
 21. Wallet & Crypto — v1 · Design Approved
+22. QR Flows — v1 · Design Approved
 
-Journey 21 — Wallet & Crypto V1 is Golden #21. Exact approved HTML SHA-256: `28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6`; the approved HTML was not changed during freeze.
+Journey 22 — QR Flows V1 is Golden #22. Exact approved HTML SHA-256: `3bbab5328a71d42866006c6f48088c06759fd0a3a922ee4a91e6fcd7bb75fe23`; the approved HTML was not changed during freeze.
 
-Current journey: Journey 22 — QR Flows V1 definition. No review candidate exists yet.
+Current journey: Journey 23 — Import Data / Group V1 definition. No review candidate exists yet.
 
 TYPO-01 remains deferred.

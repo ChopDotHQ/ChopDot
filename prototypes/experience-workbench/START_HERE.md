@@ -8,15 +8,15 @@ Read `DESIGN_CONTRACT.md`, `WORKFLOW.md`, `REVIEW_PROTOCOL.md`, `shared/improvem
 
 ## Current authority
 
-28 registered journeys; 21 Goldens; 7 remaining.
+28 registered journeys; 22 Goldens; 6 remaining.
 
-Journey 21 — Wallet & Crypto V1 is Golden #21. Exact approved artifact SHA-256: `28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6`. Human approval is issue #38 comment `5634082954`; HTML changes after approval are not authorized.
+Journey 22 — QR Flows V1 is Golden #22. Exact approved artifact SHA-256: `3bbab5328a71d42866006c6f48088c06759fd0a3a922ee4a91e6fcd7bb75fe23`. Human approval is issue #38 comment `5639819516`; HTML changes after approval are not authorized.
 
-Journey 22 — QR Flows V1 is **current at definition stage**. No J22 candidate or human approval exists.
+Journey 23 — Import Data / Group V1 is **current at definition stage**. No J23 candidate or human approval exists.
 
 ## Preserve
 
-All 21 Golden artifact checksums must pass. `registry/goldens.manifest.json` is generated and must not become competing approval authority. TYPO-01 remains deferred.
+All 22 Golden artifact checksums must pass. `registry/goldens.manifest.json` is generated and must not become competing approval authority. TYPO-01 remains deferred.
 
 <!-- JOURNEY_DECISION_HISTORY:START -->
 ## Decision history

@@ -529,10 +529,15 @@
       "09",
       "14"
     ],
-    "status": "current",
-    "approval": "not-reviewed",
+    "status": "golden",
+    "approval": "design-approved",
     "version": "v1",
-    "spec_path": "journeys/22-qr-flows/spec.md"
+    "spec_path": "journeys/22-qr-flows/spec.md",
+    "prototype_path": "journeys/22-qr-flows/v1-candidate.html",
+    "prototype_sha256": "3bbab5328a71d42866006c6f48088c06759fd0a3a922ee4a91e6fcd7bb75fe23",
+    "qa_path": "journeys/22-qr-flows/review-v1/VISUAL_QA.md",
+    "golden_number": 22,
+    "approved_on": "2026-09-11"
   },
   {
     "id": "23",
@@ -548,9 +553,11 @@
       "24",
       "28"
     ],
-    "status": "not-started",
+    "status": "current",
     "approval": "not-reviewed",
-    "entry_mode": "feature"
+    "entry_mode": "feature",
+    "version": "v1",
+    "spec_path": "journeys/23-import/spec.md"
   },
   {
     "id": "24",

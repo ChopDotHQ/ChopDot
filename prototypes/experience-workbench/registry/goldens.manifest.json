@@ -4,7 +4,7 @@
     "journey_authority": "registry/journeys.json",
     "checksum_authority": "registry/golden-artifact-locks.json"
   },
-  "golden_count": 21,
+  "golden_count": 22,
   "entries": [
     {
       "golden_number": 1,
@@ -213,6 +213,16 @@
       "version": "v1",
       "prototype_path": "journeys/21-wallet-crypto/v1-candidate.html",
       "sha256": "28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6",
+      "approval": "design-approved",
+      "immutable": true
+    },
+    {
+      "golden_number": 22,
+      "journey": "22",
+      "name": "QR Flows",
+      "version": "v1",
+      "prototype_path": "journeys/22-qr-flows/v1-candidate.html",
+      "sha256": "3bbab5328a71d42866006c6f48088c06759fd0a3a922ee4a91e6fcd7bb75fe23",
       "approval": "design-approved",
       "immutable": true
     }

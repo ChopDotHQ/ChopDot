@@ -1,16 +1,23 @@
 {
   "journey": "23",
   "name": "Import Data / Group",
-  "version": "v1",
+  "status": "current",
   "approval": "not-reviewed",
+  "version": "v1",
   "stage": "definition",
-  "prototype_built": false,
+  "goal": "Bring existing history or a group into ChopDot safely.",
+  "entry": "You or group list",
+  "exit": "Imported group or review",
+  "next": [
+    "08",
+    "24",
+    "28"
+  ],
   "spec_path": "journeys/23-import/spec.md",
   "decision_history_path": "journeys/23-import/source/decision-history.md",
   "state_inventory_path": "journeys/23-import/STATE_INVENTORY.md",
   "edge_cases_path": "journeys/23-import/EDGE_CASES.md",
+  "prototype_built": false,
   "golden_count_before": 22,
-  "human_approval_required": true,
-  "typography_note": "TYPO-01 deferred",
-  "prototype_only": true
+  "typography_note": "TYPO-01 deferred"
 }
