@@ -32,6 +32,17 @@ const states = [
   'connect-reconciling',
   'connected',
   'wrong-network',
+  'switch-account-review',
+  'switch-network-review',
+  'switch-pending',
+  'switch-accepted',
+  'action-review-switched',
+  'signature-pending-switched',
+  'switch-rejected',
+  'switch-failed',
+  'switch-unknown',
+  'switch-unknown-handoff',
+  'switch-reconciling',
   'connect-rejected',
   'cancelled',
   'action-review',
@@ -59,7 +70,19 @@ const expectedSemantics = {
   'connect-timeout': ['connection result is not known yet', 'Do not start a second connection prompt yet', 'Check the existing wallet/session result first'],
   'connection-unknown-handoff': ['Settle Up', 'Still checking the wallet connection', '12.50 DOT', 'Maya', 'Polkadot', 'Connection unknown', 'fresh Connect remains blocked'],
   'connect-reconciling': ['Checking the existing wallet session', 'cannot sign, submit, or move money', 'trusted provider/session result'],
-  'connected': ['Wallet connected', 'not added to Payment Methods', 'not authorized or sent'],
+  'connected': ['Wallet connected', '5F3sa2…Demo9', 'Polkadot', 'not added to Payment Methods', 'not authorized or sent'],
+  'wrong-network': ['This network does not match', 'settlement expects Polkadot', 'will not continue with the old review'],
+  'switch-account-review': ['Switch the signing account?', '5F3sa2…Demo9', 'Polkadot', 'Maya', '12.50 DOT', 'review the exact payment again'],
+  'switch-network-review': ['Switch to the required network?', 'Polkadot', 'Other network', '12.50 DOT', 'will not silently substitute a network'],
+  'switch-pending': ['Approve the wallet change', 'Nothing is being signed or submitted', 'settlement amount, recipient, asset, source scope, or payment authority'],
+  'switch-accepted': ['Wallet context revalidated', '1Demo…A7', 'Polkadot', 'previous action review is stale', '12.50 DOT', 'Maya'],
+  'action-review-switched': ['Check the payment after the wallet change', '12.50 DOT', 'Maya', '1Demo…A7', 'Polkadot', 'Fresh exact review'],
+  'signature-pending-switched': ['Approve this exact action in your wallet', '1Demo…A7', 'Nothing has been submitted'],
+  'switch-rejected': ['Wallet switch was not approved', 'No new wallet context was accepted', 'settlement is unchanged'],
+  'switch-failed': ['Wallet could not complete the switch', 'No new wallet context is trusted', 'No payment was sent'],
+  'switch-unknown': ['switch result is not known yet', 'Do not start another switch or request a signature yet', 'Reconcile the original wallet change first'],
+  'switch-unknown-handoff': ['Settle Up', 'Still checking the wallet switch', '12.50 DOT', 'Maya', 'Polkadot', 'Switch unknown', 'No fresh switch, signature, or payment route'],
+  'switch-reconciling': ['Checking the original wallet switch', 'cannot sign, submit, or start another switch', 'trusted provider result'],
   'action-review': ['Check exactly what you will sign', '12.50 DOT', 'Maya', '5F3sa2…Demo9', 'Polkadot', 'revalidated'],
   'stale-review': ['Review expired', 'will not request a signature', 'settlement itself is unchanged'],
   'signature-pending': ['Approve this exact action in your wallet', 'Nothing has been submitted'],
@@ -168,6 +191,64 @@ try {
           if (!metrics.anchors.includes(outcome)) errors.push(`${viewport.name}/${state}: missing explicit connection recovery outcome ${outcome}`);
         }
       }
+      if (state === 'connected') {
+        if (!metrics.anchors.includes('#switch-account-review')) errors.push(`${viewport.name}/${state}: connected wallet must enter explicit account-switch review before a switch prompt`);
+      }
+      if (state === 'wrong-network') {
+        if (!metrics.anchors.includes('#switch-network-review')) errors.push(`${viewport.name}/${state}: network mismatch must enter explicit network-switch review`);
+        if (metrics.anchors.includes('#connect-pending')) errors.push(`${viewport.name}/${state}: network mismatch must not reuse the initial connection-pending path as a switch`);
+      }
+      if (state === 'switch-account-review' || state === 'switch-network-review') {
+        if (!metrics.anchors.includes('#switch-pending')) errors.push(`${viewport.name}/${state}: reviewed switch must proceed through switch-pending`);
+        for (const forbidden of ['#action-review', '#action-review-switched', '#signature-pending', '#signature-pending-switched', '#signed']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: switch review must not bypass provider switching into ${forbidden}`);
+        }
+      }
+      if (state === 'switch-pending') {
+        for (const outcome of ['#switch-accepted', '#switch-rejected', '#switch-failed', '#switch-unknown']) {
+          if (!metrics.anchors.includes(outcome)) errors.push(`${viewport.name}/${state}: missing explicit switch outcome ${outcome}`);
+        }
+      }
+      if (state === 'switch-accepted') {
+        if (!metrics.anchors.includes('#action-review-switched')) errors.push(`${viewport.name}/${state}: accepted material wallet change must require a fresh exact action review`);
+        for (const forbidden of ['#signature-pending', '#signature-pending-switched', '#signed', '#submission-pending']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: accepted switch must not bypass fresh review into ${forbidden}`);
+        }
+      }
+      if (state === 'action-review-switched' || state === 'signature-pending-switched') {
+        if (metrics.text.includes('5F3sa2…Demo9')) errors.push(`${viewport.name}/${state}: switched exact review/signature leaked the stale pre-switch account`);
+        if (!metrics.text.includes('1Demo…A7')) errors.push(`${viewport.name}/${state}: switched exact review/signature must bind the revalidated switched account`);
+      }
+      if (state === 'switch-rejected') {
+        if (!metrics.anchors.includes('#switch-account-review') || !metrics.anchors.includes('#switch-network-review')) errors.push(`${viewport.name}/${state}: known rejection must permit a newly reviewed switch attempt without execution`);
+        for (const forbidden of ['#action-review', '#action-review-switched', '#signature-pending', '#signed']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: rejected switch must not continue execution through ${forbidden}`);
+        }
+      }
+      if (state === 'switch-failed') {
+        if (!metrics.anchors.includes('#switch-reconciling')) errors.push(`${viewport.name}/${state}: provider failure must re-read wallet context before execution or another switch`);
+        for (const forbidden of ['#action-review', '#action-review-switched', '#signature-pending', '#switch-pending']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: failed switch must not bypass recheck into ${forbidden}`);
+        }
+      }
+      if (state === 'switch-unknown') {
+        for (const required of ['#switch-reconciling', '#switch-unknown-handoff']) {
+          if (!metrics.anchors.includes(required)) errors.push(`${viewport.name}/${state}: unknown switch must preserve ${required}`);
+        }
+        for (const forbidden of ['#switch-pending', '#switch-accepted', '#switch-rejected', '#switch-failed', '#action-review', '#action-review-switched', '#signature-pending', '#signature-pending-switched', '#connected', '#cancelled']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: unknown switch must not route directly to ${forbidden}`);
+        }
+      }
+      if (state === 'switch-unknown-handoff') {
+        if (metrics.anchors.length !== 0) errors.push(`${viewport.name}/${state}: unresolved switch handoff must expose no fresh switch/sign/payment route`);
+        if (/Wallet setup was cancelled/iu.test(metrics.text)) errors.push(`${viewport.name}/${state}: unresolved switch was incorrectly converted to cancellation`);
+      }
+      if (state === 'switch-reconciling') {
+        for (const outcome of ['#switch-accepted', '#switch-rejected', '#switch-failed', '#switch-unknown']) {
+          if (!metrics.anchors.includes(outcome)) errors.push(`${viewport.name}/${state}: missing explicit same-switch recovery outcome ${outcome}`);
+        }
+        if (metrics.anchors.includes('#switch-pending')) errors.push(`${viewport.name}/${state}: reconciliation must not create a new switch prompt`);
+      }
       if (state === 'submission-unknown') {
         for (const required of ['#submission-reconciling', '#settlement-unknown-handoff']) {
           if (!metrics.anchors.includes(required)) errors.push(`${viewport.name}/${state}: missing required recovery route ${required}`);
@@ -217,7 +298,7 @@ try {
     }
     interactionResults.push({viewport: viewport.name, path: 'connect-unknown-reconcile-still-unknown', finalHash: await page.evaluate(() => location.hash)});
 
-    // Regression for the reviewer blocker: returning from an unknown connection may not expose a fresh Connect path.
+    // Regression for the prior reviewer blocker: returning from an unknown connection may not expose a fresh Connect path.
     await page.goto(`${pathToFileURL(candidatePath).href}#connect-timeout`, {waitUntil: 'load'});
     const returnUnknown = page.locator('.screen:visible a[href="#connection-unknown-handoff"]').first();
     if (!(await returnUnknown.isVisible())) {
@@ -229,6 +310,47 @@ try {
       if (bypassCount !== 0) errors.push(`${viewport.name}: timeout return exposes ${bypassCount} fresh connection/cancel bypass route(s)`);
     }
     interactionResults.push({viewport: viewport.name, path: 'timeout-return-keeps-connect-blocked', finalHash: await page.evaluate(() => location.hash)});
+
+    const accountSwitchPath = ['#connected', '#switch-account-review', '#switch-pending', '#switch-accepted', '#action-review-switched', '#signature-pending-switched', '#signed'];
+    await page.goto(`${pathToFileURL(candidatePath).href}${accountSwitchPath[0]}`, {waitUntil: 'load'});
+    for (const next of accountSwitchPath.slice(1)) {
+      const link = page.locator(`.screen:visible a[href="${next}"]`).first();
+      if (!(await link.isVisible())) {
+        errors.push(`${viewport.name}: account-switch path cannot reach ${next}`);
+        break;
+      }
+      await link.click();
+      await page.waitForFunction(target => location.hash === target, next);
+    }
+    interactionResults.push({viewport: viewport.name, path: 'account-switch-to-fresh-signature', finalHash: await page.evaluate(() => location.hash)});
+
+    const networkSwitchPath = ['#wrong-network', '#switch-network-review', '#switch-pending', '#switch-rejected', '#switch-network-review'];
+    await page.goto(`${pathToFileURL(candidatePath).href}${networkSwitchPath[0]}`, {waitUntil: 'load'});
+    for (const next of networkSwitchPath.slice(1)) {
+      const link = page.locator(`.screen:visible a[href="${next}"]`).first();
+      if (!(await link.isVisible())) {
+        errors.push(`${viewport.name}: network-switch rejection path cannot reach ${next}`);
+        break;
+      }
+      await link.click();
+      await page.waitForFunction(target => location.hash === target, next);
+    }
+    interactionResults.push({viewport: viewport.name, path: 'network-switch-rejected-to-new-review', finalHash: await page.evaluate(() => location.hash)});
+
+    const switchUnknownRecoveryPath = ['#switch-unknown', '#switch-reconciling', '#switch-unknown', '#switch-unknown-handoff'];
+    await page.goto(`${pathToFileURL(candidatePath).href}${switchUnknownRecoveryPath[0]}`, {waitUntil: 'load'});
+    for (const next of switchUnknownRecoveryPath.slice(1)) {
+      const link = page.locator(`.screen:visible a[href="${next}"]`).first();
+      if (!(await link.isVisible())) {
+        errors.push(`${viewport.name}: switch-unknown recovery path cannot reach ${next}`);
+        break;
+      }
+      await link.click();
+      await page.waitForFunction(target => location.hash === target, next);
+    }
+    const switchHandoffBypass = await page.locator('.screen:visible a[href="#switch-pending"], .screen:visible a[href="#action-review"], .screen:visible a[href="#action-review-switched"], .screen:visible a[href="#signature-pending"], .screen:visible a[href="#signature-pending-switched"], .screen:visible a[href="#connected"], .screen:visible a[href="#cancelled"]').count();
+    if (switchHandoffBypass !== 0) errors.push(`${viewport.name}: unresolved switch handoff exposes ${switchHandoffBypass} fresh switch/execution bypass route(s)`);
+    interactionResults.push({viewport: viewport.name, path: 'switch-unknown-reconcile-still-unknown-to-settlement', finalHash: await page.evaluate(() => location.hash)});
 
     const executionPath = ['#action-review', '#signature-pending', '#signed', '#submission-pending', '#finalized', '#result-handoff'];
     await page.goto(`${pathToFileURL(candidatePath).href}${executionPath[0]}`, {waitUntil: 'load'});
@@ -276,7 +398,7 @@ const summary = {
     path: path.relative(repoRoot, candidatePath),
     sha256: candidateSha256,
   },
-  scope: 'J21 bounded connection-timeout return-continuity repair; unresolved wallet/session state remains Still checking across the Settle Up handoff and cannot bypass reconciliation into a fresh Connect',
+  scope: 'J21 bounded account/network-switch lifecycle: explicit account and exact-network review, provider pending/accepted/rejected/failed/unknown, same-switch reconciliation before retry, and fresh exact action/account/network review after a material wallet-context change',
   counts: {
     states: states.length,
     viewports: viewports.length,
@@ -294,15 +416,15 @@ const summary = {
   errors,
   review_status: errors.length ? 'MECHANICAL_QA_FAILED' : 'BOUNDED_SLICE_QA_PASSED',
   limitations: [
-    'This evidence verifies the reviewer-requested connection-timeout return-continuity repair plus the previously built J21 states; it is not yet a complete Journey 21 review bundle.',
-    'The remaining required account-network-switch/balance/disconnect/offline/loading/provider-error clusters are intentionally still open.',
+    'This evidence verifies the reviewer-requested account/network-switch lifecycle plus all previously built J21 states; it is not yet a complete Journey 21 review bundle.',
+    'Insufficient native-fee balance, insufficient transfer-asset balance, disconnect, offline, loading, and load/provider-error states remain intentionally open for later bounded Builder increments.',
     'It does not provide independent UX judgment or human approval.',
     'No real wallet, signature, chain submission, funds, or network finality is exercised; all product states are synthetic prototype states.',
   ],
 };
 
 await writeFile(path.join(evidenceRoot, 'QA_SUMMARY.json'), `${JSON.stringify(summary, null, 2)}\n`);
-await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 connection-timeout return-continuity repair — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
+await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 account/network-switch lifecycle — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
 
 console.log(JSON.stringify({head, candidateSha256, states: states.length, screenshots: pages.length, failures: errors.length}, null, 2));
 if (errors.length) {

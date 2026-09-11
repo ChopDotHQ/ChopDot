@@ -103,7 +103,7 @@
 <div><div class="eyebrow">Wallet & crypto</div><h1 class="hero">Wallet connected</h1><p class="sub">Check the account and network. Connecting still has not authorized or sent the settlement.</p></div>
 <div class="card account"><div class="account-top"><span class="walletmark">W</span><span><b>5F3sa2…Demo9</b><small>Synthetic account · owner view only</small></span><span class="status">Connected</span></div><div class="detail"><span>Network</span><strong>Polkadot</strong><span>Connection</span><strong>Browser wallet</strong></div></div>
 <div class="notice success">Connected for this session. The address was not added to Payment Methods or shared with anyone.</div>
-<div class="actions"><a class="btn primary" href="#action-review">Review this payment</a><a class="btn secondary" href="#handoff">Back to Settle Up</a><a class="btn text" href="#wrong-network">Switch account or network</a></div>
+<div class="actions"><a class="btn primary" href="#action-review">Review this payment</a><a class="btn secondary" href="#handoff">Back to Settle Up</a><a class="btn text" href="#switch-account-review">Switch account or network</a></div>
 </main>
 <footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
 </section>
@@ -113,7 +113,124 @@
 <main class="content">
 <div><div class="eyebrow">Account check</div><h1 class="hero">This network does not match</h1><p class="sub">The settlement expects Polkadot. Your wallet is currently on a different network, so ChopDot will not continue with the old review.</p></div>
 <div class="notice warning">Switching account or network invalidates any stale action review. You will see the exact action again before a signature is requested.</div>
-<div class="actions"><a class="btn primary" href="#connect-pending">Switch in wallet</a><a class="btn secondary" href="#connected">Keep current connection</a><a class="btn text" href="#cancelled">Cancel and return</a></div>
+<div class="actions"><a class="btn primary" href="#switch-network-review">Review network switch</a><a class="btn secondary" href="#connected">Keep current connection</a><a class="btn text" href="#cancelled">Cancel and return</a></div>
+</main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="switch-account-review" data-state="switch-account-review" aria-label="Review wallet account switch">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div><div class="eyebrow">Account switch</div><h1 class="hero">Switch the signing account?</h1><p class="sub">A different active account is a material change. ChopDot will make you review the exact payment again before any signature is requested.</p></div>
+<div class="card context"><div class="context-head"><b>Current wallet context</b><span>Connected</span></div><div class="context-grid"><span>Account</span><strong>5F3sa2…Demo9</strong><span>Network</span><strong>Polkadot</strong><span>Pay</span><strong>Maya</strong><span>Amount</span><strong class="fact">12.50 DOT</strong></div></div>
+<div class="notice warning">Switching does not authorize payment or publish the new account. Any earlier action review becomes stale until the returned account and network are revalidated.</div>
+<div class="actions"><a class="btn primary" href="#switch-pending">Continue in wallet</a><a class="btn secondary" href="#connected">Keep current account</a><a class="btn text" href="#cancelled">Cancel and return</a></div>
+</main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="switch-network-review" data-state="switch-network-review" aria-label="Review wallet network switch">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div><div class="eyebrow">Network switch</div><h1 class="hero">Switch to the required network?</h1><p class="sub">This settlement requires Polkadot. A matching asset ticker on another network is not enough, and ChopDot will not silently substitute a network.</p></div>
+<div class="card context"><div class="context-head"><b>Exact network check</b><span>Settle Up</span></div><div class="context-grid"><span>Required</span><strong>Polkadot</strong><span>Current wallet</span><strong>Other network</strong><span>Pay</span><strong>Maya</strong><span>Amount</span><strong class="fact">12.50 DOT</strong></div></div>
+<div class="notice warning">If the wallet returns a different account or network, the old action review is invalid. The exact action must be reviewed again before signing.</div>
+<div class="actions"><a class="btn primary" href="#switch-pending">Continue in wallet</a><a class="btn secondary" href="#wrong-network">Keep current network</a><a class="btn text" href="#cancelled">Cancel and return</a></div>
+</main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="switch-pending" data-state="switch-pending" aria-label="Waiting for wallet switch">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div class="card pending" role="status" aria-live="polite"><div class="spinner" aria-hidden="true"></div><b>Approve the wallet change</b><p>ChopDot is waiting for the provider to change the active account or network. Nothing is being signed or submitted.</p></div>
+<div class="card context"><div class="context-head"><b>Settlement preserved</b><span>Unchanged</span></div><div class="context-grid"><span>Pay</span><strong>Maya</strong><span>Amount</span><strong class="fact">12.50 DOT</strong><span>Required network</span><strong>Polkadot</strong></div></div>
+<div class="notice neutral">This prompt can change wallet session context only. It cannot change the settlement amount, recipient, asset, source scope, or payment authority.</div>
+<div class="actions"><a class="btn primary" href="#switch-accepted">Demo switch accepted</a><a class="btn secondary" href="#switch-rejected">Demo switch rejected</a><a class="btn text" href="#switch-failed">Demo switch failed</a><a class="btn text" href="#switch-unknown">Demo result unknown</a></div>
+</main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="switch-accepted" data-state="switch-accepted" aria-label="Wallet switch accepted">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div><div class="eyebrow">Wallet context changed</div><h1 class="hero">Wallet context revalidated</h1><p class="sub">The provider returned a different active account on the exact required network. ChopDot has re-read that context but has not signed or sent anything.</p></div>
+<div class="card account"><div class="account-top"><span class="walletmark">W</span><span><b>1Demo…A7</b><small>Synthetic switched account · owner view only</small></span><span class="status">Revalidated</span></div><div class="detail"><span>Network</span><strong>Polkadot</strong><span>Connection</span><strong>Browser wallet</strong></div></div>
+<div class="notice warning">The previous action review is stale. Review the exact 12.50 DOT payment to Maya again from 1Demo…A7 on Polkadot before any signature.</div>
+<div class="actions"><a class="btn primary" href="#action-review-switched">Review the exact action again</a><a class="btn text" href="#cancelled">Return without signing</a></div>
+</main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="action-review-switched" data-state="action-review-switched" aria-label="Review wallet action after switch">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div><div class="eyebrow">Fresh exact review</div><h1 class="hero">Check the payment after the wallet change</h1><p class="sub">The settlement scope is unchanged, but the signing account changed. This is a new exact review bound to the revalidated account and network.</p></div>
+<div class="card context"><div class="context-head"><b>Exact action</b><span>Settle Up</span></div><div class="context-grid"><span>Send</span><strong class="fact">12.50 DOT</strong><span>To</span><strong>Maya</strong><span>From</span><strong>1Demo…A7</strong><span>Network</span><strong>Polkadot</strong><span>Source</span><strong>Zurich dinner</strong></div></div>
+<div class="notice success">Account and network revalidated for this fresh review. Any further material change invalidates it before signing.</div>
+<div class="actions"><a class="btn primary" href="#signature-pending-switched">Approve in wallet</a><a class="btn secondary" href="#stale-review">Demo account/network changed again</a><a class="btn text" href="#cancelled">Cancel and return</a></div>
+</main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="signature-pending-switched" data-state="signature-pending-switched" aria-label="Waiting for wallet signature after switch">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div class="card pending" role="status" aria-live="polite"><div class="spinner" aria-hidden="true"></div><b>Approve this exact action in your wallet</b><p>ChopDot is waiting for the signature from the revalidated switched account. Nothing has been submitted to the network yet.</p></div>
+<div class="card context"><div class="context-head"><b>Signing</b><span>Fresh exact review</span></div><div class="context-grid"><span>Send</span><strong class="fact">12.50 DOT</strong><span>To</span><strong>Maya</strong><span>Account</span><strong>1Demo…A7</strong><span>Network</span><strong>Polkadot</strong></div></div>
+<div class="actions"><a class="btn primary" href="#signed">Demo signature approved</a><a class="btn secondary" href="#signature-rejected">Demo signature rejected</a><a class="btn text" href="#signature-unknown">Demo wallet closed / result unknown</a></div>
+</main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="switch-rejected" data-state="switch-rejected" aria-label="Wallet switch rejected">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div><div class="eyebrow">Switch stopped</div><h1 class="hero">Wallet switch was not approved</h1><p class="sub">The provider reported a rejected change. No new wallet context was accepted, and nothing was signed or submitted.</p></div>
+<div class="notice neutral">The settlement is unchanged. Because the rejection is known, you may review a new switch attempt without pretending the old action review is still valid.</div>
+<div class="actions"><a class="btn primary" href="#switch-account-review">Review account switch</a><a class="btn secondary" href="#switch-network-review">Review network switch</a><a class="btn text" href="#cancelled">Return to settlement</a></div>
+</main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="switch-failed" data-state="switch-failed" aria-label="Wallet switch failed">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div><div class="eyebrow">Provider error</div><h1 class="hero">Wallet could not complete the switch</h1><p class="sub">The provider returned a failure before ChopDot could accept a new account or network. No payment was sent.</p></div>
+<div class="notice danger">No new wallet context is trusted. Re-read the current wallet state before signing or starting another switch.</div>
+<div class="actions"><a class="btn primary" href="#switch-reconciling">Recheck wallet context</a><a class="btn secondary" href="#cancelled">Return to settlement</a></div>
+</main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="switch-unknown" data-state="switch-unknown" aria-label="Wallet switch result unknown">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div><div class="eyebrow">Still checking</div><h1 class="hero">The switch result is not known yet</h1><p class="sub">The wallet stopped responding before ChopDot could prove which account and network are now active.</p></div>
+<div class="card context"><div class="context-head"><b>Settlement preserved</b><span>Settle Up</span></div><div class="context-grid"><span>Pay</span><strong>Maya</strong><span>Amount</span><strong class="fact">12.50 DOT</strong><span>Required network</span><strong>Polkadot</strong></div></div>
+<div class="notice warning">Do not start another switch or request a signature yet. Reconcile the original wallet change first so a late provider result cannot silently change signing context.</div>
+<div class="actions"><a class="btn primary" href="#switch-reconciling">Check the original switch</a><a class="btn secondary" href="#switch-unknown-handoff">Return to settlement</a></div>
+</main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="switch-unknown-handoff" data-state="switch-unknown-handoff" aria-label="Settlement wallet switch still checking">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div><div class="eyebrow">Settle Up</div><h1 class="hero">Still checking the wallet switch</h1><p class="sub">Wallet & Crypto returned the unresolved switch without guessing which account or network is active. The settlement scope is unchanged.</p></div>
+<div class="card context"><div class="context-head"><b>Settlement preserved</b><span>Still checking</span></div><div class="context-grid"><span>Pay</span><strong>Maya</strong><span>Amount</span><strong class="fact">12.50 DOT</strong><span>Required network</span><strong>Polkadot</strong><span>Wallet</span><strong>Switch unknown</strong></div></div>
+<div class="notice warning">No fresh switch, signature, or payment route is available until the original wallet change is reconciled.</div>
+<div class="actions"><span class="btn primary" aria-disabled="true">Returned to Settle Up · still checking</span></div>
+</main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="switch-reconciling" data-state="switch-reconciling" aria-label="Checking wallet switch">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div class="card pending" role="status" aria-live="polite"><div class="spinner" aria-hidden="true"></div><b>Checking the original wallet switch</b><p>ChopDot is re-reading the provider result for the existing switch. This check cannot sign, submit, or start another switch.</p></div>
+<div class="notice warning">Only a trusted provider result can establish the returned account/network or prove that another switch attempt is safe.</div>
+<div class="actions"><a class="btn primary" href="#switch-accepted">Demo result: accepted</a><a class="btn secondary" href="#switch-rejected">Demo result: rejected</a><a class="btn secondary" href="#switch-failed">Demo result: failed</a><a class="btn text" href="#switch-unknown">Demo result: still unknown</a></div>
 </main>
 <footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
 </section>
@@ -227,7 +344,7 @@
 </section>
 
 </div></div>
-<aside class="labpanel"><h2>J21 · Wallet & Crypto</h2><p>V1 candidate · bounded Builder slice 5</p><div class="lablabel">Built now</div><ul><li>Exact action/account/network review</li><li>Stale review invalidation</li><li>Signature pending / rejected / unknown</li><li>Signed ≠ submitted distinction</li><li>Same-transaction reconciliation before retry</li><li>Still-checking settlement handoff</li><li>Finality and verified failure handoff</li><li>Provider unavailable safe stop</li><li>Connection timeout / unknown recovery before retry</li><li>Unknown connection remains Still checking across Settle Up return</li></ul><div class="lablabel">Authority preserved</div><p class="pass">Wallet execution consumes exact upstream authority; unknown connection or execution stays unknown until reconciliation proves an outcome. Connection does not define scope, save/share an address, sign, submit, calculate balances, or infer finality.</p><div class="lablabel">Still to build</div><p>Full account/network switch review/pending/accepted/rejected/unknown, insufficient fee/asset, disconnect, offline/loading/provider-error states, plus complete deterministic/browser/render evidence.</p><div class="lablabel">Quick state links</div><p><a href="#wallet-unavailable">Unavailable</a> · <a href="#connect-timeout">Connect unknown</a> · <a href="#connection-unknown-handoff">Connection handoff</a> · <a href="#connect-reconciling">Connect recovery</a> · <a href="#action-review">Action review</a> · <a href="#signature-pending">Signature</a> · <a href="#submission-unknown">Unknown submission</a> · <a href="#submission-reconciling">Reconcile</a> · <a href="#settlement-unknown-handoff">Still checking handoff</a> · <a href="#finalized">Finalized</a> · <a href="#reverted">Failed</a></p></aside>
+<aside class="labpanel"><h2>J21 · Wallet & Crypto</h2><p>V1 candidate · bounded Builder slice 6</p><div class="lablabel">Built now</div><ul><li>Exact action/account/network review</li><li>Stale review invalidation</li><li>Signature pending / rejected / unknown</li><li>Signed ≠ submitted distinction</li><li>Same-transaction reconciliation before retry</li><li>Still-checking settlement handoff</li><li>Finality and verified failure handoff</li><li>Provider unavailable safe stop</li><li>Connection timeout / unknown recovery before retry</li><li>Unknown connection remains Still checking across Settle Up return</li><li>Account switch review → provider result → fresh exact review</li><li>Exact-network switch review without ticker substitution</li><li>Switch accepted / rejected / failed / unknown</li><li>Unknown switch reconciliation before another switch or signature</li><li>Switched account is carried into fresh review and signature</li></ul><div class="lablabel">Authority preserved</div><p class="pass">Wallet execution consumes exact upstream authority; connection or switching changes session context only. Every material account/network change invalidates stale review, and unknown connection, switch, or execution results stay unknown until reconciliation proves an outcome.</p><div class="lablabel">Still to build</div><p>Insufficient native-fee balance, insufficient transfer-asset balance, disconnect, offline, loading, and load/provider-error states, plus fresh complete-candidate evidence.</p><div class="lablabel">Quick state links</div><p><a href="#wallet-unavailable">Unavailable</a> · <a href="#connect-timeout">Connect unknown</a> · <a href="#switch-account-review">Switch account</a> · <a href="#switch-network-review">Switch network</a> · <a href="#switch-unknown">Switch unknown</a> · <a href="#switch-reconciling">Switch recovery</a> · <a href="#action-review-switched">Fresh switched review</a> · <a href="#submission-unknown">Unknown submission</a> · <a href="#settlement-unknown-handoff">Still checking handoff</a> · <a href="#finalized">Finalized</a> · <a href="#reverted">Failed</a></p></aside>
 </div>
 </body>
 </html>
