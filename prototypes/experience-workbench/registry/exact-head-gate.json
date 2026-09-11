@@ -1,11 +1,11 @@
 {
   "checkpoint": "2026-09-11-j22-v1-golden-ready-awaiting-human",
   "purpose": "Preserve 21-Golden authority and reconcile Journey 22 to the exact independently cleared GOLDEN-READY candidate without granting Golden authority or Journey 23 advancement.",
-  "canonical_exact_head_verified": false,
-  "canonical_exact_head_verified_run": null,
-  "canonical_verified_transition_source": null,
-  "canonical_materialized_head": null,
-  "canonical_exact_head_note": "Exact candidate a1f60b0255e3f72054e0bf500b5cb559c213679d is independently GOLDEN-READY; this authority transition still requires the resulting-state Prototype workbench gate before canonical exact-head verification is recorded.",
+  "canonical_exact_head_verified": true,
+  "canonical_exact_head_verified_run": "34628890594",
+  "canonical_verified_transition_source": "885d4f95a4078bc2fa15bbcaa57df2c061f07429",
+  "canonical_materialized_head": "885d4f95a4078bc2fa15bbcaa57df2c061f07429",
+  "canonical_exact_head_note": "Prototype workbench gate 34628890594 cleanly validated the reconciled J22 GOLDEN-READY authority state at 885d4f95a4078bc2fa15bbcaa57df2c061f07429. No generated-state follow-up commit was required. This verification does not grant human approval or Golden authority.",
   "journey_21": {
     "version": "v1",
     "golden_number": 21,
@@ -50,6 +50,6 @@
   "current_journey": "22",
   "all_prior_golden_artifacts_preserved": true,
   "typography_note": "TYPO-01 deferred",
-  "gate_requirement": "Validate this GOLDEN-READY authority state, then present exact candidate a1f60b0255e3f72054e0bf500b5cb559c213679d / SHA-256 3bbab5328a71d42866006c6f48088c06759fd0a3a922ee4a91e6fcd7bb75fe23 to Devinson. Freeze only after explicit approval of these exact bytes.",
+  "gate_requirement": "Journey 22 exact candidate a1f60b0255e3f72054e0bf500b5cb559c213679d is GOLDEN-READY only. Present SHA-256 3bbab5328a71d42866006c6f48088c06759fd0a3a922ee4a91e6fcd7bb75fe23 to Devinson. Freeze only after explicit approval of these exact bytes, then verify checksum/evidence, freeze without changing approved HTML, run the full resulting-state gate, and advance only to the next journey confirmed by canonical registry order.",
   "prototype_only": true
 }
