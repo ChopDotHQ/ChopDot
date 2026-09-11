@@ -620,7 +620,7 @@ const summary = {
     path: path.relative(repoRoot, candidatePath),
     sha256: candidateSha256,
   },
-  scope: 'J21 bounded balance-block increment: insufficient native network-fee balance and insufficient transfer-asset balance now block signing without mutating the exact upstream settlement amount, asset, recipient, account, or network; all previously built J21 states are rechecked',
+  scope: 'J21 V1 complete registered-state candidate: all 47 current prototype states are mechanically rechecked across both canonical viewports and clicked interaction/recovery paths, including disconnect, offline, loading, load/provider error, balance blockers, deterministic rejected-network origin continuity, and distinct signature, submission, and finality states',
   counts: {
     states: states.length,
     viewports: viewports.length,
@@ -636,17 +636,15 @@ const summary = {
   interactions: interactionResults,
   pages,
   errors,
-  review_status: errors.length ? 'MECHANICAL_QA_FAILED' : 'BOUNDED_SLICE_QA_PASSED',
+  review_status: errors.length ? 'MECHANICAL_QA_FAILED' : 'COMPLETE_CANDIDATE_QA_PASSED',
   limitations: [
-    'This evidence verifies the insufficient native-fee and insufficient transfer-asset balance increment plus all previously built J21 states; it is not yet a complete Journey 21 review bundle.',
-    'Disconnect, offline, loading, and load/provider-error states remain intentionally open for later bounded Builder increments.',
-    'It does not provide independent UX judgment or human approval.',
+    'This evidence mechanically verifies the complete registered Journey 21 V1 prototype state inventory and interaction paths; it does not provide independent UX judgment or human approval.',
     'No real wallet, signature, chain submission, funds, balance read, fee quote, or network finality is exercised; all product states and balances are synthetic prototype states.',
   ],
 };
 
 await writeFile(path.join(evidenceRoot, 'QA_SUMMARY.json'), `${JSON.stringify(summary, null, 2)}\n`);
-await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 balance-block increment — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
+await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 complete candidate — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
 
 console.log(JSON.stringify({head, candidateSha256, states: states.length, screenshots: pages.length, failures: errors.length}, null, 2));
 if (errors.length) {
