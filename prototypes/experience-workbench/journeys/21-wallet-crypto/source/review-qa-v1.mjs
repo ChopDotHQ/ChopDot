@@ -28,6 +28,7 @@ const states = [
   'wallet-unavailable',
   'connect-pending',
   'connect-timeout',
+  'connection-unknown-handoff',
   'connect-reconciling',
   'connected',
   'wrong-network',
@@ -56,6 +57,7 @@ const expectedSemantics = {
   'handoff': ['Connect a wallet to continue', 'No payment has been sent', '12.50 DOT', 'Polkadot'],
   'wallet-unavailable': ['No supported wallet is available', 'settlement is still unchanged', 'No connection, signature, or payment was created'],
   'connect-timeout': ['connection result is not known yet', 'Do not start a second connection prompt yet', 'Check the existing wallet/session result first'],
+  'connection-unknown-handoff': ['Settle Up', 'Still checking the wallet connection', '12.50 DOT', 'Maya', 'Polkadot', 'Connection unknown', 'fresh Connect remains blocked'],
   'connect-reconciling': ['Checking the existing wallet session', 'cannot sign, submit, or move money', 'trusted provider/session result'],
   'connected': ['Wallet connected', 'not added to Payment Methods', 'not authorized or sent'],
   'action-review': ['Check exactly what you will sign', '12.50 DOT', 'Maya', '5F3sa2…Demo9', 'Polkadot', 'revalidated'],
@@ -150,10 +152,16 @@ try {
         if (metrics.anchors.includes('#connect-pending') || metrics.anchors.includes('#connected')) errors.push(`${viewport.name}/${state}: unavailable provider must not fabricate a connection attempt/result`);
       }
       if (state === 'connect-timeout') {
-        if (!metrics.anchors.includes('#connect-reconciling')) errors.push(`${viewport.name}/${state}: unknown connection must route through reconciliation before retry`);
-        for (const forbidden of ['#chooser', '#connect-pending', '#connected']) {
+        for (const required of ['#connect-reconciling', '#connection-unknown-handoff']) {
+          if (!metrics.anchors.includes(required)) errors.push(`${viewport.name}/${state}: unknown connection must preserve ${required} recovery/return route`);
+        }
+        for (const forbidden of ['#cancelled', '#chooser', '#connect-pending', '#connected', '#handoff']) {
           if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: unknown connection must not route directly to ${forbidden}`);
         }
+      }
+      if (state === 'connection-unknown-handoff') {
+        if (metrics.anchors.length !== 0) errors.push(`${viewport.name}/${state}: unresolved connection handoff must expose no fresh connection/execution route`);
+        if (/Status\s+Not sent/iu.test(metrics.text) || /Wallet setup was cancelled/iu.test(metrics.text)) errors.push(`${viewport.name}/${state}: unresolved connection was incorrectly converted to cancelled/not-sent`);
       }
       if (state === 'connect-reconciling') {
         for (const outcome of ['#connected', '#chooser', '#connect-timeout']) {
@@ -209,6 +217,19 @@ try {
     }
     interactionResults.push({viewport: viewport.name, path: 'connect-unknown-reconcile-still-unknown', finalHash: await page.evaluate(() => location.hash)});
 
+    // Regression for the reviewer blocker: returning from an unknown connection may not expose a fresh Connect path.
+    await page.goto(`${pathToFileURL(candidatePath).href}#connect-timeout`, {waitUntil: 'load'});
+    const returnUnknown = page.locator('.screen:visible a[href="#connection-unknown-handoff"]').first();
+    if (!(await returnUnknown.isVisible())) {
+      errors.push(`${viewport.name}: timeout return handoff is not reachable`);
+    } else {
+      await returnUnknown.click();
+      await page.waitForFunction(() => location.hash === '#connection-unknown-handoff');
+      const bypassCount = await page.locator('.screen:visible a[href="#handoff"], .screen:visible a[href="#chooser"], .screen:visible a[href="#connect-pending"], .screen:visible a[href="#connected"], .screen:visible a[href="#cancelled"]').count();
+      if (bypassCount !== 0) errors.push(`${viewport.name}: timeout return exposes ${bypassCount} fresh connection/cancel bypass route(s)`);
+    }
+    interactionResults.push({viewport: viewport.name, path: 'timeout-return-keeps-connect-blocked', finalHash: await page.evaluate(() => location.hash)});
+
     const executionPath = ['#action-review', '#signature-pending', '#signed', '#submission-pending', '#finalized', '#result-handoff'];
     await page.goto(`${pathToFileURL(candidatePath).href}${executionPath[0]}`, {waitUntil: 'load'});
     for (const next of executionPath.slice(1)) {
@@ -255,7 +276,7 @@ const summary = {
     path: path.relative(repoRoot, candidatePath),
     sha256: candidateSha256,
   },
-  scope: 'J21 bounded provider-availability and connection-timeout recovery slice; unknown connection state is reconciled before a fresh attempt',
+  scope: 'J21 bounded connection-timeout return-continuity repair; unresolved wallet/session state remains Still checking across the Settle Up handoff and cannot bypass reconciliation into a fresh Connect',
   counts: {
     states: states.length,
     viewports: viewports.length,
@@ -273,7 +294,7 @@ const summary = {
   errors,
   review_status: errors.length ? 'MECHANICAL_QA_FAILED' : 'BOUNDED_SLICE_QA_PASSED',
   limitations: [
-    'This evidence verifies the provider-unavailable and unknown connection recovery increment plus the previously built J21 states; it is not yet a complete Journey 21 review bundle.',
+    'This evidence verifies the reviewer-requested connection-timeout return-continuity repair plus the previously built J21 states; it is not yet a complete Journey 21 review bundle.',
     'The remaining required account-network-switch/balance/disconnect/offline/loading/provider-error clusters are intentionally still open.',
     'It does not provide independent UX judgment or human approval.',
     'No real wallet, signature, chain submission, funds, or network finality is exercised; all product states are synthetic prototype states.',
@@ -281,7 +302,7 @@ const summary = {
 };
 
 await writeFile(path.join(evidenceRoot, 'QA_SUMMARY.json'), `${JSON.stringify(summary, null, 2)}\n`);
-await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 provider/connection recovery slice — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
+await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 connection-timeout return-continuity repair — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
 
 console.log(JSON.stringify({head, candidateSha256, states: states.length, screenshots: pages.length, failures: errors.length}, null, 2));
 if (errors.length) {
