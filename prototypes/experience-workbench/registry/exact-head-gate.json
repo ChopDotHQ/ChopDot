@@ -1,8 +1,11 @@
 {
   "checkpoint": "2026-09-11-j21-v1-golden-j22-current",
   "purpose": "Materialize explicitly approved Journey 21 Wallet & Crypto V1 as Golden #21 without changing approved HTML, then advance only to registered Journey 22 QR Flows definition.",
-  "canonical_exact_head_verified": false,
-  "canonical_exact_head_note": "This transition becomes canonical only through the Prototype workbench gate generated-state commit after all resulting-state validations pass.",
+  "canonical_exact_head_verified": true,
+  "canonical_exact_head_verified_run": "34605996122",
+  "canonical_verified_transition_source": "6c7cb3c113b42d45ae9a7283bedf3c69bd0c955b",
+  "canonical_materialized_head": "b6c89e6478525522b9a4091391bb639a4ab0fb1c",
+  "canonical_exact_head_note": "Prototype workbench gate 34605996122 cleanly validated the repaired J21 Golden transition from 6c7cb3c113b42d45ae9a7283bedf3c69bd0c955b and materialized the resulting 21-Golden / Journey-22-current authority state at b6c89e6478525522b9a4091391bb639a4ab0fb1c. Approved Journey 21 HTML remained byte-exact at SHA-256 28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6; all Golden locks and resulting-state validations passed.",
   "journey_21": {
     "version": "v1",
     "golden_number": 21,
@@ -33,6 +36,6 @@
   "current_journey": "22",
   "all_prior_golden_artifacts_preserved": true,
   "typography_note": "TYPO-01 deferred",
-  "gate_requirement": "J21 approved bytes/checksum and all prior Golden locks must remain exact; resulting 21-Golden/J22-current state must pass the full gate before the generated-state commit lands.",
+  "gate_requirement": "Journey 21 is validated Golden #21 at exact approved SHA-256 28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6. Preserve its HTML and all prior Golden locks. Journey 22 QR Flows V1 is the only canonical current journey until separately reviewed and explicitly approved.",
   "prototype_only": true
 }
