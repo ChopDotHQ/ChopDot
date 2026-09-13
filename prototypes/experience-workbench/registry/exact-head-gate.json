@@ -1,11 +1,11 @@
 {
   "checkpoint": "2026-09-14-j23-v1-revise-partial-candidate",
   "purpose": "Preserve 22-Golden authority and record the latest exact Journey 23 independent REVISE review without granting human approval or Golden authority while three continuity defects and registered V1 scope remain open.",
-  "canonical_exact_head_verified": false,
-  "canonical_exact_head_verified_run": null,
-  "canonical_verified_transition_source": null,
-  "canonical_materialized_head": null,
-  "canonical_exact_head_note": "Pending resulting-state Prototype workbench validation for this authority reconciliation. The exact reviewed J23 candidate remains on ux/experience-workbench-j23-v1-candidate; no approved Golden HTML or checksum is changed by this metadata transition.",
+  "canonical_exact_head_verified": true,
+  "canonical_exact_head_verified_run": "34787277160",
+  "canonical_verified_transition_source": "5f9b034c14d353ca57bdec5e832f279b0087a45c",
+  "canonical_materialized_head": "e2f6f08799e73dfcb9bf3083bb85ebc8cb206d6b",
+  "canonical_exact_head_note": "Prototype workbench gate 34787277160 cleanly validated the J23 reviewed-authority reconciliation from 5f9b034c14d353ca57bdec5e832f279b0087a45c and materialized the resulting 22-Golden / Journey-23-current authority state at e2f6f08799e73dfcb9bf3083bb85ebc8cb206d6b. Transition-source Smoke 34787277120, Coverage 34787277180, CI 34787277173, and E2E Cypress 34787277205 also completed successfully on 5f9b034c14d353ca57bdec5e832f279b0087a45c; these checks are not attributed to the generated materialization commit. All 22 approved Golden HTML/checksums remain unchanged; J23 remains REVISE and unapproved.",
   "journey_22": {
     "version": "v1",
     "golden_number": 22,
