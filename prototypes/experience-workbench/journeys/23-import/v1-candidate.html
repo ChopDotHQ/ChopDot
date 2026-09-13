@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ChopDot — Import Data / Group V1 Candidate</title>
+<style>
+:root{
+  --bg:#f7f7f8;--surface:#fff;--surface2:#f0f0f2;--ink:#111113;--secondary:#66666d;--muted:#929299;
+  --border:#e6e6e9;--accent:#e6007a;--accent-soft:#fde9f3;--success:#17a66b;--success-soft:#eaf8f2;
+  --warning:#9b6a00;--warning-soft:#fff6df;--danger:#c33b45;--danger-soft:#fff0f1;
+  --shadow:0 1px 2px rgba(0,0,0,.025),0 10px 28px rgba(0,0,0,.05);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#ececef;color:var(--ink);font-family:var(--font)}
+a{text-decoration:none;color:inherit}button,input{font:inherit}:focus-visible{outline:3px solid rgba(230,0,122,.28);outline-offset:2px}
+.lab{height:100vh;height:100dvh;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:28px;padding:28px;overflow:hidden}
+.stage{min-height:0;display:flex;justify-content:center;align-items:stretch;overflow:hidden}
+.device{width:min(430px,100%);height:100%;max-height:890px;border-radius:34px;overflow:hidden;background:var(--bg);border:1px solid rgba(0,0,0,.12);box-shadow:0 30px 75px rgba(0,0,0,.17);position:relative}
+.screen{position:absolute;inset:0;display:none;grid-template-rows:auto minmax(0,1fr) auto;background:var(--bg);overflow:hidden}.screen:target{display:grid}body:not(:has(.screen:target)) #entry-you{display:grid}
+.app-header{padding:calc(13px + env(safe-area-inset-top)) 14px 11px;display:grid;grid-template-columns:38px minmax(0,1fr) 38px;align-items:center;gap:8px;background:rgba(247,247,248,.97);border-bottom:1px solid rgba(0,0,0,.04);z-index:5}
+.header-title{text-align:center}.header-title b{display:block;font-size:15px;line-height:1.1}.header-title span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.icon-btn{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;border:0;background:transparent;color:var(--ink)}.icon-btn svg{width:18px;height:18px}
+.content{min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:16px;display:flex;flex-direction:column;gap:12px}.content>*{flex:0 0 auto}
+.app-footer{background:rgba(255,255,255,.96);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom);z-index:5}.tabbar{height:78px;display:grid;grid-template-columns:1fr 1fr 72px 1fr 1fr;padding:5px 8px 8px;align-items:end}.tab{height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--muted);font-size:10px}.tab.active{color:var(--ink);font-weight:700}.tab svg{width:20px;height:20px;display:block}.add-tab{align-self:center;justify-self:center;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:0 12px 28px rgba(230,0,122,.28);transform:translateY(-12px)}.add-tab svg{width:23px;height:23px}
+.eyebrow{font-size:11px;color:var(--secondary);margin-bottom:4px}.hero{font-size:27px;line-height:1.06;margin:0;letter-spacing:-.045em;font-weight:790}.lead{font-size:13px;line-height:1.48;color:var(--secondary);margin:7px 0 0}.h2{font-size:15px;font-weight:730;margin:0}.caption{font-size:11px;line-height:1.45;color:var(--secondary)}.micro{font-size:10px;line-height:1.45;color:var(--secondary)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}.pad{padding:15px}.stack{display:flex;flex-direction:column;gap:10px}.center{text-align:center}.divider{height:1px;background:var(--border)}
+.notice{display:grid;grid-template-columns:20px minmax(0,1fr);gap:9px;align-items:start;padding:12px 13px;border:1px solid #f2cde0;background:var(--accent-soft);border-radius:14px;color:#7f174d;font-size:10px;line-height:1.45}.notice svg{width:18px;height:18px}.notice.neutral{background:var(--surface2);border-color:var(--border);color:var(--secondary)}.notice.warn{background:var(--warning-soft);border-color:#f0dfab;color:#735000}.notice.danger{background:var(--danger-soft);border-color:#f0c9cd;color:#8f2831}.notice.success{background:var(--success-soft);border-color:#ccebdd;color:#126f4b}
+.actions{display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:2px}.btn{min-height:48px;border-radius:14px;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 14px;font-size:12px;font-weight:740;text-align:center}.btn.primary{background:var(--ink);border-color:var(--ink);color:#fff}.btn.accent{background:var(--accent);border-color:var(--accent);color:#fff}.btn svg{width:17px;height:17px;flex:none}.text-link{min-height:44px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--secondary)}
+.entry-art{height:172px;display:grid;place-items:center}.import-ring{width:104px;height:104px;border-radius:28px;background:var(--accent-soft);display:grid;place-items:center;color:var(--accent);transform:rotate(-3deg);position:relative}.import-ring:after{content:"";position:absolute;inset:-9px;border:1px solid #f3cada;border-radius:34px}.import-ring svg{width:42px;height:42px;transform:rotate(3deg)}
+.file-card{padding:15px}.file-top{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:11px;align-items:center}.file-icon{width:44px;height:44px;border-radius:14px;background:var(--surface2);display:grid;place-items:center;color:var(--ink)}.file-icon svg{width:21px;height:21px}.file-copy b{display:block;font-size:13px}.file-copy span{display:block;font-size:10px;color:var(--secondary);margin-top:3px}.pill{padding:6px 8px;border-radius:999px;background:var(--surface2);font-size:9px;font-weight:720;color:var(--secondary);white-space:nowrap}.pill.success{background:var(--success-soft);color:#117a51}.pill.warn{background:var(--warning-soft);color:var(--warning)}
+.meta-list{margin-top:13px;padding-top:12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}.meta-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;font-size:10px}.meta-row span{color:var(--secondary)}.meta-row b{font-weight:710;text-align:right}
+.picker{padding:16px}.picker-zone{height:210px;border:1px dashed #c8c8ce;border-radius:18px;background:var(--surface2);display:grid;place-items:center;text-align:center;padding:24px}.picker-zone svg{width:34px;height:34px;margin:0 auto 10px;color:var(--secondary)}.picker-zone b{display:block;font-size:13px}.picker-zone span{display:block;font-size:10px;color:var(--secondary);line-height:1.45;margin-top:5px}
+.spinner-wrap{height:210px;display:grid;place-items:center;text-align:center}.spinner{width:42px;height:42px;border-radius:50%;border:3px solid #dddde2;border-top-color:var(--accent);animation:spin .85s linear infinite;margin:0 auto 13px}.freeze .spinner{animation:none;border-top-color:#a9a9b0}@keyframes spin{to{transform:rotate(360deg)}}
+.status-hero{padding:19px 16px;text-align:center}.status-icon{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);margin:0 auto 12px;color:var(--secondary)}.status-icon svg{width:26px;height:26px}.status-icon.pink{background:var(--accent-soft);color:var(--accent)}.status-icon.warn{background:var(--warning-soft);color:var(--warning)}.status-icon.danger{background:var(--danger-soft);color:var(--danger)}.status-icon.success{background:var(--success-soft);color:#117a51}.status-hero h1{font-size:22px;line-height:1.12;letter-spacing:-.035em;margin:0;font-weight:780}.status-hero p{font-size:11px;line-height:1.5;color:var(--secondary);margin:7px auto 0;max-width:300px}
+.preview-card{padding:15px}.preview-head{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:11px;align-items:center}.group-mark{width:44px;height:44px;border-radius:14px;background:#171719;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:790}.preview-copy b{display:block;font-size:14px}.preview-copy span{display:block;font-size:10px;color:var(--secondary);margin-top:3px}.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}.stat{border:1px solid var(--border);border-radius:13px;padding:10px;background:#fbfbfc}.stat b{display:block;font-size:13px}.stat span{display:block;font-size:9px;color:var(--secondary);margin-top:3px}.list{overflow:hidden}.row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 13px;border-top:1px solid var(--border)}.row:first-child{border-top:0}.row-icon{width:34px;height:34px;border-radius:11px;background:var(--surface2);display:grid;place-items:center}.row-icon svg{width:17px;height:17px}.row-copy b{display:block;font-size:12px}.row-copy span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.row-side{font-size:10px;font-weight:710;text-align:right}
+.scope-boundary{border:1px dashed #c8c8ce;background:#fbfbfc;box-shadow:none;padding:15px}.scope-boundary b{display:block;font-size:12px}.scope-boundary p{font-size:10px;line-height:1.5;color:var(--secondary);margin:6px 0 0}
+.labpanel{height:100%;overflow:auto;background:#151516;color:#fff;border-radius:22px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.18)}.labpanel h2{font-size:17px;margin:0 0 5px}.labpanel p{font-size:12px;line-height:1.5;color:#b9b9bf;margin:0}.labsec{margin-top:16px;padding-top:14px;border-top:1px solid #303034}.lablabel{font-size:10px;color:#929299;text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px}.lablinks{display:grid;grid-template-columns:1fr 1fr;gap:6px}.lablinks a{border:1px solid #37373a;background:#222225;color:#fff;border-radius:10px;padding:8px;font-size:10px}.note{font-size:11px;line-height:1.5;color:#a9a9af}
+@media(max-width:860px){.lab{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;display:block;padding:0;overflow:hidden}.labpanel{display:none}.stage{position:absolute;inset:0}.device{position:absolute;inset:0;width:100%;height:100%;max-height:none;border:0;border-radius:0;box-shadow:none}}
+@media(max-height:760px){.entry-art{height:125px}.picker-zone{height:160px}.spinner-wrap{height:160px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-import" viewBox="0 0 24 24"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 15v4h14v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v6M12 7.5h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2.8 20h18.4L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9v5m0 3h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="m3 3 18 18M5.2 9.2A11.6 11.6 0 0 1 12 7c2.5 0 4.8.8 6.7 2.2M8.5 12.5A6.3 6.3 0 0 1 12 11.5c1.2 0 2.4.3 3.4.9M10.8 16a2 2 0 0 1 2.4 0M12 20h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M16 5.5a3 3 0 0 1 0 5.8M16 14a5 5 0 0 1 4.5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M6 3v18l3-2 3 2 3-2 3 2V3l-3 2-3-2-3 2-3-2Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 9h6M9 13h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 2.7 8 7 10 4.3-2 7-5.3 7-10V6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9h-6v-6H9v6H3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-activity" viewBox="0 0 24 24"><path d="M4 13h4l2-6 4 10 2-4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+<div class="lab">
+  <div class="stage"><div class="device">
+    <section class="screen" id="entry-you" data-state-code="J23-S01">
+      <header class="app-header"><span></span><div class="header-title"><b>Import</b><span>From You</span></div><span></span></header>
+      <div class="content">
+        <div class="entry-art"><div class="import-ring"><svg><use href="#i-import"/></svg></div></div>
+        <div class="center"><div class="eyebrow">Bring a group with you</div><h1 class="hero">Review first. Import after.</h1><p class="lead">Choose one group-history package. ChopDot checks it and shows what would be added before anything is saved.</p></div>
+        <div class="notice"><svg><use href="#i-shield"/></svg><div>Selecting or inspecting a package does not create a group, link people, move money, or activate payment details.</div></div>
+        <div class="actions"><a class="btn primary accent" data-test-primary href="#source-picker"><svg><use href="#i-import"/></svg>Choose import package</a><a class="text-link" href="#entry-groups">See group-list entry</a></div>
+      </div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="entry-groups" data-state-code="J23-S02">
+      <header class="app-header"><a class="icon-btn" href="#entry-you" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Import group</b><span>Group list</span></div><span></span></header>
+      <div class="content">
+        <div class="entry-art"><div class="import-ring"><svg><use href="#i-import"/></svg></div></div>
+        <div class="center"><div class="eyebrow">Add an existing group</div><h1 class="hero">Import without touching your current groups.</h1><p class="lead">This flow creates a new group only after review and confirmation. It never merges history into an existing group in V1.</p></div>
+        <div class="notice neutral"><svg><use href="#i-info"/></svg><div>Existing groups remain unchanged while a source is selected, inspected, or previewed.</div></div>
+        <div class="actions"><a class="btn primary" data-test-primary href="#source-picker">Choose import package</a><a class="text-link" href="#entry-you">Return to You</a></div>
+      </div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab active"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="source-picker" data-state-code="J23-S03">
+      <header class="app-header"><a class="icon-btn" href="#entry-you" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Choose package</b><span>System picker boundary</span></div><span></span></header>
+      <div class="content">
+        <section class="card picker"><div class="picker-zone"><div><svg><use href="#i-file"/></svg><b>Select one import package</b><span>The real platform picker is outside this prototype. This demo does not read a local file.</span></div></div></section>
+        <div class="notice neutral"><svg><use href="#i-info"/></svg><div>Choosing a source only identifies what to inspect. No ChopDot product data is written at this boundary.</div></div>
+        <div class="actions"><a class="btn primary" data-test-primary href="#source-selected">Use demo package</a><a class="text-link" href="#source-picker-cancelled">Cancel</a></div>
+      </div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="source-picker-cancelled" data-state-code="J23-S04">
+      <header class="app-header"><span></span><div class="header-title"><b>Import</b><span>Picker closed</span></div><span></span></header>
+      <div class="content">
+        <section class="card status-hero"><div class="status-icon"><svg><use href="#i-file"/></svg></div><h1>No package selected.</h1><p>The source picker was closed before a package was chosen. Nothing was inspected or saved.</p></section>
+        <div class="notice neutral"><svg><use href="#i-shield"/></svg><div>Your existing groups and people are unchanged.</div></div>
+        <div class="actions"><a class="btn primary" data-test-primary href="#source-picker">Choose a package</a><a class="text-link" href="#entry-you">Return to You</a></div>
+      </div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="source-selected" data-state-code="J23-S05">
+      <header class="app-header"><a class="icon-btn" href="#source-picker" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Selected package</b><span>Not inspected yet</span></div><span></span></header>
+      <div class="content">
+        <section class="card file-card"><div class="file-top"><span class="file-icon"><svg><use href="#i-file"/></svg></span><div class="file-copy"><b>Demo import package</b><span>Local fixture · content not trusted yet</span></div><span class="pill">Selected</span></div><div class="meta-list"><div class="meta-row"><span>Inspection</span><b>Not started</b></div><div class="meta-row"><span>Product writes</span><b>None</b></div></div></section>
+        <div class="notice"><svg><use href="#i-shield"/></svg><div>Selection is not validation. ChopDot must inspect structure, safety, and financial meaning before showing a preview.</div></div>
+        <div class="actions"><a class="btn primary accent" data-test-primary href="#inspecting">Inspect package</a><a class="text-link" href="#source-picker">Choose another</a></div>
+      </div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="source-unavailable" data-state-code="J23-S06">
+      <header class="app-header"><a class="icon-btn" href="#source-picker" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Import</b><span>Source unavailable</span></div><span></span></header>
+      <div class="content">
+        <section class="card status-hero"><div class="status-icon warn"><svg><use href="#i-alert"/></svg></div><h1>This package is no longer available.</h1><p>ChopDot could not open the selected source. It was not inspected and nothing was written.</p></section>
+        <div class="actions"><a class="btn primary" data-test-primary href="#source-picker">Choose another package</a><a class="text-link" href="#entry-you">Return to You</a></div>
+      </div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="inspecting" data-state-code="J23-S07">
+      <header class="app-header"><span></span><div class="header-title"><b>Inspecting package</b><span>Read-only check</span></div><span></span></header>
+      <div class="content">
+        <section class="card spinner-wrap"><div><div class="spinner"></div><h2 class="h2">Checking before we preview anything.</h2><p class="caption">Structure, supported records, identities, currencies, and unsafe content are checked before any product write.</p></div></section>
+        <div class="notice neutral"><svg><use href="#i-shield"/></svg><div>Inspection is read-only. No group has been created and no imported person has been linked.</div></div>
+      </div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="valid-package" data-state-code="J23-S08">
+      <header class="app-header"><a class="icon-btn" href="#source-selected" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Package checked</b><span>Preview available</span></div><span></span></header>
+      <div class="content">
+        <section class="card status-hero"><div class="status-icon success"><svg><use href="#i-check"/></svg></div><h1>Ready to preview.</h1><p>The package can be read safely enough to show what it contains. Nothing has been imported yet.</p></section>
+        <div class="notice neutral"><svg><use href="#i-info"/></svg><div>A readable package is not proof that its source is authentic, and it does not grant any payment or wallet authority.</div></div>
+        <div class="actions"><a class="btn primary accent" data-test-primary href="#clean-preview">Preview import</a><a class="text-link" href="#source-picker">Choose another package</a></div>
+      </div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="unsupported-package" data-state-code="J23-S09">
+      <header class="app-header"><a class="icon-btn" href="#source-picker" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Import</b><span>Unsupported package</span></div><span></span></header>
+      <div class="content"><section class="card status-hero"><div class="status-icon warn"><svg><use href="#i-file"/></svg></div><h1>We cannot interpret this package.</h1><p>This V1 flow cannot safely understand its structure. No data was imported or changed.</p></section><div class="notice neutral"><svg><use href="#i-info"/></svg><div>This prototype does not claim support for a named provider, file extension, remote fetch, or production parser.</div></div><div class="actions"><a class="btn primary" data-test-primary href="#source-picker">Choose another package</a><a class="text-link" href="#entry-you">Return to You</a></div></div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="malformed" data-state-code="J23-S10">
+      <header class="app-header"><a class="icon-btn" href="#source-picker" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Import</b><span>Unreadable package</span></div><span></span></header>
+      <div class="content"><section class="card status-hero"><div class="status-icon danger"><svg><use href="#i-alert"/></svg></div><h1>This package is damaged or invalid.</h1><p>ChopDot stopped before previewing unsafe or malformed content. Nothing was written.</p></section><div class="notice danger"><svg><use href="#i-shield"/></svg><div>Raw source markup or scripts are not rendered as trusted customer content.</div></div><div class="actions"><a class="btn primary" data-test-primary href="#source-picker">Choose another package</a><a class="text-link" href="#entry-you">Return to You</a></div></div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="empty-package" data-state-code="J23-S11">
+      <header class="app-header"><a class="icon-btn" href="#source-picker" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Import</b><span>No group found</span></div><span></span></header>
+      <div class="content"><section class="card status-hero"><div class="status-icon"><svg><use href="#i-file"/></svg></div><h1>There is nothing to import here.</h1><p>No importable group or history was found. No import action is available.</p></section><div class="actions"><a class="btn primary" data-test-primary href="#source-picker">Choose another package</a><a class="text-link" href="#entry-you">Return to You</a></div></div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="oversized" data-state-code="J23-S12">
+      <header class="app-header"><a class="icon-btn" href="#source-picker" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Import</b><span>Cannot inspect safely</span></div><span></span></header>
+      <div class="content"><section class="card status-hero"><div class="status-icon warn"><svg><use href="#i-alert"/></svg></div><h1>This package is too large or complex here.</h1><p>ChopDot stopped before a safe preview could be established. Nothing was imported.</p></section><div class="actions"><a class="btn primary" data-test-primary href="#source-picker">Choose another package</a><a class="text-link" href="#entry-you">Return to You</a></div></div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="partial-readable" data-state-code="J23-S13">
+      <header class="app-header"><a class="icon-btn" href="#source-picker" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Package checked</b><span>Partially readable</span></div><span></span></header>
+      <div class="content"><section class="card status-hero"><div class="status-icon warn"><svg><use href="#i-info"/></svg></div><h1>Some non-financial details could not be read.</h1><p>The omitted demo fields do not change balances, identity, or record meaning. A later preview must disclose the omission before confirmation.</p></section><div class="notice warn"><svg><use href="#i-shield"/></svg><div>If an omission changed financial or identity truth, this state would block instead of continuing.</div></div><div class="actions"><a class="btn primary" data-test-primary href="#clean-preview">Preview with warning</a><a class="text-link" href="#source-picker">Choose another package</a></div></div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="provenance-unknown" data-state-code="J23-S14">
+      <header class="app-header"><a class="icon-btn" href="#source-picker" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Package checked</b><span>Source not verified</span></div><span></span></header>
+      <div class="content"><section class="card status-hero"><div class="status-icon pink"><svg><use href="#i-shield"/></svg></div><h1>Readable, not verified.</h1><p>The package parsed successfully, but ChopDot cannot establish who produced it. That distinction remains visible through review.</p></section><div class="notice neutral"><svg><use href="#i-info"/></svg><div>Parsing success is not authenticity, import success, or external verification.</div></div><div class="actions"><a class="btn primary" data-test-primary href="#clean-preview">Preview anyway</a><a class="text-link" href="#source-picker">Choose another package</a></div></div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="offline-inspection" data-state-code="J23-S15">
+      <header class="app-header"><a class="icon-btn" href="#source-selected" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Inspecting package</b><span>Offline</span></div><span></span></header>
+      <div class="content"><section class="card status-hero"><div class="status-icon warn"><svg><use href="#i-wifi-off"/></svg></div><h1>Inspection was interrupted.</h1><p>The selection can be preserved safely, but ChopDot has not validated this package and will not show a stale preview as current.</p></section><div class="notice warn"><svg><use href="#i-info"/></svg><div>No product write started. Retrying resumes the read-only inspection step.</div></div><div class="actions"><a class="btn primary" data-test-primary href="#inspecting">Retry inspection</a><a class="text-link" href="#source-picker">Choose another package</a></div></div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="clean-preview" data-state-code="J23-S16">
+      <header class="app-header"><a class="icon-btn" href="#valid-package" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Preview import</b><span>Nothing saved yet</span></div><span></span></header>
+      <div class="content">
+        <section class="card preview-card"><div class="preview-head"><span class="group-mark">LW</span><div class="preview-copy"><b>Lisbon Weekend</b><span>Demo package · one new group</span></div><span class="pill success">Preview</span></div><div class="stat-grid"><div class="stat"><b>4</b><span>people</span></div><div class="stat"><b>18</b><span>records</span></div><div class="stat"><b>EUR</b><span>currency</span></div></div></section>
+        <div class="notice success"><svg><use href="#i-check"/></svg><div>No blocking issue is shown in this clean fixture. Preview is still read-only: no group or identity link exists yet.</div></div>
+        <section class="card file-card"><div class="meta-list" style="margin-top:0;padding-top:0;border-top:0"><div class="meta-row"><span>Destination</span><b>New group</b></div><div class="meta-row"><span>Merge into existing</span><b>Never in V1</b></div><div class="meta-row"><span>Product writes</span><b>None yet</b></div></div></section>
+        <div class="actions"><a class="btn primary accent" data-test-primary href="#preview-detail">Review details</a><a class="text-link" href="#cancelled-before-confirmation">Cancel import</a></div>
+      </div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="preview-detail" data-state-code="J23-S17">
+      <header class="app-header"><a class="icon-btn" href="#clean-preview" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Import details</b><span>Preview only</span></div><span></span></header>
+      <div class="content">
+        <div><div class="eyebrow">Lisbon Weekend</div><h1 class="hero">What this package says it contains.</h1><p class="lead">These are historical records to review, not commands ChopDot can replay.</p></div>
+        <section class="card list"><div class="row"><span class="row-icon"><svg><use href="#i-receipt"/></svg></span><div class="row-copy"><b>Expenses</b><span>Historical shared costs</span></div><span class="row-side">12</span></div><div class="row"><span class="row-icon"><svg><use href="#i-check"/></svg></span><div class="row-copy"><b>Settlements</b><span>History only · not payment authority</span></div><span class="row-side">4</span></div><div class="row"><span class="row-icon"><svg><use href="#i-info"/></svg></span><div class="row-copy"><b>Notes</b><span>Non-financial context</span></div><span class="row-side">2</span></div></section>
+        <section class="card file-card"><div class="meta-list" style="margin-top:0;padding-top:0;border-top:0"><div class="meta-row"><span>Detected people</span><b>4</b></div><div class="meta-row"><span>Source currency</span><b>EUR</b></div><div class="meta-row"><span>Receiving / wallet authority</span><b>Not imported</b></div></div></section>
+        <div class="notice"><svg><use href="#i-shield"/></svg><div>Imported payment-looking records stay historical. This flow cannot settle, sign, publish receiving details, invite members, or claim external finality.</div></div>
+        <div class="actions"><a class="btn primary" data-test-primary href="#review-boundary">Continue review</a><a class="text-link" href="#cancelled-before-confirmation">Cancel import</a></div>
+      </div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="cancelled-before-confirmation" data-state-code="J23-S39">
+      <header class="app-header"><span></span><div class="header-title"><b>Import cancelled</b><span>Before confirmation</span></div><span></span></header>
+      <div class="content"><section class="card status-hero"><div class="status-icon success"><svg><use href="#i-check"/></svg></div><h1>Nothing was imported.</h1><p>You left before the explicit import confirmation. No group, person link, balance, or history was written.</p></section><div class="notice neutral"><svg><use href="#i-shield"/></svg><div>The inspected preview was informational only. Existing ChopDot data remains unchanged.</div></div><div class="actions"><a class="btn primary" data-test-primary href="#entry-you">Return to Import</a><a class="text-link" href="#source-picker">Choose another package</a></div></div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+
+    <section class="screen" id="review-boundary" data-boundary="builder-scope">
+      <header class="app-header"><a class="icon-btn" href="#preview-detail" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>J23 review boundary</b><span>Bounded candidate increment</span></div><span></span></header>
+      <div class="content">
+        <section class="card status-hero"><div class="status-icon pink"><svg><use href="#i-shield"/></svg></div><h1>The write boundary is not built yet.</h1><p>This first bounded candidate stops after source intake, read-only inspection, and preview detail.</p></section>
+        <section class="scope-boundary"><b>Builder scope boundary — not a registered product state</b><p>J23-S18–J23-S38 remain intentionally unimplemented in this increment: duplicate/similarity conflicts, identity/currency review, explicit import confirmation, commit, result, and reconciliation. No “Import group” control exists on this head.</p></section>
+        <div class="notice neutral"><svg><use href="#i-info"/></svg><div>This boundary is review scaffolding only. It grants no product authority and is excluded from registered-state coverage.</div></div>
+        <div class="actions"><a class="btn primary" data-test-primary href="#preview-detail">Back to preview details</a><a class="text-link" href="#cancelled-before-confirmation">Cancel without writing</a></div>
+      </div>
+      <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+    </section>
+  </div></div>
+  <aside class="labpanel"><h2>Journey 23 · V1 candidate</h2><p>First bounded increment: source intake → read-only inspection → preview detail. Fixture only; no production parser or write is exercised.</p>
+    <div class="labsec"><div class="lablabel">Entry & selection</div><div class="lablinks"><a href="#entry-you">S01 · You entry</a><a href="#entry-groups">S02 · Groups entry</a><a href="#source-picker">S03 · Picker</a><a href="#source-picker-cancelled">S04 · Picker cancelled</a><a href="#source-selected">S05 · Selected</a><a href="#source-unavailable">S06 · Unavailable</a></div></div>
+    <div class="labsec"><div class="lablabel">Inspection</div><div class="lablinks"><a href="#inspecting">S07 · Inspecting</a><a href="#valid-package">S08 · Valid</a><a href="#unsupported-package">S09 · Unsupported</a><a href="#malformed">S10 · Malformed</a><a href="#empty-package">S11 · Empty</a><a href="#oversized">S12 · Oversized</a><a href="#partial-readable">S13 · Partial</a><a href="#provenance-unknown">S14 · Provenance</a><a href="#offline-inspection">S15 · Offline</a></div></div>
+    <div class="labsec"><div class="lablabel">Preview</div><div class="lablinks"><a href="#clean-preview">S16 · Clean preview</a><a href="#preview-detail">S17 · Detail</a><a href="#cancelled-before-confirmation">S39 · Cancelled</a><a href="#review-boundary">Scope boundary</a></div></div>
+    <div class="labsec"><div class="lablabel">Limitations</div><p class="note">S18–S38 are not implemented. No import write, merge, payment execution, wallet signing, receiving-detail publication, invitations, provider integration, or authenticity claim is present. TYPO-01 remains deferred.</p></div>
+  </aside>
+</div>
+</body>
+</html>
