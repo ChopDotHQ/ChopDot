@@ -25,9 +25,12 @@ const branch = process.env.GITHUB_REF_NAME || git('rev-parse', '--abbrev-ref', '
 const states = [
   'entry-you','entry-groups','source-picker','source-picker-cancelled','source-selected','source-unavailable',
   'inspecting','valid-package','unsupported-package','malformed','empty-package','oversized','partial-readable',
-  'provenance-unknown','offline-inspection','clean-preview','preview-detail','cancelled-before-confirmation',
+  'provenance-unknown','offline-inspection','clean-preview','preview-detail','exact-duplicate','similar-group',
+  'identity-clean','ambiguous-person','own-identity-ambiguity','currency-conflict','unsupported-record','ready-to-confirm',
+  'cancelled-before-confirmation',
 ];
-const boundaries = ['review-boundary'];
+const boundaries = ['group-home-boundary','review-boundary'];
+const boundaryMarkers = {'group-home-boundary':'owner-j08','review-boundary':'builder-scope'};
 const rendered = [...states, ...boundaries];
 const progressStates = new Set(['inspecting']);
 const viewports = [
@@ -40,7 +43,9 @@ const expectedStateCodes = {
   'source-selected':'J23-S05','source-unavailable':'J23-S06','inspecting':'J23-S07','valid-package':'J23-S08',
   'unsupported-package':'J23-S09','malformed':'J23-S10','empty-package':'J23-S11','oversized':'J23-S12',
   'partial-readable':'J23-S13','provenance-unknown':'J23-S14','offline-inspection':'J23-S15','clean-preview':'J23-S16',
-  'preview-detail':'J23-S17','cancelled-before-confirmation':'J23-S39',
+  'preview-detail':'J23-S17','exact-duplicate':'J23-S18','similar-group':'J23-S19','identity-clean':'J23-S20',
+  'ambiguous-person':'J23-S21','own-identity-ambiguity':'J23-S22','currency-conflict':'J23-S23',
+  'unsupported-record':'J23-S24','ready-to-confirm':'J23-S25','cancelled-before-confirmation':'J23-S39',
 };
 
 const expectedSemantics = {
@@ -61,8 +66,17 @@ const expectedSemantics = {
   'offline-inspection':['Inspection was interrupted','has not validated this package','No product write started'],
   'clean-preview':['Nothing saved yet','Lisbon Weekend','one new group','Merge into existing','Never in V1','Product writes','None yet'],
   'preview-detail':['historical records','not commands','History only','not payment authority','Not imported'],
+  'exact-duplicate':['exact package was already imported','Lisbon Weekend','not a same-name guess','No new import is created'],
+  'similar-group':['similar group already exists','cannot prove they are the same group','Separate new group','Never in V1'],
+  'identity-clean':['People are resolved without guessing','Stable identity evidence','No name-only linking','Nothing is saved yet'],
+  'ambiguous-person':['Which Maya is this?','Display name alone is not enough','No link is made until you choose','pending preview'],
+  'own-identity-ambiguity':['Is this imported member you?','cannot prove this imported member is your current identity','pending preview','Nothing is linked or written'],
+  'currency-conflict':['Currency meaning is unclear','Import cannot continue','No exchange rate','financial truth'],
+  'unsupported-record':['unsupported record changes the balance','Dropping it would change','cannot be dropped safely','import is blocked'],
+  'ready-to-confirm':['Ready to import','Final review','No product write has happened','Import group'],
   'cancelled-before-confirmation':['Nothing was imported','before the explicit import confirmation','Existing ChopDot data remains unchanged'],
-  'review-boundary':['write boundary is not built yet','S18–J23-S38 remain intentionally unimplemented','No “Import group” control exists','review scaffolding only'],
+  'group-home-boundary':['Journey 08 boundary','Preview only','Journey 08 owns','does not redesign Group Home'],
+  'review-boundary':['Commit is not built yet','J23-S26–J23-S38 remain intentionally unimplemented','Nothing was written','review scaffolding'],
 };
 
 const errors = [];
@@ -130,7 +144,7 @@ try {
           stateCode:screen?.getAttribute('data-state-code'),
           boundary:screen?.getAttribute('data-boundary'),
           secretInputs:[...(screen?.querySelectorAll('input,textarea')??[])].filter(node=>/seed|private\s*key|password|secret|credential/iu.test(`${node.getAttribute('name')??''} ${node.getAttribute('aria-label')??''} ${node.getAttribute('placeholder')??''}`)).length,
-          actionableImportGroup:primaryButtons.some(node=>/import\s+group/iu.test(node.textContent??'')),
+          actionableImportGroup:primaryButtons.some(node=>/^\s*import\s+group\s*$/iu.test(node.textContent??'')),
         };
       }, state);
 
@@ -143,10 +157,11 @@ try {
       for (const button of metrics.buttonTargets) if (button.height < 44) errors.push(`${viewport.name}/${state}: candidate .btn target '${button.text}' is ${button.height}px < 44px`);
       if (metrics.primaryBottom!==null && metrics.contentBottom!==null && metrics.primaryBottom>metrics.contentBottom+1) errors.push(`${viewport.name}/${state}: primary action extends below content viewport`);
       if (metrics.secretInputs) errors.push(`${viewport.name}/${state}: secret-like input field detected`);
-      if (metrics.actionableImportGroup) errors.push(`${viewport.name}/${state}: Import group action must not exist in this bounded pre-write increment`);
+      if (metrics.actionableImportGroup && state !== 'ready-to-confirm') errors.push(`${viewport.name}/${state}: Import group action is allowed only on J23-S25 in this bounded increment`);
+      if (state === 'ready-to-confirm' && !metrics.actionableImportGroup) errors.push(`${viewport.name}/${state}: J23-S25 must expose the explicit Import group action`);
 
       if (states.includes(state) && metrics.stateCode !== expectedStateCodes[state]) errors.push(`${viewport.name}/${state}: expected state code ${expectedStateCodes[state]}, got ${metrics.stateCode}`);
-      if (boundaries.includes(state) && metrics.boundary !== 'builder-scope') errors.push(`${viewport.name}/${state}: expected builder-scope boundary marker`);
+      if (boundaries.includes(state) && metrics.boundary !== boundaryMarkers[state]) errors.push(`${viewport.name}/${state}: expected boundary marker ${boundaryMarkers[state]}, got ${metrics.boundary}`);
       for (const phrase of expectedSemantics[state] ?? []) if (!metrics.text.includes(phrase)) errors.push(`${viewport.name}/${state}: missing semantic phrase '${phrase}'`);
 
       for (const href of metrics.anchors) {
@@ -175,8 +190,21 @@ try {
     await clickPath(page,'offline-inspection','a[data-test-primary]','inspecting','offline inspection → retry',viewport.name);
     await clickPath(page,'clean-preview','a[data-test-primary]','preview-detail','preview → details',viewport.name);
     await clickPath(page,'clean-preview','a.text-link','cancelled-before-confirmation','preview → cancel',viewport.name);
-    await clickPath(page,'preview-detail','a[data-test-primary]','review-boundary','details → bounded scope boundary',viewport.name);
-    await clickPath(page,'review-boundary','a[data-test-primary]','preview-detail','scope boundary → back to details',viewport.name);
+    await clickPath(page,'preview-detail','a[data-test-primary]','identity-clean','details → clean identity review',viewport.name);
+    await clickPath(page,'exact-duplicate','a[data-test-primary]','group-home-boundary','exact duplicate → J08 boundary',viewport.name);
+    await clickPath(page,'exact-duplicate','a.text-link','source-picker','exact duplicate → choose another',viewport.name);
+    await clickPath(page,'group-home-boundary','a[data-test-primary]','exact-duplicate','J08 boundary → duplicate result',viewport.name);
+    await clickPath(page,'similar-group','a[data-test-primary]','identity-clean','similar group → separate import review',viewport.name);
+    await clickPath(page,'similar-group','a.text-link','cancelled-before-confirmation','similar group → cancel',viewport.name);
+    await clickPath(page,'identity-clean','a[data-test-primary]','ready-to-confirm','clean identity → ready',viewport.name);
+    await clickPath(page,'ambiguous-person','a[data-test-primary]','identity-clean','ambiguous person → keep separate',viewport.name);
+    await clickPath(page,'ambiguous-person','a[data-test-secondary]','identity-clean','ambiguous person → explicit link',viewport.name);
+    await clickPath(page,'own-identity-ambiguity','a[data-test-primary]','identity-clean','own identity → keep separate',viewport.name);
+    await clickPath(page,'own-identity-ambiguity','a[data-test-secondary]','identity-clean','own identity → explicit self link',viewport.name);
+    await clickPath(page,'currency-conflict','a[data-test-primary]','source-picker','currency conflict → choose another',viewport.name);
+    await clickPath(page,'unsupported-record','a[data-test-primary]','source-picker','unsupported financial record → choose another',viewport.name);
+    await clickPath(page,'ready-to-confirm','a[data-test-primary]','review-boundary','ready → bounded write boundary',viewport.name);
+    await clickPath(page,'review-boundary','a[data-test-primary]','ready-to-confirm','write boundary → final review',viewport.name);
     await clickPath(page,'cancelled-before-confirmation','a[data-test-primary]','entry-you','cancelled → import entry',viewport.name);
 
     await context.close();
@@ -192,7 +220,7 @@ if (externalRequests.length) errors.push(`external runtime requests: ${externalR
 const summary = {
   journey:'23',
   version:'v1',
-  scope:'First bounded J23 candidate increment: registered source intake/inspection S01–S17 plus pre-confirmation cancellation S39, with one non-product builder scope boundary. No write/commit/recovery cluster is implemented yet.',
+  scope:'Second bounded J23 candidate increment: registered S01–S25 plus pre-confirmation cancellation S39, J08 owner-boundary evidence, and one non-product Builder write boundary. S26–S38 remain open; no product write/commit/result/recovery cluster is implemented yet.',
   review_status: errors.length ? 'BOUNDED_SLICE_QA_FAILED' : 'BOUNDED_SLICE_QA_PASSED',
   branch,head,tree,candidate_path:path.relative(repoRoot,candidatePath),candidate_sha256:candidateSha256,
   registered_states:states.length,
@@ -206,10 +234,10 @@ const summary = {
   console_errors:consoleErrors,
   external_requests:externalRequests,
   failures:errors,
-  open_registered_scope:['J23-S18–J23-S38: duplicate/similar-group conflicts, identity/currency/record review, ready-to-confirm, explicit confirmation, commit, result, reconciliation and owner-boundary handoffs'],
+  open_registered_scope:['J23-S26–J23-S38: final confirmation execution, commit progress, result, unknown/partial outcomes, reconciliation and safe retry','J23-B02/J23-B03: J24 portability and J28 shared-recovery owner boundaries'],
   limitations:[
     'Prototype fixture only: no production file picker, parser, provider integration, remote fetch, migration, database write, or authenticity verification is exercised.',
-    'No Import group action exists on this bounded head; selecting, inspecting and previewing are modeled as read-only.',
+    'J23-S25 exposes the contract-required Import group action, but this bounded head routes it only to explicit Builder review scaffolding; no product write or confirmation execution occurs.',
     'Payment/settlement-looking fixture records are historical display only; no payment execution, wallet signing, receiving-detail publication, invitation, or finality is exercised.',
     'Builder mechanical evidence is not independent UX review, GOLDEN-READY, human approval, or Golden freeze.',
     'TYPO-01 remains centrally deferred and is not repaired here.'
@@ -220,7 +248,7 @@ await writeFile(path.join(evidenceRoot,'QA_SUMMARY.json'),JSON.stringify(summary
 await writeFile(path.join(evidenceRoot,'LAYOUT_QA.json'),JSON.stringify(layouts,null,2));
 await writeFile(path.join(evidenceRoot,'INTERACTION_QA.json'),JSON.stringify(interactions,null,2));
 await writeFile(path.join(evidenceRoot,'BROWSER_QA.json'),JSON.stringify({browserErrors,consoleErrors,externalRequests},null,2));
-await writeFile(path.join(evidenceRoot,'VISUAL_QA.md'),`# Journey 23 V1 — bounded intake / inspection / preview mechanical evidence\n\n- Exact head: \`${head}\`\n- Branch: \`${branch}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- Registered states rendered: **${states.length}**\n- Builder boundary renders: **${boundaries.length}**\n- Canonical viewports: **393×852**, **430×890**\n- PNGs: **${screenshots.length}**\n- Clicked paths: **${interactions.filter(x=>x.pass).length}/${interactions.length}**\n- Browser errors: **${browserErrors.length}**\n- Console errors: **${consoleErrors.length}**\n- External runtime requests: **${externalRequests.length}**\n- Deterministic failures: **${errors.length}**\n\n## Scope\n\nThis is the first bounded J23 candidate increment only. It covers J23-S01–S17 plus J23-S39 and a clearly labelled non-product Builder scope boundary. J23-S18–S38 remain open by design on this head. No import write or \`Import group\` action exists yet.\n\n## Trust / authority limits\n\nThe demo package is a fixture. This evidence does not prove a production picker, parser, provider integration, migration, source authenticity, database write, payment execution, wallet signing, receiving-detail publication, invitation, settlement replay, or finality. Imported payment-looking rows are previewed as history only.\n\n## Review status\n\n\`${summary.review_status}\`. This is Builder mechanical evidence only; it does not grant independent visual clearance, REVIEWABLE, GOLDEN-READY, human approval, or Golden status.\n`);
+await writeFile(path.join(evidenceRoot,'VISUAL_QA.md'),`# Journey 23 V1 — bounded intake / inspection / conflict-review mechanical evidence\n\n- Exact head: \`${head}\`\n- Branch: \`${branch}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- Registered states rendered: **${states.length}**\n- Boundary renders: **${boundaries.length}**\n- Canonical viewports: **393×852**, **430×890**\n- PNGs: **${screenshots.length}**\n- Clicked paths: **${interactions.filter(x=>x.pass).length}/${interactions.length}**\n- Browser errors: **${browserErrors.length}**\n- Console errors: **${consoleErrors.length}**\n- External runtime requests: **${externalRequests.length}**\n- Deterministic failures: **${errors.length}**\n\n## Scope\n\nThis is the second bounded J23 candidate increment. It covers J23-S01–S25 plus J23-S39, one J08 owner-boundary render, and a clearly labelled non-product Builder write boundary. J23-S26–S38 and B02/B03 remain open by design on this head. The S25 \`Import group\` action routes only to that Builder boundary; no product write or confirmation execution occurs.\n\n## Trust / authority limits\n\nThe demo package is a fixture. This evidence does not prove a production picker, parser, provider integration, migration, source authenticity, database write, payment execution, wallet signing, receiving-detail publication, invitation, settlement replay, or finality. Imported payment-looking rows are previewed as history only.\n\n## Review status\n\n\`${summary.review_status}\`. This is Builder mechanical evidence only; it does not grant independent visual clearance, REVIEWABLE, GOLDEN-READY, human approval, or Golden status.\n`);
 
 if (errors.length) {
   console.error(JSON.stringify(summary,null,2));
