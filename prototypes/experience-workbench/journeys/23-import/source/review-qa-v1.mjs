@@ -83,7 +83,7 @@ const checkHash = async (page, expected, label, viewport) => {
 
 const clickPath = async (page, start, selector, expected, label, viewport) => {
   await page.goto(`${pathToFileURL(candidatePath).href}#${start}`, {waitUntil:'load'});
-  await page.locator(selector).click();
+  await page.locator(`#${start}`).locator(selector).click();
   await checkHash(page, expected, label, viewport);
 };
 
