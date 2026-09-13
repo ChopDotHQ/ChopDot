@@ -1,6 +1,6 @@
 {
-  "schema_version": 21,
-  "updated_on": "2026-09-11",
+  "schema_version": 22,
+  "updated_on": "2026-09-14",
   "registered_journeys": 28,
   "golden_count": 22,
   "current_journey": "23",
@@ -16,6 +16,6 @@
   "last_approved_journey": "22",
   "last_approved_version": "v1",
   "last_approved_sha256": "3bbab5328a71d42866006c6f48088c06759fd0a3a922ee4a91e6fcd7bb75fe23",
-  "next_action": "Journey 23 Import Data / Group V1 is current at definition stage. Builder may define only from the canonical J23 bundle, then build when the established process permits; Reviewer remains no-op until exact candidate evidence exists.",
+  "next_action": "Journey 23 exact candidate 37bcdfdb11552e96e6dff5d3a6231997deb89474 is REVISE after sealed independent review receipt 5656569512. Builder owns only the three reviewed continuity repairs (S07 caller transition, identity-decision truth preservation, partial-read warning carry-forward) plus completion of registered J23-S26–S38 and J23-B02/B03, then must regenerate exact-head evidence and issue a new sealed review handoff. No human approval or freeze is authorized.",
   "typography_note": "TYPO-01 deferred"
 }
