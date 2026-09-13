@@ -326,5 +326,18 @@ a{text-decoration:none;color:inherit}button,input{font:inherit}:focus-visible{ou
     <div class="labsec"><div class="lablabel">Limitations</div><p class="note">S26–S38 and B02/B03 are not implemented. No import write, merge, payment execution, wallet signing, receiving-detail publication, invitations, provider integration, or authenticity claim is exercised. TYPO-01 remains deferred.</p></div>
   </aside>
 </div>
+<script>
+(() => {
+  let inspectionTimer = null;
+  document.addEventListener('click', event => {
+    const link = event.target.closest('a[href="#inspecting"]');
+    if (!link) return;
+    clearTimeout(inspectionTimer);
+    inspectionTimer = setTimeout(() => {
+      if (location.hash === '#inspecting') location.hash = '#valid-package';
+    }, 300);
+  });
+})();
+</script>
 </body>
 </html>
