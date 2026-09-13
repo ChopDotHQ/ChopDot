@@ -101,6 +101,14 @@ const clickPath = async (page, start, selector, expected, label, viewport) => {
   await checkHash(page, expected, label, viewport);
 };
 
+const clickInspectionPath = async (page, start, selector, label, viewport) => {
+  await page.goto(`${pathToFileURL(candidatePath).href}#${start}`, {waitUntil:'load'});
+  await page.locator(`#${start}`).locator(selector).click();
+  await checkHash(page, 'inspecting', `${label} → inspecting`, viewport);
+  await page.waitForFunction(() => location.hash === '#valid-package');
+  await checkHash(page, 'valid-package', `${label} → selected fixture result`, viewport);
+};
+
 try {
   for (const viewport of viewports) {
     const context = await browser.newContext({viewport:{width:viewport.width,height:viewport.height}});
@@ -178,7 +186,7 @@ try {
     await clickPath(page,'source-picker','a[data-test-primary]','source-selected','picker → demo package',viewport.name);
     await clickPath(page,'source-picker','a.text-link','source-picker-cancelled','picker → cancel',viewport.name);
     await clickPath(page,'source-picker-cancelled','a[data-test-primary]','source-picker','picker cancelled → choose package',viewport.name);
-    await clickPath(page,'source-selected','a[data-test-primary]','inspecting','selected → inspect',viewport.name);
+    await clickInspectionPath(page,'source-selected','a[data-test-primary]','selected → inspect',viewport.name);
     await clickPath(page,'source-unavailable','a[data-test-primary]','source-picker','unavailable → choose another',viewport.name);
     await clickPath(page,'valid-package','a[data-test-primary]','clean-preview','valid → preview',viewport.name);
     await clickPath(page,'unsupported-package','a[data-test-primary]','source-picker','unsupported → choose another',viewport.name);
@@ -237,6 +245,7 @@ const summary = {
   open_registered_scope:['J23-S26–J23-S38: final confirmation execution, commit progress, result, unknown/partial outcomes, reconciliation and safe retry','J23-B02/J23-B03: J24 portability and J28 shared-recovery owner boundaries'],
   limitations:[
     'Prototype fixture only: no production file picker, parser, provider integration, remote fetch, migration, database write, or authenticity verification is exercised.',
+    'The selected demo package now proves the S05 → S07 → S08 caller transition; direct state loads remain evidence fixtures rather than product navigation.',
     'J23-S25 exposes the contract-required Import group action, but this bounded head routes it only to explicit Builder review scaffolding; no product write or confirmation execution occurs.',
     'Payment/settlement-looking fixture records are historical display only; no payment execution, wallet signing, receiving-detail publication, invitation, or finality is exercised.',
     'Builder mechanical evidence is not independent UX review, GOLDEN-READY, human approval, or Golden freeze.',
@@ -248,7 +257,7 @@ await writeFile(path.join(evidenceRoot,'QA_SUMMARY.json'),JSON.stringify(summary
 await writeFile(path.join(evidenceRoot,'LAYOUT_QA.json'),JSON.stringify(layouts,null,2));
 await writeFile(path.join(evidenceRoot,'INTERACTION_QA.json'),JSON.stringify(interactions,null,2));
 await writeFile(path.join(evidenceRoot,'BROWSER_QA.json'),JSON.stringify({browserErrors,consoleErrors,externalRequests},null,2));
-await writeFile(path.join(evidenceRoot,'VISUAL_QA.md'),`# Journey 23 V1 — bounded intake / inspection / conflict-review mechanical evidence\n\n- Exact head: \`${head}\`\n- Branch: \`${branch}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- Registered states rendered: **${states.length}**\n- Boundary renders: **${boundaries.length}**\n- Canonical viewports: **393×852**, **430×890**\n- PNGs: **${screenshots.length}**\n- Clicked paths: **${interactions.filter(x=>x.pass).length}/${interactions.length}**\n- Browser errors: **${browserErrors.length}**\n- Console errors: **${consoleErrors.length}**\n- External runtime requests: **${externalRequests.length}**\n- Deterministic failures: **${errors.length}**\n\n## Scope\n\nThis is the second bounded J23 candidate increment. It covers J23-S01–S25 plus J23-S39, one J08 owner-boundary render, and a clearly labelled non-product Builder write boundary. J23-S26–S38 and B02/B03 remain open by design on this head. The S25 \`Import group\` action routes only to that Builder boundary; no product write or confirmation execution occurs.\n\n## Trust / authority limits\n\nThe demo package is a fixture. This evidence does not prove a production picker, parser, provider integration, migration, source authenticity, database write, payment execution, wallet signing, receiving-detail publication, invitation, settlement replay, or finality. Imported payment-looking rows are previewed as history only.\n\n## Review status\n\n\`${summary.review_status}\`. This is Builder mechanical evidence only; it does not grant independent visual clearance, REVIEWABLE, GOLDEN-READY, human approval, or Golden status.\n`);
+await writeFile(path.join(evidenceRoot,'VISUAL_QA.md'),`# Journey 23 V1 — bounded intake / inspection / conflict-review mechanical evidence\n\n- Exact head: \`${head}\`\n- Branch: \`${branch}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- Registered states rendered: **${states.length}**\n- Boundary renders: **${boundaries.length}**\n- Canonical viewports: **393×852**, **430×890**\n- PNGs: **${screenshots.length}**\n- Clicked paths: **${interactions.filter(x=>x.pass).length}/${interactions.length}**\n- Browser errors: **${browserErrors.length}**\n- Console errors: **${consoleErrors.length}**\n- External runtime requests: **${externalRequests.length}**\n- Deterministic failures: **${errors.length}**\n\n## Scope\n\nThis is the second bounded J23 candidate increment with the reviewed S07 caller-continuity repair. It covers J23-S01–S25 plus J23-S39, one J08 owner-boundary render, and a clearly labelled non-product Builder write boundary. J23-S26–S38 and B02/B03 remain open by design on this head. The S25 \`Import group\` action routes only to that Builder boundary; no product write or confirmation execution occurs.\n\nThe selected demo fixture now exercises the real candidate caller path from S05 through S07 into S08; direct state loads remain evidence fixtures rather than a substitute for that caller transition.\n\n## Trust / authority limits\n\nThe demo package is a fixture. This evidence does not prove a production picker, parser, provider integration, migration, source authenticity, database write, payment execution, wallet signing, receiving-detail publication, invitation, settlement replay, or finality. Imported payment-looking rows are previewed as history only.\n\n## Review status\n\n\`${summary.review_status}\`. This is Builder mechanical evidence only; it does not grant independent visual clearance, REVIEWABLE, GOLDEN-READY, human approval, or Golden status.\n`);
 
 if (errors.length) {
   console.error(JSON.stringify(summary,null,2));
