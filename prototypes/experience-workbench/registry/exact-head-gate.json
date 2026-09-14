@@ -1,10 +1,19 @@
 {
   "checkpoint": "2026-09-14-j24-v1-golden-j25-current",
   "purpose": "Materialize explicitly approved Journey 24 Export / Portability V1 as Golden #24 without changing approved HTML, then advance only to registered Journey 25 definition.",
-  "canonical_exact_head_verified": false,
+  "canonical_exact_head_verified": true,
   "canonical_materialized_head": "a5d7dea481929178f153ae620d625d6fccaa9ce9",
   "canonical_verified_transition_source": "1ec687c31b39d1f3855aed61a36589a4e6fac2d4",
-  "canonical_exact_head_note": "Golden #24 / Journey 25 generated state was materialized at a5d7dea481929178f153ae620d625d6fccaa9ce9 by Prototype workbench gate 34843891036 from approved freeze source 1ec687c31b39d1f3855aed61a36589a4e6fac2d4. This verification-source commit exists only to trigger exact resulting-state checks on the materialized tree; canonical_exact_head_verified remains false until those checks are observed green and a final verification binding is committed.",
+  "canonical_verification_source_head": "96e008103338178455c576c05299a9c99bf3f613",
+  "canonical_exact_head_note": "Golden #24 / Journey 25 generated state was materialized at a5d7dea481929178f153ae620d625d6fccaa9ce9 from approved freeze source 1ec687c31b39d1f3855aed61a36589a4e6fac2d4. Exact resulting-state verification source 96e008103338178455c576c05299a9c99bf3f613 passed Prototype workbench, CI, Coverage, Smoke and E2E. This binding records that verified state without changing approved J24 product HTML.",
+  "canonical_verification_runs": {
+    "prototype_workbench_gate": "34845377072",
+    "ci": "34845376848",
+    "coverage": "34845377027",
+    "smoke": "34845376912",
+    "e2e_cypress": "34845376871"
+  },
+  "canonical_verification_conclusion": "success",
   "journey_24": {
     "version": "v1",
     "golden_number": 24,
@@ -18,6 +27,7 @@
     "evidence_artifact": "10343014765",
     "evidence_artifact_sha256": "7b5173c48a8f8b3588b6d2af55f8cc093a4b3d4e48010a36f42a7f2974749531",
     "direct_visual_review": "pass",
+    "independent_review_comment_id": "5663139837",
     "human_approval": true,
     "human_approval_comment_id": "5663800809",
     "html_change_authorized": false
@@ -38,6 +48,6 @@
   "current_journey": "25",
   "all_prior_golden_artifacts_preserved": true,
   "typography_note": "TYPO-01 deferred",
-  "gate_requirement": "J24 approved bytes/checksum and all prior Golden locks must remain exact; the materialized 24-Golden/J25-current state must pass Prototype workbench, CI, Coverage, Smoke and E2E on this exact verification source before canonical_exact_head_verified may become true.",
+  "gate_requirement": "Satisfied: exact approved J24 bytes/checksum and all prior Golden locks remained exact; the materialized 24-Golden/J25-current state passed Prototype workbench, CI, Coverage, Smoke and E2E on verification source 96e008103338178455c576c05299a9c99bf3f613.",
   "prototype_only": true
 }
