@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const root=path.resolve(import.meta.dirname,'..');
+const registry=path.join(root,'registry','journeys.json');
+const journeys=JSON.parse(fs.readFileSync(registry,'utf8'));
+const j26=journeys.find(j=>j.id==='26');
+if(!j26) throw new Error('Missing Journey 26');
+const qaPath='journeys/26-group-lifecycle/review-v1/VISUAL_QA.md';
+if(!fs.existsSync(path.join(root,qaPath))) throw new Error('Missing J26 QA evidence pointer');
+j26.qa_path=qaPath;
+fs.writeFileSync(registry,JSON.stringify(journeys,null,2)+'\n');
+console.log(`J26 QA PATH BOUND: ${qaPath}`);
