@@ -2,7 +2,9 @@
   "checkpoint": "2026-09-14-j25-v1-golden-j26-current",
   "purpose": "Materialize explicitly approved Journey 25 Storage / Backup / Recovery V1 as Golden #25 without changing approved HTML, then advance only to registered Journey 26 definition.",
   "canonical_exact_head_verified": false,
-  "canonical_exact_head_note": "This transition becomes canonical only through the Prototype workbench gate generated-state commit after all resulting-state validations pass.",
+  "canonical_materialized_head": "64f57e736b218dc61d78f680a361bcc6eae04465",
+  "canonical_verified_transition_source": "d87153066962e9e9057991413b8f94bcc5f23dc1",
+  "canonical_exact_head_note": "Golden #25 / Journey 26 generated state was materialized at 64f57e736b218dc61d78f680a361bcc6eae04465 by Prototype workbench gate 34863477919 from approved freeze source d87153066962e9e9057991413b8f94bcc5f23dc1. This verification-source commit exists only to trigger exact resulting-state checks on the materialized tree; canonical_exact_head_verified remains false until those checks are observed green and a final verification binding is committed.",
   "journey_25": {
     "version": "v1",
     "golden_number": 25,
@@ -37,6 +39,6 @@
   "current_journey": "26",
   "all_prior_golden_artifacts_preserved": true,
   "typography_note": "TYPO-01 deferred",
-  "gate_requirement": "J25 approved bytes/checksum and all prior Golden locks must remain exact; resulting 25-Golden/J26-current state must pass the full gate before the generated-state commit lands.",
+  "gate_requirement": "J25 approved bytes/checksum and all prior Golden locks must remain exact; the materialized 25-Golden/J26-current state must pass Prototype workbench, CI, Coverage, Smoke and E2E on this exact verification source before canonical_exact_head_verified may become true.",
   "prototype_only": true
 }
