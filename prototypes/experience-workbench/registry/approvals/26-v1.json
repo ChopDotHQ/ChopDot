@@ -47,7 +47,7 @@
     "synthetic_no_live_execution": true
   },
   "freeze_eligible": true,
-  "freeze_completed": false,
+  "freeze_completed": true,
   "next_journey": "27",
   "deferred_note": {
     "id": "TYPO-01",
@@ -55,5 +55,6 @@
     "change_now": false,
     "note": "Shared typography/readability remains deferred."
   },
-  "prototype_only": true
+  "prototype_only": true,
+  "frozen_on": "2026-09-15"
 }

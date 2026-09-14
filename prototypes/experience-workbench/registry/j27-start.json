@@ -1,20 +1,29 @@
 {
   "journey": "27",
   "name": "Account & Preferences",
-  "version": "v1",
+  "status": "current",
   "approval": "not-reviewed",
+  "version": "v1",
   "stage": "definition",
-  "prototype_built": false,
+  "goal": "Manage identity, notifications, appearance, security, and deletion.",
+  "entry": "You or account menu",
+  "exit": "Previous context or signed out",
+  "next": [
+    "01",
+    "19",
+    "20",
+    "21",
+    "23",
+    "25"
+  ],
   "spec_path": "journeys/27-account-preferences/spec.md",
   "decision_history_path": "journeys/27-account-preferences/source/decision-history.md",
   "state_inventory_path": "journeys/27-account-preferences/STATE_INVENTORY.md",
   "edge_cases_path": "journeys/27-account-preferences/EDGE_CASES.md",
+  "prototype_built": false,
   "golden_count_before": 26,
-  "human_approval_required": false,
   "standing_approval_policy": "docs/CHATGPT_FACTORY_APPROVAL_POLICY.md",
-  "standing_approval_applicable_on_golden_ready": true,
   "caller_reachability_required": true,
   "factory_generation": "v1.1",
-  "typography_note": "TYPO-01 deferred",
-  "prototype_only": true
+  "typography_note": "TYPO-01 deferred"
 }

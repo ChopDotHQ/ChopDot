@@ -1,8 +1,8 @@
 {
   "ok": true,
   "scope": "documentation structure and artifact preservation",
-  "covered_journeys": 26,
-  "decision_entries": 60,
+  "covered_journeys": 27,
+  "decision_entries": 70,
   "all_golden_locks_pass": true,
   "coverage": [
     {
@@ -283,13 +283,24 @@
     {
       "journey": "26",
       "version": "v1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 10,
+      "source_path": "journeys/26-group-lifecycle/source/decision-history.md",
+      "source_sha256": "48ed38872464d146dba9f1ea4f7a417113decf6f4b88843f12289a04624b0cba",
+      "spec_path": "journeys/26-group-lifecycle/spec.md",
+      "spec_sha256": "3f1cb13980e10fd4ccd1ada1f7b08794f2379d346575f9e73e159ec6a4a0c362"
+    },
+    {
+      "journey": "27",
+      "version": "v1",
       "approval": "not-reviewed",
       "status": "current",
       "decisions": 1,
-      "source_path": "journeys/26-group-lifecycle/source/decision-history.md",
-      "source_sha256": "b72c4c24f47d5455068e4cc044b51fd2789e4d5bc3858a7a2a2bae6aca94a8ea",
-      "spec_path": "journeys/26-group-lifecycle/spec.md",
-      "spec_sha256": "102790cb54791b8a5c8c7359918778e3b06ec74df30889acd9b06054c1554060"
+      "source_path": "journeys/27-account-preferences/source/decision-history.md",
+      "source_sha256": "1bf5c445f83e51ecaa038de409cafa160abde50d233b8615c9621b27eb3d46aa",
+      "spec_path": "journeys/27-account-preferences/spec.md",
+      "spec_sha256": "185e9f1c7ff283014edb827b3fff3f22a4b85ac0552b9a0c766e4cfd3e7ea395"
     }
   ],
   "complete_conversation_audit": false,
