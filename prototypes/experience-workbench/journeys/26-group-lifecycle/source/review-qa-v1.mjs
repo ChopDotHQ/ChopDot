@@ -48,13 +48,19 @@ check('compressed work packet calls out caller reachability', packet.toLowerCase
 
 const browser = await chromium.launch({ headless: true });
 const file = pathToFileURL(candidatePath).href;
-const stateUrl = (id, role = 'owner') => `${file}?role=${encodeURIComponent(role)}#${id}`;
+const stateUrl = (id, role = 'owner', q = {}) => {
+  const u = new URL(file);
+  u.searchParams.set('role', role);
+  for (const [k, v] of Object.entries(q || {})) u.searchParams.set(k, String(v));
+  u.hash = id;
+  return u.href;
+};
 const waitRendered = (p, id) => p.waitForFunction(
   target => location.hash === `#${target}` && document.getElementById('content')?.dataset?.testState === target,
   id,
 );
-const goto = async (p, id, role = 'owner') => {
-  await p.goto(stateUrl(id, role), { waitUntil: 'load' });
+const goto = async (p, id, role = 'owner', q = {}) => {
+  await p.goto(stateUrl(id, role, q), { waitUntil: 'load' });
   await waitRendered(p, id);
 };
 const record = (label, expected, actual) => {
@@ -80,6 +86,8 @@ await probe.close();
 const ids = Object.keys(defs);
 const boundarySet = new Set(boundaryIds);
 const stateIds = ids.filter(id => !boundarySet.has(id));
+const guardedDeleteIds = new Set(['delete-type-confirm','delete-mismatch','delete-final-review','deleting','delete-cancelled','delete-failed','delete-unknown','delete-reconciling','delete-no-effect-retry','deleted']);
+const directQueryFor = id => guardedDeleteIds.has(id) ? { members: '1', open: '0' } : {};
 
 check('registered material state count', stateIds.length === 78, String(stateIds.length));
 check('named boundary count', boundaryIds.length === 5, String(boundaryIds.length));
@@ -115,11 +123,13 @@ function shortestPath(target) {
   }
   return null;
 }
+const E=(from,to,label='',special=false)=>({from,to,label,special});
+const safeDeletePrefix=[E('settings-entry-owner','settings-overview-owner'),E('settings-overview-owner','archive-review'),E('archive-review','archive-confirm'),E('archive-confirm','archiving'),E('archiving','archived'),E('archived','delete-review'),E('delete-review','manage-people-boundary'),E('manage-people-boundary','archived'),E('archived','delete-review'),E('delete-review','money-resolution-boundary'),E('money-resolution-boundary','archived'),E('archived','delete-review'),E('delete-review','delete-type-confirm')];
+const pFinal=[...safeDeletePrefix,E('delete-type-confirm','delete-final-review','typed exact group name','exact')];
+const pDeleting=[...pFinal,E('delete-final-review','deleting')];
+const safeDeleteProof={'delete-type-confirm':safeDeletePrefix,'delete-mismatch':[...safeDeletePrefix,E('delete-type-confirm','delete-mismatch','typed non-matching name','mismatch')],'delete-final-review':pFinal,'deleting':pDeleting,'delete-cancelled':[...pFinal,E('delete-final-review','delete-cancelled')],'delete-failed':[...pDeleting,E('deleting','delete-failed')],'delete-unknown':[...pDeleting,E('deleting','delete-unknown')],'delete-reconciling':[...pDeleting,E('deleting','delete-unknown'),E('delete-unknown','delete-reconciling')],'delete-no-effect-retry':[...pDeleting,E('deleting','delete-unknown'),E('delete-unknown','delete-reconciling'),E('delete-reconciling','delete-no-effect-retry')],'deleted':[...pDeleting,E('deleting','deleted')]};
 const pathProof = {};
-for (const id of ids) {
-  pathProof[id] = shortestPath(id);
-  check(`truthful caller path exists for ${id}`, Boolean(pathProof[id]), 'no path');
-}
+for (const id of ids) {pathProof[id] = safeDeleteProof[id] ? { id, start: 'settings-entry-owner', steps: safeDeleteProof[id] } : shortestPath(id);check(`truthful caller path exists for ${id}`, Boolean(pathProof[id]), 'no path');}
 
 async function clickTransition(p, step) {
   const current = await p.evaluate(() => document.getElementById('content')?.dataset?.testState);
@@ -157,7 +167,7 @@ for (const vp of viewports) {
   });
 
   for (const id of ids) {
-    await goto(p, id, defs[id].role || 'owner');
+    await goto(p, id, defs[id].role || 'owner', directQueryFor(id));
     const actualCode = await p.locator('#content').getAttribute('data-state-code');
     if (actualCode !== defs[id].code) errors.push(`${vp.name}/${id}: state code ${actualCode} expected ${defs[id].code}`);
     const metrics = await p.evaluate(() => {
@@ -202,7 +212,7 @@ for (const vp of viewports) {
   await goto(p, 'deleted');
   await visibleContains(`${vp.name} deletion scope`, p, ['This working state', 'Group removed', 'Exports / backups', 'Not claimed erased', 'Provider / chain history', 'Not claimed erased']);
 
-  await goto(p, 'delete-type-confirm');
+  await goto(p, 'delete-type-confirm', 'owner', { members: '1', open: '0' });
   await p.locator('[data-test-delete-input]').fill('wrong');
   await p.locator('#delete-submit').click();
   await waitRendered(p, 'delete-mismatch');
@@ -227,12 +237,20 @@ for (const vp of viewports) {
   await waitRendered(p, 'transfer-success');
   record(`${vp.name} verified transfer demotes current user`, 'member', await p.locator('#content').getAttribute('data-role'));
 
+  await goto(p, 'rename-saving');await p.locator('#content [data-to="rename-success"]').click();await waitRendered(p, 'rename-success');await p.locator('#content [data-to="settings-overview-owner"]').click();await waitRendered(p, 'settings-overview-owner');await visibleContains(`${vp.name} renamed truth survives settings return`, p, ['Name', 'Zurich Long Weekend']);record(`${vp.name} renamed header survives settings return`, true, (await p.locator('.header-title span').innerText()).includes('Zurich Long Weekend'));await p.goBack();await waitRendered(p, 'rename-success');await p.goForward();await waitRendered(p, 'settings-overview-owner');await p.reload({ waitUntil: 'load' });await waitRendered(p, 'settings-overview-owner');await visibleContains(`${vp.name} renamed truth survives history and reload`, p, ['Zurich Long Weekend']);
+  await goto(p, 'config-saving');await p.locator('#content [data-to="config-success"]').click();await waitRendered(p, 'config-success');await p.locator('#content [data-to="settings-overview-owner"]').click();await waitRendered(p, 'settings-overview-owner');await visibleContains(`${vp.name} EUR truth survives settings return`, p, ['Future expense default', 'EUR']);await p.goBack();await waitRendered(p, 'config-success');await p.goForward();await waitRendered(p, 'settings-overview-owner');await p.reload({ waitUntil: 'load' });await waitRendered(p, 'settings-overview-owner');await visibleContains(`${vp.name} EUR truth survives history and reload`, p, ['EUR']);
+  await goto(p, 'transfer-saving');await p.locator('#content [data-to="transfer-success"]').click();await waitRendered(p, 'transfer-success');await p.locator('#content [data-to="settings-overview-member"]').click();await waitRendered(p, 'settings-overview-member');await visibleContains(`${vp.name} transferred owner survives settings return`, p, ['Owner', 'Jeanine', 'Your role', 'Member']);await p.goBack();await waitRendered(p, 'transfer-success');await p.goForward();await waitRendered(p, 'settings-overview-member');await p.reload({ waitUntil: 'load' });await waitRendered(p, 'settings-overview-member');await visibleContains(`${vp.name} transferred owner survives history and reload`, p, ['Owner', 'Jeanine']);
+  await goto(p, 'archived');await p.locator('#content [data-to="delete-review"]').click();await waitRendered(p, 'delete-review');record(`${vp.name} open archived group cannot reach delete effect`, 0, await p.locator('#content [data-to="delete-type-confirm"]').count());await p.locator('#content [data-to="manage-people-boundary"]').click();await waitRendered(p, 'manage-people-boundary');await p.locator('#content [data-to="archived"]').click();await waitRendered(p, 'archived');await visibleContains(`${vp.name} roster return establishes owner-only fact`, p, ['Active members', 'Owner only', 'Outstanding positions', 'Still true']);await p.locator('#content [data-to="delete-review"]').click();await waitRendered(p, 'delete-review');record(`${vp.name} owner-only with open items still blocks delete`, 0, await p.locator('#content [data-to="delete-type-confirm"]').count());await p.locator('#content [data-to="money-resolution-boundary"]').click();await waitRendered(p, 'money-resolution-boundary');await p.locator('#content [data-to="archived"]').click();await waitRendered(p, 'archived');await visibleContains(`${vp.name} money return establishes no-open-item fact`, p, ['Active members', 'Owner only', 'Outstanding positions', 'None']);await p.locator('#content [data-to="delete-review"]').click();await waitRendered(p, 'delete-review');record(`${vp.name} delete unlocks only after both returned facts`, 1, await p.locator('#content [data-to="delete-type-confirm"]').count());
+  await p.evaluate(() => sessionStorage.removeItem('j26-terminal'));await goto(p, 'leaving', 'member');await p.locator('#content [data-to="left-group"]').click();await waitRendered(p, 'left-group');await p.goBack();await waitRendered(p, 'home-boundary');record(`${vp.name} browser Back after leave cannot re-expose group`, '#home-boundary', await p.evaluate(() => location.hash));await p.goForward();await waitRendered(p, 'left-group');await p.reload({ waitUntil: 'load' });await waitRendered(p, 'left-group');record(`${vp.name} terminal leave survives Forward/reload without stale group`, '#left-group', await p.evaluate(() => location.hash));
+  await p.evaluate(() => sessionStorage.removeItem('j26-terminal'));await goto(p, 'deleting', 'owner', { members: '1', open: '0' });await p.locator('#content [data-to="deleted"]').click();await waitRendered(p, 'deleted');await p.goBack();await waitRendered(p, 'home-boundary');record(`${vp.name} browser Back after delete cannot re-expose group`, '#home-boundary', await p.evaluate(() => location.hash));await p.goForward();await waitRendered(p, 'deleted');await p.reload({ waitUntil: 'load' });await waitRendered(p, 'deleted');record(`${vp.name} terminal delete survives Forward/reload without stale group`, '#deleted', await p.evaluate(() => location.hash));
+
   for (const id of ids) {
     const proof = pathProof[id];
     if (!proof) {
       reachability.push({ viewport: vp.name, target: id, pass: false, reason: 'no path' });
       continue;
     }
+    await p.evaluate(() => sessionStorage.removeItem('j26-terminal'));
     await goto(p, proof.start, defs[proof.start].role || 'owner');
     let pass = true;
     for (const step of proof.steps) {
