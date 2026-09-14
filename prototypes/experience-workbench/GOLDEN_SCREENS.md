@@ -22,9 +22,10 @@
 20. Payment Methods — v1 · Design Approved
 21. Wallet & Crypto — v1 · Design Approved
 22. QR Flows — v1 · Design Approved
+23. Import Data / Group — v1 · Design Approved
 
-Journey 22 — QR Flows V1 is Golden #22. Exact approved HTML SHA-256: `3bbab5328a71d42866006c6f48088c06759fd0a3a922ee4a91e6fcd7bb75fe23`; the approved HTML was not changed during freeze.
+Journey 23 — Import Data / Group V1 is Golden #23. Exact approved HTML SHA-256: `3a6f88274ff59bd7d513d5bbcee57a235465f1d33345df37a0b84ed51a2f6f9d`; the approved HTML was not changed during freeze.
 
-Current journey: Journey 23 — Import Data / Group V1 definition. No review candidate exists yet.
+Current journey: Journey 24 — Export / Portability V1 definition. No review candidate exists yet.
 
 TYPO-01 remains deferred.

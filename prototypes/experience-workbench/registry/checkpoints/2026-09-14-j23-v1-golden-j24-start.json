@@ -1,0 +1,29 @@
+{
+  "checkpoint": "2026-09-14-j23-v1-golden-j24-start",
+  "j23": {
+    "status": "golden",
+    "version": "v1",
+    "golden_number": 23,
+    "prototype_path": "journeys/23-import/v1-candidate.html",
+    "prototype_sha256": "3a6f88274ff59bd7d513d5bbcee57a235465f1d33345df37a0b84ed51a2f6f9d",
+    "qa_path": "journeys/23-import/review-v1/VISUAL_QA.md",
+    "reviewed_source_head": "bbafa198f28f19e4b7b668474ed2a9fdac28451f",
+    "exact_qa_run": "34799157705",
+    "evidence_artifact": "10330638400",
+    "evidence_artifact_sha256": "06aae3111d5f9f37c19d3c176067f0450e8b30c6863ba4c2d2c7b03f967c2baf",
+    "independent_review_comment_id": "5658531776",
+    "human_approval_comment_id": "5661163397",
+    "html_change_authorized": false
+  },
+  "j24": {
+    "status": "current",
+    "version": "v1",
+    "stage": "definition",
+    "prototype_built": false,
+    "spec_path": "journeys/24-export-portability/spec.md",
+    "decision_history_path": "journeys/24-export-portability/source/decision-history.md"
+  },
+  "golden_count": 23,
+  "remaining_overall": 5,
+  "typography_note": "TYPO-01 deferred"
+}

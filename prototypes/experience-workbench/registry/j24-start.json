@@ -1,16 +1,19 @@
 {
   "journey": "24",
   "name": "Export / Portability",
-  "version": "v1",
+  "status": "current",
   "approval": "not-reviewed",
+  "version": "v1",
   "stage": "definition",
-  "prototype_built": false,
+  "goal": "Take records out and retain ownership.",
+  "entry": "Group settings or account",
+  "exit": "Exported artifact or external storage",
+  "next": [],
   "spec_path": "journeys/24-export-portability/spec.md",
   "decision_history_path": "journeys/24-export-portability/source/decision-history.md",
   "state_inventory_path": "journeys/24-export-portability/STATE_INVENTORY.md",
   "edge_cases_path": "journeys/24-export-portability/EDGE_CASES.md",
+  "prototype_built": false,
   "golden_count_before": 23,
-  "human_approval_required": true,
-  "typography_note": "TYPO-01 deferred",
-  "prototype_only": true
+  "typography_note": "TYPO-01 deferred"
 }
