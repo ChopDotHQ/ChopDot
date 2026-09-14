@@ -156,11 +156,15 @@ const checkIdentityDecisionPath = async (page, start, selector, person, expected
 
   await page.locator('#identity-clean').locator('a[data-test-primary]').click();
   await checkHash(page,'ready-to-confirm',`${label} → final review`,viewport);
-  const finalText=((await page.locator('#ready-to-confirm [data-test-identity-summary]').textContent())??'').replace(/\s+/gu,' ').trim();
-  const expectedFinal=`${person} identity ${expectedEvidence}`;
-  const finalPass=finalText.includes(expectedFinal);
-  interactions.push({viewport,label:`${label} decision truth in S25`,expected:expectedFinal,actual:finalText,pass:finalPass});
-  if (!finalPass) errors.push(`${viewport}/${label}: S25 lost explicit identity decision truth (${finalText})`);
+  const finalTruth = await page.evaluate(({person}) => {
+    const rows=[...document.querySelectorAll('#ready-to-confirm [data-test-identity-summary] .meta-row')];
+    const row=rows.find(node=>node.querySelector('span')?.textContent?.trim()===`${person} identity`);
+    return {label:row?.querySelector('span')?.textContent?.trim()??'',evidence:row?.querySelector('b')?.textContent?.trim()??''};
+  },{person});
+  const expectedFinal={label:`${person} identity`,evidence:expectedEvidence};
+  const finalPass=finalTruth.label === expectedFinal.label && finalTruth.evidence === expectedFinal.evidence;
+  interactions.push({viewport,label:`${label} decision truth in S25`,expected:expectedFinal,actual:finalTruth,pass:finalPass});
+  if (!finalPass) errors.push(`${viewport}/${label}: S25 lost explicit identity decision truth (${JSON.stringify(finalTruth)})`);
   const s25Shot=path.join(screenshotRoot,`identity-${label.replace(/[^a-z0-9]+/giu,'-').toLowerCase()}-s25-${viewport}.png`);
   await page.screenshot({path:s25Shot,fullPage:false});
   screenshots.push({viewport,state:'ready-to-confirm',context:label,path:path.relative(evidenceRoot,s25Shot)});
