@@ -42,6 +42,16 @@ Rename, configure, archive, transfer ownership, leave, or delete a group safely 
 - Cancelled/no-effect, pending, known failure, unknown/reconciling and verified success are materially distinct.
 - Verified delete is scoped to this ChopDot working state; no external/global erasure claim.
 
+## Reviewer repair successor
+
+The first independent review of exact candidate `8b3f7feba07ded11932a39dce8a58a548e26735d` returned `REVISE`. The bounded successor repairs all three material findings without widening J26 scope:
+
+- verified rename, future-currency and ownership-transfer facts now remain current truth across normal J26 navigation plus browser Back/Forward/reload;
+- destructive delete eligibility is derived from carried fixture facts and stays blocked until the Journey 09 member boundary and money/issue-resolution boundary truthfully return sole-member + no-open-item facts; navigation alone cannot manufacture delete authority;
+- verified leave/delete terminal outcomes fail closed under browser history so Back cannot re-expose stale group-sensitive states, with real Back/Forward/reload assertions for both outcomes.
+
+The repair preserves the 78-state + 5-boundary inventory and the existing visual/accessibility/privacy boundaries. The exact successor must regenerate caller-reachability, interaction/model assertions, both canonical viewport renders and exact CI/Coverage/Smoke/E2E before a new review request is sealed.
+
 ## Evidence contract
 
 - Candidate: `journeys/26-group-lifecycle/v1-candidate.html`
