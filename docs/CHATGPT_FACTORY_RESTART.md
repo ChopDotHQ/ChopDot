@@ -31,9 +31,10 @@
    - `CHATGPT_WORK_FACTORY.md`
    - `CHATGPT_FACTORY_EVOLUTION.md`
    - `CHATGPT_FACTORY_DECISION_LOG.md`
+   - `CHATGPT_FACTORY_WORKER_REGISTRY.md`
    - `CHATGPT_CAPABILITY_RADAR.md`
 7. Latest relevant issue #40 Factory Observer / Platform Watch / Capability Radar finding.
-8. Enabled scheduled workers: verify the permanent factory is generic and event-gated rather than journey-number-specific.
+8. **List live scheduled workers and reconcile them against `CHATGPT_FACTORY_WORKER_REGISTRY.md` before changing any automation.** A mismatch is factory drift, not permission to create another worker.
 
 ## Authority order
 
@@ -46,6 +47,8 @@ When sources disagree, use this order:
 5. factory docs / issue #40 process guidance;
 6. saved conversation context and summaries;
 7. historical chat links and old prompts.
+
+Live automation state is the truth of what is actually enabled; `CHATGPT_FACTORY_WORKER_REGISTRY.md` is the declared expected topology used to detect drift.
 
 See ADR 0004 for the broader context-authority rule.
 
@@ -72,6 +75,9 @@ A new thread must not:
 
 - trust a journey number embedded in an old prompt;
 - infer factory generation from journey number;
+- change worker topology from memory instead of reconciling live automation state against the worker registry;
+- create a new recurring worker before proving no active worker already has the same trigger/authority/output;
+- exceed the declared factory active-task target without first repurposing/disabling capacity;
 - create competing candidate writers;
 - treat duplicate equivalent reviewers as throughput;
 - start next-journey product bytes while transition verification is pending;
@@ -88,7 +94,7 @@ A new thread must not:
 
 A future thread can start with:
 
-> Continue the ChopDot autonomous product factory from live GitHub truth. Use `docs/CHATGPT_FACTORY_RESTART.md` on `ops/chatgpt-work-factory-v1` as the bootstrap route. Tell me the current journey/stage, exact next owner/action, whether any time is being wasted, and what needs me now. Do not trust old chat state over GitHub.
+> Continue the ChopDot autonomous product factory from live GitHub truth. Use `docs/CHATGPT_FACTORY_RESTART.md` on `ops/chatgpt-work-factory-v1` as the bootstrap route. Tell me the current journey/stage, exact next owner/action, whether any time is being wasted, and whether the live worker roster matches `CHATGPT_FACTORY_WORKER_REGISTRY.md`. Do not trust old chat state over GitHub or change worker topology from memory.
 
 ## What must be durable before a thread ends
 
@@ -100,7 +106,7 @@ Before abandoning a long thread, verify:
 - factory-rule changes are in the factory docs;
 - product decisions are in journey history or ADR/product law;
 - issue #38/#40 contain the material current handoffs/findings;
-- scheduled workers are generic and healthy;
+- live scheduled workers match `CHATGPT_FACTORY_WORKER_REGISTRY.md`;
 - no important decision exists only in the departing thread.
 
 If those are true, the thread may disappear without losing operating continuity.
