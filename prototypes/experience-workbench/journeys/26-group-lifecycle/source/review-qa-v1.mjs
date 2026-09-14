@@ -228,7 +228,7 @@ for (const vp of viewports) {
   await p.locator('#back').click();
   await waitRendered(p, 'rename-unknown');
   record(`${vp.name} leaving pending rename preserves unknown truth`, '#rename-unknown', await p.evaluate(() => location.hash));
-  await goto(p, 'delete-unknown');
+  await goto(p, 'delete-unknown', 'owner', { members: '1', open: '0' });
   await p.reload({ waitUntil: 'load' });
   await waitRendered(p, 'delete-unknown');
   record(`${vp.name} unknown delete survives reload`, '#delete-unknown', await p.evaluate(() => location.hash));
