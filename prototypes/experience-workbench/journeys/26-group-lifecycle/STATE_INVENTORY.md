@@ -66,6 +66,8 @@ Status: candidate definition for review. Every material state below must be rend
 | J26-S43 | `unarchive-unknown` | Restore-active outcome unknown. |
 | J26-S44 | `unarchive-reconciling` | Exact unarchive operation status being checked. |
 | J26-S45 | `active-restored` | Active status verified restored; no historical rewrite. |
+| J26-S76 | `unarchive-failed` | Verified no-effect restore failure; group remains archived and safe retry is allowed. |
+| J26-S77 | `unarchive-cancelled` | Restore cancelled before first effect; group remains archived. |
 
 ## Ownership transfer
 
@@ -78,6 +80,7 @@ Status: candidate definition for review. Every material state below must be rend
 | J26-S50 | `transfer-unknown` | Transfer outcome unknown; owner identity not guessed. |
 | J26-S51 | `transfer-reconciling` | Exact transfer operation status being checked. |
 | J26-S52 | `transfer-success` | New owner verified; current user becomes regular member. |
+| J26-S78 | `transfer-cancelled` | Transfer cancelled before first effect; owner remains unchanged. |
 
 ## Leave
 
