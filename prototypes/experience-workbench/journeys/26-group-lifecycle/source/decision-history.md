@@ -1,6 +1,6 @@
 ## Decision history
 
-**Coverage:** Journey 26 V1 candidate decisions proposed for independent review. None of these entries are human-approved until the exact candidate is reviewed and explicitly approved.
+**Coverage:** Journey 26 V1 candidate decisions as independently reviewed on exact candidate `19b3e3f3c4bfe2c6a8e8412126ef0e38522e705d`. The behavioral decisions below are unchanged; approval truth is governed by `registry/approvals/26-v1.json` and the active standing-approval policy.
 
 ### J26-D01 — Initialize Journey 26 from canonical authority
 
@@ -8,7 +8,15 @@
 
 **Why:** Preserve sequential product authority.
 
-**Approval / version:** Process initialization only; unchanged from canonical seed.
+**Alternatives:** Starting Journey 26 before Journey 25 exact-head validation was rejected because it would let candidate work outrun canonical authority.
+
+**Tradeoffs:** Sequential activation adds a verification boundary before implementation but keeps the Golden chain auditable.
+
+**Revisit when:** Canonical factory policy explicitly changes journey activation or permits a separately governed preflight lane.
+
+**Approval / version:** Process initialization for J26 V1; preserved through the exact reviewed candidate and standing-approved freeze transition.
+
+**Sources:** [Journey registry](../../../registry/journeys.json), [J26 approval record](../../../registry/approvals/26-v1.json), and [review protocol](../../../REVIEW_PROTOCOL.md).
 
 ### J26-D02 — Owner writes, member self-leave
 
@@ -22,6 +30,10 @@
 
 **Revisit when:** A separately approved role/permission model changes group-wide authority.
 
+**Approval / version:** J26 V1 candidate decision; independently reviewed and covered by the standing-approved exact candidate.
+
+**Sources:** [J26 spec](../spec.md), [state inventory](../STATE_INVENTORY.md), and [J26 approval record](../../../registry/approvals/26-v1.json).
+
 ### J26-D03 — Configuration is future-default currency only
 
 **Decision:** The V1 configurable financial default is the currency preselected for **future expense entry**. Existing expenses, balances, settlements and history are never converted/recalculated by this setting.
@@ -33,6 +45,10 @@
 **Tradeoffs:** J26 does not attempt to be a complete settings surface for every future product capability.
 
 **Revisit when:** Add Expense or another approved owner defines richer group defaults.
+
+**Approval / version:** J26 V1 candidate decision; independently reviewed and covered by the standing-approved exact candidate.
+
+**Sources:** [J26 spec](../spec.md), [edge cases](../EDGE_CASES.md), and [J26 approval record](../../../registry/approvals/26-v1.json).
 
 ### J26-D04 — Archive is reversible organization state, not settlement
 
@@ -46,6 +62,10 @@
 
 **Revisit when:** Product law separately defines archival retention or read/write behavior.
 
+**Approval / version:** J26 V1 candidate decision; independently reviewed and covered by the standing-approved exact candidate.
+
+**Sources:** [J26 spec](../spec.md), [state inventory](../STATE_INVENTORY.md), and [edge cases](../EDGE_CASES.md).
+
 ### J26-D05 — Ownership transfer belongs here; roster editing stays J09
 
 **Decision:** J26 owns the ownership mutation. The recipient must already be an eligible active member. Member removal/invitation/roster management remains Journey 09.
@@ -57,6 +77,10 @@
 **Tradeoffs:** Delete/leave may route to Manage People first.
 
 **Revisit when:** J09's approved roster contract changes.
+
+**Approval / version:** J26 V1 candidate decision; independently reviewed and covered by the standing-approved exact candidate.
+
+**Sources:** [J26 spec](../spec.md), [state inventory](../STATE_INVENTORY.md), and [Journey registry](../../../registry/journeys.json).
 
 ### J26-D06 — Leave is blocked by ownership or open-item truth
 
@@ -70,6 +94,10 @@
 
 **Revisit when:** A separately approved financial contract defines a safe post-leave representation for unresolved items.
 
+**Approval / version:** J26 V1 candidate decision; independently reviewed and covered by the standing-approved exact candidate.
+
+**Sources:** [J26 spec](../spec.md), [edge cases](../EDGE_CASES.md), and [J26 approval record](../../../registry/approvals/26-v1.json).
+
 ### J26-D07 — Delete is conservative and scoped
 
 **Decision:** Delete is owner-only, requires archived status, sole active membership and no open items, plus typed group-name confirmation and a separate final review. Verified deletion is scoped to this ChopDot working state; no external/global erasure claim is made.
@@ -81,6 +109,10 @@
 **Tradeoffs:** Deletion can require prior J09 and money-resolution work.
 
 **Revisit when:** Runtime architecture defines stronger multi-party deletion/retention semantics.
+
+**Approval / version:** J26 V1 candidate decision; independently reviewed and covered by the standing-approved exact candidate.
+
+**Sources:** [J26 spec](../spec.md), [edge cases](../EDGE_CASES.md), and [J26 approval record](../../../registry/approvals/26-v1.json).
 
 ### J26-D08 — Stable operation identity and reconcile-before-retry
 
@@ -94,6 +126,10 @@
 
 **Revisit when:** Production mutation APIs provide stronger transactional/finality semantics.
 
+**Approval / version:** J26 V1 candidate decision; independently reviewed and covered by the standing-approved exact candidate.
+
+**Sources:** [state inventory](../STATE_INVENTORY.md), [edge cases](../EDGE_CASES.md), and [J26 approval record](../../../registry/approvals/26-v1.json).
+
 ### J26-D09 — Factory v1.1 requires caller reachability
 
 **Decision:** Exact QA must reach every material J26 state through clicked UI paths from the owner/member settings entries, or classify it as a named owner/system boundary. Direct state injection counts only for render coverage.
@@ -106,19 +142,22 @@
 
 **Revisit when:** Canonical factory configuration changes the evidence contract.
 
+**Approval / version:** J26 V1 evidence rule; independently reviewed with `166/166` caller-reachability coverage on the approved candidate.
+
+**Sources:** [J26 review evidence](../review-v1/VISUAL_QA.md), [review protocol](../../../REVIEW_PROTOCOL.md), and [J26 approval record](../../../registry/approvals/26-v1.json).
+
 ### J26-D10 — Preserve Golden shell and TYPO-01 deferral
 
 **Decision:** Reuse the approved Group Home / recent workbench shell, navigation language, spacing/status/action hierarchy and owner-boundary treatment. Do not edit approved Golden HTML or locally solve TYPO-01.
 
 **Why:** Shared design rules require Golden reuse and keep shared typography work outside active journey scope.
 
+**Alternatives:** Journey-local redesign of the shared shell or typography was rejected because it would create cross-journey inconsistency and bypass the deferred shared-system decision.
+
+**Tradeoffs:** J26 inherits known shared typography constraints until the explicitly authorized shared pass.
+
 **Revisit when:** A dedicated shared-system pass is explicitly authorized.
 
-## Sources
+**Approval / version:** J26 V1 candidate decision; independently reviewed and covered by the standing-approved exact candidate. TYPO-01 remains deferred.
 
-- canonical `registry/progress.json`, `active-candidate.json`, `exact-head-gate.json`, `journeys.json`;
-- `DESIGN_CONTRACT.md` and `REVIEW_PROTOCOL.md`;
-- Journey 08 Group Home Golden contract;
-- Journey 09 Manage People Golden contract;
-- `shared/improvements.md` (`TYPO-01` deferred);
-- repo-owned Factory v1.1/evolution guidance.
+**Sources:** [J26 review evidence](../review-v1/VISUAL_QA.md), [review protocol](../../../REVIEW_PROTOCOL.md), and [J26 approval record](../../../registry/approvals/26-v1.json).
