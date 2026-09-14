@@ -1,11 +1,11 @@
 {
   "checkpoint": "2026-09-14-j23-v1-golden-ready-awaiting-human",
   "purpose": "Preserve 22-Golden authority and record Journey 23 GOLDEN-READY review state without granting Golden authority or advancing Journey 24.",
-  "canonical_exact_head_verified": false,
-  "canonical_exact_head_verified_run": null,
-  "canonical_verified_transition_source": null,
-  "canonical_materialized_head": null,
-  "canonical_exact_head_note": "Pending resulting-state Prototype workbench validation for this authority alignment. No approved Golden HTML/checksum is changed.",
+  "canonical_exact_head_verified": true,
+  "canonical_exact_head_verified_run": "34803271041",
+  "canonical_verified_transition_source": "3ec3acc493d7696ae4c3305718cea5bcea0f424e",
+  "canonical_materialized_head": "3ec3acc493d7696ae4c3305718cea5bcea0f424e",
+  "canonical_exact_head_note": "Prototype workbench gate 34803271041 cleanly validated exact authority head 3ec3acc493d7696ae4c3305718cea5bcea0f424e with generated workbench files already current, so no separate materialization commit was created. Exact-head CI 34803271026, Coverage 34803271084, Smoke 34803271035 (Detect Smoke Scope success; targeted required jobs correctly scope-skipped), and E2E Cypress 34803271038 all completed successfully on the same head. This binding records verification only: Journey 23 remains GOLDEN-READY and unapproved, Golden count remains 22, and no approved Golden HTML/checksum changed.",
   "journey_22": {
     "version": "v1",
     "golden_number": 22,
