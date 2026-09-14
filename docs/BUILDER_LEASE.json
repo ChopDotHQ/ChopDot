@@ -1,11 +1,12 @@
 {
   "version": 1,
   "role": "builder",
-  "status": "claimed",
+  "status": "completed",
   "journey": "26",
   "holder": "primary-builder",
   "fingerprint": "d9c27f6228cafddc3fe6c521bcb550a64e72315ede8d8ea07cc7369cf287d5e2",
   "claimed_at": "2026-09-14T17:02:15Z",
   "renewed_at": "2026-09-14T17:02:15Z",
-  "expires_at": "2026-09-14T17:32:15Z"
+  "completed_at": "2026-09-14T17:03:02Z",
+  "expires_at": "2026-09-14T17:03:02Z"
 }
