@@ -1,12 +1,11 @@
 {
   "version": 1,
   "role": "builder",
-  "status": "completed",
+  "status": "claimed",
   "journey": "26",
-  "holder": "primary-builder",
-  "fingerprint": "d9c27f6228cafddc3fe6c521bcb550a64e72315ede8d8ea07cc7369cf287d5e2",
-  "claimed_at": "2026-09-14T17:02:15Z",
-  "renewed_at": "2026-09-14T17:02:15Z",
-  "completed_at": "2026-09-14T17:03:02Z",
-  "expires_at": "2026-09-14T17:03:02Z"
+  "holder": "fast-builder-B",
+  "fingerprint": "f891a168324bd65eb06276c0502c8a2ed3273f0411c239ffa9e885fc5940b570",
+  "claimed_at": "2026-09-14T17:46:15Z",
+  "renewed_at": "2026-09-14T17:46:15Z",
+  "expires_at": "2026-09-14T18:16:15Z"
 }
