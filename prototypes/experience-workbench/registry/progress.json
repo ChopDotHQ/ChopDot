@@ -16,6 +16,6 @@
   "last_approved_journey": "26",
   "last_approved_version": "v1",
   "last_approved_sha256": "4d93b1b3458aead8d412256f65d0e4c2c2de1b273abc0af58bd89cb56783da28",
-  "next_action": "Journey 27 Account & Preferences V1 is staged at definition pending exact resulting-state verification of the J26 Golden transition. Builder must not write J27 candidate bytes until canonical_exact_head_verified is true.",
+  "next_action": "Journey 27 Account & Preferences V1 is authoritative at definition stage after exact J26 Golden transition verification. Builder may proceed with the complete J27 candidate under Factory v1.1; caller-reachability remains required and standing approval may apply only after exact independent GOLDEN-READY.",
   "typography_note": "TYPO-01 deferred"
 }
