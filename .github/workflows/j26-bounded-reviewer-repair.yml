@@ -16,7 +16,18 @@ jobs:
           fetch-depth: 0
           ref: ux/experience-workbench-j26-v1-candidate
       - name: Apply exact reviewer repair
-        run: python3 prototypes/experience-workbench/journeys/26-group-lifecycle/source/apply-review-repair.py
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('prototypes/experience-workbench/journeys/26-group-lifecycle/source/apply-review-repair.py')
+          s=p.read_text()
+          old="'transfer success continuation')"
+          new="'transfer success continuation', 2)"
+          if s.count(old) != 1:
+              raise SystemExit(f'expected one repair-count marker, got {s.count(old)}')
+          p.write_text(s.replace(old,new))
+          PY
+          python3 prototypes/experience-workbench/journeys/26-group-lifecycle/source/apply-review-repair.py
       - name: Check patch shape
         run: |
           git diff --check
@@ -29,4 +40,3 @@ jobs:
           git rm .github/workflows/j26-bounded-reviewer-repair.yml prototypes/experience-workbench/journeys/26-group-lifecycle/source/apply-review-repair.py
           git commit -m "Repair J26 durable lifecycle truth"
           git push origin HEAD:ux/experience-workbench-j26-v1-candidate
-# trigger bounded repair
