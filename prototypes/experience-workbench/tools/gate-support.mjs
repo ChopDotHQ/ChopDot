@@ -7,10 +7,6 @@ const j18HistoryPath=path.join(root,'journeys/18-activity-notifications/source/d
 const canonicalJ18History=fs.readFileSync(j18HistoryPath,'utf8');
 if(!canonicalJ18History.includes('**Coverage:**')) throw new Error('Canonical J18 decision history snapshot must use current structured format');
 
-// Historical replay proves the frozen journey chain, but it must never become the
-// authority for the newer current candidate. Preserve current-authority overlays
-// byte-for-byte, replay/validate the historical checkpoints, then restore them and
-// regenerate the derived map/manifest against the actual current state.
 const authorityOverlayPaths=[
   'registry/progress.json',
   'registry/active-candidate.json',
@@ -41,10 +37,6 @@ for(const [relative,bytes] of authorityOverlay){
   fs.writeFileSync(target,bytes);
 }
 
-// J20's historical transition predates J21+. When replaying a newer authority state,
-// temporarily present its expected last-approved marker, then restore the live progress
-// before applying the J21/J22/J23/J24 transitions. This keeps historical replay deterministic
-// without downgrading the canonical current journey.
 const liveProgressBytes=authorityOverlay.get('registry/progress.json');
 const liveProgress=JSON.parse(liveProgressBytes.toString('utf8'));
 const newerThanJ20=Number(liveProgress.golden_count)>=21;
@@ -60,6 +52,8 @@ run('apply-j22-golden-j23-current.mjs');
 run('apply-j23-golden-j24-current.mjs');
 run('apply-j24-golden-j25-current.mjs');
 run('bind-j24-qa.mjs');
+run('apply-j25-golden-j26-current.mjs');
+run('bind-j25-qa.mjs');
 run('decision-history.mjs');
 run('build-journey-map.mjs');
 run('build-golden-manifest.mjs');

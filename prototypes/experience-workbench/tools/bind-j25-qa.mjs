@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const root=path.resolve(import.meta.dirname,'..');
+const registry=path.join(root,'registry','journeys.json');
+const journeys=JSON.parse(fs.readFileSync(registry,'utf8'));
+const j25=journeys.find(j=>j.id==='25');
+if(!j25) throw new Error('Missing Journey 25');
+const qaPath='journeys/25-storage-recovery/review-v1/VISUAL_QA.md';
+if(!fs.existsSync(path.join(root,qaPath))) throw new Error('Missing J25 QA evidence pointer');
+j25.qa_path=qaPath;
+fs.writeFileSync(registry,JSON.stringify(journeys,null,2)+'\n');
+console.log(`J25 QA PATH BOUND: ${qaPath}`);
