@@ -5,9 +5,9 @@
   "journey": "27",
   "holder": "fast-builder-A",
   "fingerprint": "j27-definition-19a282b8c3346ca62e77c2db3780163a75f58046",
-  "candidate_head": null,
+  "candidate_head": "43921b3b43cb1d81de65ca3a198a1dc0a17b3cbe",
   "claimed_at": "2026-09-14T23:22:17Z",
-  "renewed_at": "2026-09-14T23:30:00Z",
+  "renewed_at": "2026-09-14T23:39:00Z",
   "completed_at": null,
-  "expires_at": "2026-09-14T23:42:00Z"
+  "expires_at": "2026-09-14T23:51:00Z"
 }
