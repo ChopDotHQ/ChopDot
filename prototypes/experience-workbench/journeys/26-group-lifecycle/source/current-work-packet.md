@@ -52,7 +52,7 @@ The first independent review of exact candidate `8b3f7feba07ded11932a39dce8a58a5
 
 The repair preserves the 78-state + 5-boundary inventory and the existing visual/accessibility/privacy boundaries. The exact successor must regenerate caller-reachability, interaction/model assertions, both canonical viewport renders and exact CI/Coverage/Smoke/E2E before a new review request is sealed.
 
-QA self-repair: the guarded direct deletion-scope render now supplies established sole-member/no-open-item fixture facts, matching the new delete-eligibility contract rather than timing out behind its fail-closed guard.
+QA self-repair: guarded direct deletion-scope and unknown-delete reload checks now supply the already-established sole-member/no-open-item fixture facts required by the fail-closed delete guard; this changes only harness setup, not product authority or eligibility.
 
 ## Evidence contract
 
