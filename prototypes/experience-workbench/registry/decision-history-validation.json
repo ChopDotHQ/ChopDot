@@ -1,8 +1,8 @@
 {
   "ok": true,
   "scope": "documentation structure and artifact preservation",
-  "covered_journeys": 24,
-  "decision_entries": 50,
+  "covered_journeys": 25,
+  "decision_entries": 59,
   "all_golden_locks_pass": true,
   "coverage": [
     {
@@ -261,13 +261,24 @@
     {
       "journey": "24",
       "version": "v1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 9,
+      "source_path": "journeys/24-export-portability/source/decision-history.md",
+      "source_sha256": "48c718564d58bd00b6f128e36a7962353b61592b52cbe7c81a5921926712cdae",
+      "spec_path": "journeys/24-export-portability/spec.md",
+      "spec_sha256": "473bbc20a282e78df0e3e4ea56b395316fa874c7bb1c529afde9e673da13a293"
+    },
+    {
+      "journey": "25",
+      "version": "v1",
       "approval": "not-reviewed",
       "status": "current",
       "decisions": 1,
-      "source_path": "journeys/24-export-portability/source/decision-history.md",
-      "source_sha256": "f62773fd51a0fb4c4fd5ee9715bdec87438f7f3f0d2c6def1d17a3693aefdfb2",
-      "spec_path": "journeys/24-export-portability/spec.md",
-      "spec_sha256": "6adeff5ee9ab5ab004209a73c133584d09dd158958360742e43c339437cad9de"
+      "source_path": "journeys/25-storage-recovery/source/decision-history.md",
+      "source_sha256": "a8bfcf178efe73e8503e855ca1101c3363060ce876a13bbdcdd170ca78993f9d",
+      "spec_path": "journeys/25-storage-recovery/spec.md",
+      "spec_sha256": "e7331d9abdc0f7a1f46d379ffa692a4b166e999c4c7c632f71931109ecdbe8ee"
     }
   ],
   "complete_conversation_audit": false,

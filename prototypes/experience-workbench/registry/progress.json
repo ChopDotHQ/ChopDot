@@ -1,10 +1,10 @@
 {
-  "schema_version": 23,
+  "schema_version": 24,
   "updated_on": "2026-09-14",
   "registered_journeys": 28,
-  "golden_count": 23,
-  "current_journey": "24",
-  "remaining_overall": 5,
+  "golden_count": 24,
+  "current_journey": "25",
+  "remaining_overall": 4,
   "remaining_core_including_entry": [],
   "remaining_in_app_money_loop": [],
   "map_source": "registry/journeys.json",
@@ -13,9 +13,9 @@
   "payment_contract_version": "1.2",
   "storage_contract_version": "1.0",
   "paused_after_freeze": false,
-  "last_approved_journey": "23",
+  "last_approved_journey": "24",
   "last_approved_version": "v1",
-  "last_approved_sha256": "3a6f88274ff59bd7d513d5bbcee57a235465f1d33345df37a0b84ed51a2f6f9d",
-  "next_action": "Journey 24 exact candidate 186564690c4bd41308cc4bbf6609263ebf225f42 / HTML SHA-256 03d1c2094251dc3ec683108c484bdc84e6f7db08b1c40ce042535a2d186a9b82 is GOLDEN-READY after sealed independent Reviewer receipt 5663139837 with all five lenses clear and no blocking findings. Exact Devinson approval of these unchanged bytes is now required before Golden freeze or Journey 25 advancement; do not re-review or mutate the candidate while approval is pending.",
+  "last_approved_sha256": "03d1c2094251dc3ec683108c484bdc84e6f7db08b1c40ce042535a2d186a9b82",
+  "next_action": "Journey 25 Storage / Backup / Recovery V1 is current at definition stage. Builder should execute Factory v1.1 with a compressed current-work packet and caller-reachability evidence for every material state; Reviewer remains no-op until exact candidate evidence exists.",
   "typography_note": "TYPO-01 deferred"
 }

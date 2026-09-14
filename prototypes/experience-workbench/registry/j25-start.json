@@ -1,18 +1,24 @@
 {
   "journey": "25",
   "name": "Storage / Backup / Recovery",
-  "version": "v1",
+  "status": "current",
   "approval": "not-reviewed",
+  "version": "v1",
   "stage": "definition",
-  "prototype_built": false,
+  "goal": "Understand storage choices and recover safely.",
+  "entry": "Security, storage settings, or recovery event",
+  "exit": "Recovered or synced state",
+  "next": [
+    "27",
+    "28"
+  ],
   "spec_path": "journeys/25-storage-recovery/spec.md",
   "decision_history_path": "journeys/25-storage-recovery/source/decision-history.md",
   "state_inventory_path": "journeys/25-storage-recovery/STATE_INVENTORY.md",
   "edge_cases_path": "journeys/25-storage-recovery/EDGE_CASES.md",
+  "prototype_built": false,
   "golden_count_before": 24,
-  "human_approval_required": true,
   "caller_reachability_required": true,
   "factory_generation": "v1.1",
-  "typography_note": "TYPO-01 deferred",
-  "prototype_only": true
+  "typography_note": "TYPO-01 deferred"
 }

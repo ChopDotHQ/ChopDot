@@ -574,11 +574,16 @@
     "entry": "Group settings or account",
     "exit": "Exported artifact or external storage",
     "next": [],
-    "status": "current",
-    "approval": "not-reviewed",
+    "status": "golden",
+    "approval": "design-approved",
     "terminal": true,
     "version": "v1",
-    "spec_path": "journeys/24-export-portability/spec.md"
+    "spec_path": "journeys/24-export-portability/spec.md",
+    "prototype_path": "journeys/24-export-portability/v1-candidate.html",
+    "prototype_sha256": "03d1c2094251dc3ec683108c484bdc84e6f7db08b1c40ce042535a2d186a9b82",
+    "golden_number": 24,
+    "approved_on": "2026-09-14",
+    "qa_path": "journeys/24-export-portability/review-v1/VISUAL_QA.md"
   },
   {
     "id": "25",
@@ -593,9 +598,11 @@
       "27",
       "28"
     ],
-    "status": "not-started",
+    "status": "current",
     "approval": "not-reviewed",
-    "entry_mode": "feature"
+    "entry_mode": "feature",
+    "version": "v1",
+    "spec_path": "journeys/25-storage-recovery/spec.md"
   },
   {
     "id": "26",

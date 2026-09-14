@@ -23,9 +23,10 @@
 21. Wallet & Crypto — v1 · Design Approved
 22. QR Flows — v1 · Design Approved
 23. Import Data / Group — v1 · Design Approved
+24. Export / Portability — v1 · Design Approved
 
-Journey 23 — Import Data / Group V1 is Golden #23. Exact approved HTML SHA-256: `3a6f88274ff59bd7d513d5bbcee57a235465f1d33345df37a0b84ed51a2f6f9d`; the approved HTML was not changed during freeze.
+Journey 24 — Export / Portability V1 is Golden #24. Exact approved HTML SHA-256: `03d1c2094251dc3ec683108c484bdc84e6f7db08b1c40ce042535a2d186a9b82`; the approved HTML was not changed during freeze.
 
-Current journey: Journey 24 — Export / Portability V1 definition. No review candidate exists yet.
+Current journey: Journey 25 — Storage / Backup / Recovery V1 definition. No review candidate exists yet.
 
 TYPO-01 remains deferred.

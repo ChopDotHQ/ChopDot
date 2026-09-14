@@ -4,7 +4,7 @@
     "journey_authority": "registry/journeys.json",
     "checksum_authority": "registry/golden-artifact-locks.json"
   },
-  "golden_count": 23,
+  "golden_count": 24,
   "entries": [
     {
       "golden_number": 1,
@@ -233,6 +233,16 @@
       "version": "v1",
       "prototype_path": "journeys/23-import/v1-candidate.html",
       "sha256": "3a6f88274ff59bd7d513d5bbcee57a235465f1d33345df37a0b84ed51a2f6f9d",
+      "approval": "design-approved",
+      "immutable": true
+    },
+    {
+      "golden_number": 24,
+      "journey": "24",
+      "name": "Export / Portability",
+      "version": "v1",
+      "prototype_path": "journeys/24-export-portability/v1-candidate.html",
+      "sha256": "03d1c2094251dc3ec683108c484bdc84e6f7db08b1c40ce042535a2d186a9b82",
       "approval": "design-approved",
       "immutable": true
     }
