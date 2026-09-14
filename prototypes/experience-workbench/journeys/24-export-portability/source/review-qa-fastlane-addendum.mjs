@@ -40,6 +40,15 @@ const click=async(page,start,selector,target,scope,label)=>{
   await page.waitForFunction(x=>location.hash===`#${x}`,target);
   return record(page,label,target,scope);
 };
+const walk=async(page,start,scope,steps,label)=>{
+  await goto(page,start,scope);
+  for(let i=0;i<steps.length;i++){
+    const [selector,target]=steps[i];
+    await page.locator(selector).click();
+    await page.waitForFunction(x=>location.hash===`#${x}`,target);
+    await record(page,`${label} · step ${i+1}`,target,scope);
+  }
+};
 
 for(const vp of viewports){
   const page=await browser.newPage({viewport:{width:vp.width,height:vp.height}});
@@ -57,7 +66,33 @@ for(const vp of viewports){
     screenshots.push({viewport:vp.name,scope:'group',state,path:path.relative(evidenceRoot,out)});
   }
 
-  // Safety-critical exits promised by the contract.
+  // Reviewer-directed caller reachability: no direct-loading of the target states.
+  await walk(page,'scope-account','account',[
+    ['[data-test-quaternary]','oversized']
+  ],`${vp.name} account scope → oversized`);
+
+  await walk(page,'export-confirmation','account',[
+    ['[data-test-primary]','generating'],
+    ['[data-test-quaternary]','generation-failed-before-artifact']
+  ],`${vp.name} generating → known pre-artifact failure`);
+
+  await walk(page,'export-confirmation','account',[
+    ['[data-test-primary]','generating'],
+    ['[data-test-secondary]','taking-longer'],
+    ['[data-test-quaternary]','generation-cancel-requested'],
+    ['[data-test-primary]','reconcile-generation'],
+    ['[data-test-quaternary]','generation-cancelled']
+  ],`${vp.name} pending → cancel request → reconcile → verified cancelled`);
+
+  await walk(page,'export-confirmation','account',[
+    ['[data-test-primary]','generating'],
+    ['[data-test-secondary]','taking-longer'],
+    ['[data-test-secondary]','leave-during-generation'],
+    ['[data-test-quaternary]','generation-unknown'],
+    ['[data-test-primary]','reconcile-generation']
+  ],`${vp.name} pending → leave → unknown → reconcile`);
+
+  // Existing safety-critical exits promised by the contract.
   await click(page,'offline-before-snapshot','[data-test-primary]','snapshot-preparing','account',`${vp.name} offline-before-snapshot → recheck snapshot`);
   await click(page,'partial-unsupported','[data-test-primary]','preview-summary','group',`${vp.name} partial warning → group preview`);
   await click(page,'identity-unresolved','[data-test-primary]','preview-summary','group',`${vp.name} unresolved identity → group preview`);
@@ -85,9 +120,15 @@ if(externalRequests.length)errors.push(`${externalRequests.length} external runt
 
 const report={
   status:errors.length?'FAILED':'ADDITIONAL_SAFETY_EVIDENCE_PASSED',
-  purpose:'Close pre-handoff J24 safety evidence gaps without changing candidate product bytes.',
+  purpose:'Prove reviewer-directed caller reachability plus the existing J24 safety exits.',
   screenshots:screenshots.length,
   group_visual_states:groupVisualStates,
+  caller_reachability:[
+    'scope-account → oversized',
+    'export-confirmation → generating → generation-failed-before-artifact',
+    'export-confirmation → generating → taking-longer → generation-cancel-requested → reconcile-generation → generation-cancelled',
+    'export-confirmation → generating → taking-longer → leave-during-generation → generation-unknown → reconcile-generation'
+  ],
   interaction_checks:observations.length,
   interaction_passed:observations.filter(x=>x.pass).length,
   observations,
