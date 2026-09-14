@@ -79,6 +79,7 @@ const expectedSemantics = {
   'review-boundary':['Commit is not built yet','J23-S26–J23-S38 remain intentionally unimplemented','Nothing was written','review scaffolding'],
 };
 
+const partialWarningPhrase = 'Some non-financial source details were omitted.';
 const errors = [];
 const browserErrors = [];
 const consoleErrors = [];
@@ -107,6 +108,35 @@ const clickInspectionPath = async (page, start, selector, label, viewport) => {
   await checkHash(page, 'inspecting', `${label} → inspecting`, viewport);
   await page.waitForFunction(() => location.hash === '#valid-package');
   await checkHash(page, 'valid-package', `${label} → selected fixture result`, viewport);
+};
+
+const checkPartialWarning = async (page, state, label, viewport) => {
+  const warning = page.locator(`#${state} [data-test-partial-warning]`);
+  const visible = await warning.isVisible();
+  const text = visible ? (await warning.textContent() ?? '').replace(/\s+/gu,' ').trim() : '';
+  const pass = visible && text.includes(partialWarningPhrase);
+  interactions.push({viewport,label,expected:`visible warning containing '${partialWarningPhrase}'`,actual:visible?text:'hidden',pass});
+  if (!pass) errors.push(`${viewport}/${label}: partial-read omission warning did not persist visibly`);
+  if (visible) await warning.scrollIntoViewIfNeeded();
+  const shot = path.join(screenshotRoot, `partial-warning-${state}-${viewport}.png`);
+  await page.screenshot({path:shot,fullPage:false});
+  screenshots.push({viewport,state:`partial-warning-${state}`,context:'J23-S13 carry-forward',path:path.relative(evidenceRoot,shot)});
+};
+
+const clickPartialWarningPath = async (page, viewport) => {
+  await page.goto(`${pathToFileURL(candidatePath).href}#partial-readable`, {waitUntil:'load'});
+  await page.locator('#partial-readable').locator('a[data-test-primary]').click();
+  await checkHash(page,'clean-preview','partial → preview with warning',viewport);
+  await checkPartialWarning(page,'clean-preview','partial warning visible in preview',viewport);
+  await page.locator('#clean-preview').locator('a[data-test-primary]').click();
+  await checkHash(page,'preview-detail','partial preview → detail',viewport);
+  await checkPartialWarning(page,'preview-detail','partial warning visible in preview detail',viewport);
+  await page.locator('#preview-detail').locator('a[data-test-primary]').click();
+  await checkHash(page,'identity-clean','partial detail → identity review',viewport);
+  await checkPartialWarning(page,'identity-clean','partial warning survives identity review',viewport);
+  await page.locator('#identity-clean').locator('a[data-test-primary]').click();
+  await checkHash(page,'ready-to-confirm','partial identity review → final review',viewport);
+  await checkPartialWarning(page,'ready-to-confirm','partial warning visible in final review',viewport);
 };
 
 try {
@@ -193,7 +223,7 @@ try {
     await clickPath(page,'malformed','a[data-test-primary]','source-picker','malformed → choose another',viewport.name);
     await clickPath(page,'empty-package','a[data-test-primary]','source-picker','empty → choose another',viewport.name);
     await clickPath(page,'oversized','a[data-test-primary]','source-picker','oversized → choose another',viewport.name);
-    await clickPath(page,'partial-readable','a[data-test-primary]','clean-preview','partial → preview with warning',viewport.name);
+    await clickPartialWarningPath(page,viewport.name);
     await clickPath(page,'provenance-unknown','a[data-test-primary]','clean-preview','unknown provenance → preview',viewport.name);
     await clickPath(page,'offline-inspection','a[data-test-primary]','inspecting','offline inspection → retry',viewport.name);
     await clickPath(page,'clean-preview','a[data-test-primary]','preview-detail','preview → details',viewport.name);
@@ -245,7 +275,9 @@ const summary = {
   open_registered_scope:['J23-S26–J23-S38: final confirmation execution, commit progress, result, unknown/partial outcomes, reconciliation and safe retry','J23-B02/J23-B03: J24 portability and J28 shared-recovery owner boundaries'],
   limitations:[
     'Prototype fixture only: no production file picker, parser, provider integration, remote fetch, migration, database write, or authenticity verification is exercised.',
-    'The selected demo package now proves the S05 → S07 → S08 caller transition; direct state loads remain evidence fixtures rather than product navigation.',
+    'The selected demo package proves the S05 → S07 → S08 caller transition; direct state loads remain evidence fixtures rather than product navigation.',
+    'The J23-S13 non-financial omission warning now carries contextually through S16, S17, S20 and S25; dedicated clicked-path screenshots prove the warning remains visible until confirmation.',
+    'The separate Reviewer finding for ambiguous identity decision truth remains open on this bounded head; keep-separate/manual-link semantics are not repaired by this change.',
     'J23-S25 exposes the contract-required Import group action, but this bounded head routes it only to explicit Builder review scaffolding; no product write or confirmation execution occurs.',
     'Payment/settlement-looking fixture records are historical display only; no payment execution, wallet signing, receiving-detail publication, invitation, or finality is exercised.',
     'Builder mechanical evidence is not independent UX review, GOLDEN-READY, human approval, or Golden freeze.',
@@ -257,7 +289,7 @@ await writeFile(path.join(evidenceRoot,'QA_SUMMARY.json'),JSON.stringify(summary
 await writeFile(path.join(evidenceRoot,'LAYOUT_QA.json'),JSON.stringify(layouts,null,2));
 await writeFile(path.join(evidenceRoot,'INTERACTION_QA.json'),JSON.stringify(interactions,null,2));
 await writeFile(path.join(evidenceRoot,'BROWSER_QA.json'),JSON.stringify({browserErrors,consoleErrors,externalRequests},null,2));
-await writeFile(path.join(evidenceRoot,'VISUAL_QA.md'),`# Journey 23 V1 — bounded intake / inspection / conflict-review mechanical evidence\n\n- Exact head: \`${head}\`\n- Branch: \`${branch}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- Registered states rendered: **${states.length}**\n- Boundary renders: **${boundaries.length}**\n- Canonical viewports: **393×852**, **430×890**\n- PNGs: **${screenshots.length}**\n- Clicked paths: **${interactions.filter(x=>x.pass).length}/${interactions.length}**\n- Browser errors: **${browserErrors.length}**\n- Console errors: **${consoleErrors.length}**\n- External runtime requests: **${externalRequests.length}**\n- Deterministic failures: **${errors.length}**\n\n## Scope\n\nThis is the second bounded J23 candidate increment with the reviewed S07 caller-continuity repair. It covers J23-S01–S25 plus J23-S39, one J08 owner-boundary render, and a clearly labelled non-product Builder write boundary. J23-S26–S38 and B02/B03 remain open by design on this head. The S25 \`Import group\` action routes only to that Builder boundary; no product write or confirmation execution occurs.\n\nThe selected demo fixture now exercises the real candidate caller path from S05 through S07 into S08; direct state loads remain evidence fixtures rather than a substitute for that caller transition.\n\n## Trust / authority limits\n\nThe demo package is a fixture. This evidence does not prove a production picker, parser, provider integration, migration, source authenticity, database write, payment execution, wallet signing, receiving-detail publication, invitation, settlement replay, or finality. Imported payment-looking rows are previewed as history only.\n\n## Review status\n\n\`${summary.review_status}\`. This is Builder mechanical evidence only; it does not grant independent visual clearance, REVIEWABLE, GOLDEN-READY, human approval, or Golden status.\n`);
+await writeFile(path.join(evidenceRoot,'VISUAL_QA.md'),`# Journey 23 V1 — bounded intake / inspection / conflict-review mechanical evidence\n\n- Exact head: \`${head}\`\n- Branch: \`${branch}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- Registered states rendered: **${states.length}**\n- Boundary renders: **${boundaries.length}**\n- Canonical viewports: **393×852**, **430×890**\n- PNGs: **${screenshots.length}**\n- Clicked paths: **${interactions.filter(x=>x.pass).length}/${interactions.length}**\n- Browser errors: **${browserErrors.length}**\n- Console errors: **${consoleErrors.length}**\n- External runtime requests: **${externalRequests.length}**\n- Deterministic failures: **${errors.length}**\n\n## Scope\n\nThis is the second bounded J23 candidate increment with the reviewed S07 caller-continuity repair and the bounded S13 warning-carry repair. It covers J23-S01–S25 plus J23-S39, one J08 owner-boundary render, and a clearly labelled non-product Builder write boundary. J23-S26–S38 and B02/B03 remain open by design on this head. The S25 \`Import group\` action routes only to that Builder boundary; no product write or confirmation execution occurs.\n\nThe selected demo fixture exercises the real candidate caller path from S05 through S07 into S08. The partially readable fixture now keeps its explicit non-financial omission warning visible through S16 preview, S17 detail, S20 people review and S25 final review; contextual screenshots are captured at both canonical viewports.\n\nThe separate ambiguous-identity decision-truth Reviewer finding remains open and is intentionally not repaired in this bounded change.\n\n## Trust / authority limits\n\nThe demo package is a fixture. This evidence does not prove a production picker, parser, provider integration, migration, source authenticity, database write, payment execution, wallet signing, receiving-detail publication, invitation, settlement replay, or finality. Imported payment-looking rows are previewed as history only.\n\n## Review status\n\n\`${summary.review_status}\`. This is Builder mechanical evidence only; it does not grant independent visual clearance, REVIEWABLE, GOLDEN-READY, human approval, or Golden status.\n`);
 
 if (errors.length) {
   console.error(JSON.stringify(summary,null,2));
