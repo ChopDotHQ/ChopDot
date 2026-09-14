@@ -24,13 +24,14 @@
 4. Newest material issue #38 handoffs only:
    - Builder REVIEW REQUEST
    - Reviewer REVIEW RECEIPT
-   - explicit human approval
+   - explicit human approval or standing-approval policy application
    - Supervisor validation/freeze/blocker
 5. Exact current candidate branch/head and exact Actions/evidence.
 6. Factory doctrine on `ops/chatgpt-work-factory-v1`:
    - `CHATGPT_WORK_FACTORY.md`
    - `CHATGPT_FACTORY_EVOLUTION.md`
    - `CHATGPT_FACTORY_DECISION_LOG.md`
+   - `CHATGPT_FACTORY_APPROVAL_POLICY.md`
    - `CHATGPT_FACTORY_WORKER_REGISTRY.md`
    - `CHATGPT_CAPABILITY_RADAR.md`
 7. Latest relevant issue #40 Factory Observer / Platform Watch / Capability Radar finding.
@@ -43,10 +44,11 @@ When sources disagree, use this order:
 1. live product law, canonical UX registry, approvals and Golden locks;
 2. exact current Git head plus exact CI/evidence;
 3. newest non-superseded sealed handoff bound to those bytes;
-4. issue #38 operational mirror;
-5. factory docs / issue #40 process guidance;
-6. saved conversation context and summaries;
-7. historical chat links and old prompts.
+4. explicit active human authority, including `CHATGPT_FACTORY_APPROVAL_POLICY.md` only within its stated scope and fail-closed conditions;
+5. issue #38 operational mirror;
+6. factory docs / issue #40 process guidance;
+7. saved conversation context and summaries;
+8. historical chat links and old prompts.
 
 Live automation state is the truth of what is actually enabled; `CHATGPT_FACTORY_WORKER_REGISTRY.md` is the declared expected topology used to detect drift.
 
@@ -62,12 +64,15 @@ Classify the factory into one primary node:
 - `REVISE_REPAIR_ELIGIBLE`
 - `REVIEWABLE_HOLD`
 - `GOLDEN_READY_HUMAN_GATE`
+- `GOLDEN_READY_STANDING_APPROVAL_ELIGIBLE`
 - `HUMAN_APPROVED_FREEZE_ELIGIBLE`
 - `TRANSITION_VERIFY_PENDING`
 - `VALIDATED_NEXT_JOURNEY_ELIGIBLE`
 - `GENUINE_EXTERNAL_OR_AUTHORITY_BLOCKER`
 
 Then follow the generic state machine in `CHATGPT_FACTORY_EVOLUTION.md`. Do not create a journey-specific orchestration path merely because a handoff is urgent.
+
+When the standing approval policy is active and applicable, `GOLDEN-READY` may advance directly to exact approval-record materialization and freeze after the Supervisor revalidates the exact candidate/review/evidence. The independent Reviewer gate is never skipped.
 
 ## Anti-regression checks
 
@@ -83,7 +88,9 @@ A new thread must not:
 - start next-journey product bytes while transition verification is pending;
 - treat direct-loaded/renderable states as proof of caller reachability when reachability is required;
 - edit approved Golden HTML in place;
-- infer human approval;
+- infer approval outside an explicit per-candidate approval or an active standing-approval policy that clearly applies to the exact candidate;
+- use standing approval to bypass `REVISE`, `REVIEWABLE`, direct visual review, exact evidence, exact-byte binding or resulting-state verification;
+- extend standing approval to later-added journeys outside its activation-time scope;
 - treat green CI as independent UX/product review;
 - treat historical centralized experiments as current runtime architecture;
 - make an external tool a critical dependency without a measured adoption decision;
@@ -94,7 +101,7 @@ A new thread must not:
 
 A future thread can start with:
 
-> Continue the ChopDot autonomous product factory from live GitHub truth. Use `docs/CHATGPT_FACTORY_RESTART.md` on `ops/chatgpt-work-factory-v1` as the bootstrap route. Tell me the current journey/stage, exact next owner/action, whether any time is being wasted, and whether the live worker roster matches `CHATGPT_FACTORY_WORKER_REGISTRY.md`. Do not trust old chat state over GitHub or change worker topology from memory.
+> Continue the ChopDot autonomous product factory from live GitHub truth. Use `docs/CHATGPT_FACTORY_RESTART.md` on `ops/chatgpt-work-factory-v1` as the bootstrap route. Tell me the current journey/stage, exact next owner/action, whether any time is being wasted, whether the standing approval policy currently applies, and whether the live worker roster matches `CHATGPT_FACTORY_WORKER_REGISTRY.md`. Do not trust old chat state over GitHub or change worker topology from memory.
 
 ## What must be durable before a thread ends
 
@@ -102,6 +109,7 @@ Before abandoning a long thread, verify:
 
 - current journey/stage is correct in canonical registry;
 - latest candidate/review/approval/freeze handoff is in GitHub;
+- active standing approval/revocation state is durable in GitHub;
 - reusable factory lessons are in `CHATGPT_FACTORY_DECISION_LOG.md`;
 - factory-rule changes are in the factory docs;
 - product decisions are in journey history or ADR/product law;
