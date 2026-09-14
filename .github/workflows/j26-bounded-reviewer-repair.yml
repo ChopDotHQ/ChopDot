@@ -29,3 +29,4 @@ jobs:
           git rm .github/workflows/j26-bounded-reviewer-repair.yml prototypes/experience-workbench/journeys/26-group-lifecycle/source/apply-review-repair.py
           git commit -m "Repair J26 durable lifecycle truth"
           git push origin HEAD:ux/experience-workbench-j26-v1-candidate
+# trigger bounded repair
