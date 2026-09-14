@@ -233,7 +233,7 @@ a{text-decoration:none;color:inherit}button,input{font:inherit}:focus-visible{ou
       <div class="content">
         <div><div class="eyebrow">Lisbon Weekend</div><h1 class="hero">People are resolved without guessing.</h1><p class="lead">Stable identity evidence may link a person. Everyone else stays separate unless you explicitly decide otherwise.</p></div>
         <section class="card list"><div class="row"><span class="row-icon"><svg><use href="#i-user"/></svg></span><div class="row-copy"><b>Dev</b><span>Stable identity evidence</span></div><span class="pill success">Matched</span></div><div class="row"><span class="row-icon"><svg><use href="#i-user"/></svg></span><div class="row-copy"><b>Maya</b><span>Stable identity evidence</span></div><span class="pill success">Matched</span></div><div class="row"><span class="row-icon"><svg><use href="#i-user"/></svg></span><div class="row-copy"><b>Luca</b><span>No deterministic local match</span></div><span class="pill">Separate</span></div><div class="row"><span class="row-icon"><svg><use href="#i-user"/></svg></span><div class="row-copy"><b>Ines</b><span>No deterministic local match</span></div><span class="pill">Separate</span></div></section>
-        <div class="notice success"><svg><use href="#i-check"/></svg><div>No name-only linking was used. Nothing is saved yet; these decisions belong to the pending import preview.</div></div>
+        <div class="notice success"><svg><use href="#i-check"/></svg><div>No automatic name-only linking was used. Nothing is saved yet; these decisions belong to the pending import preview.</div></div>
         <div class="notice warn partial-carry" data-test-partial-warning><svg><use href="#i-info"/></svg><div>Some non-financial source details were omitted. They do not change balances, identity, or record meaning. This omission remains part of this import review.</div></div>
         <div class="actions"><a class="btn primary" data-test-primary href="#ready-to-confirm">Continue to final review</a><a class="text-link" href="#cancelled-before-confirmation">Cancel import</a></div>
       </div>
@@ -333,9 +333,68 @@ a{text-decoration:none;color:inherit}button,input{font:inherit}:focus-visible{ou
 <script>
 (() => {
   let inspectionTimer = null;
+  const identityDecisions = {maya:null,dev:null};
   const setPartialWarning = active => {
     if (active) document.body.dataset.partialWarning = 'true';
     else delete document.body.dataset.partialWarning;
+  };
+  const findPersonRow = name => [...document.querySelectorAll('#identity-clean .row')].find(row => row.querySelector('.row-copy b')?.textContent?.trim() === name);
+  const setPersonDecision = (name, decision) => {
+    const row = findPersonRow(name);
+    if (!row) return;
+    const evidence = row.querySelector('.row-copy span');
+    const pill = row.querySelector('.pill');
+    if (!evidence || !pill) return;
+    if (!decision) {
+      evidence.textContent = 'Stable identity evidence';
+      pill.textContent = 'Matched';
+      pill.className = 'pill success';
+      return;
+    }
+    if (decision === 'separate') {
+      evidence.textContent = 'Kept separate by your choice';
+      pill.textContent = 'Separate';
+      pill.className = 'pill';
+      return;
+    }
+    if (decision === 'linked') {
+      evidence.textContent = 'Linked by your confirmation';
+      pill.textContent = 'User confirmed';
+      pill.className = 'pill success';
+      return;
+    }
+    evidence.textContent = 'Confirmed by you for this import';
+    pill.textContent = 'You confirmed';
+    pill.className = 'pill success';
+  };
+  const renderIdentityDecisions = () => {
+    setPersonDecision('Maya',identityDecisions.maya);
+    setPersonDecision('Dev',identityDecisions.dev);
+    const anyDecision = Boolean(identityDecisions.maya || identityDecisions.dev);
+    const subtitle = document.querySelector('#identity-clean .header-title span');
+    if (subtitle) subtitle.textContent = anyDecision ? 'Reviewed choices preserved' : 'Stable matches only';
+    const notice = document.querySelector('#identity-clean .notice.success div');
+    if (notice) notice.textContent = anyDecision
+      ? 'No automatic name-only linking was used. Your explicit identity choices remain part of this pending import preview.'
+      : 'No automatic name-only linking was used. Nothing is saved yet; these decisions belong to the pending import preview.';
+    document.querySelector('#ready-to-confirm [data-test-identity-summary]')?.remove();
+    const decisions = [];
+    if (identityDecisions.maya === 'separate') decisions.push(['Maya identity','Kept separate by your choice']);
+    if (identityDecisions.maya === 'linked') decisions.push(['Maya identity','Linked by your confirmation']);
+    if (identityDecisions.dev === 'separate') decisions.push(['Dev identity','Kept separate by your choice']);
+    if (identityDecisions.dev === 'self-confirmed') decisions.push(['Dev identity','Confirmed by you for this import']);
+    if (!decisions.length) return;
+    const summary = document.createElement('section');
+    summary.className = 'card file-card';
+    summary.dataset.testIdentitySummary = 'true';
+    const rows = decisions.map(([label,value]) => `<div class="meta-row"><span>${label}</span><b>${value}</b></div>`).join('');
+    summary.innerHTML = `<div class="meta-list" style="margin-top:0;padding-top:0;border-top:0">${rows}</div>`;
+    document.querySelector('#ready-to-confirm .card.file-card')?.insertAdjacentElement('afterend',summary);
+  };
+  const resetIdentityDecisions = () => {
+    identityDecisions.maya = null;
+    identityDecisions.dev = null;
+    renderIdentityDecisions();
   };
   document.addEventListener('click', event => {
     const link = event.target.closest('a[href^="#"]');
@@ -345,6 +404,21 @@ a{text-decoration:none;color:inherit}button,input{font:inherit}:focus-visible{ou
 
     if (sourceState === 'partial-readable' && link.matches('[data-test-primary]')) setPartialWarning(true);
     if (target === '#source-picker' || target === '#entry-you' || target === '#cancelled-before-confirmation' || (sourceState === 'source-picker' && target === '#source-selected')) setPartialWarning(false);
+
+    if (sourceState === 'ambiguous-person' && link.matches('[data-test-primary]')) {
+      identityDecisions.maya = 'separate';
+      renderIdentityDecisions();
+    } else if (sourceState === 'ambiguous-person' && link.matches('[data-test-secondary]')) {
+      identityDecisions.maya = 'linked';
+      renderIdentityDecisions();
+    } else if (sourceState === 'own-identity-ambiguity' && link.matches('[data-test-primary]')) {
+      identityDecisions.dev = 'separate';
+      renderIdentityDecisions();
+    } else if (sourceState === 'own-identity-ambiguity' && link.matches('[data-test-secondary]')) {
+      identityDecisions.dev = 'self-confirmed';
+      renderIdentityDecisions();
+    }
+    if (target === '#source-picker' || target === '#entry-you' || target === '#cancelled-before-confirmation' || (sourceState === 'source-picker' && target === '#source-selected')) resetIdentityDecisions();
 
     if (target !== '#inspecting') return;
     clearTimeout(inspectionTimer);

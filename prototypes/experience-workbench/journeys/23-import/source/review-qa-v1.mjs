@@ -68,7 +68,7 @@ const expectedSemantics = {
   'preview-detail':['historical records','not commands','History only','not payment authority','Not imported'],
   'exact-duplicate':['exact package was already imported','Lisbon Weekend','not a same-name guess','No new import is created'],
   'similar-group':['similar group already exists','cannot prove they are the same group','Separate new group','Never in V1'],
-  'identity-clean':['People are resolved without guessing','Stable identity evidence','No name-only linking','Nothing is saved yet'],
+  'identity-clean':['People are resolved without guessing','Stable identity evidence','No automatic name-only linking','Nothing is saved yet'],
   'ambiguous-person':['Which Maya is this?','Display name alone is not enough','No link is made until you choose','pending preview'],
   'own-identity-ambiguity':['Is this imported member you?','cannot prove this imported member is your current identity','pending preview','Nothing is linked or written'],
   'currency-conflict':['Currency meaning is unclear','Import cannot continue','No exchange rate','financial truth'],
@@ -137,6 +137,33 @@ const clickPartialWarningPath = async (page, viewport) => {
   await page.locator('#identity-clean').locator('a[data-test-primary]').click();
   await checkHash(page,'ready-to-confirm','partial identity review → final review',viewport);
   await checkPartialWarning(page,'ready-to-confirm','partial warning visible in final review',viewport);
+};
+
+const checkIdentityDecisionPath = async (page, start, selector, person, expectedEvidence, expectedPill, label, viewport) => {
+  await page.goto(`${pathToFileURL(candidatePath).href}#${start}`, {waitUntil:'load'});
+  await page.locator(`#${start}`).locator(selector).click();
+  await checkHash(page,'identity-clean',`${label} → people review`,viewport);
+  const rowTruth = await page.evaluate(({person}) => {
+    const row=[...document.querySelectorAll('#identity-clean .row')].find(node=>node.querySelector('.row-copy b')?.textContent?.trim()===person);
+    return {evidence:row?.querySelector('.row-copy span')?.textContent?.trim()??'',pill:row?.querySelector('.pill')?.textContent?.trim()??''};
+  },{person});
+  const rowPass = rowTruth.evidence === expectedEvidence && rowTruth.pill === expectedPill && rowTruth.evidence !== 'Stable identity evidence';
+  interactions.push({viewport,label:`${label} decision truth in S20`,expected:{evidence:expectedEvidence,pill:expectedPill},actual:rowTruth,pass:rowPass});
+  if (!rowPass) errors.push(`${viewport}/${label}: S20 lost explicit identity decision truth (${JSON.stringify(rowTruth)})`);
+  const s20Shot=path.join(screenshotRoot,`identity-${label.replace(/[^a-z0-9]+/giu,'-').toLowerCase()}-s20-${viewport}.png`);
+  await page.screenshot({path:s20Shot,fullPage:false});
+  screenshots.push({viewport,state:'identity-clean',context:label,path:path.relative(evidenceRoot,s20Shot)});
+
+  await page.locator('#identity-clean').locator('a[data-test-primary]').click();
+  await checkHash(page,'ready-to-confirm',`${label} → final review`,viewport);
+  const finalText=((await page.locator('#ready-to-confirm [data-test-identity-summary]').textContent())??'').replace(/\s+/gu,' ').trim();
+  const expectedFinal=`${person} identity ${expectedEvidence}`;
+  const finalPass=finalText.includes(expectedFinal);
+  interactions.push({viewport,label:`${label} decision truth in S25`,expected:expectedFinal,actual:finalText,pass:finalPass});
+  if (!finalPass) errors.push(`${viewport}/${label}: S25 lost explicit identity decision truth (${finalText})`);
+  const s25Shot=path.join(screenshotRoot,`identity-${label.replace(/[^a-z0-9]+/giu,'-').toLowerCase()}-s25-${viewport}.png`);
+  await page.screenshot({path:s25Shot,fullPage:false});
+  screenshots.push({viewport,state:'ready-to-confirm',context:label,path:path.relative(evidenceRoot,s25Shot)});
 };
 
 try {
@@ -235,10 +262,10 @@ try {
     await clickPath(page,'similar-group','a[data-test-primary]','identity-clean','similar group → separate import review',viewport.name);
     await clickPath(page,'similar-group','a.text-link','cancelled-before-confirmation','similar group → cancel',viewport.name);
     await clickPath(page,'identity-clean','a[data-test-primary]','ready-to-confirm','clean identity → ready',viewport.name);
-    await clickPath(page,'ambiguous-person','a[data-test-primary]','identity-clean','ambiguous person → keep separate',viewport.name);
-    await clickPath(page,'ambiguous-person','a[data-test-secondary]','identity-clean','ambiguous person → explicit link',viewport.name);
-    await clickPath(page,'own-identity-ambiguity','a[data-test-primary]','identity-clean','own identity → keep separate',viewport.name);
-    await clickPath(page,'own-identity-ambiguity','a[data-test-secondary]','identity-clean','own identity → explicit self link',viewport.name);
+    await checkIdentityDecisionPath(page,'ambiguous-person','a[data-test-primary]','Maya','Kept separate by your choice','Separate','ambiguous Maya keep separate',viewport.name);
+    await checkIdentityDecisionPath(page,'ambiguous-person','a[data-test-secondary]','Maya','Linked by your confirmation','User confirmed','ambiguous Maya explicit link',viewport.name);
+    await checkIdentityDecisionPath(page,'own-identity-ambiguity','a[data-test-primary]','Dev','Kept separate by your choice','Separate','ambiguous self keep separate',viewport.name);
+    await checkIdentityDecisionPath(page,'own-identity-ambiguity','a[data-test-secondary]','Dev','Confirmed by you for this import','You confirmed','ambiguous self explicit confirmation',viewport.name);
     await clickPath(page,'currency-conflict','a[data-test-primary]','source-picker','currency conflict → choose another',viewport.name);
     await clickPath(page,'unsupported-record','a[data-test-primary]','source-picker','unsupported financial record → choose another',viewport.name);
     await clickPath(page,'ready-to-confirm','a[data-test-primary]','review-boundary','ready → bounded write boundary',viewport.name);
@@ -258,7 +285,7 @@ if (externalRequests.length) errors.push(`external runtime requests: ${externalR
 const summary = {
   journey:'23',
   version:'v1',
-  scope:'Second bounded J23 candidate increment: registered S01–S25 plus pre-confirmation cancellation S39, J08 owner-boundary evidence, and one non-product Builder write boundary. S26–S38 remain open; no product write/commit/result/recovery cluster is implemented yet.',
+  scope:'Bounded J23 Reviewer-repair head: registered S01–S25 plus pre-confirmation cancellation S39, J08 owner-boundary evidence, and one non-product Builder write boundary. S07 caller continuity, S13 warning carry-forward, and S21/S22 identity-decision truth are repaired; S26–S38 remain open.',
   review_status: errors.length ? 'BOUNDED_SLICE_QA_FAILED' : 'BOUNDED_SLICE_QA_PASSED',
   branch,head,tree,candidate_path:path.relative(repoRoot,candidatePath),candidate_sha256:candidateSha256,
   registered_states:states.length,
@@ -276,8 +303,8 @@ const summary = {
   limitations:[
     'Prototype fixture only: no production file picker, parser, provider integration, remote fetch, migration, database write, or authenticity verification is exercised.',
     'The selected demo package proves the S05 → S07 → S08 caller transition; direct state loads remain evidence fixtures rather than product navigation.',
-    'The J23-S13 non-financial omission warning now carries contextually through S16, S17, S20 and S25; dedicated clicked-path screenshots prove the warning remains visible until confirmation.',
-    'The separate Reviewer finding for ambiguous identity decision truth remains open on this bounded head; keep-separate/manual-link semantics are not repaired by this change.',
+    'The J23-S13 non-financial omission warning carries contextually through S16, S17, S20 and S25; dedicated clicked-path screenshots prove the warning remains visible until confirmation.',
+    'Ambiguous Maya and self-identity choices now retain exact keep-separate versus user-confirmed truth through S20 and S25; four choice-path regressions prove no manual choice is relabeled as deterministic Stable identity evidence.',
     'J23-S25 exposes the contract-required Import group action, but this bounded head routes it only to explicit Builder review scaffolding; no product write or confirmation execution occurs.',
     'Payment/settlement-looking fixture records are historical display only; no payment execution, wallet signing, receiving-detail publication, invitation, or finality is exercised.',
     'Builder mechanical evidence is not independent UX review, GOLDEN-READY, human approval, or Golden freeze.',
@@ -289,7 +316,7 @@ await writeFile(path.join(evidenceRoot,'QA_SUMMARY.json'),JSON.stringify(summary
 await writeFile(path.join(evidenceRoot,'LAYOUT_QA.json'),JSON.stringify(layouts,null,2));
 await writeFile(path.join(evidenceRoot,'INTERACTION_QA.json'),JSON.stringify(interactions,null,2));
 await writeFile(path.join(evidenceRoot,'BROWSER_QA.json'),JSON.stringify({browserErrors,consoleErrors,externalRequests},null,2));
-await writeFile(path.join(evidenceRoot,'VISUAL_QA.md'),`# Journey 23 V1 — bounded intake / inspection / conflict-review mechanical evidence\n\n- Exact head: \`${head}\`\n- Branch: \`${branch}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- Registered states rendered: **${states.length}**\n- Boundary renders: **${boundaries.length}**\n- Canonical viewports: **393×852**, **430×890**\n- PNGs: **${screenshots.length}**\n- Clicked paths: **${interactions.filter(x=>x.pass).length}/${interactions.length}**\n- Browser errors: **${browserErrors.length}**\n- Console errors: **${consoleErrors.length}**\n- External runtime requests: **${externalRequests.length}**\n- Deterministic failures: **${errors.length}**\n\n## Scope\n\nThis is the second bounded J23 candidate increment with the reviewed S07 caller-continuity repair and the bounded S13 warning-carry repair. It covers J23-S01–S25 plus J23-S39, one J08 owner-boundary render, and a clearly labelled non-product Builder write boundary. J23-S26–S38 and B02/B03 remain open by design on this head. The S25 \`Import group\` action routes only to that Builder boundary; no product write or confirmation execution occurs.\n\nThe selected demo fixture exercises the real candidate caller path from S05 through S07 into S08. The partially readable fixture now keeps its explicit non-financial omission warning visible through S16 preview, S17 detail, S20 people review and S25 final review; contextual screenshots are captured at both canonical viewports.\n\nThe separate ambiguous-identity decision-truth Reviewer finding remains open and is intentionally not repaired in this bounded change.\n\n## Trust / authority limits\n\nThe demo package is a fixture. This evidence does not prove a production picker, parser, provider integration, migration, source authenticity, database write, payment execution, wallet signing, receiving-detail publication, invitation, settlement replay, or finality. Imported payment-looking rows are previewed as history only.\n\n## Review status\n\n\`${summary.review_status}\`. This is Builder mechanical evidence only; it does not grant independent visual clearance, REVIEWABLE, GOLDEN-READY, human approval, or Golden status.\n`);
+await writeFile(path.join(evidenceRoot,'VISUAL_QA.md'),`# Journey 23 V1 — bounded intake / inspection / conflict-review mechanical evidence\n\n- Exact head: \`${head}\`\n- Branch: \`${branch}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- Registered states rendered: **${states.length}**\n- Boundary renders: **${boundaries.length}**\n- Canonical viewports: **393×852**, **430×890**\n- PNGs: **${screenshots.length}**\n- Clicked paths: **${interactions.filter(x=>x.pass).length}/${interactions.length}**\n- Browser errors: **${browserErrors.length}**\n- Console errors: **${consoleErrors.length}**\n- External runtime requests: **${externalRequests.length}**\n- Deterministic failures: **${errors.length}**\n\n## Scope\n\nThis bounded J23 Reviewer-repair head covers J23-S01–S25 plus J23-S39, one J08 owner-boundary render, and a clearly labelled non-product Builder write boundary. It includes the reviewed S07 caller-continuity repair, S13 warning-carry repair, and S21/S22 identity-decision-truth repair. J23-S26–S38 and B02/B03 remain open by design on this head. The S25 \`Import group\` action routes only to that Builder boundary; no product write or confirmation execution occurs.\n\nThe selected demo fixture exercises the real candidate caller path from S05 through S07 into S08. The partially readable fixture keeps its explicit non-financial omission warning visible through S16 preview, S17 detail, S20 people review and S25 final review; contextual screenshots are captured at both canonical viewports.\n\nThe ambiguous-person and own-identity fixtures now preserve all four explicit choices downstream: keep-separate remains separate, manual Maya linking is labelled user-confirmed, and self-linking is labelled confirmed by the user for this import. Neither manual path is rewritten as Stable identity evidence. Dedicated S20 and S25 screenshots are captured for every choice at both canonical viewports.\n\n## Trust / authority limits\n\nThe demo package is a fixture. This evidence does not prove a production picker, parser, provider integration, migration, source authenticity, database write, payment execution, wallet signing, receiving-detail publication, invitation, settlement replay, or finality. Imported payment-looking rows are previewed as history only.\n\n## Review status\n\n\`${summary.review_status}\`. This is Builder mechanical evidence only; it does not grant independent visual clearance, REVIEWABLE, GOLDEN-READY, human approval, or Golden status.\n`);
 
 if (errors.length) {
   console.error(JSON.stringify(summary,null,2));
