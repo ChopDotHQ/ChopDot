@@ -37,6 +37,6 @@ jobs:
           git config user.name "ChatGPT Factory Builder"
           git config user.email "actions@users.noreply.github.com"
           git add prototypes/experience-workbench/journeys/26-group-lifecycle/v1-candidate.html prototypes/experience-workbench/journeys/26-group-lifecycle/source/review-qa-v1.mjs
-          git rm .github/workflows/j26-bounded-reviewer-repair.yml prototypes/experience-workbench/journeys/26-group-lifecycle/source/apply-review-repair.py
+          git rm -f .github/workflows/j26-bounded-reviewer-repair.yml prototypes/experience-workbench/journeys/26-group-lifecycle/source/apply-review-repair.py
           git commit -m "Repair J26 durable lifecycle truth"
           git push origin HEAD:ux/experience-workbench-j26-v1-candidate
