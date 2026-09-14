@@ -11,6 +11,7 @@ on:
       - '.github/workflows/j24-v1-review.yml'
       - 'prototypes/experience-workbench/journeys/24-export-portability/v1-candidate.html'
       - 'prototypes/experience-workbench/journeys/24-export-portability/source/review-qa-v1.mjs'
+      - 'prototypes/experience-workbench/journeys/24-export-portability/source/review-qa-fastlane-addendum.mjs'
       - 'prototypes/experience-workbench/journeys/24-export-portability/spec.md'
       - 'prototypes/experience-workbench/journeys/24-export-portability/STATE_INVENTORY.md'
       - 'prototypes/experience-workbench/journeys/24-export-portability/EDGE_CASES.md'
@@ -36,6 +37,8 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run exact-head J24 browser, interaction, layout and authority QA
         run: node prototypes/experience-workbench/journeys/24-export-portability/source/review-qa-v1.mjs
+      - name: Run J24 fast-lane safety evidence addendum
+        run: node prototypes/experience-workbench/journeys/24-export-portability/source/review-qa-fastlane-addendum.mjs
       - name: Upload exact-head J24 evidence
         if: always()
         uses: actions/upload-artifact@v4
