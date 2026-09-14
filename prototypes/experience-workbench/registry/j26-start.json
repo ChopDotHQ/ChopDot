@@ -1,18 +1,25 @@
 {
   "journey": "26",
   "name": "Group Lifecycle",
-  "version": "v1",
+  "status": "current",
   "approval": "not-reviewed",
+  "version": "v1",
   "stage": "definition",
-  "prototype_built": false,
+  "goal": "Rename, configure, archive, leave, or delete safely.",
+  "entry": "Group settings",
+  "exit": "Group Home or Home",
+  "next": [
+    "02",
+    "08",
+    "24"
+  ],
   "spec_path": "journeys/26-group-lifecycle/spec.md",
   "decision_history_path": "journeys/26-group-lifecycle/source/decision-history.md",
   "state_inventory_path": "journeys/26-group-lifecycle/STATE_INVENTORY.md",
   "edge_cases_path": "journeys/26-group-lifecycle/EDGE_CASES.md",
+  "prototype_built": false,
   "golden_count_before": 25,
-  "human_approval_required": true,
   "caller_reachability_required": true,
   "factory_generation": "v1.1",
-  "typography_note": "TYPO-01 deferred",
-  "prototype_only": true
+  "typography_note": "TYPO-01 deferred"
 }

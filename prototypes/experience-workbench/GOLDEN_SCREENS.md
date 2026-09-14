@@ -24,9 +24,10 @@
 22. QR Flows — v1 · Design Approved
 23. Import Data / Group — v1 · Design Approved
 24. Export / Portability — v1 · Design Approved
+25. Storage / Backup / Recovery — v1 · Design Approved
 
-Journey 24 — Export / Portability V1 is Golden #24. Exact approved HTML SHA-256: `03d1c2094251dc3ec683108c484bdc84e6f7db08b1c40ce042535a2d186a9b82`; the approved HTML was not changed during freeze.
+Journey 25 — Storage / Backup / Recovery V1 is Golden #25. Exact approved HTML SHA-256: `785fd02267b1e47e1bde8513a6c91373ee1ce8dd85b35812201f0af92c77ca3f`; the approved HTML was not changed during freeze.
 
-Current journey: Journey 25 — Storage / Backup / Recovery V1 definition. No review candidate exists yet.
+Current journey: Journey 26 — Group Lifecycle V1 definition. No review candidate exists yet.
 
 TYPO-01 remains deferred.

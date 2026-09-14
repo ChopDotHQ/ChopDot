@@ -598,11 +598,16 @@
       "27",
       "28"
     ],
-    "status": "current",
-    "approval": "not-reviewed",
+    "status": "golden",
+    "approval": "design-approved",
     "entry_mode": "feature",
     "version": "v1",
-    "spec_path": "journeys/25-storage-recovery/spec.md"
+    "spec_path": "journeys/25-storage-recovery/spec.md",
+    "prototype_path": "journeys/25-storage-recovery/v1-candidate.html",
+    "prototype_sha256": "785fd02267b1e47e1bde8513a6c91373ee1ce8dd85b35812201f0af92c77ca3f",
+    "golden_number": 25,
+    "approved_on": "2026-09-14",
+    "qa_path": "journeys/25-storage-recovery/review-v1/VISUAL_QA.md"
   },
   {
     "id": "26",
@@ -618,8 +623,10 @@
       "08",
       "24"
     ],
-    "status": "not-started",
-    "approval": "not-reviewed"
+    "status": "current",
+    "approval": "not-reviewed",
+    "version": "v1",
+    "spec_path": "journeys/26-group-lifecycle/spec.md"
   },
   {
     "id": "27",

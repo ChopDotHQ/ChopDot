@@ -8,15 +8,15 @@ Read `DESIGN_CONTRACT.md`, `WORKFLOW.md`, `REVIEW_PROTOCOL.md`, `shared/improvem
 
 ## Current authority
 
-28 registered journeys; 24 Goldens; 4 remaining.
+28 registered journeys; 25 Goldens; 3 remaining.
 
-Journey 24 — Export / Portability V1 is Golden #24. Exact approved artifact SHA-256: `03d1c2094251dc3ec683108c484bdc84e6f7db08b1c40ce042535a2d186a9b82`. Human approval is issue #38 comment `5663800809`; HTML changes after approval are not authorized.
+Journey 25 — Storage / Backup / Recovery V1 is Golden #25. Exact approved artifact SHA-256: `785fd02267b1e47e1bde8513a6c91373ee1ce8dd85b35812201f0af92c77ca3f`. Human approval is issue #38 comment `5666505408`; HTML changes after approval are not authorized.
 
-Journey 25 — Storage / Backup / Recovery V1 is **current at definition stage**. Factory v1.1 requires a compressed current-work packet and truthful caller-reachability coverage for every material state. No J25 candidate or human approval exists.
+Journey 26 — Group Lifecycle V1 is **current at definition stage**. Canonical factory generation remains `v1.1`; caller-reachability coverage is required for every material state. No J26 candidate or human approval exists.
 
 ## Preserve
 
-All 24 Golden artifact checksums must pass. `registry/goldens.manifest.json` is generated and must not become competing approval authority. TYPO-01 remains deferred.
+All 25 Golden artifact checksums must pass. `registry/goldens.manifest.json` is generated and must not become competing approval authority. TYPO-01 remains deferred.
 
 <!-- JOURNEY_DECISION_HISTORY:START -->
 ## Decision history

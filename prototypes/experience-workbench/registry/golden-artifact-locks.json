@@ -119,5 +119,10 @@
     "journey": "24",
     "path": "journeys/24-export-portability/v1-candidate.html",
     "sha256": "03d1c2094251dc3ec683108c484bdc84e6f7db08b1c40ce042535a2d186a9b82"
+  },
+  {
+    "journey": "25",
+    "path": "journeys/25-storage-recovery/v1-candidate.html",
+    "sha256": "785fd02267b1e47e1bde8513a6c91373ee1ce8dd85b35812201f0af92c77ca3f"
   }
 ]
