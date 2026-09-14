@@ -209,7 +209,7 @@ for (const vp of viewports) {
   await visibleContains(`${vp.name} transfer truth`, p, ['Jeanine', 'Your role', 'Member', 'Money / history', 'Unchanged']);
   await goto(p, 'left-group', 'member');
   await visibleContains(`${vp.name} leave truth`, p, ['Membership', 'Removed', 'History / ledger', 'Preserved']);
-  await goto(p, 'deleted');
+  await goto(p, 'deleted', 'owner', { members: '1', open: '0' });
   await visibleContains(`${vp.name} deletion scope`, p, ['This working state', 'Group removed', 'Exports / backups', 'Not claimed erased', 'Provider / chain history', 'Not claimed erased']);
 
   await goto(p, 'delete-type-confirm', 'owner', { members: '1', open: '0' });
