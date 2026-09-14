@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const root=path.resolve(import.meta.dirname,'..');
+const registry=path.join(root,'registry','journeys.json');
+const journeys=JSON.parse(fs.readFileSync(registry,'utf8'));
+const j24=journeys.find(j=>j.id==='24');
+if(!j24) throw new Error('Missing Journey 24');
+const qaPath='journeys/24-export-portability/review-v1/VISUAL_QA.md';
+if(!fs.existsSync(path.join(root,qaPath))) throw new Error('Missing J24 QA evidence pointer');
+j24.qa_path=qaPath;
+fs.writeFileSync(registry,JSON.stringify(journeys,null,2)+'\n');
+console.log(`J24 QA PATH BOUND: ${qaPath}`);

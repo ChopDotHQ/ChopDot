@@ -59,6 +59,7 @@ run('apply-j21-golden-j22-current.mjs');
 run('apply-j22-golden-j23-current.mjs');
 run('apply-j23-golden-j24-current.mjs');
 run('apply-j24-golden-j25-current.mjs');
+run('bind-j24-qa.mjs');
 run('decision-history.mjs');
 run('build-journey-map.mjs');
 run('build-golden-manifest.mjs');
