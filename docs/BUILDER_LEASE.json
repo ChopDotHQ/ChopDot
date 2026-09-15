@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "completed",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
-  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5683242402|candidate-4ef1eba|proof-materialization-authority",
+  "holder": "repair-pickup",
+  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5684201633|candidate-184dc84|money-partition-contract-surface",
   "candidate_head": "184dc84d64180a4e53c6c875c218c4100d0b0020",
-  "claimed_at": "2026-09-15T15:56:30Z",
-  "renewed_at": "2026-09-15T15:56:30Z",
-  "completed_at": "2026-09-15T16:12:00Z",
-  "expires_at": null,
+  "claimed_at": "2026-09-15T16:52:06Z",
+  "renewed_at": "2026-09-15T16:52:06Z",
+  "completed_at": null,
+  "expires_at": "2026-09-15T17:04:06Z",
   "waiting_reason": null,
-  "note": "Bounded repair complete and sealed in #38 comment 5683759355. Exact Phase C1, CI, Coverage, Smoke and E2E evidence are green on 184dc84d64180a4e53c6c875c218c4100d0b0020. Reviewer owns next transition."
+  "note": "Bounded Phase C1 repair claimed for Reviewer receipt 5684201633: exact money partition/delegation, non-2-decimal and partition-substitution tests, and README proof-tuple parity only."
 }
