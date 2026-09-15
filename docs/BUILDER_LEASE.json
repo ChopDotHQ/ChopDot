@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "contract-repair-pickup",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5683242402|candidate-4ef1eba|proof-materialization-authority",
-  "candidate_head": "4ef1eba23832b5017ddc5acfc2dba4e16efc8f0b",
+  "candidate_head": "184dc84d64180a4e53c6c875c218c4100d0b0020",
   "claimed_at": "2026-09-15T15:56:30Z",
   "renewed_at": "2026-09-15T15:56:30Z",
   "completed_at": null,
-  "expires_at": "2026-09-15T16:08:30Z",
-  "waiting_reason": null,
-  "note": "Claimed for bounded Reviewer REVISE 5683242402 plus Security acceptance delta 5683392060: exact proof binding, authoritative external-effect identity end-to-end, and fresh replay-protected authorization adjustments."
+  "expires_at": null,
+  "waiting_reason": "Exact successor pushed; waiting for Phase C1/CI/Coverage/Smoke/E2E on 184dc84d64180a4e53c6c875c218c4100d0b0020.",
+  "note": "Bounded repair applied: exact non-empty proof binding incl. authoritative_effect_ref and authorization_version; authoritative external-effect dedupe end-to-end; fresh replay-protected current authority for authorization adjustments; pending/unknown prior execution blocks adjustment."
 }
