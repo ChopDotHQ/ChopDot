@@ -87,7 +87,8 @@ const proofMatches = (proof, expected) => {
   return true;
 };
 
-let materializer = createCanonicalMaterializationState();
+let authoritativeHead = null;
+let materializer = createCanonicalMaterializationState({ resolveAuthoritativeHead: () => authoritativeHead });
 const authorizedMoney = { minorUnits:10000n, currency:'USD', exponent:2 };
 const deriveEffect = ({ state, proof, expected, authorized = authorizedMoney }) => {
   const effectMoney = moneyFrom(expected);
@@ -135,8 +136,10 @@ eq(materializer.getEffect('sp_parent','op_parent','rail:cap:A').remaining_unadju
 eq(materializer.getIntentMoney('sp_parent').minorUnits, 4400n, 'first refund updates canonical intent net exactly once');
 
 const persistedAfterRefund = materializer.snapshot();
-const restarted = createCanonicalMaterializationState();
-eq(restarted.restore(persistedAfterRefund), true, 'restart restores canonical materialization state');
+const checkpointAfterRefund = materializer.checkpoint();
+authoritativeHead = materializer.headCandidate();
+const restarted = createCanonicalMaterializationState({ resolveAuthoritativeHead: () => authoritativeHead });
+eq(restarted.restore(persistedAfterRefund, checkpointAfterRefund), true, 'restart restores canonical materialization state against authoritative head');
 materializer = restarted;
 eq(materializer.getEffect('sp_parent','op_parent','rail:cap:A').remaining_unadjusted_units, 400n, 'restart preserves consumed parent capacity');
 
@@ -201,8 +204,10 @@ eq(orderedState.materialize({
 
 // Recovery after full exhaustion cannot recreate already-consumed value.
 const exhaustedSnapshot = materializer.snapshot();
-const restoredExhausted = createCanonicalMaterializationState();
-eq(restoredExhausted.restore(exhaustedSnapshot), true, 'exhausted parent state restores');
+const exhaustedCheckpoint = materializer.checkpoint();
+authoritativeHead = materializer.headCandidate();
+const restoredExhausted = createCanonicalMaterializationState({ resolveAuthoritativeHead: () => authoritativeHead });
+eq(restoredExhausted.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'exhausted parent state restores against authoritative head');
 eq(restoredExhausted.getEffect('sp_parent','op_parent','rail:cap:A').remaining_unadjusted_units, 0n, 'restore keeps exhausted parent at zero');
 materializer = restoredExhausted;
 eq(deriveEffect({ state:'reversed', proof:proofFor(freshAfterExhaustion), expected:freshAfterExhaustion }), false, 'restore cannot recreate consumed parent capacity');
