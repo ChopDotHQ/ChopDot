@@ -7,9 +7,9 @@
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5689122970|candidate-ee0a1474|partial-capture-descendant-cas",
   "candidate_head": "ee0a1474f193244a386e8dd6fb86704864561452",
   "claimed_at": "2026-09-15T22:53:34Z",
-  "renewed_at": "2026-09-15T22:53:34Z",
+  "renewed_at": "2026-09-15T22:59:30Z",
   "completed_at": null,
-  "expires_at": "2026-09-15T23:05:34Z",
+  "expires_at": "2026-09-15T23:11:30Z",
   "waiting_reason": null,
   "note": "Authorized by newest non-superseded Phase C1 Reviewer REVISE #38 5689122970; bounded repair of partial_capture lineage coherence and descendant/CAS accepted-head advancement only."
 }
