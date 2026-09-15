@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "repair-pickup",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5684201633|candidate-184dc84|money-partition-contract-surface",
-  "candidate_head": "f61c5f5a0bef95beedc3db32fb1c9b14dd5d443d",
+  "candidate_head": "7f7f6a4e486976aa806a20848b73e5957c69f8d0",
   "claimed_at": "2026-09-15T16:52:06Z",
-  "renewed_at": "2026-09-15T16:59:41Z",
+  "renewed_at": "2026-09-15T17:04:56Z",
   "completed_at": null,
-  "expires_at": "2026-09-15T17:11:41Z",
-  "waiting_reason": null,
-  "note": "Bounded Phase C1 repair active for Reviewer receipt 5684201633: exact money partition/delegation, non-2-decimal and partition-substitution tests, and README proof-tuple parity only. README parity committed; contract/verifier repair in progress."
+  "expires_at": null,
+  "waiting_reason": "Bounded MoneyV1 partition successor pushed; waiting for exact Phase C1/CI/Coverage/Smoke/E2E on 7f7f6a4e486976aa806a20848b73e5957c69f8d0.",
+  "note": "Reviewer 5684201633 repair applied only to SPEND-01 exact money partition/delegation, deterministic non-two-decimal and partition-substitution evidence, and README tuple parity. Vercel quota policy already satisfied and unchanged."
 }
