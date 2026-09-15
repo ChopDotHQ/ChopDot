@@ -2,7 +2,16 @@
   "registered_journeys": 28,
   "golden_count": 28,
   "last_journey": "28",
-  "status": "pending-exact-head-verification",
+  "status": "validated",
+  "canonical_exact_head_verified": true,
+  "canonical_verification_source_head": "ec67add06888ab99212f3a4a533951195259030b",
+  "canonical_verification_runs": {
+    "prototype_workbench_gate": "34931601970",
+    "ci": "34931601940",
+    "coverage": "34931601934",
+    "smoke": "34931601933",
+    "e2e_cypress": "34931601957"
+  },
   "production_implementation_authorized": false,
   "next_phase": "post-journey-strategy-gate",
   "typography_note": "TYPO-01 deferred"

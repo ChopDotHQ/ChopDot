@@ -1,7 +1,7 @@
 {
   "checkpoint": "2026-09-15-j28-v1-golden-closeout",
   "j28": {
-    "status": "golden-pending-verification",
+    "status": "golden-verified",
     "version": "v1",
     "golden_number": 28,
     "prototype_path": "journeys/28-failure-recovery/v1-candidate.html",
@@ -18,6 +18,16 @@
   },
   "golden_count": 28,
   "remaining_overall": 0,
-  "journey_production_complete_pending_verification": true,
+  "canonical_exact_head_verified": true,
+  "canonical_verification_source_head": "ec67add06888ab99212f3a4a533951195259030b",
+  "canonical_verification_runs": {
+    "prototype_workbench_gate": "34931601970",
+    "ci": "34931601940",
+    "coverage": "34931601934",
+    "smoke": "34931601933",
+    "e2e_cypress": "34931601957"
+  },
+  "journey_production_complete_pending_verification": false,
+  "journey_production_complete": true,
   "typography_note": "TYPO-01 deferred"
 }

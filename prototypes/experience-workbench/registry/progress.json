@@ -16,6 +16,6 @@
   "last_approved_journey": "28",
   "last_approved_version": "v1",
   "last_approved_sha256": "7ef254016da0755860fd0ede62840e7668d40406fdac850aad8c5e0ac4d12dfc",
-  "next_action": "Journey 28 Golden freeze is materialized. Hold production implementation until exact resulting-state verification completes; after validation, the registered UX journey-production phase is complete and the authorized post-journey strategy gate owns the next phase.",
+  "next_action": "Journey 28 Golden #28 is exact-head validated. All 28 registered UX journeys are complete. Production implementation remains held; the authorized post-journey strategy gate owns the next phase.",
   "typography_note": "TYPO-01 deferred"
 }

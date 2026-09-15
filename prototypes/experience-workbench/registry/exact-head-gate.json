@@ -1,8 +1,19 @@
 {
   "checkpoint": "2026-09-15-j28-v1-golden-closeout",
   "purpose": "Materialize standing-approved Journey 28 Things Go Wrong / Recovery V1 as Golden #28 without changing approved HTML, then close the registered UX journey-production phase only after resulting-state verification.",
-  "canonical_exact_head_verified": false,
-  "canonical_exact_head_note": "The final 28-Golden state becomes authoritative only after Prototype workbench, CI, Coverage, Smoke and E2E all pass on the resulting canonical head and exact-head binding is recorded.",
+  "canonical_exact_head_verified": true,
+  "canonical_exact_head_note": "The final 28-Golden resulting state on ec67add06888ab99212f3a4a533951195259030b passed the complete Prototype workbench, CI, Coverage, Smoke and E2E set. This binding records that verified source without changing approved Journey 28 HTML.",
+  "canonical_materialized_head": "ec67add06888ab99212f3a4a533951195259030b",
+  "canonical_verified_transition_source": "ec67add06888ab99212f3a4a533951195259030b",
+  "canonical_verification_source_head": "ec67add06888ab99212f3a4a533951195259030b",
+  "canonical_verification_runs": {
+    "prototype_workbench_gate": "34931601970",
+    "ci": "34931601940",
+    "coverage": "34931601934",
+    "smoke": "34931601933",
+    "e2e_cypress": "34931601957"
+  },
+  "canonical_verification_conclusion": "success",
   "journey_28": {
     "version": "v1",
     "golden_number": 28,
@@ -27,9 +38,10 @@
   "golden_manifest": "registry/goldens.manifest.json",
   "current_journey": "28",
   "all_registered_journeys_golden": true,
-  "journey_production_complete_pending_verification": true,
+  "journey_production_complete_pending_verification": false,
+  "journey_production_complete": true,
   "all_prior_golden_artifacts_preserved": true,
   "typography_note": "TYPO-01 deferred",
-  "gate_requirement": "J28 approved bytes/checksum and all prior Golden locks must remain exact; resulting 28-Golden state must pass Prototype/CI/Coverage/Smoke/E2E and exact-head verification before the UX journey-production phase is declared complete.",
+  "gate_requirement": "Satisfied: exact source ec67add06888ab99212f3a4a533951195259030b preserved all 28 Golden checksums and passed Prototype workbench 34931601970, CI 34931601940, Coverage 34931601934, Smoke 34931601933 and E2E Cypress 34931601957; Journey 28 remains bound to approved HTML SHA-256 7ef254016da0755860fd0ede62840e7668d40406fdac850aad8c5e0ac4d12dfc.",
   "prototype_only": true
 }

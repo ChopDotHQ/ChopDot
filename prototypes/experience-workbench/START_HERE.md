@@ -12,7 +12,7 @@ Read `DESIGN_CONTRACT.md`, `WORKFLOW.md`, `REVIEW_PROTOCOL.md`, `shared/improvem
 
 Journey 28 — Things Go Wrong / Recovery V1 is Golden #28 at exact approved artifact SHA-256 `7ef254016da0755860fd0ede62840e7668d40406fdac850aad8c5e0ac4d12dfc`. Approval derives from the active standing human approval policy after independent GOLDEN-READY review; HTML changes after review are not authorized.
 
-The final 28-Golden state is **pending exact resulting-state verification**. Do not begin production implementation until exact-head verification is true and the authorized post-journey strategy gate completes.
+The final 28-Golden state is **exact-head validated** against canonical verification source `ec67add06888ab99212f3a4a533951195259030b` with Prototype workbench, CI, Coverage, Smoke and E2E all green. The registered UX journey-production phase is complete. Production implementation is still not authorized; the post-journey strategy gate owns the next phase.
 
 ## Preserve
 

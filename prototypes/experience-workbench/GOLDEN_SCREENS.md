@@ -31,6 +31,6 @@
 
 Journey 28 — Things Go Wrong / Recovery V1 is Golden #28. Exact approved HTML SHA-256: `7ef254016da0755860fd0ede62840e7668d40406fdac850aad8c5e0ac4d12dfc`; the approved HTML was not changed during freeze.
 
-All 28 registered UX journeys are now frozen as Goldens pending final exact resulting-state verification. Production implementation remains held until the authorized post-journey strategy gate completes.
+All 28 registered UX journeys are frozen and exact-head validated. The registered UX journey-production phase is complete. Production implementation remains held for the authorized post-journey strategy gate.
 
 TYPO-01 remains deferred.
