@@ -5,11 +5,11 @@
   "journey": "Phase-C1",
   "holder": "repair-pickup",
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5684201633|candidate-184dc84|money-partition-contract-surface",
-  "candidate_head": "184dc84d64180a4e53c6c875c218c4100d0b0020",
+  "candidate_head": "f61c5f5a0bef95beedc3db32fb1c9b14dd5d443d",
   "claimed_at": "2026-09-15T16:52:06Z",
-  "renewed_at": "2026-09-15T16:52:06Z",
+  "renewed_at": "2026-09-15T16:59:41Z",
   "completed_at": null,
-  "expires_at": "2026-09-15T17:04:06Z",
+  "expires_at": "2026-09-15T17:11:41Z",
   "waiting_reason": null,
-  "note": "Bounded Phase C1 repair claimed for Reviewer receipt 5684201633: exact money partition/delegation, non-2-decimal and partition-substitution tests, and README proof-tuple parity only."
+  "note": "Bounded Phase C1 repair active for Reviewer receipt 5684201633: exact money partition/delegation, non-2-decimal and partition-substitution tests, and README proof-tuple parity only. README parity committed; contract/verifier repair in progress."
 }
