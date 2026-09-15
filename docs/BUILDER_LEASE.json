@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "completed",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
-  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5688117121|candidate-ee0a1474|restore-authority-handoff",
+  "holder": "fast-builder-A",
+  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5689122970|candidate-ee0a1474|partial-capture-descendant-cas",
   "candidate_head": "ee0a1474f193244a386e8dd6fb86704864561452",
-  "claimed_at": "2026-09-15T22:16:22Z",
-  "renewed_at": "2026-09-15T22:16:22Z",
-  "completed_at": "2026-09-15T22:23:00Z",
-  "expires_at": null,
+  "claimed_at": "2026-09-15T22:53:34Z",
+  "renewed_at": "2026-09-15T22:53:34Z",
+  "completed_at": null,
+  "expires_at": "2026-09-15T23:05:34Z",
   "waiting_reason": null,
-  "note": "Sealed Phase C1 Builder REVIEW REQUEST #38 5688896193 published for exact successor ee0a1474f193244a386e8dd6fb86704864561452 after all required exact-head checks completed green. Independent Reviewer owns next disposition."
+  "note": "Authorized by newest non-superseded Phase C1 Reviewer REVISE #38 5689122970; bounded repair of partial_capture lineage coherence and descendant/CAS accepted-head advancement only."
 }
