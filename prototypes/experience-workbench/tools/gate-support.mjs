@@ -9,6 +9,9 @@ if(!canonicalJ18History.includes('**Coverage:**')) throw new Error('Canonical J1
 const j27HistoryPath=path.join(root,'journeys/27-account-preferences/source/decision-history.md');
 const canonicalJ27History=fs.readFileSync(j27HistoryPath,'utf8');
 if(!canonicalJ27History.includes('**Coverage:**')||!canonicalJ27History.includes('**Decision:**')) throw new Error('Canonical J27 decision history snapshot must use current structured format');
+const j28HistoryPath=path.join(root,'journeys/28-failure-recovery/source/decision-history.md');
+const canonicalJ28History=fs.readFileSync(j28HistoryPath,'utf8');
+if(!canonicalJ28History.includes('**Coverage:**')||!canonicalJ28History.includes('**Decision:**')) throw new Error('Canonical J28 decision history snapshot must use current structured format');
 
 const authorityOverlayPaths=[
   'registry/progress.json',
@@ -62,6 +65,9 @@ run('bind-j26-qa.mjs');
 fs.mkdirSync(path.dirname(j27HistoryPath),{recursive:true});
 fs.writeFileSync(j27HistoryPath,canonicalJ27History);
 run('apply-j27-golden-j28-current.mjs');
+fs.mkdirSync(path.dirname(j28HistoryPath),{recursive:true});
+fs.writeFileSync(j28HistoryPath,canonicalJ28History);
+run('apply-j28-golden-closeout.mjs');
 run('decision-history.mjs');
 run('build-journey-map.mjs');
 run('build-golden-manifest.mjs');
