@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "waiting_ci",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
-  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|issue38-comment-5678939496|security-delta-5680116087|guest-01-approved|spend-01-rail-neutral-only",
+  "holder": "primary-builder",
+  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|issue38-comment-5678939496|security-blocker-5680342337|guest-01-approved|spend-01-rail-neutral-only",
   "candidate_head": "8a9ca150ed51c83628eddcf644e986b5daeff8cc",
-  "claimed_at": "2026-09-15T12:31:00Z",
-  "renewed_at": "2026-09-15T12:37:30Z",
+  "claimed_at": "2026-09-15T12:45:00Z",
+  "renewed_at": "2026-09-15T12:45:00Z",
   "completed_at": null,
-  "expires_at": null,
-  "waiting_reason": "exact-head GitHub Actions",
-  "note": "Phase C1 security acceptance repairs are pushed at exact candidate head 8a9ca150; writer lane released while exact-head checks validate the repaired package."
+  "expires_at": "2026-09-15T12:57:00Z",
+  "waiting_reason": null,
+  "note": "Phase C1 Builder claimed the exact current candidate to harden stale-head security acceptance blockers before sealed review."
 }
