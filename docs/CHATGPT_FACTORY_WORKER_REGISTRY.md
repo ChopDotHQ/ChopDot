@@ -64,7 +64,7 @@ These roles do not implement candidate UX and do not independently review their 
 | Worker | Schedule | Role |
 |---|---:|---|
 | ChopDot Control Tower | `:58` hourly condition watch | coordination/no-idle observer |
-| ChopDot Factory Observer | hourly condition watch | independent factory measurement/learning |
+| ChopDot Factory Observer | `:44` hourly exact | independent factory measurement/learning + post-J28 private strategy reconciliation |
 
 ### External change watches — 2
 
