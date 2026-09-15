@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "waiting_ci",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
+  "holder": "primary-builder",
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|issue38-comment-5678939496|security-blocker-5680342337|guest-01-approved|spend-01-rail-neutral-only",
   "candidate_head": "c906d00fbcfaaac2706f7a34401ead6ebd9ce8cf",
-  "claimed_at": "2026-09-15T12:45:00Z",
-  "renewed_at": "2026-09-15T12:53:00Z",
+  "claimed_at": "2026-09-15T13:04:00Z",
+  "renewed_at": "2026-09-15T13:04:00Z",
   "completed_at": null,
-  "expires_at": null,
-  "waiting_reason": "exact-head GitHub Actions",
-  "note": "Phase C1 security hardening pushed at exact candidate head c906d00f; writer lane released while exact-head checks validate the repair."
+  "expires_at": "2026-09-15T13:16:00Z",
+  "waiting_reason": null,
+  "note": "Phase C1 exact-head checks are green; primary Builder claimed only to seal the exact review handoff."
 }
