@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "completed",
   "journey": "Phase-C1",
-  "holder": "contract-repair-pickup",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5684201633|candidate-184dc84|money-partition-contract-surface",
   "candidate_head": "73bdd3706630bb14acb59dadc8a58445a244b911",
   "claimed_at": "2026-09-15T17:55:52Z",
   "renewed_at": "2026-09-15T17:55:52Z",
-  "completed_at": null,
-  "expires_at": "2026-09-15T18:07:52Z",
+  "completed_at": "2026-09-15T18:02:00Z",
+  "expires_at": null,
   "waiting_reason": null,
-  "note": "Claimed only to finalize exact green evidence and sealed Phase C1 Builder review handoff for the MoneyV1 repair; no further candidate/product mutation authorized unless a concrete exact-head mechanical failure is found."
+  "note": "Exact green successor handed to independent Reviewer in #38 comment 5685348708. Phase C1 selective review/CI/Coverage/Smoke/E2E all succeeded on 73bdd3706630bb14acb59dadc8a58445a244b911; Reviewer owns the next transition."
 }
