@@ -3,7 +3,8 @@
 // live materialization and restart/restore.
 // Restore is fail-closed: a backup checkpoint proves internal snapshot integrity,
 // while an independently resolved, namespace-bound authoritative head prevents
-// stale-but-valid rollback.
+// stale-but-valid rollback. Higher-generation restore additionally requires an
+// exact prior-head-bound owner-scoped CAS/equivalent proof and descendant lineage.
 
 import { createHash } from 'node:crypto';
 
@@ -61,6 +62,9 @@ const immutableLineageRow = ([key, value]) => ({
     : null
 });
 
+const immutableRowsEqual = (key, left, right) =>
+  JSON.stringify(immutableLineageRow([key, left])) === JSON.stringify(immutableLineageRow([key, right]));
+
 const lineageDigest = effects => {
   const rows = [...effects.entries()]
     .map(immutableLineageRow)
@@ -97,7 +101,8 @@ const validateAuthoritativeHead = (head, expectedNamespace) => {
   if (!canonicalIntegerString(head.generation) || !present(head.lineage_digest)) {
     throw new Error('invalid authoritative restore head');
   }
-  return {
+
+  const validated = {
     head_version: AUTHORITATIVE_HEAD_VERSION,
     domain: AUTHORITATIVE_HEAD_DOMAIN,
     namespace: expectedNamespace,
@@ -105,20 +110,89 @@ const validateAuthoritativeHead = (head, expectedNamespace) => {
     generation: head.generation,
     lineage_digest: head.lineage_digest
   };
+
+  const hasTransitionMetadata =
+    head.prior_generation !== undefined ||
+    head.prior_lineage_digest !== undefined ||
+    head.owner_scoped_cas_token !== undefined;
+  if (hasTransitionMetadata) {
+    if (
+      !canonicalIntegerString(head.prior_generation) ||
+      !present(head.prior_lineage_digest) ||
+      !present(head.owner_scoped_cas_token)
+    ) {
+      throw new Error('invalid authoritative restore head transition metadata');
+    }
+    validated.prior_generation = head.prior_generation;
+    validated.prior_lineage_digest = head.prior_lineage_digest;
+    validated.owner_scoped_cas_token = head.owner_scoped_cas_token;
+  }
+
+  return validated;
 };
 
+const sameAuthoritativeHead = (left, right) =>
+  left?.head_version === right?.head_version &&
+  left?.domain === right?.domain &&
+  left?.namespace === right?.namespace &&
+  left?.snapshot_version === right?.snapshot_version &&
+  left?.generation === right?.generation &&
+  left?.lineage_digest === right?.lineage_digest &&
+  (left?.prior_generation ?? null) === (right?.prior_generation ?? null) &&
+  (left?.prior_lineage_digest ?? null) === (right?.prior_lineage_digest ?? null) &&
+  (left?.owner_scoped_cas_token ?? null) === (right?.owner_scoped_cas_token ?? null);
+
 const compareHeadToFrontier = (candidate, frontier) => {
-  if (!frontier) return;
+  if (!frontier) return 'initial';
   const candidateGeneration = BigInt(candidate.generation);
   const frontierGeneration = BigInt(frontier.generation);
   if (candidateGeneration < frontierGeneration) {
     throw new Error('authoritative restore head is behind accepted frontier');
   }
+  if (candidateGeneration === frontierGeneration) {
+    if (candidate.lineage_digest !== frontier.lineage_digest) {
+      throw new Error('authoritative restore head fork at accepted generation');
+    }
+    return 'same';
+  }
+  return 'advance';
+};
+
+const validateHeadAdvance = (candidate, frontier, verifyAuthoritativeHeadTransition) => {
+  if (!frontier) throw new Error('accepted frontier required for authoritative head advancement');
   if (
-    candidateGeneration === frontierGeneration &&
-    candidate.lineage_digest !== frontier.lineage_digest
+    candidate.prior_generation !== frontier.generation ||
+    candidate.prior_lineage_digest !== frontier.lineage_digest ||
+    !present(candidate.owner_scoped_cas_token)
   ) {
-    throw new Error('authoritative restore head fork at accepted generation');
+    throw new Error('authoritative head advancement is not bound to exact prior frontier');
+  }
+  if (typeof verifyAuthoritativeHeadTransition !== 'function') {
+    throw new Error('owner-scoped authoritative head transition verifier required');
+  }
+  const accepted = verifyAuthoritativeHeadTransition({
+    prior_head: {
+      head_version: frontier.head_version,
+      domain: frontier.domain,
+      namespace: frontier.namespace,
+      snapshot_version: frontier.snapshot_version,
+      generation: frontier.generation,
+      lineage_digest: frontier.lineage_digest
+    },
+    next_head: candidate,
+    owner_scoped_cas_token: candidate.owner_scoped_cas_token
+  });
+  if (accepted !== true) {
+    throw new Error('authoritative head advancement CAS/equivalent proof rejected');
+  }
+};
+
+const assertDescendantLineage = (frontierEffects, candidateEffects) => {
+  for (const [key, priorEffect] of frontierEffects) {
+    const nextEffect = candidateEffects.get(key);
+    if (!nextEffect || !immutableRowsEqual(key, priorEffect, nextEffect)) {
+      throw new Error('higher-generation authoritative head is not a descendant of accepted lineage');
+    }
   }
 };
 
@@ -131,7 +205,11 @@ const exactSetEqualsArray = (expectedSet, serialized) => {
   return true;
 };
 
-export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead, persistenceNamespace } = {}) => {
+export const createCanonicalMaterializationState = ({
+  resolveAuthoritativeHead,
+  verifyAuthoritativeHeadTransition,
+  persistenceNamespace
+} = {}) => {
   const materializedAuthoritativeEffects = new Set();
   const materializedByIntent = new Map();
   const materializedEffects = new Map();
@@ -150,6 +228,7 @@ export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead, 
   const materialize = ({ state, proofAccepted, expected, effectMoney, authorizedMoney }) => {
     if (!['captured', 'partial', 'reversed'].includes(state) || proofAccepted !== true) return false;
     if (!expected?.spend_intent_id || !expected?.operation_id || !expected?.authoritative_effect_ref) return false;
+    if (!['capture', 'partial_capture', 'refund', 'reversal'].includes(expected.effect_kind)) return false;
     if (!effectMoney || !authorizedMoney || !samePartition(effectMoney, authorizedMoney)) return false;
     if (typeof effectMoney.minorUnits !== 'bigint' || effectMoney.minorUnits <= 0n) return false;
 
@@ -157,6 +236,8 @@ export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead, 
     if (materializedAuthoritativeEffects.has(authoritativeKey)) return false;
 
     const isAdjustment = ['refund', 'reversal'].includes(expected.effect_kind);
+    if (!isAdjustment && present(expected.authoritative_parent_effect_ref)) return false;
+
     let parent = null;
     let parentKey = null;
     let parentRemainingAfter = null;
@@ -263,7 +344,10 @@ export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead, 
       throw new Error('independent authoritative restore head resolver required');
     }
     const authoritativeHead = validateAuthoritativeHead(resolveAuthoritativeHead(), persistenceNamespace);
-    compareHeadToFrontier(authoritativeHead, acceptedFrontier);
+    const headRelation = compareHeadToFrontier(authoritativeHead, acceptedFrontier);
+    if (headRelation === 'advance') {
+      validateHeadAdvance(authoritativeHead, acceptedFrontier, verifyAuthoritativeHeadTransition);
+    }
 
     if (!trustedCheckpoint || trustedCheckpoint.snapshot_version !== SNAPSHOT_VERSION) {
       throw new Error('trusted restore checkpoint required');
@@ -336,8 +420,8 @@ export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead, 
         ) {
           throw new Error('invalid restored parent conservation state');
         }
-        if (value.authoritative_parent_effect_ref !== undefined && value.authoritative_parent_effect_ref !== null) {
-          throw new Error('capture cannot restore with parent lineage');
+        if (present(value.authoritative_parent_effect_ref)) {
+          throw new Error('root capture cannot restore with parent lineage');
         }
       } else {
         if (!present(value.authoritative_parent_effect_ref)) {
@@ -363,6 +447,9 @@ export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead, 
       computedDigest !== authoritativeHead.lineage_digest
     ) {
       throw new Error('restored lineage digest mismatch');
+    }
+    if (headRelation === 'advance') {
+      assertDescendantLineage(materializedEffects, nextEffects);
     }
 
     const derivedAuthoritative = new Set();
@@ -463,6 +550,18 @@ export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead, 
       ) {
         throw new Error('restored aggregate intent drift');
       }
+    }
+
+    const commitHead = validateAuthoritativeHead(resolveAuthoritativeHead(), persistenceNamespace);
+    if (!sameAuthoritativeHead(commitHead, authoritativeHead)) {
+      throw new Error('authoritative restore head changed during validation');
+    }
+    const commitRelation = compareHeadToFrontier(commitHead, acceptedFrontier);
+    if (commitRelation !== headRelation) {
+      throw new Error('authoritative restore head relation changed during validation');
+    }
+    if (commitRelation === 'advance') {
+      validateHeadAdvance(commitHead, acceptedFrontier, verifyAuthoritativeHeadTransition);
     }
 
     materializedAuthoritativeEffects.clear();
