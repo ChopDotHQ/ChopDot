@@ -14,6 +14,7 @@ const locks=load('registry/golden-artifact-locks.json');
 const active=load('registry/active-candidate.json');
 const exact=load('registry/exact-head-gate.json');
 const manifest=load('registry/goldens.manifest.json');
+const phase=load('registry/ux-phase-complete.json');
 
 assert.equal(journeys.length,28);
 const golden=journeys.filter(j=>j.status==='golden'&&j.approval==='design-approved');
@@ -43,10 +44,23 @@ if(terminal){
   assert(['golden-pending-verification','golden-verified'].includes(active.stage),'Terminal active state must be Golden verification state');
   assert.equal(active.prototype_sha256,lastGolden.prototype_sha256);
   assert.equal(digest(active.prototype_path),active.prototype_sha256);
+  assert.equal(active.canonical_exact_head_verified,exact.canonical_exact_head_verified,'Terminal active/exact verification flags must agree');
   assert.equal(exact.current_journey,lastGolden.id,'Terminal exact-head gate must bind the final frozen journey');
   assert.equal(exact.golden_count,golden.length);
   assert.equal(exact.golden_lock_count,golden.length);
   assert.equal(exact.all_registered_journeys_golden,true);
+  assert.equal(phase.registered_journeys,journeys.length);
+  assert.equal(phase.golden_count,golden.length);
+  assert.equal(phase.last_journey,lastGolden.id);
+  assert.equal(phase.production_implementation_authorized,false);
+  assert.equal(phase.next_phase,'post-journey-strategy-gate');
+  if(exact.canonical_exact_head_verified===true){
+    assert.equal(active.stage,'golden-verified','Verified terminal authority must mark the final Golden verified');
+    assert.equal(phase.status,'validated','Verified terminal authority must mark the UX journey phase validated');
+  }else{
+    assert.equal(active.stage,'golden-pending-verification','Unverified terminal authority must remain pending verification');
+    assert.equal(phase.status,'pending-exact-head-verification','Unverified terminal UX journey phase must remain pending');
+  }
 }else{
   assert.equal(current.length,1,'Exactly one current journey required');
   assert.equal(progress.current_journey,current[0].id);
