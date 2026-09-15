@@ -5,11 +5,11 @@
   "journey": "Phase-C1",
   "holder": "contract-repair-pickup",
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5687144251|candidate-d724138|per-parent-adjustment-conservation",
-  "candidate_head": "d7241380eb13e9085b75d31abffc3cf303f4367c",
+  "candidate_head": "be88d368c1291934c8c58a20c5216da4de758e21",
   "claimed_at": "2026-09-15T19:56:58Z",
-  "renewed_at": "2026-09-15T19:56:58Z",
+  "renewed_at": "2026-09-15T20:02:00Z",
   "completed_at": null,
-  "expires_at": "2026-09-15T20:08:58Z",
+  "expires_at": "2026-09-15T20:14:00Z",
   "waiting_reason": null,
-  "note": "Claimed from exact Reviewer REVISE receipt 5687144251 for one bounded Phase C1 repair: integrated per-parent adjustment-lineage conservation only."
+  "note": "Active bounded repair from Reviewer REVISE 5687144251. Contract now binds per-parent remaining conservation; integrated verifier/test repair is in progress."
 }
