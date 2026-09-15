@@ -1,11 +1,13 @@
 // Canonical Phase C1 rail-neutral materialization state model.
-// Security revision 7 is enforced across live materialization and restart/restore.
-// Restore is fail-closed: one trusted checkpoint must bind one complete snapshot,
-// and every redundant structure is reconstructed/cross-validated before commit.
+// Security revision 8 is enforced across live materialization and restart/restore.
+// Restore is fail-closed: a backup checkpoint proves internal snapshot integrity,
+// while an independently resolved authoritative head prevents stale-but-valid rollback.
 
 import { createHash } from 'node:crypto';
 
 const SNAPSHOT_VERSION = 1;
+const AUTHORITATIVE_HEAD_VERSION = 1;
+const AUTHORITATIVE_HEAD_DOMAIN = 'SPEND-01:materialization';
 
 const samePartition = (a, b) =>
   a?.currency === b?.currency && a?.exponent === b?.exponent;
@@ -70,6 +72,49 @@ const checkpointFor = (effects, generation) => ({
   lineage_digest: lineageDigest(effects)
 });
 
+const headCandidateFor = (effects, generation) => ({
+  head_version: AUTHORITATIVE_HEAD_VERSION,
+  domain: AUTHORITATIVE_HEAD_DOMAIN,
+  ...checkpointFor(effects, generation)
+});
+
+const validateAuthoritativeHead = head => {
+  if (!head || head.head_version !== AUTHORITATIVE_HEAD_VERSION) {
+    throw new Error('authoritative restore head required');
+  }
+  if (head.domain !== AUTHORITATIVE_HEAD_DOMAIN) {
+    throw new Error('authoritative restore head domain mismatch');
+  }
+  if (head.snapshot_version !== SNAPSHOT_VERSION) {
+    throw new Error('authoritative restore head snapshot version mismatch');
+  }
+  if (!canonicalIntegerString(head.generation) || !present(head.lineage_digest)) {
+    throw new Error('invalid authoritative restore head');
+  }
+  return {
+    head_version: AUTHORITATIVE_HEAD_VERSION,
+    domain: AUTHORITATIVE_HEAD_DOMAIN,
+    snapshot_version: SNAPSHOT_VERSION,
+    generation: head.generation,
+    lineage_digest: head.lineage_digest
+  };
+};
+
+const compareHeadToFrontier = (candidate, frontier) => {
+  if (!frontier) return;
+  const candidateGeneration = BigInt(candidate.generation);
+  const frontierGeneration = BigInt(frontier.generation);
+  if (candidateGeneration < frontierGeneration) {
+    throw new Error('authoritative restore head is behind accepted frontier');
+  }
+  if (
+    candidateGeneration === frontierGeneration &&
+    candidate.lineage_digest !== frontier.lineage_digest
+  ) {
+    throw new Error('authoritative restore head fork at accepted generation');
+  }
+};
+
 const exactSetEqualsArray = (expectedSet, serialized) => {
   if (!Array.isArray(serialized) || serialized.length !== expectedSet.size) return false;
   const serializedSet = new Set(serialized);
@@ -79,11 +124,17 @@ const exactSetEqualsArray = (expectedSet, serialized) => {
   return true;
 };
 
-export const createCanonicalMaterializationState = () => {
+export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead } = {}) => {
   const materializedAuthoritativeEffects = new Set();
   const materializedByIntent = new Map();
   const materializedEffects = new Map();
   let generation = 0n;
+  let acceptedFrontier = null;
+
+  const currentHeadCandidate = () => headCandidateFor(materializedEffects, generation);
+  const advanceLocalFrontier = () => {
+    acceptedFrontier = currentHeadCandidate();
+  };
 
   const materialize = ({ state, proofAccepted, expected, effectMoney, authorizedMoney }) => {
     if (!['captured', 'partial', 'reversed'].includes(state) || proofAccepted !== true) return false;
@@ -158,6 +209,9 @@ export const createCanonicalMaterializationState = () => {
       remaining_unadjusted_units: effectMoney.minorUnits
     });
     generation += 1n;
+    // Live effects advance the in-process monotonic floor immediately. A stale
+    // externally resolved head can never authorize rolling this process backward.
+    advanceLocalFrontier();
     return true;
   };
 
@@ -179,6 +233,11 @@ export const createCanonicalMaterializationState = () => {
 
   const checkpoint = () => checkpointFor(materializedEffects, generation);
 
+  // This is a deterministic candidate representation only. It becomes authority
+  // only after an independent runtime/store accepts it. Backups must not treat a
+  // self-computed head candidate as proof that they are the latest accepted head.
+  const headCandidate = () => currentHeadCandidate();
+
   const snapshot = () => ({
     ...checkpoint(),
     authoritativeEffects: [...materializedAuthoritativeEffects],
@@ -192,8 +251,18 @@ export const createCanonicalMaterializationState = () => {
   });
 
   const restore = (persisted, trustedCheckpoint) => {
-    // A restart must be anchored to a separately trusted locator/checkpoint. The
-    // snapshot may carry the same values for diagnostics, but cannot self-authorize.
+    // The authoritative head is deliberately not accepted as a restore argument:
+    // startup/in-process recovery must resolve it through an independently owned
+    // adapter/runtime so a backup cannot self-supply its own authority.
+    if (typeof resolveAuthoritativeHead !== 'function') {
+      throw new Error('independent authoritative restore head resolver required');
+    }
+    const authoritativeHead = validateAuthoritativeHead(resolveAuthoritativeHead());
+    compareHeadToFrontier(authoritativeHead, acceptedFrontier);
+
+    // A restart must also be anchored to a separately persisted backup checkpoint.
+    // Snapshot + checkpoint establish internal integrity; they do not establish
+    // freshness or authority, which comes only from authoritativeHead above.
     if (!trustedCheckpoint || trustedCheckpoint.snapshot_version !== SNAPSHOT_VERSION) {
       throw new Error('trusted restore checkpoint required');
     }
@@ -211,6 +280,12 @@ export const createCanonicalMaterializationState = () => {
       persisted.lineage_digest !== trustedCheckpoint.lineage_digest
     ) {
       throw new Error('restored snapshot does not match trusted checkpoint');
+    }
+    if (
+      persisted.generation !== authoritativeHead.generation ||
+      persisted.lineage_digest !== authoritativeHead.lineage_digest
+    ) {
+      throw new Error('restored snapshot is not the current authoritative head');
     }
 
     const nextEffects = new Map();
@@ -280,7 +355,11 @@ export const createCanonicalMaterializationState = () => {
     }
 
     const computedDigest = lineageDigest(nextEffects);
-    if (computedDigest !== persisted.lineage_digest || computedDigest !== trustedCheckpoint.lineage_digest) {
+    if (
+      computedDigest !== persisted.lineage_digest ||
+      computedDigest !== trustedCheckpoint.lineage_digest ||
+      computedDigest !== authoritativeHead.lineage_digest
+    ) {
       throw new Error('restored lineage digest mismatch');
     }
 
@@ -300,7 +379,7 @@ export const createCanonicalMaterializationState = () => {
       derivedIntents.set(spendIntentId, { ...current, minorUnits: current.minorUnits + delta });
     };
 
-    for (const [key, effect] of nextEffects) {
+    for (const [, effect] of nextEffects) {
       const authoritativeKey = dedupeKey(effect.spend_intent_id, effect.authoritative_effect_ref);
       if (derivedAuthoritative.has(authoritativeKey)) {
         throw new Error('restored authoritative effect replay/collision');
@@ -386,8 +465,9 @@ export const createCanonicalMaterializationState = () => {
       }
     }
 
-    // Atomic commit only after checkpoint, lineage, dedupe, aggregate and parent
-    // conservation all agree. Any throw above leaves the current state untouched.
+    // Atomic commit only after authoritative freshness, checkpoint, lineage,
+    // dedupe, aggregate and parent conservation all agree. Any throw above leaves
+    // the current state and accepted frontier untouched.
     materializedAuthoritativeEffects.clear();
     for (const value of derivedAuthoritative) materializedAuthoritativeEffects.add(value);
     materializedByIntent.clear();
@@ -395,8 +475,9 @@ export const createCanonicalMaterializationState = () => {
     materializedEffects.clear();
     for (const [key, value] of nextEffects) materializedEffects.set(key, value);
     generation = persistedGeneration;
+    acceptedFrontier = authoritativeHead;
     return true;
   };
 
-  return { materialize, getIntentMoney, getEffect, checkpoint, snapshot, restore };
+  return { materialize, getIntentMoney, getEffect, checkpoint, headCandidate, snapshot, restore };
 };
