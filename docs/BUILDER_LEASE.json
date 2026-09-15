@@ -1,13 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "completed",
-  "journey": "28",
-  "holder": null,
-  "fingerprint": "j28-revise-5673747319-f8563051bd7442224a0a3d3bb3634a63b7d3419e",
-  "candidate_head": "8a8c9f4513b7d94b47a683a00d3a3881b94bdb16",
-  "claimed_at": "2026-09-15T03:49:48Z",
-  "renewed_at": "2026-09-15T03:49:48Z",
-  "completed_at": "2026-09-15T03:50:43Z",
-  "expires_at": null
+  "status": "claimed",
+  "journey": "Phase-C1",
+  "holder": "primary-builder",
+  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|issue38-comment-5678939496|guest-01-approved|spend-01-rail-neutral-only|no-successor",
+  "candidate_head": null,
+  "claimed_at": "2026-09-15T11:24:03Z",
+  "renewed_at": "2026-09-15T11:24:03Z",
+  "completed_at": null,
+  "expires_at": "2026-09-15T11:36:03Z",
+  "waiting_reason": null,
+  "note": "Phase C1 selective product-contract build; active writes only."
 }
