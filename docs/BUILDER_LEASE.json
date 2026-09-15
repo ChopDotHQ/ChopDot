@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "primary-builder",
-  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5687144251|successor-bc9b6c3|per-parent-adjustment-conservation",
-  "candidate_head": "bc9b6c3827c7b1a623c624faba978f603be77de1",
+  "holder": null,
+  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5687144251|successor-606c530|per-parent-adjustment-conservation",
+  "candidate_head": "606c5303e89312810e3c357aef74e3c3c59ef23c",
   "claimed_at": "2026-09-15T20:14:00Z",
-  "renewed_at": "2026-09-15T20:14:00Z",
+  "renewed_at": "2026-09-15T20:17:30Z",
   "completed_at": null,
-  "expires_at": "2026-09-15T20:26:00Z",
-  "waiting_reason": null,
-  "note": "Mechanical repair only: exact Phase C1 review run 35017209010 failed in cumulative operation conservation after security_revision advanced to 7; preserve bounded per-parent repair and all cleared scope."
+  "expires_at": null,
+  "waiting_reason": "Exact successor 606c5303e89312810e3c357aef74e3c3c59ef23c pushed after mechanical alignment of the operation-conservation harness to SPEND-01 security_revision 7. Required Phase C1/CI/Coverage/Smoke/E2E workflows must complete before any sealed successor REVIEW REQUEST.",
+  "note": "Bounded Reviewer repair remains integrated per-parent adjustment ownership/remaining conservation plus restart/restore/order negatives. Mechanical delta changes only the stale security_revision assertion/message in verify-operation-conservation.mjs; root vercel.json deploymentEnabled suppression remains unchanged."
 }
