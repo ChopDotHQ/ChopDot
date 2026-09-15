@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "completed",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
-  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|issue38-comment-5678939496|security-blocker-5680342337|guest-01-approved|spend-01-rail-neutral-only",
+  "holder": "contract-repair-pickup",
+  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5681203912|candidate-c906d00f|spend-proof-finality-readback",
   "candidate_head": "c906d00fbcfaaac2706f7a34401ead6ebd9ce8cf",
-  "claimed_at": "2026-09-15T13:04:00Z",
-  "renewed_at": "2026-09-15T13:04:00Z",
-  "completed_at": "2026-09-15T13:05:00Z",
-  "expires_at": null,
+  "claimed_at": "2026-09-15T13:52:10Z",
+  "renewed_at": "2026-09-15T13:52:10Z",
+  "completed_at": null,
+  "expires_at": "2026-09-15T14:04:10Z",
   "waiting_reason": null,
-  "note": "Phase C1 sealed review request published in issue #38 comment 5680644051 for exact candidate c906d00f and green exact-head evidence. Independent Reviewer owns next stage."
+  "note": "Repair pickup for Phase C1 Reviewer REVISE #38 comment 5681203912; scope limited to SPEND-01 authoritative terminal proof/readback acceptance plus the pre-authorized Vercel quota policy on this natural successor write."
 }
