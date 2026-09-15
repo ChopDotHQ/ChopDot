@@ -11,7 +11,7 @@ const ok = (value, message) => { checks += 1; assert.ok(value, message); };
 const eq = (actual, expected, message) => { checks += 1; assert.deepEqual(actual, expected, message); };
 
 // Preserve the full pre-existing operation-conservation contract surface.
-eq(spend.security_revision, 6, 'money-partition security revision is active');
+eq(spend.security_revision, 7, 'integrated parent-conservation security revision is active');
 eq(spend.operation_value.immutable_within_authorization_version, true, 'authorized value is immutable within an authorization version');
 eq(spend.operation_value.cumulative_capture_or_partial_may_exceed_authorized_amount, false, 'capture total cannot exceed authorized amount');
 eq(spend.operation_value.bound_change_requires_explicit_versioned_authorized_adjustment, true, 'bound change requires explicit versioned authorization');
