@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "waiting_ci",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
-  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5681203912|candidate-c906d00f|spend-proof-finality-readback",
+  "holder": "contract-repair-pickup",
+  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5681203912|successor-b2ffc1af|handoff",
   "candidate_head": "b2ffc1af38286bc8d7bc0edbfdb4113e9a9eb311",
-  "claimed_at": "2026-09-15T13:52:10Z",
-  "renewed_at": "2026-09-15T13:52:10Z",
+  "claimed_at": "2026-09-15T14:06:07Z",
+  "renewed_at": "2026-09-15T14:06:07Z",
   "completed_at": null,
-  "expires_at": null,
-  "waiting_reason": "Exact successor pushed; awaiting Phase C1 selective review plus CI/Coverage/Smoke/E2E on b2ffc1af.",
-  "note": "Reviewer REVISE 5681203912 repaired: SpendIntent materialization now requires an adapter-authoritative verifier, adapter-declared terminal finality, verified readback binding, and rejects pending/unknown finality, arbitrary readback refs, callback-only completion, stale/substituted readback, and unknown adapters. Same natural successor also adds the approved Vercel deploymentEnabled policy."
+  "expires_at": "2026-09-15T14:18:07Z",
+  "waiting_reason": null,
+  "note": "All exact successor checks are green; claiming only to seal the Phase C1 Builder review handoff for b2ffc1af after Reviewer REVISE 5681203912."
 }
