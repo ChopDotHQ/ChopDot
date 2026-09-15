@@ -148,15 +148,18 @@ for (const state of ['draft','reviewed','authorized','pending','captured','parti
 eq(spend.materialization.mode, 'exactly_once', 'canonical materialization is exactly-once');
 eq(spend.materialization.authorized_is_spent, false, 'authorized is not spent');
 eq(spend.materialization.unknown_may_materialize_new_spend, false, 'unknown cannot materialize spend');
+eq(spend.materialization.authoritative_effect_ref_required_before_dedupe, true, 'materialization requires authoritative external effect identity');
 eq(spend.proof.required_for_financial_materialization, true, 'proof required for financial materialization');
 eq(spend.proof.adapter_authoritative_verifier_required, true, 'adapter authoritative verifier is required');
 eq(spend.proof.accepted_terminal_finality_must_be_declared_by_adapter, true, 'adapter declares terminal finality semantics');
 eq(spend.proof.arbitrary_nonempty_readback_ref_is_sufficient, false, 'arbitrary readback refs are insufficient');
 eq(spend.proof.callback_completed_is_authoritative_proof, false, 'callback Completed is observation only');
+eq(spend.proof.exact_binding_required_fields_must_be_present_non_null_non_empty, true, 'exact proof bindings must be present and non-empty');
+eq(spend.policy.proof_must_bind_authorization_version, true, 'effect proof binds applicable authorization version');
 for (const state of ['pending','unknown','observed','submitted','accepted']) {
   ok(spend.proof.explicit_nonterminal_finality_classes.includes(state), `nonterminal finality ${state} fails closed`);
 }
-for (const field of ['spend_intent_id','operation_id','effect_id','adapter_id','rail_identity','amount','asset','target_digest','policy_snapshot_digest','approval_snapshot_digest','finality','readback_ref']) {
+for (const field of ['spend_intent_id','operation_id','effect_id','authoritative_effect_ref','adapter_id','rail_identity','amount','asset','authorization_version','target_digest','policy_snapshot_digest','approval_snapshot_digest','finality','readback_ref']) {
   ok(spend.proof.shape.includes(field), `proof field ${field}`);
   ok(spend.proof.exact_binding_required.includes(field) || ['finality','readback_ref'].includes(field), `proof binding ${field}`);
 }
@@ -172,22 +175,38 @@ eq(spend.payment_intent_boundary.separate_economic_domain, true, 'SpendIntent an
 eq(spend.payment_intent_boundary.payment_intent_may_create_or_recreate_merchant_spend, false, 'PaymentIntent cannot create merchant spend');
 eq(spend.research_boundary.selected_modes.length, 0, 'selected execution modes stay empty');
 
+const present = value =>
+  value !== null &&
+  value !== undefined &&
+  (typeof value !== 'string' || value.trim().length > 0);
+
 const expectedSpend = {
-  spend_intent_id:'sp_1', operation_id:'op_1', effect_id:'cap_1', adapter_id:'adapter_fixture',
-  rail_identity:'fixture_rail', amount:'42.50', asset:'USD', target_digest:'target:merchant-7',
-  policy_snapshot_digest:'policy:p9', approval_snapshot_digest:'approval:a3'
+  spend_intent_id:'sp_1', operation_id:'op_1', effect_id:'cap_1',
+  authoritative_effect_ref:'rail:tx:001', adapter_id:'adapter_fixture',
+  rail_identity:'fixture_rail', amount:'42.50', asset:'USD', authorization_version:1,
+  target_digest:'target:merchant-7', policy_snapshot_digest:'policy:p9', approval_snapshot_digest:'approval:a3'
 };
-const verifiedReadbackRef = 'verified:adapter_fixture:op_1:cap_1';
-const validProof = {...expectedSpend, source:'authoritative_readback', proof_id:'proof_1', observed_at:'2026-09-15T12:00:00Z', finality:'final', readback_ref:verifiedReadbackRef};
+const verifiedReadbackRef = 'verified:adapter_fixture:op_1:rail:tx:001:v1';
+const validProof = {
+  ...expectedSpend,
+  source:'authoritative_readback',
+  proof_id:'proof_1',
+  observed_at:'2026-09-15T12:00:00Z',
+  finality:'final',
+  readback_ref:verifiedReadbackRef
+};
 const adapterProofPolicies = {
   adapter_fixture: {
     authoritative_sources: new Set(['authoritative_readback']),
     terminal_finality: new Set(['final']),
-    verify_readback: (proof, expected) => proof.readback_ref === `verified:${expected.adapter_id}:${expected.operation_id}:${expected.effect_id}`
+    verify_readback: (proof, expected) =>
+      proof.readback_ref === `verified:${expected.adapter_id}:${expected.operation_id}:${expected.authoritative_effect_ref}:v${expected.authorization_version}`
   }
 };
 const proofMatches = (proof, expected) => {
-  if (!spend.proof.exact_binding_required.every(field => proof[field] === expected[field])) return false;
+  for (const field of spend.proof.exact_binding_required) {
+    if (!present(proof[field]) || !present(expected[field]) || proof[field] !== expected[field]) return false;
+  }
   const verifier = adapterProofPolicies[proof.adapter_id];
   if (!verifier) return false;
   if (!verifier.authoritative_sources.has(proof.source)) return false;
@@ -197,16 +216,20 @@ const proofMatches = (proof, expected) => {
   return true;
 };
 eq(proofMatches(validProof, expectedSpend), true, 'verifier-confirmed terminal proof matches exact SpendIntent effect');
+eq(proofMatches({...validProof, authoritative_effect_ref:''}, expectedSpend), false, 'missing authoritative external-effect identity fails');
+eq(proofMatches({...validProof, authoritative_effect_ref:'rail:tx:other'}, expectedSpend), false, 'mismatched authoritative external-effect identity fails');
+eq(proofMatches({...validProof, authorization_version:2}, expectedSpend), false, 'wrong authorization version fails exact proof binding');
 eq(proofMatches({...validProof, finality:'pending'}, expectedSpend), false, 'pending finality fails even with verified readback ref');
 eq(proofMatches({...validProof, finality:'unknown'}, expectedSpend), false, 'unknown finality fails even with verified readback ref');
 eq(proofMatches({...validProof, readback_ref:'arbitrary-nonempty-ref'}, expectedSpend), false, 'arbitrary readback ref fails');
-eq(proofMatches({...validProof, readback_ref:'verified:adapter_fixture:op_stale:cap_1'}, expectedSpend), false, 'stale/substituted readback ref fails');
+eq(proofMatches({...validProof, readback_ref:'verified:adapter_fixture:op_stale:rail:tx:001:v1'}, expectedSpend), false, 'stale/substituted readback ref fails');
 eq(proofMatches({...validProof, source:'host_callback', proof_id:'callback-completed'}, expectedSpend), false, 'callback Completed observation cannot materialize');
 eq(proofMatches({...validProof, adapter_id:'unknown_adapter'}, {...expectedSpend, adapter_id:'unknown_adapter'}), false, 'unregistered adapter verifier fails closed');
 for (const [field, value] of [
-  ['spend_intent_id','sp_2'],['operation_id','op_2'],['effect_id','cap_2'],['adapter_id','other_adapter'],
-  ['rail_identity','other_rail'],['target_digest','target:other'],['policy_snapshot_digest','policy:p10'],
-  ['approval_snapshot_digest','approval:a4'],['amount','42.51'],['asset','EUR']
+  ['spend_intent_id','sp_2'],['operation_id','op_2'],['effect_id','cap_2'],['authoritative_effect_ref','rail:tx:002'],
+  ['adapter_id','other_adapter'],['rail_identity','other_rail'],['target_digest','target:other'],
+  ['policy_snapshot_digest','policy:p10'],['approval_snapshot_digest','approval:a4'],['amount','42.51'],['asset','EUR'],
+  ['authorization_version',2]
 ]) {
   eq(proofMatches({...validProof, [field]:value}, expectedSpend), false, `proof substitution fails on ${field}`);
 }
@@ -224,16 +247,32 @@ eq(mayStartFreshOperation({state:'failed', authoritative_no_effect_proof:true}),
 eq(mayStartFreshOperation({state:'failed', authoritative_no_effect_proof:false}), false, 'failed label alone cannot permit fresh op');
 eq(mayStartFreshOperation({state:'unknown', authoritative_no_effect_proof:false}), false, 'unknown cannot permit fresh op');
 
-const derived = new Set();
-const deriveEffect = ({ state, proof, expected }) => {
+// End-to-end proof -> operation conservation -> canonical materialization uses external effect identity, not internal effect ID.
+const materializedAuthoritativeEffects = new Set();
+const materializedByIntent = new Map();
+const deriveEffect = ({ state, proof, expected, authorizedAmountUnits = 10000 }) => {
   if (!['captured','partial'].includes(state) || !proofMatches(proof, expected)) return false;
-  const key = `${expected.spend_intent_id}:${expected.effect_id}`;
-  if (derived.has(key)) return false;
-  derived.add(key);
+  const key = `${expected.spend_intent_id}:${expected.authoritative_effect_ref}`;
+  if (materializedAuthoritativeEffects.has(key)) return false;
+
+  const amountUnits = Math.round(Number(expected.amount) * 100);
+  const currentUnits = materializedByIntent.get(expected.spend_intent_id) ?? 0;
+  if (!Number.isSafeInteger(amountUnits) || amountUnits <= 0 || currentUnits + amountUnits > authorizedAmountUnits) return false;
+
+  materializedAuthoritativeEffects.add(key);
+  materializedByIntent.set(expected.spend_intent_id, currentUnits + amountUnits);
   return true;
 };
 eq(deriveEffect({state:'captured', proof:validProof, expected:expectedSpend}), true, 'first exact proven capture derives canonical state');
-eq(deriveEffect({state:'captured', proof:validProof, expected:expectedSpend}), false, 'duplicate proof cannot derive twice');
+eq(deriveEffect({state:'captured', proof:validProof, expected:expectedSpend}), false, 'duplicate authoritative proof cannot derive twice');
+const freshInternalSameExternalExpected = {...expectedSpend, effect_id:'cap_2'};
+const freshInternalSameExternalProof = {
+  ...validProof,
+  effect_id:'cap_2',
+  readback_ref:'verified:adapter_fixture:op_1:rail:tx:001:v1'
+};
+eq(proofMatches(freshInternalSameExternalProof, freshInternalSameExternalExpected), true, 'fresh internal ID may still prove the same external effect tuple');
+eq(deriveEffect({state:'captured', proof:freshInternalSameExternalProof, expected:freshInternalSameExternalExpected}), false, 'same authoritative external effect cannot materialize under fresh internal effect_id');
 eq(deriveEffect({state:'captured', proof:{...validProof, operation_id:'op_2'}, expected:expectedSpend}), false, 'substituted proof cannot materialize');
 eq(deriveEffect({state:'captured', proof:{...validProof, finality:'pending'}, expected:expectedSpend}), false, 'pending proof cannot materialize');
 eq(deriveEffect({state:'captured', proof:{...validProof, readback_ref:'arbitrary-nonempty-ref'}, expected:expectedSpend}), false, 'unverified readback cannot materialize');
