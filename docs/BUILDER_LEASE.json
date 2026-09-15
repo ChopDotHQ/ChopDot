@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "completed",
   "journey": "Phase-C1",
-  "holder": "primary-builder",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5688117121|candidate-ee0a1474|restore-authority-handoff",
   "candidate_head": "ee0a1474f193244a386e8dd6fb86704864561452",
   "claimed_at": "2026-09-15T22:16:22Z",
   "renewed_at": "2026-09-15T22:16:22Z",
-  "completed_at": null,
-  "expires_at": "2026-09-15T22:28:22Z",
+  "completed_at": "2026-09-15T22:20:00Z",
+  "expires_at": null,
   "waiting_reason": null,
-  "note": "Handoff-only continuation of formal Reviewer REVISE #38 5688117121. Exact successor ee0a1474 has completed Phase C1/CI/Coverage/Smoke/E2E green; claim serializes final revalidation and one sealed review request only."
+  "note": "Sealed Phase C1 Builder REVIEW REQUEST #38 5688896193 published for exact successor ee0a1474f193244a386e8dd6fb86704864561452 after all required exact-head checks completed green. Independent Reviewer owns next disposition."
 }
