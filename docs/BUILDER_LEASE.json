@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "completed",
   "journey": "Phase-C1",
-  "holder": "contract-repair-pickup",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5681203912|successor-b2ffc1af|handoff",
   "candidate_head": "b2ffc1af38286bc8d7bc0edbfdb4113e9a9eb311",
   "claimed_at": "2026-09-15T14:06:07Z",
   "renewed_at": "2026-09-15T14:06:07Z",
-  "completed_at": null,
-  "expires_at": "2026-09-15T14:18:07Z",
+  "completed_at": "2026-09-15T14:07:27Z",
+  "expires_at": null,
   "waiting_reason": null,
-  "note": "All exact successor checks are green; claiming only to seal the Phase C1 Builder review handoff for b2ffc1af after Reviewer REVISE 5681203912."
+  "note": "Sealed Phase C1 Builder REVIEW REQUEST posted as issue #38 comment 5681563527 for exact successor b2ffc1af after all exact-head evidence completed green. Reviewer owns next stage."
 }
