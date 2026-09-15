@@ -149,19 +149,37 @@ eq(spend.materialization.mode, 'exactly_once', 'canonical materialization is exa
 eq(spend.materialization.authorized_is_spent, false, 'authorized is not spent');
 eq(spend.materialization.unknown_may_materialize_new_spend, false, 'unknown cannot materialize spend');
 eq(spend.materialization.authoritative_effect_ref_required_before_dedupe, true, 'materialization requires authoritative external effect identity');
+eq(spend.materialization.requires_canonical_money_partition, true, 'materialization requires canonical MoneyV1');
+eq(spend.materialization.raw_display_amount_may_not_materialize_financial_truth, true, 'display amount cannot create financial truth');
+eq(spend.materialization.economic_effect_kind_from_authoritative_proof_only, true, 'effect kind comes from authoritative proof');
+eq(spend.materialization.adjustment_parentage_from_authoritative_proof_only, true, 'adjustment parentage comes from authoritative proof');
 eq(spend.proof.required_for_financial_materialization, true, 'proof required for financial materialization');
 eq(spend.proof.adapter_authoritative_verifier_required, true, 'adapter authoritative verifier is required');
 eq(spend.proof.accepted_terminal_finality_must_be_declared_by_adapter, true, 'adapter declares terminal finality semantics');
 eq(spend.proof.arbitrary_nonempty_readback_ref_is_sufficient, false, 'arbitrary readback refs are insufficient');
 eq(spend.proof.callback_completed_is_authoritative_proof, false, 'callback Completed is observation only');
 eq(spend.proof.exact_binding_required_fields_must_be_present_non_null_non_empty, true, 'exact proof bindings must be present and non-empty');
+eq(spend.proof.economic_effect_kind_must_be_authoritatively_bound, true, 'economic effect kind is proof-bound');
+eq(spend.proof.caller_supplied_effect_kind_may_override_proof, false, 'caller cannot override effect kind');
+eq(spend.proof.adjustment_parent_binding.must_be_verified_by_adapter_authoritative_source, true, 'adjustment parent is verifier-bound');
+eq(spend.proof.adjustment_parent_binding.caller_supplied_parent_may_override_proof, false, 'caller cannot override adjustment parent');
 eq(spend.policy.proof_must_bind_authorization_version, true, 'effect proof binds applicable authorization version');
+eq(spend.policy.proof_must_bind_economic_effect_kind, true, 'policy requires proof-bound effect kind');
+eq(spend.policy.proof_must_bind_adjustment_parentage, true, 'policy requires proof-bound adjustment parentage');
 for (const state of ['pending','unknown','observed','submitted','accepted']) {
   ok(spend.proof.explicit_nonterminal_finality_classes.includes(state), `nonterminal finality ${state} fails closed`);
 }
-for (const field of ['spend_intent_id','operation_id','effect_id','authoritative_effect_ref','adapter_id','rail_identity','amount','asset','authorization_version','target_digest','policy_snapshot_digest','approval_snapshot_digest','finality','readback_ref']) {
+for (const field of [
+  'spend_intent_id','operation_id','effect_id','authoritative_effect_ref','effect_kind',
+  'adapter_id','rail_identity','amount','asset','money_minor_units','money_currency','money_exponent',
+  'authorization_version','target_digest','policy_snapshot_digest','approval_snapshot_digest','finality','readback_ref'
+]) {
   ok(spend.proof.shape.includes(field), `proof field ${field}`);
   ok(spend.proof.exact_binding_required.includes(field) || ['finality','readback_ref'].includes(field), `proof binding ${field}`);
+}
+ok(spend.proof.shape.includes('authoritative_parent_effect_ref'), 'proof shape carries authoritative adjustment parent');
+for (const field of ['money_minor_units','money_currency','money_exponent']) {
+  ok(spend.proof.canonical_money_exact_binding_required.includes(field), `canonical money proof binding ${field}`);
 }
 eq(spend.proof.proof_reuse_across_another_intent_operation_effect_or_target_allowed, false, 'proof substitution is forbidden');
 eq(spend.failure_semantics.failed_requires_authoritative_no_effect_proof, true, 'failed requires no-effect proof');
@@ -180,33 +198,59 @@ const present = value =>
   value !== undefined &&
   (typeof value !== 'string' || value.trim().length > 0);
 
+const canonicalIntegerString = value => typeof value === 'string' && /^(0|[1-9]\d*)$/.test(value);
+const canonicalExponent = value => Number.isInteger(value) && value >= 0 && value <= 18;
+const moneyFrom = obj => {
+  if (!canonicalIntegerString(obj.money_minor_units)) return null;
+  if (!present(obj.money_currency) || !canonicalExponent(obj.money_exponent)) return null;
+  return {
+    minorUnits: BigInt(obj.money_minor_units),
+    currency: obj.money_currency,
+    exponent: obj.money_exponent
+  };
+};
+const samePartition = (a, b) => a.currency === b.currency && a.exponent === b.exponent;
+const parentRequired = kind => spend.proof.adjustment_parent_binding.required_for_kinds.includes(kind);
+
 const expectedSpend = {
   spend_intent_id:'sp_1', operation_id:'op_1', effect_id:'cap_1',
-  authoritative_effect_ref:'rail:tx:001', adapter_id:'adapter_fixture',
-  rail_identity:'fixture_rail', amount:'42.50', asset:'USD', authorization_version:1,
+  authoritative_effect_ref:'rail:tx:001', effect_kind:'capture', authoritative_parent_effect_ref:null,
+  adapter_id:'adapter_fixture', rail_identity:'fixture_rail',
+  amount:'42.50', asset:'USD',
+  money_minor_units:'4250', money_currency:'USD', money_exponent:2,
+  authorization_version:1,
   target_digest:'target:merchant-7', policy_snapshot_digest:'policy:p9', approval_snapshot_digest:'approval:a3'
 };
-const verifiedReadbackRef = 'verified:adapter_fixture:op_1:rail:tx:001:v1';
+const readbackFor = expected =>
+  `verified:${expected.adapter_id}:${expected.operation_id}:${expected.authoritative_effect_ref}:v${expected.authorization_version}:${expected.effect_kind}:${expected.authoritative_parent_effect_ref ?? 'root'}:${expected.money_minor_units}:${expected.money_currency}:e${expected.money_exponent}`;
 const validProof = {
   ...expectedSpend,
   source:'authoritative_readback',
   proof_id:'proof_1',
   observed_at:'2026-09-15T12:00:00Z',
   finality:'final',
-  readback_ref:verifiedReadbackRef
+  readback_ref:readbackFor(expectedSpend)
 };
 const adapterProofPolicies = {
   adapter_fixture: {
     authoritative_sources: new Set(['authoritative_readback']),
     terminal_finality: new Set(['final']),
-    verify_readback: (proof, expected) =>
-      proof.readback_ref === `verified:${expected.adapter_id}:${expected.operation_id}:${expected.authoritative_effect_ref}:v${expected.authorization_version}`
+    verify_readback: (proof, expected) => proof.readback_ref === readbackFor(expected)
   }
 };
 const proofMatches = (proof, expected) => {
   for (const field of spend.proof.exact_binding_required) {
     if (!present(proof[field]) || !present(expected[field]) || proof[field] !== expected[field]) return false;
   }
+  if (parentRequired(expected.effect_kind)) {
+    const parentField = spend.proof.adjustment_parent_binding.field;
+    if (!present(proof[parentField]) || !present(expected[parentField]) || proof[parentField] !== expected[parentField]) return false;
+  } else if (proof.authoritative_parent_effect_ref !== null && proof.authoritative_parent_effect_ref !== undefined) {
+    return false;
+  }
+  const proofMoney = moneyFrom(proof);
+  const expectedMoney = moneyFrom(expected);
+  if (!proofMoney || !expectedMoney || !samePartition(proofMoney, expectedMoney) || proofMoney.minorUnits !== expectedMoney.minorUnits) return false;
   const verifier = adapterProofPolicies[proof.adapter_id];
   if (!verifier) return false;
   if (!verifier.authoritative_sources.has(proof.source)) return false;
@@ -215,21 +259,26 @@ const proofMatches = (proof, expected) => {
   if (!proof.readback_ref || !verifier.verify_readback(proof, expected)) return false;
   return true;
 };
-eq(proofMatches(validProof, expectedSpend), true, 'verifier-confirmed terminal proof matches exact SpendIntent effect');
+
+eq(proofMatches(validProof, expectedSpend), true, 'verifier-confirmed terminal capture binds MoneyV1 and effect semantics');
 eq(proofMatches({...validProof, authoritative_effect_ref:''}, expectedSpend), false, 'missing authoritative external-effect identity fails');
 eq(proofMatches({...validProof, authoritative_effect_ref:'rail:tx:other'}, expectedSpend), false, 'mismatched authoritative external-effect identity fails');
 eq(proofMatches({...validProof, authorization_version:2}, expectedSpend), false, 'wrong authorization version fails exact proof binding');
 eq(proofMatches({...validProof, finality:'pending'}, expectedSpend), false, 'pending finality fails even with verified readback ref');
 eq(proofMatches({...validProof, finality:'unknown'}, expectedSpend), false, 'unknown finality fails even with verified readback ref');
 eq(proofMatches({...validProof, readback_ref:'arbitrary-nonempty-ref'}, expectedSpend), false, 'arbitrary readback ref fails');
-eq(proofMatches({...validProof, readback_ref:'verified:adapter_fixture:op_stale:rail:tx:001:v1'}, expectedSpend), false, 'stale/substituted readback ref fails');
 eq(proofMatches({...validProof, source:'host_callback', proof_id:'callback-completed'}, expectedSpend), false, 'callback Completed observation cannot materialize');
 eq(proofMatches({...validProof, adapter_id:'unknown_adapter'}, {...expectedSpend, adapter_id:'unknown_adapter'}), false, 'unregistered adapter verifier fails closed');
+eq(proofMatches({...validProof, effect_kind:'refund'}, expectedSpend), false, 'capture proof cannot be reclassified as refund');
+eq(proofMatches({...validProof, money_minor_units:'42500'}, expectedSpend), false, 'minor-unit substitution fails');
+eq(proofMatches({...validProof, money_currency:'EUR'}, expectedSpend), false, 'currency substitution fails');
+eq(proofMatches({...validProof, money_exponent:3}, expectedSpend), false, 'exponent substitution fails');
+
 for (const [field, value] of [
   ['spend_intent_id','sp_2'],['operation_id','op_2'],['effect_id','cap_2'],['authoritative_effect_ref','rail:tx:002'],
-  ['adapter_id','other_adapter'],['rail_identity','other_rail'],['target_digest','target:other'],
+  ['effect_kind','partial_capture'],['adapter_id','other_adapter'],['rail_identity','other_rail'],['target_digest','target:other'],
   ['policy_snapshot_digest','policy:p10'],['approval_snapshot_digest','approval:a4'],['amount','42.51'],['asset','EUR'],
-  ['authorization_version',2]
+  ['money_minor_units','4251'],['money_currency','EUR'],['money_exponent',3],['authorization_version',2]
 ]) {
   eq(proofMatches({...validProof, [field]:value}, expectedSpend), false, `proof substitution fails on ${field}`);
 }
@@ -247,36 +296,125 @@ eq(mayStartFreshOperation({state:'failed', authoritative_no_effect_proof:true}),
 eq(mayStartFreshOperation({state:'failed', authoritative_no_effect_proof:false}), false, 'failed label alone cannot permit fresh op');
 eq(mayStartFreshOperation({state:'unknown', authoritative_no_effect_proof:false}), false, 'unknown cannot permit fresh op');
 
-// End-to-end proof -> operation conservation -> canonical materialization uses external effect identity, not internal effect ID.
+// End-to-end proof -> canonical materialization consumes exact MoneyV1 BigInt units and proof-bound effect semantics.
 const materializedAuthoritativeEffects = new Set();
 const materializedByIntent = new Map();
-const deriveEffect = ({ state, proof, expected, authorizedAmountUnits = 10000 }) => {
-  if (!['captured','partial'].includes(state) || !proofMatches(proof, expected)) return false;
+const materializedEffects = new Map();
+
+const deriveEffect = ({ state, proof, expected, authorizedMoney }) => {
+  if (!['captured','partial','reversed'].includes(state) || !proofMatches(proof, expected)) return false;
+  const effectMoney = moneyFrom(expected);
+  if (!effectMoney || !authorizedMoney || !samePartition(effectMoney, authorizedMoney)) return false;
   const key = `${expected.spend_intent_id}:${expected.authoritative_effect_ref}`;
   if (materializedAuthoritativeEffects.has(key)) return false;
 
-  const amountUnits = Math.round(Number(expected.amount) * 100);
-  const currentUnits = materializedByIntent.get(expected.spend_intent_id) ?? 0;
-  if (!Number.isSafeInteger(amountUnits) || amountUnits <= 0 || currentUnits + amountUnits > authorizedAmountUnits) return false;
+  let delta = effectMoney.minorUnits;
+  if (['refund','reversal'].includes(expected.effect_kind)) delta = -delta;
+
+  if (parentRequired(expected.effect_kind)) {
+    const parent = materializedEffects.get(expected.authoritative_parent_effect_ref);
+    if (!parent || !samePartition(parent.money, effectMoney)) return false;
+    if (!['capture','partial_capture'].includes(parent.kind)) return false;
+  }
+
+  const current = materializedByIntent.get(expected.spend_intent_id) ?? {
+    minorUnits: 0n,
+    currency: authorizedMoney.currency,
+    exponent: authorizedMoney.exponent
+  };
+  if (!samePartition(current, authorizedMoney)) return false;
+  const next = current.minorUnits + delta;
+  if (next < 0n || next > authorizedMoney.minorUnits) return false;
 
   materializedAuthoritativeEffects.add(key);
-  materializedByIntent.set(expected.spend_intent_id, currentUnits + amountUnits);
+  materializedByIntent.set(expected.spend_intent_id, {...current, minorUnits: next});
+  materializedEffects.set(expected.authoritative_effect_ref, {kind: expected.effect_kind, money: effectMoney});
   return true;
 };
-eq(deriveEffect({state:'captured', proof:validProof, expected:expectedSpend}), true, 'first exact proven capture derives canonical state');
-eq(deriveEffect({state:'captured', proof:validProof, expected:expectedSpend}), false, 'duplicate authoritative proof cannot derive twice');
+
+const authorizedMoney = {minorUnits:10000n, currency:'USD', exponent:2};
+eq(deriveEffect({state:'captured', proof:validProof, expected:expectedSpend, authorizedMoney}), true, 'first exact proven capture derives canonical MoneyV1 state');
+eq(materializedByIntent.get('sp_1').minorUnits, 4250n, 'capture stores exact BigInt minor units');
+eq(deriveEffect({state:'captured', proof:validProof, expected:expectedSpend, authorizedMoney}), false, 'duplicate authoritative proof cannot derive twice');
+
 const freshInternalSameExternalExpected = {...expectedSpend, effect_id:'cap_2'};
-const freshInternalSameExternalProof = {
-  ...validProof,
-  effect_id:'cap_2',
-  readback_ref:'verified:adapter_fixture:op_1:rail:tx:001:v1'
+const freshInternalSameExternalProof = {...validProof, effect_id:'cap_2'};
+eq(proofMatches(freshInternalSameExternalProof, freshInternalSameExternalExpected), true, 'fresh internal ID may still prove same authoritative external effect');
+eq(deriveEffect({state:'captured', proof:freshInternalSameExternalProof, expected:freshInternalSameExternalExpected, authorizedMoney}), false, 'same authoritative external effect cannot materialize under fresh internal effect_id');
+
+const partitionCases = [
+  {spend_intent_id:'sp_e0', operation_id:'op_e0', effect_id:'cap_e0', authoritative_effect_ref:'rail:e0', amount:'7', asset:'JPY', money_minor_units:'7', money_currency:'JPY', money_exponent:0, authorized:{minorUnits:20n,currency:'JPY',exponent:0}},
+  {spend_intent_id:'sp_e2', operation_id:'op_e2', effect_id:'cap_e2', authoritative_effect_ref:'rail:e2', amount:'1.23', asset:'USD', money_minor_units:'123', money_currency:'USD', money_exponent:2, authorized:{minorUnits:500n,currency:'USD',exponent:2}},
+  {spend_intent_id:'sp_e3', operation_id:'op_e3', effect_id:'cap_e3', authoritative_effect_ref:'rail:e3', amount:'1.234', asset:'BHD', money_minor_units:'1234', money_currency:'BHD', money_exponent:3, authorized:{minorUnits:5000n,currency:'BHD',exponent:3}},
+  {spend_intent_id:'sp_e6', operation_id:'op_e6', effect_id:'cap_e6', authoritative_effect_ref:'rail:e6', amount:'0.000001', asset:'TOK6', money_minor_units:'1', money_currency:'TOK6', money_exponent:6, authorized:{minorUnits:1000000n,currency:'TOK6',exponent:6}},
+  {spend_intent_id:'sp_e12', operation_id:'op_e12', effect_id:'cap_e12', authoritative_effect_ref:'rail:e12', amount:'0.000000000001', asset:'TOK12', money_minor_units:'1', money_currency:'TOK12', money_exponent:12, authorized:{minorUnits:1000000000000n,currency:'TOK12',exponent:12}}
+];
+for (const c of partitionCases) {
+  const expected = {...expectedSpend, ...c, authorization_version:1, effect_kind:'capture', authoritative_parent_effect_ref:null};
+  delete expected.authorized;
+  const proof = {...expected, source:'authoritative_readback', proof_id:`proof_${c.spend_intent_id}`, observed_at:'2026-09-15T12:00:00Z', finality:'final', readback_ref:readbackFor(expected)};
+  eq(proofMatches(proof, expected), true, `MoneyV1 exponent ${expected.money_exponent} proof verifies`);
+  eq(deriveEffect({state:'captured', proof, expected, authorizedMoney:c.authorized}), true, `MoneyV1 exponent ${expected.money_exponent} materializes exactly`);
+}
+
+const largeExpected = {
+  ...expectedSpend,
+  spend_intent_id:'sp_large', operation_id:'op_large', effect_id:'cap_large', authoritative_effect_ref:'rail:large',
+  amount:'9007199254740993.000001', asset:'TOK6',
+  money_minor_units:'9007199254740993000001', money_currency:'TOK6', money_exponent:6
 };
-eq(proofMatches(freshInternalSameExternalProof, freshInternalSameExternalExpected), true, 'fresh internal ID may still prove the same external effect tuple');
-eq(deriveEffect({state:'captured', proof:freshInternalSameExternalProof, expected:freshInternalSameExternalExpected}), false, 'same authoritative external effect cannot materialize under fresh internal effect_id');
-eq(deriveEffect({state:'captured', proof:{...validProof, operation_id:'op_2'}, expected:expectedSpend}), false, 'substituted proof cannot materialize');
-eq(deriveEffect({state:'captured', proof:{...validProof, finality:'pending'}, expected:expectedSpend}), false, 'pending proof cannot materialize');
-eq(deriveEffect({state:'captured', proof:{...validProof, readback_ref:'arbitrary-nonempty-ref'}, expected:expectedSpend}), false, 'unverified readback cannot materialize');
-eq(deriveEffect({state:'captured', proof:{...validProof, source:'host_callback'}, expected:expectedSpend}), false, 'callback-only completion cannot materialize');
-eq(deriveEffect({state:'unknown', proof:validProof, expected:expectedSpend}), false, 'unknown derives nothing');
+const largeProof = {...largeExpected, source:'authoritative_readback', proof_id:'proof_large', observed_at:'2026-09-15T12:00:00Z', finality:'final', readback_ref:readbackFor(largeExpected)};
+eq(proofMatches(largeProof, largeExpected), true, 'large MoneyV1 proof remains exact beyond Number safe integer');
+eq(deriveEffect({state:'captured', proof:largeProof, expected:largeExpected, authorizedMoney:{minorUnits:9007199254740993000001n,currency:'TOK6',exponent:6}}), true, 'large MoneyV1 materializes without Number rounding');
+
+const badExponentExpected = {...expectedSpend, spend_intent_id:'sp_badexp', operation_id:'op_badexp', effect_id:'cap_badexp', authoritative_effect_ref:'rail:badexp', money_minor_units:'4250', money_currency:'USD', money_exponent:3};
+const badExponentProof = {...validProof, ...badExponentExpected, readback_ref:readbackFor(badExponentExpected)};
+eq(deriveEffect({state:'captured', proof:badExponentProof, expected:badExponentExpected, authorizedMoney:{minorUnits:10000n,currency:'USD',exponent:2}}), false, 'authorization/materialization exponent mismatch fails closed');
+
+const badCurrencyExpected = {...expectedSpend, spend_intent_id:'sp_badcur', operation_id:'op_badcur', effect_id:'cap_badcur', authoritative_effect_ref:'rail:badcur', money_minor_units:'4250', money_currency:'EUR', money_exponent:2};
+const badCurrencyProof = {...validProof, ...badCurrencyExpected, readback_ref:readbackFor(badCurrencyExpected)};
+eq(deriveEffect({state:'captured', proof:badCurrencyProof, expected:badCurrencyExpected, authorizedMoney:{minorUnits:10000n,currency:'USD',exponent:2}}), false, 'authorization/materialization currency mismatch fails closed');
+
+const fractionalBoundary = {...expectedSpend, spend_intent_id:'sp_frac', operation_id:'op_frac', effect_id:'cap_frac', authoritative_effect_ref:'rail:frac', money_minor_units:'1.5'};
+const fractionalProof = {...validProof, ...fractionalBoundary, readback_ref:readbackFor(fractionalBoundary)};
+eq(proofMatches(fractionalProof, fractionalBoundary), false, 'fractional minor units are rejected');
+
+const refundExpected = {
+  ...expectedSpend,
+  effect_id:'refund_1',
+  authoritative_effect_ref:'rail:refund:001',
+  effect_kind:'refund',
+  authoritative_parent_effect_ref:'rail:tx:001',
+  amount:'10.00',
+  money_minor_units:'1000'
+};
+const refundProof = {...refundExpected, source:'authoritative_readback', proof_id:'proof_refund_1', observed_at:'2026-09-15T12:05:00Z', finality:'final', readback_ref:readbackFor(refundExpected)};
+eq(proofMatches(refundProof, refundExpected), true, 'authoritative refund proof binds effect kind and parent capture');
+eq(proofMatches({...refundProof, effect_kind:'capture'}, refundExpected), false, 'refund cannot be reclassified as capture');
+eq(proofMatches({...refundProof, effect_kind:'reversal'}, refundExpected), false, 'refund cannot be reclassified as reversal');
+eq(proofMatches({...refundProof, authoritative_parent_effect_ref:'rail:tx:other'}, refundExpected), false, 'wrong authoritative parent fails proof binding');
+eq(deriveEffect({state:'reversed', proof:refundProof, expected:refundExpected, authorizedMoney}), true, 'proof-bound refund adjusts original capture lineage');
+eq(materializedByIntent.get('sp_1').minorUnits, 3250n, 'refund subtracts exact BigInt units from canonical state');
+
+const reversalExpected = {
+  ...expectedSpend,
+  effect_id:'reversal_1',
+  authoritative_effect_ref:'rail:reversal:001',
+  effect_kind:'reversal',
+  authoritative_parent_effect_ref:'rail:tx:001',
+  amount:'5.00',
+  money_minor_units:'500'
+};
+const reversalProof = {...reversalExpected, source:'authoritative_readback', proof_id:'proof_reversal_1', observed_at:'2026-09-15T12:06:00Z', finality:'final', readback_ref:readbackFor(reversalExpected)};
+eq(proofMatches(reversalProof, reversalExpected), true, 'authoritative reversal proof binds immutable parent');
+eq(proofMatches({...reversalProof, authoritative_parent_effect_ref:'rail:refund:001'}, reversalExpected), false, 'reversal cannot switch to wrong parent lineage');
+eq(deriveEffect({state:'reversed', proof:reversalProof, expected:reversalExpected, authorizedMoney}), true, 'proof-bound reversal adjusts original capture lineage');
+eq(materializedByIntent.get('sp_1').minorUnits, 2750n, 'reversal subtracts exact BigInt units');
+
+eq(deriveEffect({state:'captured', proof:{...validProof, operation_id:'op_2'}, expected:expectedSpend, authorizedMoney}), false, 'substituted proof cannot materialize');
+eq(deriveEffect({state:'captured', proof:{...validProof, finality:'pending'}, expected:expectedSpend, authorizedMoney}), false, 'pending proof cannot materialize');
+eq(deriveEffect({state:'captured', proof:{...validProof, readback_ref:'arbitrary-nonempty-ref'}, expected:expectedSpend, authorizedMoney}), false, 'unverified readback cannot materialize');
+eq(deriveEffect({state:'captured', proof:{...validProof, source:'host_callback'}, expected:expectedSpend, authorizedMoney}), false, 'callback-only completion cannot materialize');
+eq(deriveEffect({state:'unknown', proof:validProof, expected:expectedSpend, authorizedMoney}), false, 'unknown derives nothing');
 
 console.log(JSON.stringify({ suite: 'phase-c1-contract-invariants', checks, result: 'pass' }));
