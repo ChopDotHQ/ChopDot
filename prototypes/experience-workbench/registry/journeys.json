@@ -671,11 +671,16 @@
     "entry": "Every journey",
     "exit": "Recovered state, safe retry, or explicit stop",
     "next": [],
-    "status": "current",
+    "status": "golden",
     "entry_mode": "cross-cutting",
     "terminal": true,
-    "approval": "not-reviewed",
+    "approval": "design-approved",
     "version": "v1",
-    "spec_path": "journeys/28-failure-recovery/spec.md"
+    "spec_path": "journeys/28-failure-recovery/spec.md",
+    "prototype_path": "journeys/28-failure-recovery/v1-candidate.html",
+    "prototype_sha256": "7ef254016da0755860fd0ede62840e7668d40406fdac850aad8c5e0ac4d12dfc",
+    "qa_path": "journeys/28-failure-recovery/review-v1/VISUAL_QA.md",
+    "golden_number": 28,
+    "approved_on": "2026-09-15"
   }
 ]

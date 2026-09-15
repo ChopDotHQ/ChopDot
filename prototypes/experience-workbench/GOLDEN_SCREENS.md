@@ -27,9 +27,10 @@
 25. Storage / Backup / Recovery — v1 · Design Approved
 26. Group Lifecycle — v1 · Design Approved
 27. Account & Preferences — v1 · Design Approved
+28. Things Go Wrong / Recovery — v1 · Design Approved
 
-Journey 27 — Account & Preferences V1 is Golden #27. Exact approved HTML SHA-256: `64b730ee19a8713826868af6ca4b39b33d0c48c128b2fce2e90c7beec1dfa560`; the approved HTML was not changed during freeze.
+Journey 28 — Things Go Wrong / Recovery V1 is Golden #28. Exact approved HTML SHA-256: `7ef254016da0755860fd0ede62840e7668d40406fdac850aad8c5e0ac4d12dfc`; the approved HTML was not changed during freeze.
 
-Journey 28 — Things Go Wrong / Recovery V1 is staged at definition pending exact transition verification.
+All 28 registered UX journeys are now frozen as Goldens pending final exact resulting-state verification. Production implementation remains held until the authorized post-journey strategy gate completes.
 
 TYPO-01 remains deferred.

@@ -134,5 +134,10 @@
     "journey": "27",
     "path": "journeys/27-account-preferences/v1-candidate.html",
     "sha256": "64b730ee19a8713826868af6ca4b39b33d0c48c128b2fce2e90c7beec1dfa560"
+  },
+  {
+    "journey": "28",
+    "path": "journeys/28-failure-recovery/v1-candidate.html",
+    "sha256": "7ef254016da0755860fd0ede62840e7668d40406fdac850aad8c5e0ac4d12dfc"
   }
 ]

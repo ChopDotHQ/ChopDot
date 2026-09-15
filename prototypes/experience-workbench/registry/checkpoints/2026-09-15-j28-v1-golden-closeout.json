@@ -1,0 +1,23 @@
+{
+  "checkpoint": "2026-09-15-j28-v1-golden-closeout",
+  "j28": {
+    "status": "golden-pending-verification",
+    "version": "v1",
+    "golden_number": 28,
+    "prototype_path": "journeys/28-failure-recovery/v1-candidate.html",
+    "prototype_sha256": "7ef254016da0755860fd0ede62840e7668d40406fdac850aad8c5e0ac4d12dfc",
+    "reviewed_source_head": "8a8c9f4513b7d94b47a683a00d3a3881b94bdb16",
+    "candidate_tree": "5ddbe943d5f5f1e8044b1c3d131e509fb636a6d8",
+    "exact_qa_run": "34924953198",
+    "evidence_artifact": "10380150777",
+    "evidence_artifact_sha256": "d246646617d04269600bcc36d200d45314e85a084446a3be269445373f2ca0f2",
+    "independent_review_comment_id": "5674670892",
+    "approval_basis": "standing-human-approval-policy",
+    "approval_record": "registry/approvals/28-v1.json",
+    "html_change_authorized": false
+  },
+  "golden_count": 28,
+  "remaining_overall": 0,
+  "journey_production_complete_pending_verification": true,
+  "typography_note": "TYPO-01 deferred"
+}

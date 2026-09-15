@@ -1,22 +1,22 @@
 # ChopDot Experience Workbench — Start Here
 
-Always read `registry/progress.json` first. It is the canonical current-journey/count authority; historical prose does not override it.
+Always read `registry/progress.json` first. It is the canonical current/count authority; historical prose does not override it.
 
 ## Shared process
 
-Read `DESIGN_CONTRACT.md`, `WORKFLOW.md`, `REVIEW_PROTOCOL.md`, `shared/improvements.md`, then the current journey definition bundle and only relevant adjacent Goldens.
+Read `DESIGN_CONTRACT.md`, `WORKFLOW.md`, `REVIEW_PROTOCOL.md`, `shared/improvements.md`, then relevant Golden contracts.
 
 ## Current authority
 
-28 registered journeys; 27 Goldens; 1 remaining.
+28 registered journeys; 28 standing-approved/frozen Goldens; 0 remaining registered UX journeys.
 
-Journey 27 — Account & Preferences V1 is Golden #27. Exact approved artifact SHA-256: `64b730ee19a8713826868af6ca4b39b33d0c48c128b2fce2e90c7beec1dfa560`. Approval derives from the active standing human approval policy after independent GOLDEN-READY review; HTML changes after review are not authorized.
+Journey 28 — Things Go Wrong / Recovery V1 is Golden #28 at exact approved artifact SHA-256 `7ef254016da0755860fd0ede62840e7668d40406fdac850aad8c5e0ac4d12dfc`. Approval derives from the active standing human approval policy after independent GOLDEN-READY review; HTML changes after review are not authorized.
 
-Journey 28 — Things Go Wrong / Recovery V1 is **staged at definition pending exact-head verification**. Canonical factory generation remains `v1.1`; caller-reachability coverage is required for every material state. Standing approval may apply only after an exact unchanged J28 candidate later reaches independent GOLDEN-READY.
+The final 28-Golden state is **pending exact resulting-state verification**. Do not begin production implementation until exact-head verification is true and the authorized post-journey strategy gate completes.
 
 ## Preserve
 
-All 27 Golden artifact checksums must pass. `registry/goldens.manifest.json` is generated and must not become competing approval authority. TYPO-01 remains deferred.
+All 28 Golden artifact checksums must pass. `registry/goldens.manifest.json` is generated and must not become competing approval authority. TYPO-01 remains deferred.
 
 <!-- JOURNEY_DECISION_HISTORY:START -->
 ## Decision history

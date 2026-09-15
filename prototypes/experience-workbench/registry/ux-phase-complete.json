@@ -1,0 +1,9 @@
+{
+  "registered_journeys": 28,
+  "golden_count": 28,
+  "last_journey": "28",
+  "status": "pending-exact-head-verification",
+  "production_implementation_authorized": false,
+  "next_phase": "post-journey-strategy-gate",
+  "typography_note": "TYPO-01 deferred"
+}
