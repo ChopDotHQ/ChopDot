@@ -1,13 +1,13 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "28",
-  "holder": "fast-builder-A",
+  "holder": null,
   "fingerprint": "j28-revise-5673747319-f8563051bd7442224a0a3d3bb3634a63b7d3419e",
-  "candidate_head": "ee6cf8b92ab517e9eb99f8aaad67eeb791391991",
+  "candidate_head": "8a8c9f4513b7d94b47a683a00d3a3881b94bdb16",
   "claimed_at": "2026-09-15T03:21:30Z",
   "renewed_at": "2026-09-15T03:21:30Z",
   "completed_at": null,
-  "expires_at": "2026-09-15T03:33:30Z"
+  "expires_at": null
 }
