@@ -1,0 +1,43 @@
+{
+  "$id": "chopdot://contracts/member-identity/GUEST-01/v1",
+  "version": 1,
+  "scope": "group",
+  "identity_key": "participant_id",
+  "identity_key_semantics": "immutable durable group-scoped ledger reference",
+  "states": ["guest", "account_backed", "linked", "unresolved"],
+  "provenance": ["invite", "import", "local", "account"],
+  "never_merge_on": ["display_name", "email"],
+  "base_capabilities": [
+    "ledger_participate",
+    "expense_reference",
+    "split_reference",
+    "history_reference",
+    "export_participant",
+    "recover_participant"
+  ],
+  "account_gated_capabilities": ["fund_spend", "sign_spend", "group_admin"],
+  "rules": {
+    "guest_is_durable_participant": true,
+    "full_account_required_for_ledger_participation": false,
+    "upgrade_preserves_participant_id": true,
+    "link_preserves_ledger_references": true,
+    "claim_requires_explicit_target_participant_id": true,
+    "claim_requires_account_proof": true,
+    "collision_or_mismatch_state": "unresolved",
+    "collision_may_silently_merge": false,
+    "account_requirement_may_remove_guest_history": false,
+    "export_must_preserve_participant_id": true,
+    "recovery_must_preserve_participant_id": true
+  },
+  "transitions": [
+    {"from": "guest", "action": "upgrade_with_account", "to": "linked", "preserve": ["participant_id", "expense_refs", "split_refs", "history_refs"]},
+    {"from": "account_backed", "action": "participate", "to": "account_backed", "preserve": ["participant_id"]},
+    {"from": "guest", "action": "link_matching_account_proof", "to": "linked", "preserve": ["participant_id", "expense_refs", "split_refs", "history_refs"]},
+    {"from": "guest", "action": "link_mismatch_or_collision", "to": "unresolved", "preserve": ["participant_id", "expense_refs", "split_refs", "history_refs"]},
+    {"from": "unresolved", "action": "resolve_with_explicit_proof", "to": "linked", "preserve": ["participant_id", "expense_refs", "split_refs", "history_refs"]}
+  ],
+  "record_shape": {
+    "required": ["group_id", "participant_id", "state", "provenance", "capabilities", "created_at"],
+    "optional": ["display_name", "contact_hint", "linked_account_id", "link_proof_ref", "recovery_ref"]
+  }
+}
