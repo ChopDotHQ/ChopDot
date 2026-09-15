@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "completed",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
-  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5684201633|candidate-184dc84|money-partition-contract-surface",
+  "holder": "primary-builder",
+  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5685546112|candidate-73bdd370|moneyv1-materialization-effect-lineage",
   "candidate_head": "73bdd3706630bb14acb59dadc8a58445a244b911",
-  "claimed_at": "2026-09-15T17:55:52Z",
-  "renewed_at": "2026-09-15T17:55:52Z",
-  "completed_at": "2026-09-15T18:02:00Z",
-  "expires_at": null,
+  "claimed_at": "2026-09-15T18:16:03Z",
+  "renewed_at": "2026-09-15T18:16:03Z",
+  "completed_at": null,
+  "expires_at": "2026-09-15T18:28:03Z",
   "waiting_reason": null,
-  "note": "Exact green successor handed to independent Reviewer in #38 comment 5685348708. Phase C1 selective review/CI/Coverage/Smoke/E2E all succeeded on 73bdd3706630bb14acb59dadc8a58445a244b911; Reviewer owns the next transition."
+  "note": "Claimed bounded repair for Reviewer REVISE 5685546112: exact MoneyV1 integrated materialization plus authoritative effect-kind and parent-lineage proof binding."
 }
