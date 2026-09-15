@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "waiting_ci",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
+  "holder": "primary-builder",
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|issue38-comment-5678939496|guest-01-approved|spend-01-rail-neutral-only|no-successor",
   "candidate_head": "ea920cf3b8aae7bc23e2e9bd1478396a308a5202",
-  "claimed_at": "2026-09-15T11:36:04Z",
-  "renewed_at": "2026-09-15T11:36:04Z",
+  "claimed_at": "2026-09-15T12:16:22Z",
+  "renewed_at": "2026-09-15T12:16:22Z",
   "completed_at": null,
-  "expires_at": null,
-  "waiting_reason": "exact-head GitHub Actions",
-  "note": "Golden regression gate now verifies all 28 immutable bytes against the canonical base manifest; writer lane released for exact-head CI."
+  "expires_at": "2026-09-15T12:28:22Z",
+  "waiting_reason": null,
+  "note": "Exact-head Phase C1 CI is complete; primary Builder reclaimed the active-write lease to finish the required durable rationale record and sealed review handoff."
 }
