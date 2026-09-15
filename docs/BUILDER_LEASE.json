@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "repair-pickup",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5684201633|candidate-184dc84|money-partition-contract-surface",
-  "candidate_head": "7f7f6a4e486976aa806a20848b73e5957c69f8d0",
+  "candidate_head": "73bdd3706630bb14acb59dadc8a58445a244b911",
   "claimed_at": "2026-09-15T17:07:00Z",
-  "renewed_at": "2026-09-15T17:07:00Z",
+  "renewed_at": "2026-09-15T17:14:15Z",
   "completed_at": null,
-  "expires_at": "2026-09-15T17:19:00Z",
-  "waiting_reason": null,
-  "note": "Mechanical repair claimed for exact successor 7f7f6a4 after Phase C1/CI parse failure in verify-operation-conservation.mjs; scope limited to syntax/harness repair for the already-approved MoneyV1 partition delta."
+  "expires_at": null,
+  "waiting_reason": "Mechanical verifier repair pushed after the 7f7f6a4 parse failure; waiting for exact Phase C1/CI/Coverage/Smoke/E2E on 73bdd3706630bb14acb59dadc8a58445a244b911.",
+  "note": "MoneyV1 contract/verifier repair remains bounded to Reviewer 5684201633; previous operation-conservation assertions were preserved and new non-two-decimal/currency/exponent partition evidence added. Vercel quota policy remains unchanged."
 }
