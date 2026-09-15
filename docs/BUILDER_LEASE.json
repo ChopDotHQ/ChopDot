@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "primary-builder",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|issue38-comment-5678939496|guest-01-approved|spend-01-rail-neutral-only|no-successor",
-  "candidate_head": "ea920cf3b8aae7bc23e2e9bd1478396a308a5202",
+  "candidate_head": "233f350635f0b0184c2f7ad8a77ada0519044e8b",
   "claimed_at": "2026-09-15T12:16:22Z",
   "renewed_at": "2026-09-15T12:16:22Z",
   "completed_at": null,
-  "expires_at": "2026-09-15T12:28:22Z",
-  "waiting_reason": null,
-  "note": "Exact-head Phase C1 CI is complete; primary Builder reclaimed the active-write lease to finish the required durable rationale record and sealed review handoff."
+  "expires_at": null,
+  "waiting_reason": "exact-head GitHub Actions",
+  "note": "Durable Phase C1 rationale record pushed; writer lane released while exact-head checks validate the new candidate head."
 }
