@@ -1,7 +1,9 @@
 // Canonical Phase C1 rail-neutral materialization state model.
-// Security revision 8 is enforced across live materialization and restart/restore.
+// Security revision 7 plus the anti-rollback acceptance delta are enforced across
+// live materialization and restart/restore.
 // Restore is fail-closed: a backup checkpoint proves internal snapshot integrity,
-// while an independently resolved authoritative head prevents stale-but-valid rollback.
+// while an independently resolved, namespace-bound authoritative head prevents
+// stale-but-valid rollback.
 
 import { createHash } from 'node:crypto';
 
@@ -72,18 +74,22 @@ const checkpointFor = (effects, generation) => ({
   lineage_digest: lineageDigest(effects)
 });
 
-const headCandidateFor = (effects, generation) => ({
+const headCandidateFor = (effects, generation, namespace) => ({
   head_version: AUTHORITATIVE_HEAD_VERSION,
   domain: AUTHORITATIVE_HEAD_DOMAIN,
+  namespace,
   ...checkpointFor(effects, generation)
 });
 
-const validateAuthoritativeHead = head => {
+const validateAuthoritativeHead = (head, expectedNamespace) => {
   if (!head || head.head_version !== AUTHORITATIVE_HEAD_VERSION) {
     throw new Error('authoritative restore head required');
   }
   if (head.domain !== AUTHORITATIVE_HEAD_DOMAIN) {
     throw new Error('authoritative restore head domain mismatch');
+  }
+  if (!present(expectedNamespace) || head.namespace !== expectedNamespace) {
+    throw new Error('authoritative restore head namespace mismatch');
   }
   if (head.snapshot_version !== SNAPSHOT_VERSION) {
     throw new Error('authoritative restore head snapshot version mismatch');
@@ -94,6 +100,7 @@ const validateAuthoritativeHead = head => {
   return {
     head_version: AUTHORITATIVE_HEAD_VERSION,
     domain: AUTHORITATIVE_HEAD_DOMAIN,
+    namespace: expectedNamespace,
     snapshot_version: SNAPSHOT_VERSION,
     generation: head.generation,
     lineage_digest: head.lineage_digest
@@ -124,16 +131,20 @@ const exactSetEqualsArray = (expectedSet, serialized) => {
   return true;
 };
 
-export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead } = {}) => {
+export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead, persistenceNamespace } = {}) => {
   const materializedAuthoritativeEffects = new Set();
   const materializedByIntent = new Map();
   const materializedEffects = new Map();
   let generation = 0n;
   let acceptedFrontier = null;
 
-  const currentHeadCandidate = () => headCandidateFor(materializedEffects, generation);
+  const namespaceBound = present(persistenceNamespace);
+  const currentHeadCandidate = () => {
+    if (!namespaceBound) throw new Error('persistence namespace required for restore head');
+    return headCandidateFor(materializedEffects, generation, persistenceNamespace);
+  };
   const advanceLocalFrontier = () => {
-    acceptedFrontier = currentHeadCandidate();
+    if (namespaceBound) acceptedFrontier = currentHeadCandidate();
   };
 
   const materialize = ({ state, proofAccepted, expected, effectMoney, authorizedMoney }) => {
@@ -176,7 +187,6 @@ export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead }
     const next = current.minorUnits + delta;
     if (next < 0n || next > authorizedMoney.minorUnits) return false;
 
-    // Commit only after proof, dedupe, lineage, partition and value checks all pass.
     materializedAuthoritativeEffects.add(authoritativeKey);
     materializedByIntent.set(expected.spend_intent_id, { ...current, minorUnits: next });
 
@@ -209,8 +219,6 @@ export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead }
       remaining_unadjusted_units: effectMoney.minorUnits
     });
     generation += 1n;
-    // Live effects advance the in-process monotonic floor immediately. A stale
-    // externally resolved head can never authorize rolling this process backward.
     advanceLocalFrontier();
     return true;
   };
@@ -233,9 +241,6 @@ export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead }
 
   const checkpoint = () => checkpointFor(materializedEffects, generation);
 
-  // This is a deterministic candidate representation only. It becomes authority
-  // only after an independent runtime/store accepts it. Backups must not treat a
-  // self-computed head candidate as proof that they are the latest accepted head.
   const headCandidate = () => currentHeadCandidate();
 
   const snapshot = () => ({
@@ -251,18 +256,15 @@ export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead }
   });
 
   const restore = (persisted, trustedCheckpoint) => {
-    // The authoritative head is deliberately not accepted as a restore argument:
-    // startup/in-process recovery must resolve it through an independently owned
-    // adapter/runtime so a backup cannot self-supply its own authority.
+    if (!namespaceBound) {
+      throw new Error('persistence namespace required for restore');
+    }
     if (typeof resolveAuthoritativeHead !== 'function') {
       throw new Error('independent authoritative restore head resolver required');
     }
-    const authoritativeHead = validateAuthoritativeHead(resolveAuthoritativeHead());
+    const authoritativeHead = validateAuthoritativeHead(resolveAuthoritativeHead(), persistenceNamespace);
     compareHeadToFrontier(authoritativeHead, acceptedFrontier);
 
-    // A restart must also be anchored to a separately persisted backup checkpoint.
-    // Snapshot + checkpoint establish internal integrity; they do not establish
-    // freshness or authority, which comes only from authoritativeHead above.
     if (!trustedCheckpoint || trustedCheckpoint.snapshot_version !== SNAPSHOT_VERSION) {
       throw new Error('trusted restore checkpoint required');
     }
@@ -363,8 +365,6 @@ export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead }
       throw new Error('restored lineage digest mismatch');
     }
 
-    // Reconstruct every derived structure from immutable effect lineage. Nothing
-    // serialized in authoritativeEffects/intents/remaining capacity is trusted.
     const derivedAuthoritative = new Set();
     const derivedIntents = new Map();
     const consumedByParent = new Map();
@@ -465,9 +465,6 @@ export const createCanonicalMaterializationState = ({ resolveAuthoritativeHead }
       }
     }
 
-    // Atomic commit only after authoritative freshness, checkpoint, lineage,
-    // dedupe, aggregate and parent conservation all agree. Any throw above leaves
-    // the current state and accepted frontier untouched.
     materializedAuthoritativeEffects.clear();
     for (const value of derivedAuthoritative) materializedAuthoritativeEffects.add(value);
     materializedByIntent.clear();
