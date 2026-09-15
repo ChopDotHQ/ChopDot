@@ -1,0 +1,32 @@
+{
+  "checkpoint": "2026-09-15-j27-v1-golden-j28-start",
+  "j27": {
+    "status": "golden",
+    "version": "v1",
+    "golden_number": 27,
+    "prototype_path": "journeys/27-account-preferences/v1-candidate.html",
+    "prototype_sha256": "64b730ee19a8713826868af6ca4b39b33d0c48c128b2fce2e90c7beec1dfa560",
+    "reviewed_source_head": "3ddb9f517526f2b7a9e417a5143ff1b2f54580be",
+    "candidate_tree": "4a0c2b8f0f449f9b6193b48697e388f1a9c2d091",
+    "exact_qa_run": "34912299281",
+    "evidence_artifact": "10374564676",
+    "evidence_artifact_sha256": "c3a2d9b955bda1e641c70efd9cff1da10617f4284628397290753b02b99a5e9a",
+    "independent_review_comment_id": "5672987078",
+    "approval_basis": "standing-human-approval-policy",
+    "approval_record": "registry/approvals/27-v1.json",
+    "html_change_authorized": false
+  },
+  "j28": {
+    "status": "current",
+    "version": "v1",
+    "stage": "definition",
+    "prototype_built": false,
+    "spec_path": "journeys/28-failure-recovery/spec.md",
+    "decision_history_path": "journeys/28-failure-recovery/source/decision-history.md",
+    "caller_reachability_required": true,
+    "factory_generation": "v1.1"
+  },
+  "golden_count": 27,
+  "remaining_overall": 1,
+  "typography_note": "TYPO-01 deferred"
+}

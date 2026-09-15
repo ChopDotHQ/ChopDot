@@ -26,9 +26,10 @@
 24. Export / Portability — v1 · Design Approved
 25. Storage / Backup / Recovery — v1 · Design Approved
 26. Group Lifecycle — v1 · Design Approved
+27. Account & Preferences — v1 · Design Approved
 
-Journey 26 — Group Lifecycle V1 is Golden #26. Exact approved HTML SHA-256: `4d93b1b3458aead8d412256f65d0e4c2c2de1b273abc0af58bd89cb56783da28`; the approved HTML was not changed during freeze.
+Journey 27 — Account & Preferences V1 is Golden #27. Exact approved HTML SHA-256: `64b730ee19a8713826868af6ca4b39b33d0c48c128b2fce2e90c7beec1dfa560`; the approved HTML was not changed during freeze.
 
-Journey 27 — Account & Preferences V1 is staged at definition pending exact transition verification.
+Journey 28 — Things Go Wrong / Recovery V1 is staged at definition pending exact transition verification.
 
 TYPO-01 remains deferred.

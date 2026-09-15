@@ -129,5 +129,10 @@
     "journey": "26",
     "path": "journeys/26-group-lifecycle/v1-candidate.html",
     "sha256": "4d93b1b3458aead8d412256f65d0e4c2c2de1b273abc0af58bd89cb56783da28"
+  },
+  {
+    "journey": "27",
+    "path": "journeys/27-account-preferences/v1-candidate.html",
+    "sha256": "64b730ee19a8713826868af6ca4b39b33d0c48c128b2fce2e90c7beec1dfa560"
   }
 ]

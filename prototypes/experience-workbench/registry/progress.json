@@ -1,10 +1,10 @@
 {
-  "schema_version": 26,
+  "schema_version": 27,
   "updated_on": "2026-09-15",
   "registered_journeys": 28,
-  "golden_count": 26,
-  "current_journey": "27",
-  "remaining_overall": 2,
+  "golden_count": 27,
+  "current_journey": "28",
+  "remaining_overall": 1,
   "remaining_core_including_entry": [],
   "remaining_in_app_money_loop": [],
   "map_source": "registry/journeys.json",
@@ -13,9 +13,9 @@
   "payment_contract_version": "1.2",
   "storage_contract_version": "1.0",
   "paused_after_freeze": false,
-  "last_approved_journey": "26",
+  "last_approved_journey": "27",
   "last_approved_version": "v1",
-  "last_approved_sha256": "4d93b1b3458aead8d412256f65d0e4c2c2de1b273abc0af58bd89cb56783da28",
-  "next_action": "Journey 27 Account & Preferences V1 exact unchanged candidate 3ddb9f517526f2b7a9e417a5143ff1b2f54580be is independently GOLDEN-READY under Reviewer receipt 5672987078. The active standing approval policy applies and per-candidate approval registry/approvals/27-v1.json is recorded. Freeze exact bytes byte-for-byte as Golden #27, then run full resulting-state checks and advance to registry Journey 28 only after canonical exact-head verification.",
+  "last_approved_sha256": "64b730ee19a8713826868af6ca4b39b33d0c48c128b2fce2e90c7beec1dfa560",
+  "next_action": "Journey 28 Things Go Wrong / Recovery V1 is staged at definition pending exact resulting-state verification of the J27 Golden transition. Builder must not write J28 candidate bytes until canonical_exact_head_verified is true.",
   "typography_note": "TYPO-01 deferred"
 }

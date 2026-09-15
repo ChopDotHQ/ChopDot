@@ -650,11 +650,16 @@
       "23",
       "25"
     ],
-    "status": "current",
-    "approval": "not-reviewed",
+    "status": "golden",
+    "approval": "design-approved",
     "entry_mode": "tab",
     "version": "v1",
-    "spec_path": "journeys/27-account-preferences/spec.md"
+    "spec_path": "journeys/27-account-preferences/spec.md",
+    "prototype_path": "journeys/27-account-preferences/v1-candidate.html",
+    "prototype_sha256": "64b730ee19a8713826868af6ca4b39b33d0c48c128b2fce2e90c7beec1dfa560",
+    "qa_path": "journeys/27-account-preferences/review-v1/VISUAL_QA.md",
+    "golden_number": 27,
+    "approved_on": "2026-09-15"
   },
   {
     "id": "28",
@@ -666,9 +671,11 @@
     "entry": "Every journey",
     "exit": "Recovered state, safe retry, or explicit stop",
     "next": [],
-    "status": "cross-cutting",
+    "status": "current",
     "entry_mode": "cross-cutting",
     "terminal": true,
-    "approval": "not-reviewed"
+    "approval": "not-reviewed",
+    "version": "v1",
+    "spec_path": "journeys/28-failure-recovery/spec.md"
   }
 ]
