@@ -1,0 +1,57 @@
+name: Phase C1 selective contract review
+
+on:
+  push:
+    branches:
+      - 'phase-c1/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  phase-c1-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify GUEST-01 and SPEND-01 invariants
+        run: node prototypes/experience-workbench/contracts/phase-c1/verify.mjs
+      - name: Browser and layout QA at canonical mobile viewports
+        run: node prototypes/experience-workbench/contracts/phase-c1/qa.mjs
+      - name: Preserve existing workbench Golden invariants
+        run: npm --prefix prototypes/experience-workbench run gate
+      - name: Prove approved Golden bytes are untouched
+        shell: bash
+        run: |
+          BASE=bfc171fbfe1407d9dda2ad1d90174a13e2431442
+          git diff --name-only "$BASE"...HEAD | tee /tmp/phase-c1-changed-paths.txt
+          if grep -E '(^|/)GOLDEN/|golden\.html$|golden-candidate\.html$' /tmp/phase-c1-changed-paths.txt; then
+            echo 'Phase C1 candidate modified protected Golden material' >&2
+            exit 1
+          fi
+          test "$(find prototypes/experience-workbench/journeys -path '*/GOLDEN/*' -type f | wc -l)" -gt 0
+      - name: Record candidate checksums
+        shell: bash
+        run: |
+          sha256sum \
+            prototypes/experience-workbench/journeys/01-enter-chopdot/phase-c1-guest-v1-candidate.html \
+            prototypes/experience-workbench/journeys/04-invite-join/phase-c1-guest-v1-candidate.html \
+            prototypes/experience-workbench/contracts/phase-c1/member-identity.contract.json \
+            prototypes/experience-workbench/contracts/phase-c1/spend-intent.contract.json \
+            | tee prototypes/experience-workbench/contracts/phase-c1/artifacts/checksums.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase-c1-review-evidence-${{ github.sha }}
+          path: prototypes/experience-workbench/contracts/phase-c1/artifacts/
+          if-no-files-found: error
