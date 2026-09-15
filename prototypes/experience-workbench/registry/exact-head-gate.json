@@ -1,8 +1,19 @@
 {
   "checkpoint": "2026-09-15-j27-v1-golden-j28-current",
   "purpose": "Materialize standing-approved Journey 27 Account & Preferences V1 as Golden #27 without changing approved HTML, then advance only to registered Journey 28 definition.",
-  "canonical_exact_head_verified": false,
-  "canonical_exact_head_note": "This transition becomes authoritative only through the Prototype workbench gate generated-state commit after all resulting-state validations pass.",
+  "canonical_exact_head_verified": true,
+  "canonical_materialized_head": "bbdc1fe40bbf91d949f82065cd4d3f1d3ea4d6c4",
+  "canonical_verified_transition_source": "bbdc1fe40bbf91d949f82065cd4d3f1d3ea4d6c4",
+  "canonical_verification_source_head": "bbdc1fe40bbf91d949f82065cd4d3f1d3ea4d6c4",
+  "canonical_exact_head_note": "Golden #27 / Journey 28 generated state on bbdc1fe40bbf91d949f82065cd4d3f1d3ea4d6c4 passed the complete resulting-state verification set. This binding records the verified transition without changing approved J27 product HTML.",
+  "canonical_verification_runs": {
+    "prototype_workbench_gate": "34916071915",
+    "ci": "34916071927",
+    "coverage": "34916071916",
+    "smoke": "34916071919",
+    "e2e_cypress": "34916071966"
+  },
+  "canonical_verification_conclusion": "success",
   "journey_27": {
     "version": "v1",
     "golden_number": 27,
@@ -39,6 +50,6 @@
   "current_journey": "28",
   "all_prior_golden_artifacts_preserved": true,
   "typography_note": "TYPO-01 deferred",
-  "gate_requirement": "J27 approved bytes/checksum and all prior Golden locks must remain exact; resulting 27-Golden/J28-current state must pass Prototype/CI/Coverage/Smoke/E2E and exact-head verification before J28 becomes Builder-authoritative.",
+  "gate_requirement": "Satisfied: exact approved J27 bytes/checksum and all prior Golden locks remained exact; the 27-Golden/J28-current state on bbdc1fe40bbf91d949f82065cd4d3f1d3ea4d6c4 passed Prototype workbench, CI, Coverage, Smoke and E2E.",
   "prototype_only": true
 }
