@@ -1,10 +1,22 @@
 ## Decision history
 
-**Coverage:** Journey 27 Account & Preferences V1 candidate definition.
+**Coverage:** Journey 27 Account & Preferences V1 candidate definition and independently reviewed product contract. This normalization adds the required decision-history metadata without changing the reviewed J27 HTML or product meaning.
 
 ### J27-D01 — Start only after J26 exact transition verification
 
-Journey 27 is authoritative only after Golden #26 and exact resulting-state verification. This is satisfied for the current candidate lineage.
+**Decision:** Journey 27 is authoritative only after Golden #26 and exact resulting-state verification. This condition was satisfied for the reviewed candidate lineage before J27 candidate construction.
+
+**Why:** Preserve sequential product authority and prevent account/preferences work from outrunning the validated Golden chain.
+
+**Alternatives:** Starting J27 before J26 exact-head verification was rejected by the canonical transition contract.
+
+**Tradeoffs:** Sequential gating adds transition latency but keeps the journey chain auditable and prevents stale authority from becoming product truth.
+
+**Revisit when:** Only if the canonical journey-transition authority model is explicitly revised.
+
+**Approval / version:** Process prerequisite for J27 V1; it does not itself approve J27 product behavior.
+
+**Sources:** [Current work packet](current-work-packet.md), [Journey 27 spec](../spec.md), and [Journey registry](../../../registry/journeys.json).
 
 ### J27-D02 — Keep account UX separate from identity-provider authority
 
@@ -12,29 +24,79 @@ Journey 27 is authoritative only after Golden #26 and exact resulting-state veri
 
 **Why:** Account presentation and identity authority are different trust domains.
 
+**Alternatives:** Treating a display-name edit as an identity-provider or cryptographic identity mutation was rejected.
+
+**Tradeoffs:** The UI must expose a narrower account-editing promise, but avoids false authority and identity-history rewriting.
+
+**Revisit when:** A production identity provider or platform-personhood contract is explicitly integrated and independently reviewed.
+
+**Approval / version:** J27 V1 reviewed product decision.
+
+**Sources:** [Journey 27 spec](../spec.md), [state inventory](../STATE_INVENTORY.md), and [edge cases](../EDGE_CASES.md).
+
 ### J27-D03 — Separate app notification preference from OS permission
 
 **Decision:** ChopDot can store a notification preference, while device/OS notification permission is a named adjacent-owner boundary.
 
 **Why:** An app cannot truthfully grant a system permission by toggling its own control.
 
+**Alternatives:** Modeling the in-app preference toggle as direct OS permission authority was rejected.
+
+**Tradeoffs:** The flow has an explicit handoff boundary, adding one more state while preserving platform truth.
+
+**Revisit when:** A production platform-permission integration can prove the external permission result and reconciliation path.
+
+**Approval / version:** J27 V1 reviewed product decision.
+
+**Sources:** [Journey 27 spec](../spec.md), [state inventory](../STATE_INVENTORY.md), and [edge cases](../EDGE_CASES.md).
+
 ### J27-D04 — Appearance preview is non-authoritative until save
 
 **Decision:** Theme preview is reversible and cannot be described as persisted until a verified save outcome exists.
 
-**Why:** Prevent navigation/preview from manufacturing durable preference truth.
+**Why:** Prevent navigation or preview from manufacturing durable preference truth.
+
+**Alternatives:** Treating preview state as a persisted preference was rejected.
+
+**Tradeoffs:** Preview and saved state require distinct UI/state handling, but recovery and navigation remain honest.
+
+**Revisit when:** The persistence contract changes or a production preference store provides stronger verified-write semantics.
+
+**Approval / version:** J27 V1 reviewed product decision.
+
+**Sources:** [Journey 27 spec](../spec.md), [state inventory](../STATE_INVENTORY.md), and [edge cases](../EDGE_CASES.md).
 
 ### J27-D05 — Scope V1 security to current-session sign-out
 
 **Decision:** V1 models current-session inspection and sign-out only. It does not claim remote-device/session revocation, credential rotation, key management, or production reauthentication.
 
-**Why:** Those require backend/provider authority not proven by this prototype. V1 still covers the essential signed-in → sign-out user job honestly.
+**Why:** Those capabilities require backend/provider authority not proven by this prototype. V1 still covers the essential signed-in to sign-out user job honestly.
+
+**Alternatives:** Expanding V1 to remote session control, credential rotation, or key management without proven authority was rejected.
+
+**Tradeoffs:** Security scope is intentionally narrower, but the candidate avoids overclaiming capabilities that belong to production authentication infrastructure.
+
+**Revisit when:** A reviewed authentication/session-management implementation provides remote-session or credential-management authority.
+
+**Approval / version:** J27 V1 reviewed product decision.
+
+**Sources:** [Journey 27 spec](../spec.md), [state inventory](../STATE_INVENTORY.md), and [edge cases](../EDGE_CASES.md).
 
 ### J27-D06 — Unknown writes reconcile before replacement retry
 
-**Decision:** Profile, notifications, appearance, sign-out, and deletion all use the same operation-truth rule: once effect may have started, an unknown result blocks a new operation until the existing operation is reconciled. Only proven no-effect exposes fresh retry.
+**Decision:** Profile, notifications, appearance, sign-out, and deletion all use the same operation-truth rule: once an effect may have started, an unknown result blocks a new operation until the existing operation is reconciled. Only proven no-effect exposes fresh retry.
 
 **Why:** Avoid duplicate writes and false success/failure created by timeout or navigation.
+
+**Alternatives:** Immediate replacement retry from an unknown outcome was rejected.
+
+**Tradeoffs:** Recovery can require an extra reconciliation step, but duplicate mutation risk and contradictory state are reduced.
+
+**Revisit when:** The underlying production mutation APIs provide stronger idempotency/result guarantees that can simplify recovery without weakening truth.
+
+**Approval / version:** J27 V1 reviewed product decision.
+
+**Sources:** [Journey 27 spec](../spec.md), [state inventory](../STATE_INVENTORY.md), and [edge cases](../EDGE_CASES.md).
 
 ### J27-D07 — Account deletion requires adjacent-owner prerequisites
 
@@ -42,11 +104,31 @@ Journey 27 is authoritative only after Golden #26 and exact resulting-state veri
 
 **Why:** Account deletion must not orphan group authority, silently discard obligations, or duplicate adjacent product responsibilities.
 
+**Alternatives:** Allowing deletion to bypass group ownership, money obligations, or export ownership boundaries was rejected.
+
+**Tradeoffs:** Deletion may require detours through adjacent journeys, but preserves financial and group-authority integrity.
+
+**Revisit when:** Adjacent Golden contracts for group ownership, settlement, or export are explicitly revised.
+
+**Approval / version:** J27 V1 reviewed product decision.
+
+**Sources:** [Journey 27 spec](../spec.md), [state inventory](../STATE_INVENTORY.md), [edge cases](../EDGE_CASES.md), and [Journey registry](../../../registry/journeys.json).
+
 ### J27-D08 — Deletion scope preserves shared/external history
 
 **Decision:** Verified deletion removes only the ChopDot account working state represented by this fixture. It does not claim erasure of shared group/expense history, user-controlled exports/backups, provider records, payment/settlement evidence, or public/on-chain history.
 
 **Why:** Those records have separate owners, retention requirements, or technical immutability.
+
+**Alternatives:** A blanket “delete everything everywhere” promise was rejected because the prototype cannot prove that authority.
+
+**Tradeoffs:** Deletion copy must explain retained/external records, but avoids misleading privacy claims.
+
+**Revisit when:** Production retention, erasure, export, and external-provider contracts are implemented and independently reviewed.
+
+**Approval / version:** J27 V1 reviewed product decision.
+
+**Sources:** [Journey 27 spec](../spec.md), [state inventory](../STATE_INVENTORY.md), and [edge cases](../EDGE_CASES.md).
 
 ### J27-D09 — Typed confirmation uses the current display name
 
@@ -54,14 +136,44 @@ Journey 27 is authoritative only after Golden #26 and exact resulting-state veri
 
 **Why:** Adds deliberate confirmation without pretending to be a security credential.
 
+**Alternatives:** No confirmation and treating the typed phrase as authentication were both rejected.
+
+**Tradeoffs:** The step adds friction to deletion but creates a clear deliberate-action boundary while keeping authentication authority separate.
+
+**Revisit when:** The destructive-action confirmation model or production reauthentication contract is explicitly revised.
+
+**Approval / version:** J27 V1 reviewed product decision.
+
+**Sources:** [Journey 27 spec](../spec.md), [state inventory](../STATE_INVENTORY.md), and [edge cases](../EDGE_CASES.md).
+
 ### J27-D10 — Exhaustive mechanical evidence, risk-based visual review
 
-**Decision:** The candidate must still render and mechanically validate every registered material state/boundary at both canonical viewports with caller-reachability evidence. Independent direct visual review follows the active risk-based doctrine: inspect high-risk/new/changed families and escalate only when anomalies or uncertainty justify broader inspection.
+**Decision:** The candidate must render and mechanically validate every registered material state/boundary at both canonical viewports with caller-reachability evidence. Independent direct visual review follows the active risk-based doctrine: inspect high-risk, new, or changed families and escalate only when anomalies or uncertainty justify broader inspection.
 
 **Why:** Preserve exhaustive coverage while avoiding redundant manual inspection of visually equivalent states.
+
+**Alternatives:** Manual inspection of every generated screenshot by default and reduced mechanical coverage were both rejected.
+
+**Tradeoffs:** The reviewer must document sample sufficiency and escalation logic, while automation retains full-state evidence coverage.
+
+**Revisit when:** Visual-diff automation, viewport policy, or review-risk doctrine materially changes.
+
+**Approval / version:** J27 V1 reviewed evidence/review-process decision.
+
+**Sources:** [Current work packet](current-work-packet.md), [Journey 27 spec](../spec.md), and [review QA source](review-qa-v1.mjs).
 
 ### J27-D11 — Preserve prototype/production honesty
 
 **Decision:** All account/session/deletion outcomes remain deterministic fixture truth. The candidate does not claim real backend persistence, auth-provider mutation, OS permission changes, external erasure, payment/settlement, wallet signing, or chain effects.
 
 **Why:** Review should evaluate the product contract without overstating implementation maturity.
+
+**Alternatives:** Presenting deterministic prototype outcomes as production/live effects was rejected.
+
+**Tradeoffs:** Prototype copy must carry explicit limitations, but trust and later implementation mapping remain accurate.
+
+**Revisit when:** Production interfaces are integrated and exact live behavior has independent evidence.
+
+**Approval / version:** J27 V1 reviewed product/trust decision.
+
+**Sources:** [Journey 27 spec](../spec.md), [state inventory](../STATE_INVENTORY.md), [edge cases](../EDGE_CASES.md), and [review QA source](review-qa-v1.mjs).
