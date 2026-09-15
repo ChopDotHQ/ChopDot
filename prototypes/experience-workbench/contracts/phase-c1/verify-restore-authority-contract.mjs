@@ -28,6 +28,13 @@ eq(recovery.higher_generation_restore_requires_exact_prior_head_binding, true, '
 eq(recovery.head_transition_requires_owner_scoped_cas_token_or_equivalent, true, 'head transition requires owner-scoped CAS token or equivalent proof');
 eq(recovery.restore_revalidates_authoritative_head_before_commit, true, 'restore revalidates authoritative head immediately before commit');
 eq(recovery.concurrent_head_change_during_restore_must_fail, true, 'concurrent authoritative-head change makes restore fail closed');
+eq(recovery.restore_commit_requires_authoritative_head_fence_or_transaction, true, 'restore commit requires an authoritative-head fence/transaction');
+eq(recovery.restore_commit_fence_binds_exact_head, true, 'restore commit fence binds the exact checked head');
+eq(recovery.restore_financial_mutation_occurs_inside_fence, true, 'restored financial mutation occurs inside the fence validity interval');
+eq(recovery.post_check_then_unfenced_commit_allowed, false, 'post-check unfenced local commit is forbidden');
+eq(recovery.fence_failure_or_invalidation_must_leave_local_state_unchanged, true, 'fence failure/invalidation leaves local financial state unchanged');
+eq(recovery.storage_failure_must_leave_local_state_unchanged, true, 'storage/fence failure leaves local state unchanged');
+eq(recovery.restart_requires_fence_reacquisition, true, 'restart/process recreation must reacquire the authoritative-head fence');
 eq(spend.lineage.partial_capture_requires_parent, false, 'partial capture is not an adjustment requiring a parent');
 eq(spend.lineage.partial_capture_is_root_capture, true, 'partial capture is a root capture in the rail-neutral model');
 eq(spend.lineage.partial_capture_parent_ref_allowed, false, 'partial capture cannot carry adjustment parent lineage');
