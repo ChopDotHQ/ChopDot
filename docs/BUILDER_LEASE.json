@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "primary-builder",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|issue38-comment-5678939496|guest-01-approved|spend-01-rail-neutral-only|no-successor",
-  "candidate_head": "c47b0e1b0890355ca452ea0f1e55111c87ab00e9",
+  "candidate_head": "ea920cf3b8aae7bc23e2e9bd1478396a308a5202",
   "claimed_at": "2026-09-15T11:36:04Z",
   "renewed_at": "2026-09-15T11:36:04Z",
   "completed_at": null,
-  "expires_at": "2026-09-15T11:48:04Z",
-  "waiting_reason": null,
-  "note": "Reclaimed exact Phase C1 head after mechanical Golden-regression workflow assertion failure; product/browser checks were green."
+  "expires_at": null,
+  "waiting_reason": "exact-head GitHub Actions",
+  "note": "Golden regression gate now verifies all 28 immutable bytes against the canonical base manifest; writer lane released for exact-head CI."
 }
