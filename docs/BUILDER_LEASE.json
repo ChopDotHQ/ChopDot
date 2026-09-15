@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "fast-builder-A",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5689122970|candidate-ee0a1474|partial-capture-descendant-cas",
-  "candidate_head": "ee0a1474f193244a386e8dd6fb86704864561452",
+  "candidate_head": "645aa912de3d70c52c824bc8f641a6fdc10c8975",
   "claimed_at": "2026-09-15T22:53:34Z",
   "renewed_at": "2026-09-15T22:59:30Z",
   "completed_at": null,
-  "expires_at": "2026-09-15T23:11:30Z",
-  "waiting_reason": null,
-  "note": "Authorized by newest non-superseded Phase C1 Reviewer REVISE #38 5689122970; bounded repair of partial_capture lineage coherence and descendant/CAS accepted-head advancement only."
+  "expires_at": null,
+  "waiting_reason": "Exact successor 645aa912de3d70c52c824bc8f641a6fdc10c8975 pushed for formal Reviewer REVISE 5689122970; waiting for required Phase C1/CI/Coverage/Smoke/E2E exact-head checks before sealed handoff.",
+  "note": "Bounded implementation repair: partial_capture is root capture with no parent lineage; higher-generation restore requires exact prior-head-bound owner-scoped CAS/equivalent proof, immutable descendant lineage, and pre-commit authoritative-head revalidation."
 }
