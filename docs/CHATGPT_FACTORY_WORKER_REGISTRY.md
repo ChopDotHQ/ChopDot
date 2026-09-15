@@ -98,7 +98,7 @@ This topology applies when canonical authority proves all 28 registered UX journ
 | Worker | Schedule | Role |
 |---|---:|---|
 | ChopDot Control Tower | `:58` hourly condition watch | phase coordination, no-idle enforcement, and implementation hold |
-| ChopDot Factory Observer | `:22` hourly exact | private Competitive × Golden × current Polkadot / Parity reconciliation and factory learning |
+| ChopDot Factory Observer | `:44` hourly exact | private Competitive × Golden × current Polkadot / Parity reconciliation and factory learning |
 | ChopDot Polkadot Platform Watch | daily | material Polkadot / Parity platform changes |
 | ChopDot Capability Radar | weekly | genuinely new hard-to-own factory capabilities |
 
