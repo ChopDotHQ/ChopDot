@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "completed",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
-  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5687144251|successor-606c530|per-parent-adjustment-conservation",
+  "holder": "primary-builder",
+  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5688117121|successor-606c530|restore-integrity",
   "candidate_head": "606c5303e89312810e3c357aef74e3c3c59ef23c",
-  "claimed_at": "2026-09-15T20:55:19Z",
-  "renewed_at": "2026-09-15T20:55:19Z",
-  "completed_at": "2026-09-15T20:56:30Z",
-  "expires_at": null,
+  "claimed_at": "2026-09-15T21:14:11Z",
+  "renewed_at": "2026-09-15T21:14:11Z",
+  "completed_at": null,
+  "expires_at": "2026-09-15T21:26:11Z",
   "waiting_reason": null,
-  "note": "Gate C handoff sealed as #38 comment 5687992300 for exact successor 606c5303e89312810e3c357aef74e3c3c59ef23c. Independent Reviewer owns next product disposition. No candidate/product bytes changed during handoff completion."
+  "note": "Phase C1 Reviewer REVISE #38 5688117121 authorizes one bounded restore-integrity repair on exact candidate 606c5303e89312810e3c357aef74e3c3c59ef23c."
 }
