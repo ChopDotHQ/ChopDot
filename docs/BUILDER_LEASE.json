@@ -5,11 +5,11 @@
   "journey": "Phase-C1",
   "holder": "phase-c1-repair-backup",
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5689695425|candidate-645aa912|commit-fencing",
-  "candidate_head": "645aa912de3d70c52c824bc8f641a6fdc10c8975",
+  "candidate_head": "dcb6509cf91d4e5e8afd4b99f258150b028fbf7b",
   "claimed_at": "2026-09-15T23:53:22Z",
-  "renewed_at": "2026-09-15T23:53:22Z",
+  "renewed_at": "2026-09-15T23:59:30Z",
   "completed_at": null,
-  "expires_at": "2026-09-16T00:05:22Z",
+  "expires_at": "2026-09-16T00:11:30Z",
   "waiting_reason": null,
-  "note": "Claimed from formal Phase C1 Reviewer REVISE #38 5689695425 / Supervisor handback 5689775272 for the bounded post-check commit-fencing repair on exact candidate 645aa912de3d70c52c824bc8f641a6fdc10c8975."
+  "note": "Active bounded post-check commit-fencing repair from Reviewer REVISE #38 5689695425 / Supervisor handback 5689775272. Implementation successor dcb6509cf91d4e5e8afd4b99f258150b028fbf7b now requires restored local financial state to commit inside an exact authoritative-head fence; tests/contract evidence are being updated in the same repair cycle."
 }
