@@ -11,119 +11,203 @@ let checks = 0;
 const ok = (value, message) => { checks += 1; assert.ok(value, message); };
 const eq = (actual, expected, message) => { checks += 1; assert.deepEqual(actual, expected, message); };
 
-// GUEST-01 identity invariants.
+// GUEST-01 identity, privacy and authority invariants.
 eq(member.scope, 'group', 'MemberIdentity must be group-scoped');
 eq(member.identity_key, 'participant_id', 'participant_id is the durable reference');
-ok(member.states.includes('guest') && member.states.includes('account_backed') && member.states.includes('linked') && member.states.includes('unresolved'), 'all approved identity states exist');
-eq(member.never_merge_on.sort(), ['display_name', 'email'], 'display name/email are never merge keys');
+eq(member.states, ['guest','account_backed','linked','unresolved'], 'approved identity states stay bounded');
+eq([...member.never_merge_on].sort(), ['display_name','email'], 'display name/email are never merge keys');
 eq(member.rules.full_account_required_for_ledger_participation, false, 'guest ledger participation cannot require a full account');
-eq(member.rules.upgrade_preserves_participant_id, true, 'upgrade must preserve participant ID');
-eq(member.rules.link_preserves_ledger_references, true, 'link must preserve ledger references');
+eq(member.rules.upgrade_preserves_participant_id, true, 'upgrade preserves participant ID');
+eq(member.rules.link_preserves_ledger_references, true, 'link preserves ledger references');
 eq(member.rules.link_never_rewrites_historical_ownership, true, 'link never rewrites historical ownership');
-eq(member.rules.link_is_staged_and_atomic, true, 'link is staged and atomic');
-eq(member.rules.link_commit_requires_account_activation_and_binding_proof, true, 'activation/proof precede binding commit');
-eq(member.rules.failed_or_cancelled_link_preserves_prelink_graph, true, 'failed/cancelled link preserves pre-link graph');
-eq(member.rules.guest_authority_requires_explicit_group_scoped_capability, true, 'guest authority is explicit and group scoped');
-eq(member.rules.guest_may_not_bypass_existing_authority_checks, true, 'guest support cannot bypass authority checks');
-eq(member.rules.organizer_may_not_proxy_sign_for_guest, true, 'organizer cannot proxy-sign for guest');
+eq(member.rules.matching_proof_alone_completes_link, false, 'matching proof alone is not terminal link success');
+eq(member.rules.pending_or_unknown_link_preserves_guest_authority, true, 'guest authority survives pending/unknown link');
+eq(member.rules.pending_or_unknown_link_grants_account_capabilities, false, 'pending/unknown cannot grant account authority');
+eq(member.rules.unknown_link_must_reconcile_same_operation_before_retry, true, 'unknown link reconciles same operation');
+eq(member.rules.serialized_capability_labels_are_non_authoritative, true, 'serialized capability labels are inert');
+eq(member.rules.guest_mutation_requires_current_participant_controlled_proof, true, 'guest mutation requires current participant proof');
+eq(member.rules.organizer_may_not_proxy_sign_for_guest, true, 'organizer cannot proxy-sign guest');
 eq(member.rules.collision_or_mismatch_state, 'unresolved', 'mismatch/collision fails unresolved');
-eq(member.rules.collision_may_silently_merge, false, 'silent merge forbidden');
-for (const capability of ['ledger_participate','expense_reference','split_reference','history_reference','export_participant','recover_participant']) ok(member.base_capabilities.includes(capability), `base capability ${capability}`);
-for (const capability of ['fund_spend','sign_spend','group_admin','membership_admin','payment_destination_control','settlement_confirmation']) ok(member.account_gated_capabilities.includes(capability), `account-gated capability ${capability}`);
-eq(member.capability_model.guest.approve, [], 'guest has no account-authority approval capability');
-for (const capability of ['fund_spend','sign_spend','group_admin','membership_admin','payment_destination_control','settlement_confirmation']) ok(member.capability_model.guest.cannot.includes(capability), `guest cannot ${capability}`);
-eq(member.capability_model.guest_holds_credential, true, 'guest holds its own scoped capability');
-eq(member.capability_model.organizer_proxy_signature_for_guest, false, 'organizer proxy signature forbidden');
-eq(member.capability_model.remove_account_key_checks_to_enable_guest, false, 'guest support is not implemented by deleting account checks');
+eq(member.rules.collision_may_silently_merge, false, 'silent merge is forbidden');
+
+for (const capability of ['ledger_participate','expense_reference','split_reference','history_reference','export_participant','recover_participant']) {
+  ok(member.base_capabilities.includes(capability), `base capability ${capability}`);
+}
+for (const capability of ['fund_spend','sign_spend','group_admin','membership_admin','payment_destination_control','settlement_confirmation']) {
+  ok(member.account_gated_capabilities.includes(capability), `account-gated capability ${capability}`);
+  ok(member.capability_model.guest.cannot.includes(capability), `guest cannot ${capability}`);
+}
+
+eq(member.guest_authority.participant_id_or_display_metadata_alone_is_authority, false, 'participant ID/metadata alone is not guest authority');
+eq(member.guest_authority.organizer_membership_authority_may_impersonate_guest, false, 'organizer cannot impersonate guest');
+eq(member.guest_authority.current_capability_version_required, true, 'current capability version required');
+eq(member.guest_authority.current_policy_version_required, true, 'current policy version required');
+eq(member.guest_authority.nonce_replay_allowed, false, 'guest mutation proof is replay-resistant');
+eq(member.guest_authority.effect_time_revalidation_required, true, 'guest authority revalidates at effect time');
+eq(member.guest_authority.serialization.capability_labels_are_authoritative, false, 'serialized labels are not authority');
+eq(member.guest_authority.serialization.imported_or_restored_capability_labels_self_grant_authority, false, 'restore/import cannot self-grant');
+eq(member.guest_authority.recovery.writes_resume_before_revalidation, false, 'recovery cannot write before revalidation');
+eq(member.guest_authority.recovery.preserve_participant_id, true, 'recovery preserves participant identity');
 eq(member.cross_group_privacy.policy, 'group_scoped_unlinkability', 'cross-group privacy choice is explicit');
-eq(member.cross_group_privacy.group_visible_participant_ids_unlinkable_across_groups, true, 'group participant IDs are unlinkable across groups');
-eq(member.cross_group_privacy.group_surfaces_may_expose_stable_cross_group_account_identifier, false, 'group surfaces cannot expose stable cross-group account ID');
-eq(member.cross_group_privacy.polkadot_per_application_alias_alone_satisfies_group_unlinkability, false, 'per-app alias alone does not satisfy per-group unlinkability');
-const guestLink = member.transitions.find(t => t.from === 'guest' && t.action === 'link_matching_account_proof');
-ok(guestLink && guestLink.to === 'linked', 'guest can explicitly link with matching proof');
-ok(guestLink.preserve.includes('participant_id') && guestLink.preserve.includes('history_refs') && guestLink.preserve.includes('historical_ownership'), 'link preserves identity/history/ownership');
-const mismatch = member.transitions.find(t => t.action === 'link_mismatch_or_collision');
-ok(mismatch && mismatch.to === 'unresolved' && mismatch.preserve.includes('participant_id'), 'mismatch keeps participant durable');
-const failed = member.transitions.find(t => t.action === 'link_activation_failed');
-const cancelled = member.transitions.find(t => t.action === 'link_cancelled');
-ok(failed?.preserve.includes('exact_pre_link_participant_graph'), 'activation failure preserves exact pre-link graph');
-ok(cancelled?.preserve.includes('exact_pre_link_participant_graph'), 'cancel preserves exact pre-link graph');
+eq(member.cross_group_privacy.group_surfaces_may_expose_stable_cross_group_account_identifier, false, 'group surfaces hide stable cross-group account ID');
 
-// Deterministic atomic-link example: nothing mutates until verified binding commit.
-const preLinkGraph = {
+eq(member.link_operation.matching_account_proof_is_terminal_success, false, 'link proof is not link completion');
+eq(member.link_operation.guest_ledger_participation_remains_valid_while_pending_or_unknown, true, 'guest remains valid during uncertain link');
+eq(member.link_operation.account_gated_capabilities_before_terminal_success, false, 'account capabilities wait for terminal success');
+eq(member.link_operation.unknown_reuses_same_link_operation_id, true, 'unknown link recovery uses same operation');
+eq(member.link_operation.unknown_may_start_fresh_link_operation, false, 'unknown link cannot fresh-dispatch');
+eq(member.link_operation.failure_after_dispatch_without_authoritative_no_effect_proof_maps_to, 'unknown', 'possible-effect link failure becomes unknown');
+
+const proofTransition = member.transitions.find(t => t.action === 'matching_account_proof_verified');
+ok(proofTransition?.from === 'guest' && proofTransition?.to === 'guest', 'matching proof leaves participant guest/nonterminal');
+const pendingTransition = member.transitions.find(t => t.action === 'account_activation_or_binding_pending');
+ok(pendingTransition?.to === 'guest', 'activation/binding pending leaves guest identity valid');
+const unknownLinkTransition = member.transitions.find(t => t.action === 'link_outcome_unknown');
+ok(unknownLinkTransition?.to === 'guest' && unknownLinkTransition.preserve.includes('link_operation_id'), 'unknown link preserves guest and operation identity');
+const terminalLinkTransition = member.transitions.find(t => t.action === 'verified_durable_binding_commit');
+ok(terminalLinkTransition?.to === 'linked', 'only verified durable binding commits linked state');
+
+// Deterministic guest-authority model: knowing IDs, forged serialized labels, stale versions and replay all fail closed.
+const currentGuest = {
+  group_id: 'grp_alps',
   participant_id: 'grp_alps:p_7f3a',
-  state: 'guest',
-  expense_refs: ['exp_1'],
-  split_refs: ['split_1'],
-  history_refs: ['hist_1'],
-  linked_account_id: null,
-  capabilities: ['ledger_participate','expense_reference','split_reference','history_reference']
+  capability_id: 'gcap_01',
+  capability_version: 4,
+  policy_version: 9,
+  state_version: 22,
+  allowed_scope_digest: 'scope:add-expense',
+  revoked: false
 };
-const linkAttempt = (snapshot, outcome) => {
-  const before = structuredClone(snapshot);
-  if (outcome === 'activation_failed' || outcome === 'cancelled') return before;
-  if (outcome === 'mismatch') return { ...before, state: 'unresolved' };
-  if (outcome === 'verified') return { ...before, state: 'linked', linked_account_id: 'acct_verified_1' };
-  throw new Error(`unknown link outcome ${outcome}`);
+const usedNonces = new Set();
+const verifyGuestMutation = (proof, current, { proofValid = true, organizerOnly = false } = {}) => {
+  if (!proofValid || organizerOnly || current.revoked) return false;
+  if (proof.group_id !== current.group_id || proof.participant_id !== current.participant_id) return false;
+  if (proof.capability_id !== current.capability_id || proof.capability_version !== current.capability_version) return false;
+  if (proof.policy_version !== current.policy_version || proof.state_version !== current.state_version) return false;
+  if (proof.scope_digest !== current.allowed_scope_digest || !proof.payload_digest || !proof.command_id || !proof.proof_ref) return false;
+  if (!proof.nonce || usedNonces.has(proof.nonce)) return false;
+  usedNonces.add(proof.nonce);
+  return true;
 };
-eq(linkAttempt(preLinkGraph, 'activation_failed'), preLinkGraph, 'activation failure is exact rollback/no-op');
-eq(linkAttempt(preLinkGraph, 'cancelled'), preLinkGraph, 'cancelled link is exact rollback/no-op');
-eq(linkAttempt(preLinkGraph, 'verified').participant_id, preLinkGraph.participant_id, 'verified link preserves participant ID');
-eq(linkAttempt(preLinkGraph, 'verified').expense_refs, preLinkGraph.expense_refs, 'verified link preserves expense ownership refs');
+const guestProof = {
+  group_id:'grp_alps', participant_id:'grp_alps:p_7f3a', capability_id:'gcap_01',
+  capability_version:4, policy_version:9, command_id:'cmd_01', state_version:22,
+  scope_digest:'scope:add-expense', payload_digest:'payload:abc', nonce:'nonce_01', proof_ref:'opaque-proof'
+};
+eq(verifyGuestMutation(guestProof, currentGuest), true, 'current guest-held proof authorizes bounded mutation');
+eq(verifyGuestMutation({...guestProof, nonce:'nonce_wrong_group', group_id:'grp_other'}, currentGuest), false, 'wrong group proof fails');
+eq(verifyGuestMutation({...guestProof, nonce:'nonce_wrong_participant', participant_id:'grp_alps:p_other'}, currentGuest), false, 'wrong participant proof fails');
+eq(verifyGuestMutation({...guestProof, nonce:'nonce_stale_version', capability_version:3}, currentGuest), false, 'stale capability version fails');
+eq(verifyGuestMutation({...guestProof, nonce:'nonce_forged_labels'}, currentGuest, {proofValid:false}), false, 'serialized capability labels without proof fail');
+eq(verifyGuestMutation({...guestProof, nonce:'nonce_organizer'}, currentGuest, {organizerOnly:true}), false, 'organizer authority cannot impersonate guest');
+eq(verifyGuestMutation(guestProof, currentGuest), false, 'replayed guest proof nonce fails');
 
-// SPEND-01 rail-neutral truth invariants.
+// Link operation temporal semantics: guest remains valid until authoritative readback; unknown cannot start a new link.
+const preLink = { participant_id:'grp_alps:p_7f3a', state:'guest', guest_authority:true, account_caps:false, link_operation_id:null };
+const linkStep = (snapshot, event) => {
+  const before = structuredClone(snapshot);
+  if (event.type === 'start') return {...before, link_operation_id:event.operation_id};
+  if (event.type === 'proof_verified' || event.type === 'pending') return {...before, state:'guest', account_caps:false};
+  if (event.type === 'known_pre_effect_failed') {
+    assert.equal(event.no_effect_proof, true);
+    return {...before, state:'guest', account_caps:false, link_operation_id:null};
+  }
+  if (event.type === 'unknown') return {...before, state:'guest', account_caps:false};
+  if (event.type === 'retry') {
+    assert.notEqual(before.link_operation_id, null);
+    throw new Error('fresh retry forbidden until exact link operation reconciles');
+  }
+  if (event.type === 'durable_readback_success') return {...before, state:'linked', account_caps:true};
+  throw new Error(`unknown link event ${event.type}`);
+};
+const started = linkStep(preLink, {type:'start', operation_id:'link_01'});
+const proofed = linkStep(started, {type:'proof_verified'});
+eq(proofed.state, 'guest', 'matching proof does not link');
+eq(proofed.account_caps, false, 'matching proof grants no account capability');
+const unknownLink = linkStep(proofed, {type:'unknown'});
+eq(unknownLink.link_operation_id, 'link_01', 'unknown preserves exact link operation');
+eq(unknownLink.guest_authority, true, 'unknown preserves guest authority');
+assert.throws(() => linkStep(unknownLink, {type:'retry'}), /fresh retry forbidden/); checks += 1;
+const linked = linkStep(proofed, {type:'durable_readback_success'});
+eq(linked.state, 'linked', 'authoritative durable readback completes link');
+eq(linked.participant_id, preLink.participant_id, 'durable link preserves participant ID');
+
+// SPEND-01 rail-neutral, evidence and temporal failure invariants.
 eq(spend.kind, 'rail-neutral-domain-model', 'SpendIntent remains rail-neutral');
-eq(spend.economic_domain, 'merchant_spend_before_or_during_purchase', 'SpendIntent economic domain is explicit');
 eq(spend.creates_user_journey, false, 'SpendIntent is not Journey 29');
-eq(spend.execution_mode_selected, false, 'no concrete mode selected');
-eq(spend.source_mode_adapter.mode, 'unselected', 'adapter mode is explicitly unselected');
-eq(spend.source_mode_adapter.adapter_id, null, 'no adapter ID selected');
-eq(spend.source_mode_adapter.callbacks_are_observations_only, true, 'adapter callbacks are observations only');
-eq(spend.source_mode_adapter.callback_success_may_mark_captured_without_proof, false, 'callback success alone cannot capture');
+eq(spend.execution_mode_selected, false, 'no concrete execution mode selected');
+eq(spend.source_mode_adapter.mode, 'unselected', 'adapter mode is unselected');
+eq(spend.source_mode_adapter.adapter_id, null, 'no adapter ID is selected');
+eq(spend.source_mode_adapter.callbacks_are_observations_only, true, 'callbacks are observations only');
+eq(spend.source_mode_adapter.callback_success_may_mark_captured_without_proof, false, 'callback cannot capture without proof');
 eq(spend.source_mode_adapter.possible_future_adapter.mode, 'polkadot_cash', 'future Polkadot seam is named without selection');
-eq(spend.source_mode_adapter.possible_future_adapter.production_ready, false, 'future Polkadot adapter is not production-ready');
-eq(spend.source_mode_adapter.possible_future_adapter.merchant_card_capability_claimed, false, 'Polkadot adapter seam makes no merchant-card claim');
-for (const state of ['draft','reviewed','authorized','pending','captured','partial','unknown','failed','reversed','cancelled']) ok(spend.lifecycle_states.includes(state), `lifecycle state ${state}`);
+eq(spend.source_mode_adapter.possible_future_adapter.production_ready, false, 'Polkadot seam is not production-ready');
+eq(spend.source_mode_adapter.possible_future_adapter.merchant_card_capability_claimed, false, 'Polkadot seam makes no merchant-card claim');
+for (const state of ['draft','reviewed','authorized','pending','captured','partial','unknown','failed','reversed','cancelled']) {
+  ok(spend.lifecycle_states.includes(state), `lifecycle state ${state}`);
+}
 eq(spend.materialization.mode, 'exactly_once', 'canonical materialization is exactly-once');
-eq(spend.materialization.one_captured_spend_intent_derives_financial_state_once, true, 'one captured SpendIntent derives canonical state once');
 eq(spend.materialization.authorized_is_spent, false, 'authorized is not spent');
 eq(spend.materialization.unknown_may_materialize_new_spend, false, 'unknown cannot materialize spend');
-eq(spend.recovery.pending_requires_reconciliation_before_retry, true, 'pending requires recovery before retry');
-eq(spend.recovery.unknown_requires_reconciliation_before_retry, true, 'unknown requires recovery before retry');
-eq(spend.recovery.unknown_may_create_new_authority, false, 'unknown cannot create authority');
-eq(spend.recovery.unknown_may_dispatch_fresh_value, false, 'unknown cannot dispatch fresh value');
-eq(spend.identity.reconciliation_reuses_operation_id, true, 'reconciliation stays on exact operation identity');
-eq(spend.identity.unknown_allows_fresh_dispatch, false, 'unknown operation cannot fresh-dispatch');
-eq(spend.proof.required_for_financial_materialization, true, 'proof is required for canonical financial state');
-eq(spend.proof.exact_operation_amount_asset_destination_match_required, true, 'proof binds operation/amount/asset/destination');
-eq(spend.proof.required_finality_or_authoritative_readback, true, 'proof requires finality/readback');
-eq(spend.proof.host_callback_alone_is_canonical_spend_proof, false, 'host callback alone is not spend proof');
-for (const field of ['operation_id','amount','asset','destination','finality','readback_ref']) ok(spend.proof.shape.includes(field), `proof field ${field}`);
-eq(spend.payment_intent_boundary.separate_economic_domain, true, 'SpendIntent and PaymentIntent domains are separate');
-eq(spend.payment_intent_boundary.payment_intent_purpose, 'settle_already_existing_obligations', 'PaymentIntent is settlement-after-debt');
+eq(spend.proof.required_for_financial_materialization, true, 'proof required for financial materialization');
+for (const field of ['spend_intent_id','operation_id','effect_id','adapter_id','rail_identity','amount','asset','target_digest','policy_snapshot_digest','approval_snapshot_digest','finality','readback_ref']) {
+  ok(spend.proof.shape.includes(field), `proof field ${field}`);
+  ok(spend.proof.exact_binding_required.includes(field) || ['finality','readback_ref'].includes(field), `proof binding ${field}`);
+}
+eq(spend.proof.proof_reuse_across_another_intent_operation_effect_or_target_allowed, false, 'proof substitution is forbidden');
+eq(spend.failure_semantics.failed_requires_authoritative_no_effect_proof, true, 'failed requires no-effect proof');
+eq(spend.failure_semantics.possible_effect_failure_must_be_unknown, true, 'possible-effect failure is unknown');
+eq(spend.failure_semantics.transport_or_timeout_after_possible_dispatch_must_be_unknown, true, 'post-dispatch timeout is unknown');
+eq(spend.failure_semantics.failed_without_no_effect_proof_is_valid, false, 'unproven failed is invalid');
+eq(spend.recovery.unknown_requires_reconciliation_before_retry, true, 'unknown reconciles before retry');
+eq(spend.recovery.reconciliation_reuses_exact_operation_id, true, 'recovery keeps exact operation ID');
+eq(spend.recovery.terminal_failure_without_no_effect_proof_may_retry, false, 'unproven failure cannot retry');
+eq(spend.payment_intent_boundary.separate_economic_domain, true, 'SpendIntent and PaymentIntent are separate');
 eq(spend.payment_intent_boundary.payment_intent_may_create_or_recreate_merchant_spend, false, 'PaymentIntent cannot create merchant spend');
-eq(spend.payment_intent_boundary.payment_intent_may_duplicate_spend_materialization, false, 'PaymentIntent cannot duplicate merchant spend materialization');
-eq(spend.lineage.partial_capture_requires_parent, true, 'partial capture lineage required');
-eq(spend.lineage.refund_requires_parent_capture, true, 'refund lineage required');
-eq(spend.lineage.reversal_requires_parent_capture, true, 'reversal lineage required');
-eq(spend.lineage.all_adjustments_remain_on_original_operation_lineage, true, 'partial/refund/reversal remain one lineage');
-eq(spend.research_boundary.selected_modes.length, 0, 'selected execution modes must stay empty');
-for (const mode of ['multi_source_merchant_card','joint_bank_account_or_pot','issuer_or_baas','generic_merchant_card_issuance','apple_pay_or_google_pay_provisioning']) ok(spend.research_boundary.not_approved.includes(mode), `research boundary ${mode}`);
-eq(spend.research_boundary.future_mode_must_implement_adapter_boundary, true, 'future modes must plug into SpendIntent');
+eq(spend.research_boundary.selected_modes.length, 0, 'selected execution modes stay empty');
 
-// Deterministic economic-domain example: capture derives once; PaymentIntent only settles the derived obligation.
+const expectedSpend = {
+  spend_intent_id:'sp_1', operation_id:'op_1', effect_id:'cap_1', adapter_id:'adapter_fixture',
+  rail_identity:'fixture_rail', amount:'42.50', asset:'USD', target_digest:'target:merchant-7',
+  policy_snapshot_digest:'policy:p9', approval_snapshot_digest:'approval:a3'
+};
+const validProof = {...expectedSpend, source:'authoritative_readback', proof_id:'proof_1', observed_at:'2026-09-15T12:00:00Z', finality:'final', readback_ref:'rb_1'};
+const proofMatches = (proof, expected) =>
+  spend.proof.exact_binding_required.every(field => proof[field] === expected[field]) &&
+  Boolean(proof.finality || proof.readback_ref);
+eq(proofMatches(validProof, expectedSpend), true, 'fully bound proof matches exact SpendIntent effect');
+for (const [field, value] of [
+  ['spend_intent_id','sp_2'],['operation_id','op_2'],['effect_id','cap_2'],['adapter_id','other_adapter'],
+  ['rail_identity','other_rail'],['target_digest','target:other'],['policy_snapshot_digest','policy:p10'],
+  ['approval_snapshot_digest','approval:a4'],['amount','42.51'],['asset','EUR']
+]) {
+  eq(proofMatches({...validProof, [field]:value}, expectedSpend), false, `proof substitution fails on ${field}`);
+}
+
+const classifyFailure = ({ dispatch_possible, authoritative_no_effect_proof }) => {
+  if (dispatch_possible) return 'unknown';
+  if (authoritative_no_effect_proof) return 'failed';
+  return 'unknown';
+};
+eq(classifyFailure({dispatch_possible:false, authoritative_no_effect_proof:true}), 'failed', 'proven pre-effect no-effect failure may be failed');
+eq(classifyFailure({dispatch_possible:false, authoritative_no_effect_proof:false}), 'unknown', 'unproven failure is unknown');
+eq(classifyFailure({dispatch_possible:true, authoritative_no_effect_proof:false}), 'unknown', 'possible-effect failure is unknown');
+const mayStartFreshOperation = ({state, authoritative_no_effect_proof}) => state === 'failed' && authoritative_no_effect_proof === true;
+eq(mayStartFreshOperation({state:'failed', authoritative_no_effect_proof:true}), true, 'fresh op allowed only after verified no-effect failed state');
+eq(mayStartFreshOperation({state:'failed', authoritative_no_effect_proof:false}), false, 'failed label alone cannot permit fresh op');
+eq(mayStartFreshOperation({state:'unknown', authoritative_no_effect_proof:false}), false, 'unknown cannot permit fresh op');
+
 const derived = new Set();
-const deriveCapturedSpend = ({ spend_intent_id, lineage_id, state }) => {
-  if (state !== 'captured') return false;
-  const key = `${spend_intent_id}:${lineage_id}`;
+const deriveEffect = ({ state, proof, expected }) => {
+  if (!['captured','partial'].includes(state) || !proofMatches(proof, expected)) return false;
+  const key = `${expected.spend_intent_id}:${expected.effect_id}`;
   if (derived.has(key)) return false;
   derived.add(key);
   return true;
 };
-eq(deriveCapturedSpend({spend_intent_id:'sp_1',lineage_id:'cap_1',state:'captured'}), true, 'first proven capture derives canonical financial state');
-eq(deriveCapturedSpend({spend_intent_id:'sp_1',lineage_id:'cap_1',state:'captured'}), false, 'duplicate capture cannot derive twice');
-eq(deriveCapturedSpend({spend_intent_id:'sp_2',lineage_id:'unknown_1',state:'unknown'}), false, 'unknown state derives nothing');
-const paymentIntent = { purpose: 'settle_existing_obligation', may_create_merchant_spend: false };
-eq(paymentIntent.may_create_merchant_spend, false, 'PaymentIntent cannot recreate merchant spend');
+eq(deriveEffect({state:'captured', proof:validProof, expected:expectedSpend}), true, 'first exact proven capture derives canonical state');
+eq(deriveEffect({state:'captured', proof:validProof, expected:expectedSpend}), false, 'duplicate proof cannot derive twice');
+eq(deriveEffect({state:'captured', proof:{...validProof, operation_id:'op_2'}, expected:expectedSpend}), false, 'substituted proof cannot materialize');
+eq(deriveEffect({state:'unknown', proof:validProof, expected:expectedSpend}), false, 'unknown derives nothing');
 
 console.log(JSON.stringify({ suite: 'phase-c1-contract-invariants', checks, result: 'pass' }));

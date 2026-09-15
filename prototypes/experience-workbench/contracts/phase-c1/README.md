@@ -1,11 +1,11 @@
 # Phase C1 selective product contracts
 
-Status: **candidate for independent review**. Product authority: issue #38 comments `5678939496`, `5679654905`, and `5679711494`. Security acceptance delta: issue #38 comment `5680116087` / issue #43 comment `5680113433`.
+Status: **candidate for independent review**. Product authority: issue #38 comments `5678939496`, `5679654905`, and `5679711494`. Security acceptance records: issue #38 comments `5680116087`, `5680342337`; issue #43 comments `5680113433`, `5680336452`.
 
 This package selectively integrates two approved product-contract decisions without reopening the 28 validated UX Goldens.
 
-- **GUEST-01** introduces a durable, group-scoped `MemberIdentity` / `Participant` primitive. A guest may become a real ledger participant without first creating a wallet or full account. Guest authority is an explicit least-authority, group-scoped capability held by the guest; it does not bypass canonical authority checks and the organizer never proxy-signs as the guest. Account-backed identity remains an optional capability upgrade for separately proven payment/signing/admin capabilities.
-- **SPEND-01** introduces only the rail-neutral `SpendIntent` shared state model for value before/during purchase. It is not a new journey and it does not select a card, pot, bank account, issuer, BaaS provider, wallet rail, or merchant-card execution mode. It is a separate economic domain from existing `PaymentIntent`, which settles already-existing obligations.
+- **GUEST-01** introduces a durable, group-scoped `MemberIdentity` / `Participant` primitive. A guest may become a real ledger participant without first creating a wallet or full account. Guest authority is an explicit least-authority, participant-controlled, group-scoped capability. Knowing `participant_id`, being the organizer, or restoring a serialized capability label is not enough to act as that guest. Concrete authenticator crypto/host mechanics remain implementation-level.
+- **SPEND-01** introduces only the rail-neutral `SpendIntent` shared state model for value before/during purchase. It is not a new journey and it does not select a card, pot, bank account, issuer, BaaS provider, wallet rail, or merchant-card execution mode. It remains a separate economic domain from existing `PaymentIntent`, which settles already-existing obligations.
 
 ## Non-negotiable boundaries
 
@@ -13,33 +13,35 @@ This package selectively integrates two approved product-contract decisions with
 2. No Journey 29 is created.
 3. Display name and email are never identity merge keys.
 4. Guest-to-account upgrade/link/claim preserves the same durable participant ID and all expense/split/history/historical-ownership references.
-5. Linking is staged and atomic: proof and account activation succeed before binding commit; failed/cancelled linking leaves the exact pre-link Participant graph unchanged.
-6. Guest capability is explicit and least-authority. Guest participation is not implemented by deleting account-key/signature checks or by organizer proxy-signing.
-7. Group-visible account-backed identity follows **group-scoped unlinkability**: a stable cross-group account identifier is not exposed on group surfaces; a Polkadot per-application alias alone does not provide per-group unlinkability.
-8. Collision or proof mismatch fails to `unresolved`; it never silently merges or replaces a participant.
-9. `authorized` does not mean `spent`. Only proof-backed capture/materialization changes canonical financial state.
-10. Host/payment callbacks are observations only until exact operation, amount, asset, destination and required finality/readback are proven.
-11. One captured SpendIntent derives canonical expense/obligation/group state exactly once. A later PaymentIntent may settle resulting obligations but cannot recreate or duplicate the merchant spend.
-12. `unknown` execution cannot create, extend or duplicate spend authority and cannot dispatch fresh value. Recovery/reconciliation is required before retry.
-13. Partial capture, refund and reversal stay on the original operation lineage.
-14. Every future concrete spend execution mode must implement the `SpendIntent` adapter boundary; none is selected here. `polkadot_cash` is only a possible future adapter seam and is not claimed production-ready or merchant-card capable.
-15. Only public-safe product requirements and architecture semantics belong in this package.
+5. **Matching account proof is not link completion.** Link has its own exact `link_operation_id`; the Participant remains a valid guest while activation/binding is pending or unknown. Account-only capabilities appear only after durable binding commit plus authoritative readback.
+6. A known pre-effect/no-effect link failure may permit a new operation only after no-effect truth is proven. Any possible-effect link failure is `unknown` and must reconcile the same `link_operation_id` before fresh authority.
+7. Guest capability is participant-controlled, group/participant/version/policy scoped, replay-resistant at the contract level, revalidated at effect time, and revocable/versioned. Organizer authority cannot impersonate the guest.
+8. Imported/exported/backed-up capability labels are descriptive only. Recovery must re-establish current guest authority from explicit proof/policy and may rotate the guest credential without replacing `participant_id`.
+9. Group-visible account-backed identity follows **group-scoped unlinkability**: stable cross-group account identifiers are not exposed on group surfaces; a Polkadot per-application alias alone does not provide per-group unlinkability.
+10. Collision or proof mismatch fails to `unresolved`; it never silently merges or replaces a participant.
+11. `authorized` does not mean `spent`. Only proof-backed capture/effect materialization changes canonical financial state.
+12. Spend evidence is bound to the exact `{spend_intent_id, operation_id, effect_id, adapter/rail identity, amount, asset, target digest, policy snapshot, approval snapshot}` plus finality/readback. A proof for one effect is invalid for another even when amount/asset match.
+13. `failed` means authoritative no-external-effect truth. A timeout/transport failure after possible dispatch is `unknown`, not `failed`; unknown cannot create or extend spend authority and must reconcile the same operation before any new execution attempt.
+14. One proven SpendIntent effect derives canonical expense/obligation/group state exactly once. A later PaymentIntent may settle resulting obligations but cannot recreate or duplicate merchant spend.
+15. Partial capture, refund and reversal stay on the original operation lineage.
+16. Every future concrete spend execution mode must implement the `SpendIntent` adapter boundary; none is selected here. `polkadot_cash` is only a possible future adapter seam and is not claimed production-ready or merchant-card capable.
+17. Only public-safe product requirements and architecture semantics belong in this package.
 
 ## Selective UX successors
 
 - `journeys/01-enter-chopdot/phase-c1-guest-v1-candidate.html` strengthens entry so an invite-context guest can continue to the invite flow without full account creation, while normal account-backed entry remains available.
-- `journeys/04-invite-join/phase-c1-guest-v1-candidate.html` preserves context-before-consent and private-before-join, creates a durable guest participant after explicit consent, exposes the guest/account capability boundary, and directly models recovery, matching link, mismatch, activation failure and cancelled-link rollback.
+- `journeys/04-invite-join/phase-c1-guest-v1-candidate.html` preserves context-before-consent and private-before-join, creates a durable guest participant after explicit consent, exposes the guest/account capability boundary, and models guest-authority recovery plus link pending, durable success, mismatch, proven pre-effect failure, cancellation, and unknown/reconciliation states.
 
 The successors are review artifacts only. They do not replace their Golden predecessors.
 
 ## Minimum consuming contracts
 
-J09, J24, J25 and J27 each receive a narrow `phase-c1-consumer-contract.md` defining how they consume `MemberIdentity` without redesigning their journeys.
+J09, J24, J25 and J27 each receive a narrow `phase-c1-consumer-contract.md` defining how they consume `MemberIdentity` without redesigning their journeys. They treat serialized authority as inert and preserve link-operation recovery semantics.
 
 ## Durable rationale
 
-`shared/POST_J28_PRODUCT_DECISIONS.md` records the public-safe decision rationale, platform interpretation, rail-neutral consequence, identity/privacy boundary and revisit triggers. Private competitor/workbook material is intentionally excluded.
+`shared/POST_J28_PRODUCT_DECISIONS.md` records the public-safe decision rationale, platform interpretation, rail-neutral consequence, identity/privacy/security boundary and revisit triggers. Private competitor/workbook material is intentionally excluded.
 
 ## Machine-verifiable evidence
 
-`verify.mjs` validates identity, atomic-link, least-authority, cross-group privacy, SpendIntent/PaymentIntent separation, adapter-proof, exactly-once and recovery invariants plus the research boundary. `qa.mjs` exercises J01/J04 at 393×852 and 430×890, captures screenshots, checks guest/account/recovery/link-success/link-mismatch/link-failure/link-cancel paths, verifies no external requests or console/page errors, and fails on viewport overflow. The dedicated candidate workflow also runs the existing workbench gate and exact byte comparison so all unrelated Golden checksums remain protected.
+`verify.mjs` validates stable identity, participant-controlled guest authority, replay/version/scope failures, serialized-authority fail-closed behavior, link pending/unknown/readback semantics, SpendIntent proof substitution resistance, failed-vs-unknown temporal rules, exactly-once materialization, PaymentIntent separation and the research boundary. `qa.mjs` exercises J01/J04 at 393×852 and 430×890, captures screenshots, and directly verifies guest happy/recovery, link pending→durable-success, mismatch, proven pre-effect failure, cancellation, possible-effect unknown→same-operation reconciliation, plus normal account-backed entry. The dedicated candidate workflow also runs the existing workbench gate and exact byte comparison so all unrelated Golden checksums remain protected.

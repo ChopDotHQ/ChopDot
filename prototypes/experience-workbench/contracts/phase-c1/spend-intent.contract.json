@@ -1,6 +1,7 @@
 {
   "$id": "chopdot://contracts/spend-intent/SPEND-01/v1",
   "version": 1,
+  "security_revision": 2,
   "kind": "rail-neutral-domain-model",
   "economic_domain": "merchant_spend_before_or_during_purchase",
   "creates_user_journey": false,
@@ -11,27 +12,18 @@
     "operation_id": "exact execution/recovery operation identity",
     "reconciliation_reuses_operation_id": true,
     "unknown_allows_fresh_dispatch": false,
-    "new_dispatch_after_proven_terminal_non_execution_requires_new_operation_id": true
+    "new_dispatch_after_verified_no_effect_failure_requires_new_operation_id": true,
+    "new_dispatch_after_possible_effect_failure_allowed": false
   },
   "required_fields": [
-    "spend_intent_id",
-    "operation_id",
-    "group_id",
-    "participants",
-    "shares",
-    "funding_rule",
-    "source_mode_adapter",
-    "policy_snapshot",
-    "approval_snapshot",
-    "lifecycle_state",
-    "authorization_state",
-    "funding_state",
-    "execution_state"
+    "spend_intent_id", "operation_id", "group_id", "participants", "shares", "funding_rule",
+    "source_mode_adapter", "policy_snapshot", "approval_snapshot", "lifecycle_state",
+    "authorization_state", "funding_state", "execution_state"
   ],
   "source_mode_adapter": {
     "adapter_id": null,
     "mode": "unselected",
-    "boundary": "Concrete rails translate mode-specific authorization/funding/execution observations into this shared contract without changing its identity or truth rules.",
+    "boundary": "Concrete rails translate mode-specific authorization/funding/execution observations into this shared contract without changing its identity, authority or truth rules.",
     "callbacks_are_observations_only": true,
     "callback_success_may_mark_captured_without_proof": false,
     "possible_future_adapter": {
@@ -40,47 +32,36 @@
       "merchant_card_capability_claimed": false
     }
   },
-  "lifecycle_states": [
-    "draft",
-    "reviewed",
-    "authorized",
-    "pending",
-    "captured",
-    "partial",
-    "unknown",
-    "failed",
-    "reversed",
-    "cancelled"
-  ],
+  "lifecycle_states": ["draft", "reviewed", "authorized", "pending", "captured", "partial", "unknown", "failed", "reversed", "cancelled"],
   "authorization_states": ["not_requested", "reviewed", "authorized", "denied", "expired"],
   "funding_states": ["unfunded", "reserved", "partially_funded", "funded", "released", "unknown"],
   "execution_states": ["not_started", "pending", "captured", "partial", "unknown", "failed", "reversed", "cancelled"],
   "proof": {
     "required_for_financial_materialization": true,
     "shape": [
-      "source",
-      "proof_id",
-      "observed_at",
-      "operation_id",
-      "amount",
-      "asset",
-      "destination",
-      "finality",
-      "readback_ref"
+      "source", "proof_id", "observed_at", "spend_intent_id", "operation_id", "effect_id",
+      "adapter_id", "rail_identity", "amount", "asset", "target_digest",
+      "policy_snapshot_digest", "approval_snapshot_digest", "finality", "readback_ref"
     ],
+    "target_digest_semantics": "adapter-specific immutable digest of the exact destination/payee/merchant/effect target",
     "confirmation_source_must_be_recorded": true,
-    "exact_operation_amount_asset_destination_match_required": true,
+    "exact_binding_required": [
+      "spend_intent_id", "operation_id", "effect_id", "adapter_id", "rail_identity",
+      "amount", "asset", "target_digest", "policy_snapshot_digest", "approval_snapshot_digest"
+    ],
+    "proof_reuse_across_another_intent_operation_effect_or_target_allowed": false,
     "required_finality_or_authoritative_readback": true,
     "host_callback_alone_is_canonical_spend_proof": false
   },
   "materialization": {
     "mode": "exactly_once",
-    "idempotency_key": "spend_intent_id + capture_or_lineage_id",
+    "idempotency_key": "spend_intent_id + effect_id",
     "targets": ["canonical_expense", "canonical_obligation", "group_financial_state"],
-    "one_captured_spend_intent_derives_financial_state_once": true,
+    "one_proven_effect_derives_financial_state_once": true,
     "authorized_is_spent": false,
     "unknown_may_materialize_new_spend": false,
-    "duplicate_capture_may_duplicate_expense": false
+    "duplicate_effect_proof_may_duplicate_expense": false,
+    "proof_binding_must_validate_before_materialization": true
   },
   "payment_intent_boundary": {
     "separate_economic_domain": true,
@@ -97,29 +78,36 @@
     "all_adjustments_remain_on_original_operation_lineage": true,
     "fields": ["lineage_id", "parent_lineage_id", "kind", "amount", "asset", "proof_ref"]
   },
+  "failure_semantics": {
+    "failed_state_means": "proven_no_external_effect_or_dispatch",
+    "failed_requires_authoritative_no_effect_proof": true,
+    "pre_effect_failure_may_be_failed": true,
+    "possible_effect_failure_must_be_unknown": true,
+    "transport_or_timeout_after_possible_dispatch_must_be_unknown": true,
+    "failed_without_no_effect_proof_is_valid": false,
+    "fresh_operation_after_failed_requires_verified_no_effect": true,
+    "fresh_operation_after_unknown_allowed": false
+  },
   "recovery": {
     "pending_requires_reconciliation_before_retry": true,
     "unknown_requires_reconciliation_before_retry": true,
     "unknown_may_create_new_authority": false,
     "unknown_may_dispatch_fresh_value": false,
-    "retry_requires_new_operation_id_after_terminal_failure": true,
+    "reconciliation_reuses_exact_operation_id": true,
+    "fresh_operation_after_verified_no_effect_failure_uses_new_operation_id": true,
+    "terminal_failure_without_no_effect_proof_may_retry": false,
     "recovery_preserves_spend_intent_id": true
   },
   "policy": {
     "policy_snapshot_is_immutable_for_operation": true,
     "approval_snapshot_is_immutable_for_operation": true,
+    "proof_must_bind_policy_and_approval_snapshot_digests": true,
     "capability_check_uses_member_identity": true,
     "identity_upgrade_during_operation_may_change_economic_subject": false
   },
   "research_boundary": {
     "selected_modes": [],
-    "not_approved": [
-      "multi_source_merchant_card",
-      "joint_bank_account_or_pot",
-      "issuer_or_baas",
-      "generic_merchant_card_issuance",
-      "apple_pay_or_google_pay_provisioning"
-    ],
+    "not_approved": ["multi_source_merchant_card", "joint_bank_account_or_pot", "issuer_or_baas", "generic_merchant_card_issuance", "apple_pay_or_google_pay_provisioning"],
     "future_mode_must_implement_adapter_boundary": true
   }
 }
