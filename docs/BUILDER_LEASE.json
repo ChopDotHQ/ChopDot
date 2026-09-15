@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "primary-builder",
-  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5685546112|candidate-4f217e8|moneyv1-materialization-effect-lineage",
-  "candidate_head": "4f217e8f19887cdca7a9be88adb04bd88291fc9b",
+  "holder": null,
+  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5685546112|candidate-d724138|moneyv1-materialization-effect-lineage",
+  "candidate_head": "d7241380eb13e9085b75d31abffc3cf303f4367c",
   "claimed_at": "2026-09-15T18:16:03Z",
   "renewed_at": "2026-09-15T18:22:00Z",
   "completed_at": null,
-  "expires_at": "2026-09-15T18:34:00Z",
-  "waiting_reason": null,
-  "note": "Active bounded repair for Reviewer REVISE 5685546112; first contract commit landed, continuing exact MoneyV1 integrated materialization and authoritative effect-kind/parent-lineage verification."
+  "expires_at": null,
+  "waiting_reason": "Exact candidate d7241380eb13e9085b75d31abffc3cf303f4367c pushed; external Phase C1/CI/Coverage/Smoke/E2E verification owns elapsed time.",
+  "note": "Bounded Reviewer-5685546112 repair pushed: integrated materialization now consumes canonical MoneyV1 BigInt units; proof/readback binds economic effect kind and immutable authoritative adjustment parentage. Await exact-head Actions before sealed handoff."
 }
