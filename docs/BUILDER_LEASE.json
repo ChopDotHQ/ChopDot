@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "completed",
   "journey": "Phase-C1",
-  "holder": "fast-builder-A",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5687144251|successor-606c530|per-parent-adjustment-conservation",
   "candidate_head": "606c5303e89312810e3c357aef74e3c3c59ef23c",
   "claimed_at": "2026-09-15T20:55:19Z",
   "renewed_at": "2026-09-15T20:55:19Z",
-  "completed_at": null,
-  "expires_at": "2026-09-15T21:07:19Z",
+  "completed_at": "2026-09-15T20:56:30Z",
+  "expires_at": null,
   "waiting_reason": null,
-  "note": "Gate C GREEN-WAIT handoff completion only. Exact candidate bytes remain unchanged; revalidating exact head/tree/checksums/evidence before one sealed Phase C1 Builder REVIEW REQUEST."
+  "note": "Gate C handoff sealed as #38 comment 5687992300 for exact successor 606c5303e89312810e3c357aef74e3c3c59ef23c. Independent Reviewer owns next product disposition. No candidate/product bytes changed during handoff completion."
 }
