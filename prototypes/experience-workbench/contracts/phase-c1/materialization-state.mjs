@@ -5,6 +5,8 @@
 // while an independently resolved, namespace-bound authoritative head prevents
 // stale-but-valid rollback. Higher-generation restore additionally requires an
 // exact prior-head-bound owner-scoped CAS/equivalent proof and descendant lineage.
+// Local restored financial state may commit only inside an authoritative-head fence
+// that binds the exact checked head for the whole mutation validity interval.
 
 import { createHash } from 'node:crypto';
 
@@ -131,17 +133,6 @@ const validateAuthoritativeHead = (head, expectedNamespace) => {
   return validated;
 };
 
-const sameAuthoritativeHead = (left, right) =>
-  left?.head_version === right?.head_version &&
-  left?.domain === right?.domain &&
-  left?.namespace === right?.namespace &&
-  left?.snapshot_version === right?.snapshot_version &&
-  left?.generation === right?.generation &&
-  left?.lineage_digest === right?.lineage_digest &&
-  (left?.prior_generation ?? null) === (right?.prior_generation ?? null) &&
-  (left?.prior_lineage_digest ?? null) === (right?.prior_lineage_digest ?? null) &&
-  (left?.owner_scoped_cas_token ?? null) === (right?.owner_scoped_cas_token ?? null);
-
 const compareHeadToFrontier = (candidate, frontier) => {
   if (!frontier) return 'initial';
   const candidateGeneration = BigInt(candidate.generation);
@@ -208,6 +199,7 @@ const exactSetEqualsArray = (expectedSet, serialized) => {
 export const createCanonicalMaterializationState = ({
   resolveAuthoritativeHead,
   verifyAuthoritativeHeadTransition,
+  commitUnderAuthoritativeHeadFence,
   persistenceNamespace
 } = {}) => {
   const materializedAuthoritativeEffects = new Set();
@@ -342,6 +334,9 @@ export const createCanonicalMaterializationState = ({
     }
     if (typeof resolveAuthoritativeHead !== 'function') {
       throw new Error('independent authoritative restore head resolver required');
+    }
+    if (typeof commitUnderAuthoritativeHeadFence !== 'function') {
+      throw new Error('authoritative restore commit fence required');
     }
     const authoritativeHead = validateAuthoritativeHead(resolveAuthoritativeHead(), persistenceNamespace);
     const headRelation = compareHeadToFrontier(authoritativeHead, acceptedFrontier);
@@ -552,26 +547,61 @@ export const createCanonicalMaterializationState = ({
       }
     }
 
-    const commitHead = validateAuthoritativeHead(resolveAuthoritativeHead(), persistenceNamespace);
-    if (!sameAuthoritativeHead(commitHead, authoritativeHead)) {
-      throw new Error('authoritative restore head changed during validation');
-    }
-    const commitRelation = compareHeadToFrontier(commitHead, acceptedFrontier);
-    if (commitRelation !== headRelation) {
-      throw new Error('authoritative restore head relation changed during validation');
-    }
-    if (commitRelation === 'advance') {
-      validateHeadAdvance(commitHead, acceptedFrontier, verifyAuthoritativeHeadTransition);
-    }
+    const previousAuthoritative = [...materializedAuthoritativeEffects];
+    const previousIntents = [...materializedByIntent.entries()];
+    const previousEffects = [...materializedEffects.entries()];
+    const previousGeneration = generation;
+    const previousFrontier = acceptedFrontier;
+    let commitInvoked = false;
 
-    materializedAuthoritativeEffects.clear();
-    for (const value of derivedAuthoritative) materializedAuthoritativeEffects.add(value);
-    materializedByIntent.clear();
-    for (const [key, value] of derivedIntents) materializedByIntent.set(key, value);
-    materializedEffects.clear();
-    for (const [key, value] of nextEffects) materializedEffects.set(key, value);
-    generation = persistedGeneration;
-    acceptedFrontier = authoritativeHead;
+    const replaceLocalState = (authoritative, intents, effects, nextGeneration, frontier) => {
+      materializedAuthoritativeEffects.clear();
+      for (const value of authoritative) materializedAuthoritativeEffects.add(value);
+      materializedByIntent.clear();
+      for (const [key, value] of intents) materializedByIntent.set(key, value);
+      materializedEffects.clear();
+      for (const [key, value] of effects) materializedEffects.set(key, value);
+      generation = nextGeneration;
+      acceptedFrontier = frontier;
+    };
+
+    const rollbackLocalCommit = () => replaceLocalState(
+      previousAuthoritative,
+      previousIntents,
+      previousEffects,
+      previousGeneration,
+      previousFrontier
+    );
+
+    const commit = () => {
+      if (commitInvoked) throw new Error('authoritative restore commit fence invoked commit more than once');
+      commitInvoked = true;
+      replaceLocalState(
+        derivedAuthoritative,
+        derivedIntents.entries(),
+        nextEffects.entries(),
+        persistedGeneration,
+        authoritativeHead
+      );
+      return true;
+    };
+
+    let fenceAccepted;
+    try {
+      fenceAccepted = commitUnderAuthoritativeHeadFence({
+        expected_head: authoritativeHead,
+        prior_head: previousFrontier,
+        relation: headRelation,
+        commit
+      });
+    } catch (error) {
+      if (commitInvoked) rollbackLocalCommit();
+      throw error;
+    }
+    if (fenceAccepted !== true || commitInvoked !== true) {
+      if (commitInvoked) rollbackLocalCommit();
+      throw new Error('authoritative restore commit fence rejected');
+    }
     return true;
   };
 
