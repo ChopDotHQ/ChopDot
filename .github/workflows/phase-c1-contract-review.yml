@@ -29,6 +29,8 @@ jobs:
         run: node prototypes/experience-workbench/contracts/phase-c1/verify.mjs
       - name: Verify SpendIntent restore integrity
         run: node prototypes/experience-workbench/contracts/phase-c1/verify-restore-integrity.mjs
+      - name: Verify SpendIntent restore authority contract
+        run: node prototypes/experience-workbench/contracts/phase-c1/verify-restore-authority-contract.mjs
       - name: Verify SpendIntent cumulative operation conservation
         run: node prototypes/experience-workbench/contracts/phase-c1/verify-operation-conservation.mjs
       - name: Browser and layout QA at canonical mobile viewports
@@ -67,6 +69,10 @@ jobs:
             prototypes/experience-workbench/journeys/04-invite-join/phase-c1-guest-v1-candidate.html \
             prototypes/experience-workbench/contracts/phase-c1/member-identity.contract.json \
             prototypes/experience-workbench/contracts/phase-c1/spend-intent.contract.json \
+            prototypes/experience-workbench/contracts/phase-c1/materialization-state.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-restore-integrity.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-restore-authority-contract.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-operation-conservation.mjs \
             vercel.json \
             | tee prototypes/experience-workbench/contracts/phase-c1/artifacts/checksums.sha256
