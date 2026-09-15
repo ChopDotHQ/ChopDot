@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "waiting_ci",
+  "status": "completed",
   "journey": "Phase-C1",
   "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5685546112|candidate-d724138|moneyv1-materialization-effect-lineage",
   "candidate_head": "d7241380eb13e9085b75d31abffc3cf303f4367c",
   "claimed_at": "2026-09-15T18:16:03Z",
   "renewed_at": "2026-09-15T18:22:00Z",
-  "completed_at": null,
+  "completed_at": "2026-09-15T19:19:54Z",
   "expires_at": null,
-  "waiting_reason": "Exact candidate d7241380eb13e9085b75d31abffc3cf303f4367c pushed; external Phase C1/CI/Coverage/Smoke/E2E verification owns elapsed time.",
-  "note": "Bounded Reviewer-5685546112 repair pushed: integrated materialization now consumes canonical MoneyV1 BigInt units; proof/readback binds economic effect kind and immutable authoritative adjustment parentage. Await exact-head Actions before sealed handoff."
+  "waiting_reason": null,
+  "note": "Gate D completed for exact candidate d7241380eb13e9085b75d31abffc3cf303f4367c after Phase C1/CI/Coverage/Smoke/E2E all completed green. Sealed Phase C1 Builder REVIEW REQUEST published in issue #38 as comment 5686711464. Independent Reviewer owns next disposition and must consume the already-surfaced per-parent adjustment conservation security criterion (#38 5686206393 / #43 5686202909)."
 }
