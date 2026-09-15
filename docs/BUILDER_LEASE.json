@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "waiting_ci",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
+  "holder": "primary-builder",
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|issue38-comment-5678939496|guest-01-approved|spend-01-rail-neutral-only|no-successor",
   "candidate_head": "0ff59d61bbc091ca6b5f0300e0633aed5c79db35",
-  "claimed_at": "2026-09-15T11:24:03Z",
-  "renewed_at": "2026-09-15T11:24:03Z",
+  "claimed_at": "2026-09-15T11:32:12Z",
+  "renewed_at": "2026-09-15T11:32:12Z",
   "completed_at": null,
-  "expires_at": null,
-  "waiting_reason": "exact-head GitHub Actions",
-  "note": "Phase C1 candidate pushed; writer lane released while exact-head CI runs."
+  "expires_at": "2026-09-15T11:44:12Z",
+  "waiting_reason": null,
+  "note": "Reclaimed exact Phase C1 head after mechanical browser QA navigation failure."
 }
