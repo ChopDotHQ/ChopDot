@@ -1,13 +1,16 @@
 {
   "$id": "chopdot://contracts/spend-intent/SPEND-01/v1",
   "version": 1,
-  "security_revision": 3,
+  "security_revision": 4,
   "kind": "rail-neutral-domain-model",
   "economic_domain": "merchant_spend_before_or_during_purchase",
   "creates_user_journey": false,
   "execution_mode_selected": false,
   "identity": {
-    "required": ["spend_intent_id", "operation_id"],
+    "required": [
+      "spend_intent_id",
+      "operation_id"
+    ],
     "spend_intent_id": "stable intent identity",
     "operation_id": "exact execution/recovery operation identity",
     "reconciliation_reuses_operation_id": true,
@@ -16,9 +19,22 @@
     "new_dispatch_after_possible_effect_failure_allowed": false
   },
   "required_fields": [
-    "spend_intent_id", "operation_id", "group_id", "participants", "shares", "funding_rule",
-    "source_mode_adapter", "policy_snapshot", "approval_snapshot", "lifecycle_state",
-    "authorization_state", "funding_state", "execution_state"
+    "spend_intent_id",
+    "operation_id",
+    "group_id",
+    "participants",
+    "shares",
+    "funding_rule",
+    "source_mode_adapter",
+    "policy_snapshot",
+    "approval_snapshot",
+    "lifecycle_state",
+    "authorization_state",
+    "funding_state",
+    "execution_state",
+    "authorized_amount",
+    "authorized_asset",
+    "authorization_version"
   ],
   "source_mode_adapter": {
     "adapter_id": null,
@@ -32,28 +48,101 @@
       "merchant_card_capability_claimed": false
     }
   },
-  "lifecycle_states": ["draft", "reviewed", "authorized", "pending", "captured", "partial", "unknown", "failed", "reversed", "cancelled"],
-  "authorization_states": ["not_requested", "reviewed", "authorized", "denied", "expired"],
-  "funding_states": ["unfunded", "reserved", "partially_funded", "funded", "released", "unknown"],
-  "execution_states": ["not_started", "pending", "captured", "partial", "unknown", "failed", "reversed", "cancelled"],
+  "lifecycle_states": [
+    "draft",
+    "reviewed",
+    "authorized",
+    "pending",
+    "captured",
+    "partial",
+    "unknown",
+    "failed",
+    "reversed",
+    "cancelled"
+  ],
+  "authorization_states": [
+    "not_requested",
+    "reviewed",
+    "authorized",
+    "denied",
+    "expired"
+  ],
+  "funding_states": [
+    "unfunded",
+    "reserved",
+    "partially_funded",
+    "funded",
+    "released",
+    "unknown"
+  ],
+  "execution_states": [
+    "not_started",
+    "pending",
+    "captured",
+    "partial",
+    "unknown",
+    "failed",
+    "reversed",
+    "cancelled"
+  ],
+  "operation_value": {
+    "authorized_amount_field": "authorized_amount",
+    "authorized_asset_field": "authorized_asset",
+    "authorization_version_field": "authorization_version",
+    "immutable_within_authorization_version": true,
+    "cumulative_capture_or_partial_may_exceed_authorized_amount": false,
+    "bound_change_requires_explicit_versioned_authorized_adjustment": true,
+    "versioned_authorized_adjustment_rebinds_policy_and_approval_snapshots": true,
+    "operation_asset_must_remain_constant": true
+  },
   "proof": {
     "required_for_financial_materialization": true,
     "shape": [
-      "source", "proof_id", "observed_at", "spend_intent_id", "operation_id", "effect_id",
-      "adapter_id", "rail_identity", "amount", "asset", "target_digest",
-      "policy_snapshot_digest", "approval_snapshot_digest", "finality", "readback_ref"
+      "source",
+      "proof_id",
+      "observed_at",
+      "spend_intent_id",
+      "operation_id",
+      "effect_id",
+      "authoritative_effect_ref",
+      "adapter_id",
+      "rail_identity",
+      "amount",
+      "asset",
+      "target_digest",
+      "policy_snapshot_digest",
+      "approval_snapshot_digest",
+      "finality",
+      "readback_ref"
     ],
     "target_digest_semantics": "adapter-specific immutable digest of the exact destination/payee/merchant/effect target",
     "confirmation_source_must_be_recorded": true,
     "exact_binding_required": [
-      "spend_intent_id", "operation_id", "effect_id", "adapter_id", "rail_identity",
-      "amount", "asset", "target_digest", "policy_snapshot_digest", "approval_snapshot_digest"
+      "spend_intent_id",
+      "operation_id",
+      "effect_id",
+      "authoritative_effect_ref",
+      "adapter_id",
+      "rail_identity",
+      "amount",
+      "asset",
+      "target_digest",
+      "policy_snapshot_digest",
+      "approval_snapshot_digest"
     ],
     "proof_reuse_across_another_intent_operation_effect_or_target_allowed": false,
+    "authoritative_effect_ref_must_be_stable_for_same_external_effect": true,
+    "same_authoritative_effect_ref_may_materialize_multiple_internal_effect_ids": false,
     "required_finality_or_authoritative_readback": true,
     "adapter_authoritative_verifier_required": true,
     "accepted_terminal_finality_must_be_declared_by_adapter": true,
-    "explicit_nonterminal_finality_classes": ["pending", "unknown", "observed", "submitted", "accepted"],
+    "explicit_nonterminal_finality_classes": [
+      "pending",
+      "unknown",
+      "observed",
+      "submitted",
+      "accepted"
+    ],
     "readback_ref_must_be_verified_by_adapter_authoritative_source": true,
     "arbitrary_nonempty_readback_ref_is_sufficient": false,
     "callback_completed_is_authoritative_proof": false,
@@ -61,13 +150,20 @@
   },
   "materialization": {
     "mode": "exactly_once",
-    "idempotency_key": "spend_intent_id + effect_id",
-    "targets": ["canonical_expense", "canonical_obligation", "group_financial_state"],
+    "idempotency_key": "spend_intent_id + authoritative_effect_ref",
+    "internal_effect_id_is_not_authoritative_dedupe_identity": true,
+    "one_authoritative_effect_ref_maps_to_at_most_one_canonical_effect": true,
+    "targets": [
+      "canonical_expense",
+      "canonical_obligation",
+      "group_financial_state"
+    ],
     "one_proven_effect_derives_financial_state_once": true,
     "authorized_is_spent": false,
     "unknown_may_materialize_new_spend": false,
     "duplicate_effect_proof_may_duplicate_expense": false,
-    "proof_binding_must_validate_before_materialization": true
+    "proof_binding_must_validate_before_materialization": true,
+    "net_materialized_value_formula": "sum(proven_capture_and_partial_effects) - sum(proven_refund_and_reversal_adjustments)"
   },
   "payment_intent_boundary": {
     "separate_economic_domain": true,
@@ -78,11 +174,35 @@
     "payment_intent_may_duplicate_spend_materialization": false
   },
   "lineage": {
+    "capture_kinds": [
+      "capture",
+      "partial_capture"
+    ],
+    "adjustment_kinds": [
+      "refund",
+      "reversal"
+    ],
     "partial_capture_requires_parent": true,
     "refund_requires_parent_capture": true,
     "reversal_requires_parent_capture": true,
     "all_adjustments_remain_on_original_operation_lineage": true,
-    "fields": ["lineage_id", "parent_lineage_id", "kind", "amount", "asset", "proof_ref"]
+    "authoritative_effect_ref_unique_within_operation": true,
+    "adjustment_requires_parent_capture_effect_id": true,
+    "adjustment_asset_must_equal_parent_capture_asset": true,
+    "adjustment_amount_may_exceed_parent_remaining_consumable": false,
+    "refund_and_reversal_share_parent_remaining_consumable": true,
+    "duplicate_authoritative_adjustment_effect_allowed": false,
+    "fields": [
+      "lineage_id",
+      "parent_lineage_id",
+      "effect_id",
+      "authoritative_effect_ref",
+      "parent_capture_effect_id",
+      "kind",
+      "amount",
+      "asset",
+      "proof_ref"
+    ]
   },
   "failure_semantics": {
     "failed_state_means": "proven_no_external_effect_or_dispatch",
@@ -113,7 +233,13 @@
   },
   "research_boundary": {
     "selected_modes": [],
-    "not_approved": ["multi_source_merchant_card", "joint_bank_account_or_pot", "issuer_or_baas", "generic_merchant_card_issuance", "apple_pay_or_google_pay_provisioning"],
+    "not_approved": [
+      "multi_source_merchant_card",
+      "joint_bank_account_or_pot",
+      "issuer_or_baas",
+      "generic_merchant_card_issuance",
+      "apple_pay_or_google_pay_provisioning"
+    ],
     "future_mode_must_implement_adapter_boundary": true
   }
 }
