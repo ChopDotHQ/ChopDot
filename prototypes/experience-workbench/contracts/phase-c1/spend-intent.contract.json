@@ -1,7 +1,7 @@
 {
   "$id": "chopdot://contracts/spend-intent/SPEND-01/v1",
   "version": 1,
-  "security_revision": 2,
+  "security_revision": 3,
   "kind": "rail-neutral-domain-model",
   "economic_domain": "merchant_spend_before_or_during_purchase",
   "creates_user_journey": false,
@@ -51,6 +51,12 @@
     ],
     "proof_reuse_across_another_intent_operation_effect_or_target_allowed": false,
     "required_finality_or_authoritative_readback": true,
+    "adapter_authoritative_verifier_required": true,
+    "accepted_terminal_finality_must_be_declared_by_adapter": true,
+    "explicit_nonterminal_finality_classes": ["pending", "unknown", "observed", "submitted", "accepted"],
+    "readback_ref_must_be_verified_by_adapter_authoritative_source": true,
+    "arbitrary_nonempty_readback_ref_is_sufficient": false,
+    "callback_completed_is_authoritative_proof": false,
     "host_callback_alone_is_canonical_spend_proof": false
   },
   "materialization": {

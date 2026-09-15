@@ -50,7 +50,6 @@ eq(member.guest_authority.recovery.writes_resume_before_revalidation, false, 're
 eq(member.guest_authority.recovery.preserve_participant_id, true, 'recovery preserves participant identity');
 eq(member.cross_group_privacy.policy, 'group_scoped_unlinkability', 'cross-group privacy choice is explicit');
 eq(member.cross_group_privacy.group_surfaces_may_expose_stable_cross_group_account_identifier, false, 'group surfaces hide stable cross-group account ID');
-
 eq(member.link_operation.matching_account_proof_is_terminal_success, false, 'link proof is not link completion');
 eq(member.link_operation.guest_ledger_participation_remains_valid_while_pending_or_unknown, true, 'guest remains valid during uncertain link');
 eq(member.link_operation.account_gated_capabilities_before_terminal_success, false, 'account capabilities wait for terminal success');
@@ -150,6 +149,13 @@ eq(spend.materialization.mode, 'exactly_once', 'canonical materialization is exa
 eq(spend.materialization.authorized_is_spent, false, 'authorized is not spent');
 eq(spend.materialization.unknown_may_materialize_new_spend, false, 'unknown cannot materialize spend');
 eq(spend.proof.required_for_financial_materialization, true, 'proof required for financial materialization');
+eq(spend.proof.adapter_authoritative_verifier_required, true, 'adapter authoritative verifier is required');
+eq(spend.proof.accepted_terminal_finality_must_be_declared_by_adapter, true, 'adapter declares terminal finality semantics');
+eq(spend.proof.arbitrary_nonempty_readback_ref_is_sufficient, false, 'arbitrary readback refs are insufficient');
+eq(spend.proof.callback_completed_is_authoritative_proof, false, 'callback Completed is observation only');
+for (const state of ['pending','unknown','observed','submitted','accepted']) {
+  ok(spend.proof.explicit_nonterminal_finality_classes.includes(state), `nonterminal finality ${state} fails closed`);
+}
 for (const field of ['spend_intent_id','operation_id','effect_id','adapter_id','rail_identity','amount','asset','target_digest','policy_snapshot_digest','approval_snapshot_digest','finality','readback_ref']) {
   ok(spend.proof.shape.includes(field), `proof field ${field}`);
   ok(spend.proof.exact_binding_required.includes(field) || ['finality','readback_ref'].includes(field), `proof binding ${field}`);
@@ -171,11 +177,32 @@ const expectedSpend = {
   rail_identity:'fixture_rail', amount:'42.50', asset:'USD', target_digest:'target:merchant-7',
   policy_snapshot_digest:'policy:p9', approval_snapshot_digest:'approval:a3'
 };
-const validProof = {...expectedSpend, source:'authoritative_readback', proof_id:'proof_1', observed_at:'2026-09-15T12:00:00Z', finality:'final', readback_ref:'rb_1'};
-const proofMatches = (proof, expected) =>
-  spend.proof.exact_binding_required.every(field => proof[field] === expected[field]) &&
-  Boolean(proof.finality || proof.readback_ref);
-eq(proofMatches(validProof, expectedSpend), true, 'fully bound proof matches exact SpendIntent effect');
+const verifiedReadbackRef = 'verified:adapter_fixture:op_1:cap_1';
+const validProof = {...expectedSpend, source:'authoritative_readback', proof_id:'proof_1', observed_at:'2026-09-15T12:00:00Z', finality:'final', readback_ref:verifiedReadbackRef};
+const adapterProofPolicies = {
+  adapter_fixture: {
+    authoritative_sources: new Set(['authoritative_readback']),
+    terminal_finality: new Set(['final']),
+    verify_readback: (proof, expected) => proof.readback_ref === `verified:${expected.adapter_id}:${expected.operation_id}:${expected.effect_id}`
+  }
+};
+const proofMatches = (proof, expected) => {
+  if (!spend.proof.exact_binding_required.every(field => proof[field] === expected[field])) return false;
+  const verifier = adapterProofPolicies[proof.adapter_id];
+  if (!verifier) return false;
+  if (!verifier.authoritative_sources.has(proof.source)) return false;
+  if (!verifier.terminal_finality.has(proof.finality)) return false;
+  if (spend.proof.explicit_nonterminal_finality_classes.includes(proof.finality)) return false;
+  if (!proof.readback_ref || !verifier.verify_readback(proof, expected)) return false;
+  return true;
+};
+eq(proofMatches(validProof, expectedSpend), true, 'verifier-confirmed terminal proof matches exact SpendIntent effect');
+eq(proofMatches({...validProof, finality:'pending'}, expectedSpend), false, 'pending finality fails even with verified readback ref');
+eq(proofMatches({...validProof, finality:'unknown'}, expectedSpend), false, 'unknown finality fails even with verified readback ref');
+eq(proofMatches({...validProof, readback_ref:'arbitrary-nonempty-ref'}, expectedSpend), false, 'arbitrary readback ref fails');
+eq(proofMatches({...validProof, readback_ref:'verified:adapter_fixture:op_stale:cap_1'}, expectedSpend), false, 'stale/substituted readback ref fails');
+eq(proofMatches({...validProof, source:'host_callback', proof_id:'callback-completed'}, expectedSpend), false, 'callback Completed observation cannot materialize');
+eq(proofMatches({...validProof, adapter_id:'unknown_adapter'}, {...expectedSpend, adapter_id:'unknown_adapter'}), false, 'unregistered adapter verifier fails closed');
 for (const [field, value] of [
   ['spend_intent_id','sp_2'],['operation_id','op_2'],['effect_id','cap_2'],['adapter_id','other_adapter'],
   ['rail_identity','other_rail'],['target_digest','target:other'],['policy_snapshot_digest','policy:p10'],
@@ -208,6 +235,9 @@ const deriveEffect = ({ state, proof, expected }) => {
 eq(deriveEffect({state:'captured', proof:validProof, expected:expectedSpend}), true, 'first exact proven capture derives canonical state');
 eq(deriveEffect({state:'captured', proof:validProof, expected:expectedSpend}), false, 'duplicate proof cannot derive twice');
 eq(deriveEffect({state:'captured', proof:{...validProof, operation_id:'op_2'}, expected:expectedSpend}), false, 'substituted proof cannot materialize');
+eq(deriveEffect({state:'captured', proof:{...validProof, finality:'pending'}, expected:expectedSpend}), false, 'pending proof cannot materialize');
+eq(deriveEffect({state:'captured', proof:{...validProof, readback_ref:'arbitrary-nonempty-ref'}, expected:expectedSpend}), false, 'unverified readback cannot materialize');
+eq(deriveEffect({state:'captured', proof:{...validProof, source:'host_callback'}, expected:expectedSpend}), false, 'callback-only completion cannot materialize');
 eq(deriveEffect({state:'unknown', proof:validProof, expected:expectedSpend}), false, 'unknown derives nothing');
 
 console.log(JSON.stringify({ suite: 'phase-c1-contract-invariants', checks, result: 'pass' }));
