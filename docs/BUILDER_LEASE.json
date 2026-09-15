@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "waiting_ci",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
-  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5688117121|successor-606c530|restore-integrity",
-  "candidate_head": "7791bdf78cb1e5b1f25ed8b9e590e0e92334c9a2",
-  "claimed_at": "2026-09-15T21:14:11Z",
-  "renewed_at": "2026-09-15T21:18:13Z",
+  "holder": "primary-builder",
+  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5688117121|candidate-ee0a1474|restore-authority-handoff",
+  "candidate_head": "ee0a1474f193244a386e8dd6fb86704864561452",
+  "claimed_at": "2026-09-15T22:16:22Z",
+  "renewed_at": "2026-09-15T22:16:22Z",
   "completed_at": null,
-  "expires_at": null,
-  "waiting_reason": "Exact-head Phase C1/CI/Coverage/Smoke/E2E checks are running for restore-integrity successor 7791bdf78cb1e5b1f25ed8b9e590e0e92334c9a2.",
-  "note": "Reviewer REVISE #38 5688117121 repaired by fail-closed trusted-checkpoint restore, authoritative lineage reconstruction/cross-validation, atomic commit, and deterministic stale/mixed/dedupe/aggregate/parent-resurrection negatives."
+  "expires_at": "2026-09-15T22:28:22Z",
+  "waiting_reason": null,
+  "note": "Handoff-only continuation of formal Reviewer REVISE #38 5688117121. Exact successor ee0a1474 has completed Phase C1/CI/Coverage/Smoke/E2E green; claim serializes final revalidation and one sealed review request only."
 }
