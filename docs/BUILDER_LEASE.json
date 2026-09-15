@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "completed",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
-  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5685546112|candidate-d724138|moneyv1-materialization-effect-lineage",
+  "holder": "contract-repair-pickup",
+  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5687144251|candidate-d724138|per-parent-adjustment-conservation",
   "candidate_head": "d7241380eb13e9085b75d31abffc3cf303f4367c",
-  "claimed_at": "2026-09-15T18:16:03Z",
-  "renewed_at": "2026-09-15T18:22:00Z",
-  "completed_at": "2026-09-15T19:19:54Z",
-  "expires_at": null,
+  "claimed_at": "2026-09-15T19:56:58Z",
+  "renewed_at": "2026-09-15T19:56:58Z",
+  "completed_at": null,
+  "expires_at": "2026-09-15T20:08:58Z",
   "waiting_reason": null,
-  "note": "Gate D completed for exact candidate d7241380eb13e9085b75d31abffc3cf303f4367c after Phase C1/CI/Coverage/Smoke/E2E all completed green. Sealed Phase C1 Builder REVIEW REQUEST published in issue #38 as comment 5686711464. Independent Reviewer owns next disposition and must consume the already-surfaced per-parent adjustment conservation security criterion (#38 5686206393 / #43 5686202909)."
+  "note": "Claimed from exact Reviewer REVISE receipt 5687144251 for one bounded Phase C1 repair: integrated per-parent adjustment-lineage conservation only."
 }
