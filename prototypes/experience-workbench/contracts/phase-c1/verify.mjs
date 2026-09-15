@@ -87,8 +87,12 @@ const proofMatches = (proof, expected) => {
   return true;
 };
 
+const MATERIALIZATION_NAMESPACE = 'phase-c1:sp_parent';
 let authoritativeHead = null;
-let materializer = createCanonicalMaterializationState({ resolveAuthoritativeHead: () => authoritativeHead });
+let materializer = createCanonicalMaterializationState({
+  persistenceNamespace: MATERIALIZATION_NAMESPACE,
+  resolveAuthoritativeHead: () => authoritativeHead
+});
 const authorizedMoney = { minorUnits:10000n, currency:'USD', exponent:2 };
 const deriveEffect = ({ state, proof, expected, authorized = authorizedMoney }) => {
   const effectMoney = moneyFrom(expected);
@@ -138,8 +142,11 @@ eq(materializer.getIntentMoney('sp_parent').minorUnits, 4400n, 'first refund upd
 const persistedAfterRefund = materializer.snapshot();
 const checkpointAfterRefund = materializer.checkpoint();
 authoritativeHead = materializer.headCandidate();
-const restarted = createCanonicalMaterializationState({ resolveAuthoritativeHead: () => authoritativeHead });
-eq(restarted.restore(persistedAfterRefund, checkpointAfterRefund), true, 'restart restores canonical materialization state against authoritative head');
+const restarted = createCanonicalMaterializationState({
+  persistenceNamespace: MATERIALIZATION_NAMESPACE,
+  resolveAuthoritativeHead: () => authoritativeHead
+});
+eq(restarted.restore(persistedAfterRefund, checkpointAfterRefund), true, 'restart restores canonical materialization state against namespace-bound authoritative head');
 materializer = restarted;
 eq(materializer.getEffect('sp_parent','op_parent','rail:cap:A').remaining_unadjusted_units, 400n, 'restart preserves consumed parent capacity');
 
@@ -206,8 +213,11 @@ eq(orderedState.materialize({
 const exhaustedSnapshot = materializer.snapshot();
 const exhaustedCheckpoint = materializer.checkpoint();
 authoritativeHead = materializer.headCandidate();
-const restoredExhausted = createCanonicalMaterializationState({ resolveAuthoritativeHead: () => authoritativeHead });
-eq(restoredExhausted.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'exhausted parent state restores against authoritative head');
+const restoredExhausted = createCanonicalMaterializationState({
+  persistenceNamespace: MATERIALIZATION_NAMESPACE,
+  resolveAuthoritativeHead: () => authoritativeHead
+});
+eq(restoredExhausted.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'exhausted parent state restores against namespace-bound authoritative head');
 eq(restoredExhausted.getEffect('sp_parent','op_parent','rail:cap:A').remaining_unadjusted_units, 0n, 'restore keeps exhausted parent at zero');
 materializer = restoredExhausted;
 eq(deriveEffect({ state:'reversed', proof:proofFor(freshAfterExhaustion), expected:freshAfterExhaustion }), false, 'restore cannot recreate consumed parent capacity');
