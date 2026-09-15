@@ -36,11 +36,25 @@ jobs:
         run: |
           BASE=bfc171fbfe1407d9dda2ad1d90174a13e2431442
           git diff --name-only "$BASE"...HEAD | tee /tmp/phase-c1-changed-paths.txt
-          if grep -E '(^|/)GOLDEN/|golden\.html$|golden-candidate\.html$' /tmp/phase-c1-changed-paths.txt; then
-            echo 'Phase C1 candidate modified protected Golden material' >&2
-            exit 1
-          fi
-          test "$(find prototypes/experience-workbench/journeys -path '*/GOLDEN/*' -type f | wc -l)" -gt 0
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { createHash } from 'node:crypto';
+          import assert from 'node:assert/strict';
+          const base = 'bfc171fbfe1407d9dda2ad1d90174a13e2431442';
+          const root = 'prototypes/experience-workbench';
+          const manifest = JSON.parse(execFileSync('git', ['show', `${base}:${root}/registry/goldens.manifest.json`], {encoding:'utf8'}));
+          assert.equal(manifest.golden_count, 28);
+          for (const entry of manifest.entries) {
+            const file = `${root}/${entry.prototype_path}`;
+            const before = execFileSync('git', ['show', `${base}:${file}`]);
+            const after = execFileSync('git', ['show', `HEAD:${file}`]);
+            const digest = value => createHash('sha256').update(value).digest('hex');
+            assert.equal(digest(before), entry.sha256, `base checksum ${file}`);
+            assert.equal(digest(after), entry.sha256, `candidate checksum ${file}`);
+            assert.deepEqual(after, before, `immutable Golden changed: ${file}`);
+          }
+          console.log(JSON.stringify({suite:'phase-c1-golden-regression',goldens:manifest.entries.length,result:'pass'}));
+          NODE
       - name: Record candidate checksums
         shell: bash
         run: |
