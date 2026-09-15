@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "waiting_ci",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
+  "holder": "fast-builder-A",
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5687144251|successor-606c530|per-parent-adjustment-conservation",
   "candidate_head": "606c5303e89312810e3c357aef74e3c3c59ef23c",
-  "claimed_at": "2026-09-15T20:14:00Z",
-  "renewed_at": "2026-09-15T20:17:30Z",
+  "claimed_at": "2026-09-15T20:55:19Z",
+  "renewed_at": "2026-09-15T20:55:19Z",
   "completed_at": null,
-  "expires_at": null,
-  "waiting_reason": "Exact successor 606c5303e89312810e3c357aef74e3c3c59ef23c pushed after mechanical alignment of the operation-conservation harness to SPEND-01 security_revision 7. Required Phase C1/CI/Coverage/Smoke/E2E workflows must complete before any sealed successor REVIEW REQUEST.",
-  "note": "Bounded Reviewer repair remains integrated per-parent adjustment ownership/remaining conservation plus restart/restore/order negatives. Mechanical delta changes only the stale security_revision assertion/message in verify-operation-conservation.mjs; root vercel.json deploymentEnabled suppression remains unchanged."
+  "expires_at": "2026-09-15T21:07:19Z",
+  "waiting_reason": null,
+  "note": "Gate C GREEN-WAIT handoff completion only. Exact candidate bytes remain unchanged; revalidating exact head/tree/checksums/evidence before one sealed Phase C1 Builder REVIEW REQUEST."
 }
