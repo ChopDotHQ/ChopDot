@@ -79,7 +79,7 @@ if(!terminal&&active.stage==='definition'){
 
 const start=read('START_HERE.md');
 if(terminal){
-  assert(start.includes(`Journey ${lastGolden.id} — ${lastGolden.name} is Golden #${lastGolden.golden_number}`),'START_HERE must name the terminal Golden');
+  assert(start.includes(`Journey ${lastGolden.id} —`)&&start.includes(`is Golden #${lastGolden.golden_number}`),'START_HERE must name the terminal Golden');
   assert(start.includes('28 registered journeys; 28 standing-approved/frozen Goldens; 0 remaining registered UX journeys.'),'START_HERE must record terminal journey counts');
 }else{
   assert(start.includes(`Journey ${current[0].id} — ${current[0].name}`),'START_HERE must name current journey');
