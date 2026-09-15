@@ -5,11 +5,11 @@
   "journey": "Phase-C1",
   "holder": "primary-builder",
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|issue38-comment-5678939496|security-delta-5680116087|guest-01-approved|spend-01-rail-neutral-only",
-  "candidate_head": "233f350635f0b0184c2f7ad8a77ada0519044e8b",
+  "candidate_head": "8a9ca150ed51c83628eddcf644e986b5daeff8cc",
   "claimed_at": "2026-09-15T12:31:00Z",
-  "renewed_at": "2026-09-15T12:31:00Z",
+  "renewed_at": "2026-09-15T12:37:30Z",
   "completed_at": null,
-  "expires_at": "2026-09-15T12:43:00Z",
+  "expires_at": "2026-09-15T12:49:30Z",
   "waiting_reason": null,
-  "note": "Primary Builder claimed the superseding Phase C1 security acceptance delta from issue #38 comment 5680116087; repairing exact candidate before sealed review handoff."
+  "note": "Primary Builder renewed the Phase C1 security-delta lease after updating the exact candidate through atomic identity-link, least-authority, privacy, SpendIntent-domain, adapter-proof, recovery and rationale contracts."
 }
