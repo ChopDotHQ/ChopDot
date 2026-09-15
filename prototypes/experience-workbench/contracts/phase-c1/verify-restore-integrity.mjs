@@ -25,12 +25,42 @@ const apply = (state, { ref, kind, units, parent = null, spend = 'sp_restore', o
     authorizedMoney
   });
 
-const stateForHead = (head, namespace = NAMESPACE) => createCanonicalMaterializationState({
+const stateForHead = (head, namespace = NAMESPACE, verifyAuthoritativeHeadTransition) => createCanonicalMaterializationState({
   persistenceNamespace: namespace,
-  resolveAuthoritativeHead: () => head
+  resolveAuthoritativeHead: () => head,
+  verifyAuthoritativeHeadTransition
 });
 const findEffect = (snapshot, key) => snapshot.effects.find(([candidate]) => candidate === key)?.[1];
 const findIntent = (snapshot, key) => snapshot.intents.find(([candidate]) => candidate === key)?.[1];
+const transitionToken = (prior, next) =>
+  `cas:${prior.generation}:${prior.lineage_digest}->${next.generation}:${next.lineage_digest}`;
+const transitionHead = (next, prior, token = transitionToken(prior, next)) => ({
+  ...next,
+  prior_generation: prior.generation,
+  prior_lineage_digest: prior.lineage_digest,
+  owner_scoped_cas_token: token
+});
+const verifyTransitionShape = ({ prior_head, next_head, owner_scoped_cas_token }) =>
+  owner_scoped_cas_token === transitionToken(prior_head, next_head);
+
+// Reviewer REVISE: partial_capture is one rail-neutral root capture kind, not an adjustment.
+// Missing parent is the valid case; any supplied parent fails rather than being silently discarded.
+let partialCaptureHead = null;
+const partialCaptureLive = createCanonicalMaterializationState({
+  persistenceNamespace: NAMESPACE,
+  resolveAuthoritativeHead: () => partialCaptureHead
+});
+eq(apply(partialCaptureLive, { ref: 'rail:partial:root', kind: 'partial_capture', units: 750 }), true, 'partial capture materializes as a root capture without parent lineage');
+eq(apply(partialCaptureLive, { ref: 'rail:partial:with-parent', kind: 'partial_capture', units: 100, parent: 'rail:partial:root' }), false, 'partial capture cannot smuggle an adjustment parent');
+eq(apply(partialCaptureLive, { ref: 'rail:partial:wrong-parent', kind: 'partial_capture', units: 100, parent: 'rail:missing' }), false, 'partial capture rejects substituted parent lineage');
+const partialCaptureSnapshot = partialCaptureLive.snapshot();
+const partialCaptureCheckpoint = partialCaptureLive.checkpoint();
+partialCaptureHead = partialCaptureLive.headCandidate();
+const partialCaptureRestart = stateForHead(partialCaptureHead);
+eq(partialCaptureRestart.restore(partialCaptureSnapshot, partialCaptureCheckpoint), true, 'root partial capture survives exact restart/restore');
+eq(partialCaptureRestart.getEffect('sp_restore', 'op_restore', 'rail:partial:root').kind, 'partial_capture', 'restored partial capture keeps its economic kind');
+eq(partialCaptureRestart.getEffect('sp_restore', 'op_restore', 'rail:partial:root').authoritative_parent_effect_ref ?? null, null, 'restored root partial capture has no parent lineage');
+eq(partialCaptureRestart.getEffect('sp_restore', 'op_restore', 'rail:partial:root').remaining_unadjusted_units, 750n, 'root partial capture preserves adjustable remaining capacity');
 
 // Build C3: parent A has only 400 units remaining.
 let resolvedHead = null;
@@ -120,12 +150,105 @@ eq(forkProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'fork probe 
 dynamicHead = forkHead;
 rejects(() => forkProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), 'same-generation different-digest authoritative head is rejected as fork');
 
+// Build an exact C5 descendant from C4.
 const newerBackupState = stateForHead(exhaustedHead);
 eq(newerBackupState.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'newer-backup fixture begins at C4');
 eq(apply(newerBackupState, { ref: 'rail:refund:B:1', kind: 'refund', units: 1, parent: 'rail:cap:B' }), true, 'newer-backup fixture advances to C5');
 const c5Snapshot = newerBackupState.snapshot();
 const c5Checkpoint = newerBackupState.checkpoint();
+const c5Head = newerBackupState.headCandidate();
 rejects(() => stateForHead(exhaustedHead).restore(c5Snapshot, c5Checkpoint), 'backup newer than accepted C4 head cannot self-promote authority');
+
+// Reviewer REVISE: a higher head is accepted only as an exact-prior-bound, owner-scoped
+// CAS/equivalent transition whose immutable effect lineage extends the accepted frontier.
+let transitionResolvedHead = exhaustedHead;
+const transitionProbe = createCanonicalMaterializationState({
+  persistenceNamespace: NAMESPACE,
+  resolveAuthoritativeHead: () => transitionResolvedHead,
+  verifyAuthoritativeHeadTransition: verifyTransitionShape
+});
+eq(transitionProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'transition probe starts from exact C4');
+transitionResolvedHead = transitionHead(c5Head, exhaustedHead);
+eq(transitionProbe.restore(c5Snapshot, c5Checkpoint), true, 'exact C4 to C5 descendant transition with prior-head CAS proof is accepted');
+eq(transitionProbe.getEffect('sp_restore', 'op_restore', 'rail:cap:B').remaining_unadjusted_units, 3999n, 'valid C5 descendant applies only its new bounded adjustment');
+
+let bareAdvanceHead = exhaustedHead;
+const bareAdvanceProbe = createCanonicalMaterializationState({
+  persistenceNamespace: NAMESPACE,
+  resolveAuthoritativeHead: () => bareAdvanceHead,
+  verifyAuthoritativeHeadTransition: verifyTransitionShape
+});
+eq(bareAdvanceProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'bare-advance probe starts at C4');
+bareAdvanceHead = c5Head;
+rejects(() => bareAdvanceProbe.restore(c5Snapshot, c5Checkpoint), 'higher generation without exact prior-head/CAS transition metadata is rejected');
+
+let noVerifierHead = exhaustedHead;
+const noVerifierProbe = createCanonicalMaterializationState({
+  persistenceNamespace: NAMESPACE,
+  resolveAuthoritativeHead: () => noVerifierHead
+});
+eq(noVerifierProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'no-verifier probe starts at C4');
+noVerifierHead = transitionHead(c5Head, exhaustedHead);
+rejects(() => noVerifierProbe.restore(c5Snapshot, c5Checkpoint), 'higher generation without owner-scoped transition verifier is rejected');
+
+// Internally-valid higher-generation fork that claims C4 as predecessor still fails because
+// its immutable lineage omits/substitutes previously accepted effects.
+const divergent = createCanonicalMaterializationState({ persistenceNamespace: NAMESPACE });
+eq(apply(divergent, { ref: 'rail:cap:A', kind: 'capture', units: 1000 }), true, 'divergent C5 capture A materializes');
+eq(apply(divergent, { ref: 'rail:cap:B', kind: 'capture', units: 4000 }), true, 'divergent C5 capture B materializes');
+eq(apply(divergent, { ref: 'rail:refund:A:500:fork', kind: 'refund', units: 500, parent: 'rail:cap:A' }), true, 'divergent C5 alternate refund materializes');
+eq(apply(divergent, { ref: 'rail:reversal:A:500:fork', kind: 'reversal', units: 500, parent: 'rail:cap:A' }), true, 'divergent C5 alternate reversal materializes');
+eq(apply(divergent, { ref: 'rail:refund:B:1:fork', kind: 'refund', units: 1, parent: 'rail:cap:B' }), true, 'divergent C5 extra effect materializes');
+const divergentSnapshot = divergent.snapshot();
+const divergentCheckpoint = divergent.checkpoint();
+const divergentTransitionHead = transitionHead(divergent.headCandidate(), exhaustedHead);
+let divergentResolvedHead = exhaustedHead;
+const divergentProbe = createCanonicalMaterializationState({
+  persistenceNamespace: NAMESPACE,
+  resolveAuthoritativeHead: () => divergentResolvedHead,
+  verifyAuthoritativeHeadTransition: verifyTransitionShape
+});
+eq(divergentProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'divergent-lineage probe starts at C4');
+const beforeDivergentAdvance = divergentProbe.snapshot();
+divergentResolvedHead = divergentTransitionHead;
+rejects(() => divergentProbe.restore(divergentSnapshot, divergentCheckpoint), 'higher-generation fork that omits accepted immutable effects is rejected despite plausible transition metadata');
+eq(divergentProbe.snapshot(), beforeDivergentAdvance, 'divergent higher-generation rejection leaves C4 state unchanged');
+
+// A competing next-head publication that loses owner-scoped CAS cannot become restore authority.
+let rejectedCasHead = exhaustedHead;
+const rejectedCasProbe = createCanonicalMaterializationState({
+  persistenceNamespace: NAMESPACE,
+  resolveAuthoritativeHead: () => rejectedCasHead,
+  verifyAuthoritativeHeadTransition: () => false
+});
+eq(rejectedCasProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'competing-CAS probe starts at C4');
+const beforeRejectedCas = rejectedCasProbe.snapshot();
+rejectedCasHead = transitionHead(c5Head, exhaustedHead, 'cas:losing-writer');
+rejects(() => rejectedCasProbe.restore(c5Snapshot, c5Checkpoint), 'competing next-head publication rejected by owner-scoped CAS/equivalent cannot restore');
+eq(rejectedCasProbe.snapshot(), beforeRejectedCas, 'rejected competing head causes zero partial local mutation');
+
+// TOCTOU: re-resolve the authority immediately before commit. If another writer advances
+// the head after validation, the stale read cannot commit backward over the newer frontier.
+eq(apply(newerBackupState, { ref: 'rail:refund:B:1:second', kind: 'refund', units: 1, parent: 'rail:cap:B' }), true, 'C5 fixture can advance to C6 for concurrent-head simulation');
+const c6Head = newerBackupState.headCandidate();
+const c6TransitionHead = transitionHead(c6Head, c5Head);
+let resolverMode = 'baseline';
+let transitionResolveCalls = 0;
+const concurrentProbe = createCanonicalMaterializationState({
+  persistenceNamespace: NAMESPACE,
+  resolveAuthoritativeHead: () => {
+    if (resolverMode === 'baseline') return exhaustedHead;
+    transitionResolveCalls += 1;
+    return transitionResolveCalls === 1 ? transitionHead(c5Head, exhaustedHead) : c6TransitionHead;
+  },
+  verifyAuthoritativeHeadTransition: verifyTransitionShape
+});
+eq(concurrentProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'concurrency probe starts at C4');
+const beforeConcurrentAdvance = concurrentProbe.snapshot();
+resolverMode = 'concurrent';
+transitionResolveCalls = 0;
+rejects(() => concurrentProbe.restore(c5Snapshot, c5Checkpoint), 'head changing from C5 to C6 between validation and commit rejects stale restore');
+eq(concurrentProbe.snapshot(), beforeConcurrentAdvance, 'TOCTOU head-change rejection is atomic');
 
 const wrongDomainHead = { ...exhaustedHead, domain: 'OTHER:materialization' };
 rejects(() => stateForHead(wrongDomainHead).restore(exhaustedSnapshot, exhaustedCheckpoint), 'wrong authoritative-head domain is rejected');
