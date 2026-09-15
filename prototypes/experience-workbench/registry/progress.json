@@ -16,6 +16,6 @@
   "last_approved_journey": "27",
   "last_approved_version": "v1",
   "last_approved_sha256": "64b730ee19a8713826868af6ca4b39b33d0c48c128b2fce2e90c7beec1dfa560",
-  "next_action": "Journey 28 Things Go Wrong / Recovery V1 is staged at definition pending exact resulting-state verification of the J27 Golden transition. Builder must not write J28 candidate bytes until canonical_exact_head_verified is true.",
+  "next_action": "Journey 28 Things Go Wrong / Recovery V1 is authoritative at definition stage after exact resulting-state verification of Golden #27. Builder may proceed with the complete J28 candidate under Factory v1.1; caller-reachability is required and standing approval may apply only after exact independent GOLDEN-READY.",
   "typography_note": "TYPO-01 deferred"
 }
