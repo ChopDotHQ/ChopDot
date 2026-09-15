@@ -1,5 +1,9 @@
 # Journey 28 — Decision History
 
+**Coverage:** Exact independently reviewed Journey 28 V1 decision set `J28-D01`–`J28-D10` plus the deterministic fixture implementation note below.
+
+**Decision:** Preserve the exact reviewed J28 recovery decisions below unchanged during Golden replay and terminal closeout.
+
 ## J28-D01 — Final registered closeout
 Journey 28 becomes authoritative only after Journey 27 is frozen as Golden #27 and the resulting canonical head is exact-head verified.
 
