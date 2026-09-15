@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "primary-builder",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|issue38-comment-5678939496|security-delta-5680116087|guest-01-approved|spend-01-rail-neutral-only",
   "candidate_head": "8a9ca150ed51c83628eddcf644e986b5daeff8cc",
   "claimed_at": "2026-09-15T12:31:00Z",
   "renewed_at": "2026-09-15T12:37:30Z",
   "completed_at": null,
-  "expires_at": "2026-09-15T12:49:30Z",
-  "waiting_reason": null,
-  "note": "Primary Builder renewed the Phase C1 security-delta lease after updating the exact candidate through atomic identity-link, least-authority, privacy, SpendIntent-domain, adapter-proof, recovery and rationale contracts."
+  "expires_at": null,
+  "waiting_reason": "exact-head GitHub Actions",
+  "note": "Phase C1 security acceptance repairs are pushed at exact candidate head 8a9ca150; writer lane released while exact-head checks validate the repaired package."
 }
