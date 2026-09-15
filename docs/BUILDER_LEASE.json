@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "waiting_ci",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
+  "holder": "contract-repair-pickup",
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5684201633|candidate-184dc84|money-partition-contract-surface",
   "candidate_head": "73bdd3706630bb14acb59dadc8a58445a244b911",
-  "claimed_at": "2026-09-15T17:07:00Z",
-  "renewed_at": "2026-09-15T17:14:15Z",
+  "claimed_at": "2026-09-15T17:55:52Z",
+  "renewed_at": "2026-09-15T17:55:52Z",
   "completed_at": null,
-  "expires_at": null,
-  "waiting_reason": "Mechanical verifier repair pushed after the 7f7f6a4 parse failure; waiting for exact Phase C1/CI/Coverage/Smoke/E2E on 73bdd3706630bb14acb59dadc8a58445a244b911.",
-  "note": "MoneyV1 contract/verifier repair remains bounded to Reviewer 5684201633; previous operation-conservation assertions were preserved and new non-two-decimal/currency/exponent partition evidence added. Vercel quota policy remains unchanged."
+  "expires_at": "2026-09-15T18:07:52Z",
+  "waiting_reason": null,
+  "note": "Claimed only to finalize exact green evidence and sealed Phase C1 Builder review handoff for the MoneyV1 repair; no further candidate/product mutation authorized unless a concrete exact-head mechanical failure is found."
 }
