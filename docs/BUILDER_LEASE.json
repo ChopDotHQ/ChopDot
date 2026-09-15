@@ -1,13 +1,13 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "completed",
   "journey": "28",
-  "holder": "primary-builder",
+  "holder": null,
   "fingerprint": "j28-definition-d12375e4bf779a2d3ad1c4e8b8975b58fd26302b-no-candidate",
   "candidate_head": "f8563051bd7442224a0a3d3bb3634a63b7d3419e",
   "claimed_at": "2026-09-15T02:04:00Z",
-  "renewed_at": "2026-09-15T02:04:00Z",
-  "completed_at": null,
-  "expires_at": "2026-09-15T02:16:00Z"
+  "renewed_at": "2026-09-15T02:07:00Z",
+  "completed_at": "2026-09-15T02:07:00Z",
+  "expires_at": null
 }
