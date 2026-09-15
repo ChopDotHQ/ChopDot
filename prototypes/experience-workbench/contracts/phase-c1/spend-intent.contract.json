@@ -1,7 +1,7 @@
 {
   "$id": "chopdot://contracts/spend-intent/SPEND-01/v1",
   "version": 1,
-  "security_revision": 4,
+  "security_revision": 5,
   "kind": "rail-neutral-domain-model",
   "economic_domain": "merchant_spend_before_or_during_purchase",
   "creates_user_journey": false,
@@ -93,7 +93,45 @@
     "cumulative_capture_or_partial_may_exceed_authorized_amount": false,
     "bound_change_requires_explicit_versioned_authorized_adjustment": true,
     "versioned_authorized_adjustment_rebinds_policy_and_approval_snapshots": true,
-    "operation_asset_must_remain_constant": true
+    "operation_asset_must_remain_constant": true,
+    "authorization_adjustment_requires_fresh_current_authority": true,
+    "authorization_adjustment_requires_unique_replay_protected_id": true,
+    "authorization_adjustment_requires_prior_and_next_version_binding": true,
+    "authorization_adjustment_requires_current_authorizer_capability": true,
+    "authorization_adjustment_requires_fresh_policy_and_approval_snapshots": true,
+    "pending_or_unknown_prior_execution_may_gain_fresh_dispatch_authority_from_adjustment": false
+  },
+  "authorization_adjustment": {
+    "identity_field": "authorization_adjustment_id",
+    "required_fields": [
+      "authorization_adjustment_id",
+      "spend_intent_id",
+      "operation_id",
+      "prior_authorization_version",
+      "authorization_version",
+      "authorized_amount",
+      "authorized_asset",
+      "policy_snapshot_digest",
+      "approval_snapshot_digest",
+      "authorizer_participant_id",
+      "authorizer_capability_id",
+      "authorizer_capability_version",
+      "authority_proof_ref"
+    ],
+    "unique_id_required": true,
+    "replay_allowed": false,
+    "prior_version_must_equal_current": true,
+    "next_version_must_equal_prior_plus_one": true,
+    "asset_must_equal_operation_asset": true,
+    "new_amount_must_cover_already_captured_value": true,
+    "policy_snapshot_digest_must_be_fresh_for_new_version": true,
+    "approval_snapshot_digest_must_be_fresh_for_new_version": true,
+    "current_authorizer_required": true,
+    "current_capability_required": true,
+    "effect_time_authority_revalidation_required": true,
+    "authorizer_scope": "spend_authorization_adjustment",
+    "pending_or_unknown_prior_execution_blocks_adjustment": true,
+    "adjustment_may_create_dispatch_authority_before_reconciliation": false
   },
   "proof": {
     "required_for_financial_materialization": true,
@@ -109,6 +147,7 @@
       "rail_identity",
       "amount",
       "asset",
+      "authorization_version",
       "target_digest",
       "policy_snapshot_digest",
       "approval_snapshot_digest",
@@ -126,10 +165,12 @@
       "rail_identity",
       "amount",
       "asset",
+      "authorization_version",
       "target_digest",
       "policy_snapshot_digest",
       "approval_snapshot_digest"
     ],
+    "exact_binding_required_fields_must_be_present_non_null_non_empty": true,
     "proof_reuse_across_another_intent_operation_effect_or_target_allowed": false,
     "authoritative_effect_ref_must_be_stable_for_same_external_effect": true,
     "same_authoritative_effect_ref_may_materialize_multiple_internal_effect_ids": false,
@@ -152,6 +193,7 @@
     "mode": "exactly_once",
     "idempotency_key": "spend_intent_id + authoritative_effect_ref",
     "internal_effect_id_is_not_authoritative_dedupe_identity": true,
+    "authoritative_effect_ref_required_before_dedupe": true,
     "one_authoritative_effect_ref_maps_to_at_most_one_canonical_effect": true,
     "targets": [
       "canonical_expense",
@@ -225,11 +267,14 @@
     "recovery_preserves_spend_intent_id": true
   },
   "policy": {
-    "policy_snapshot_is_immutable_for_operation": true,
-    "approval_snapshot_is_immutable_for_operation": true,
+    "policy_snapshot_is_immutable_within_authorization_version": true,
+    "approval_snapshot_is_immutable_within_authorization_version": true,
+    "authorization_adjustment_must_rebind_fresh_policy_and_approval_snapshots": true,
     "proof_must_bind_policy_and_approval_snapshot_digests": true,
+    "proof_must_bind_authorization_version": true,
     "capability_check_uses_member_identity": true,
-    "identity_upgrade_during_operation_may_change_economic_subject": false
+    "identity_upgrade_during_operation_may_change_economic_subject": false,
+    "unknown_or_pending_execution_blocks_fresh_dispatch_authority_after_adjustment": true
   },
   "research_boundary": {
     "selected_modes": [],
