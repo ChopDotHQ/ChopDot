@@ -1,0 +1,89 @@
+{
+  "$id": "chopdot://contracts/spend-intent/SPEND-01/v1",
+  "version": 1,
+  "kind": "rail-neutral-domain-model",
+  "creates_user_journey": false,
+  "execution_mode_selected": false,
+  "identity": {
+    "required": ["spend_intent_id", "operation_id"],
+    "spend_intent_id": "stable intent identity",
+    "operation_id": "exact execution/recovery operation identity",
+    "retry_reuses_operation_id": false
+  },
+  "required_fields": [
+    "spend_intent_id",
+    "operation_id",
+    "group_id",
+    "participants",
+    "shares",
+    "funding_rule",
+    "source_mode_adapter",
+    "policy_snapshot",
+    "approval_snapshot",
+    "lifecycle_state",
+    "authorization_state",
+    "funding_state",
+    "execution_state"
+  ],
+  "source_mode_adapter": {
+    "adapter_id": null,
+    "mode": "unselected",
+    "boundary": "Concrete rails translate mode-specific authorization/funding/execution events into this shared contract without changing its identity or truth rules."
+  },
+  "lifecycle_states": [
+    "draft",
+    "reviewed",
+    "authorized",
+    "pending",
+    "captured",
+    "partial",
+    "unknown",
+    "failed",
+    "reversed",
+    "cancelled"
+  ],
+  "authorization_states": ["not_requested", "reviewed", "authorized", "denied", "expired"],
+  "funding_states": ["unfunded", "reserved", "partially_funded", "funded", "released", "unknown"],
+  "execution_states": ["not_started", "pending", "captured", "partial", "unknown", "failed", "reversed", "cancelled"],
+  "proof": {
+    "required_for_financial_materialization": true,
+    "shape": ["source", "proof_id", "observed_at", "amount", "currency", "finality"],
+    "confirmation_source_must_be_recorded": true
+  },
+  "materialization": {
+    "mode": "exactly_once",
+    "idempotency_key": "spend_intent_id + capture_or_lineage_id",
+    "targets": ["canonical_expense", "canonical_obligation", "group_financial_state"],
+    "authorized_is_spent": false,
+    "unknown_may_materialize_new_spend": false,
+    "duplicate_capture_may_duplicate_expense": false
+  },
+  "lineage": {
+    "partial_capture_requires_parent": true,
+    "refund_requires_parent_capture": true,
+    "reversal_requires_parent_capture": true,
+    "fields": ["lineage_id", "parent_lineage_id", "kind", "amount", "currency", "proof_ref"]
+  },
+  "recovery": {
+    "pending_requires_reconciliation_before_retry": true,
+    "unknown_requires_reconciliation_before_retry": true,
+    "unknown_may_create_new_authority": false,
+    "retry_requires_new_operation_id_after_terminal_failure": true,
+    "recovery_preserves_spend_intent_id": true
+  },
+  "policy": {
+    "policy_snapshot_is_immutable_for_operation": true,
+    "approval_snapshot_is_immutable_for_operation": true,
+    "capability_check_uses_member_identity": true
+  },
+  "research_boundary": {
+    "selected_modes": [],
+    "not_approved": [
+      "multi_source_merchant_card",
+      "joint_bank_account_or_pot",
+      "issuer_or_baas",
+      "generic_merchant_card_issuance"
+    ],
+    "future_mode_must_implement_adapter_boundary": true
+  }
+}
