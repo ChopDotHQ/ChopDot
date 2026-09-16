@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "phase-c1-backup-builder",
+  "holder": null,
   "fingerprint": "a099369d9ba3b452e0ff135e9ffa842990c55e13|phase-c1|review-revise-5691650630|authoritative-external-effect-identity",
-  "candidate_head": "a099369d9ba3b452e0ff135e9ffa842990c55e13",
+  "candidate_head": "34f1076b34b1043b33c88cd24f638458bc93d78d",
   "claimed_at": "2026-09-16T04:02:32Z",
-  "renewed_at": "2026-09-16T04:11:29Z",
+  "renewed_at": "2026-09-16T04:15:52Z",
   "completed_at": null,
-  "expires_at": "2026-09-16T04:23:29Z",
-  "waiting_reason": null,
-  "note": "Formal Phase C1 Reviewer REVISE #38 comment 5691650630 remains governing for exact a099369d9ba3b452e0ff135e9ffa842990c55e13 / tree e007d3f4670db389b5c306806401778997abf5c5; Supervisor handback #38 5691781700 assigns the bounded rail-neutral authoritative external-effect identity/dedupe/parent-namespace repair to Builder."
+  "expires_at": null,
+  "waiting_reason": "exact-head Phase C1 / CI / Coverage / Smoke / E2E checks are running for successor 34f1076b34b1043b33c88cd24f638458bc93d78d",
+  "note": "Authorized repair from Reviewer #38 5691650630 / Supervisor #38 5691781700 produced exact successor 34f1076b34b1043b33c88cd24f638458bc93d78d / tree 9660c90b71c48fe238ce1ac0aa850a586e123a76. Candidate bytes are frozen while external exact-head checks run; Gate C may seal only after all five required workflows are green and no newer disposition/head/handoff exists."
 }
