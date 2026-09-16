@@ -5,11 +5,11 @@
   "journey": "Phase-C1",
   "holder": "primary-builder",
   "fingerprint": "73d7b4f8f5db54b5d7132220ceff2514c183e6d8|phase-c1|authorized-repair-cycle-5692378762|external-effect-ownership-revision9",
-  "candidate_head": "b61ee080df2a1f7473daffbd2056ab837776e2a9",
+  "candidate_head": "dfeb640910db2dfffb07c39758d32efe45efe8bb",
   "claimed_at": "2026-09-16T05:16:30Z",
-  "renewed_at": "2026-09-16T05:27:00Z",
+  "renewed_at": "2026-09-16T05:34:00Z",
   "completed_at": null,
-  "expires_at": "2026-09-16T05:39:00Z",
+  "expires_at": "2026-09-16T05:46:00Z",
   "waiting_reason": null,
-  "note": "Phase C1 Reviewer REVISE #38 comment 5692378762 repair in progress. Public materialization wrapper now enforces durable execution ownership correlation and full decorated restore fencing; candidate head advanced under this lease."
+  "note": "Phase C1 Reviewer REVISE #38 comment 5692378762 repair in progress. Revision-9 execution ownership, shared financial namespace, full decorated restore fence, focused adversarial verifier, and preserved regression adapters are now on the candidate branch; local/exact CI validation is next."
 }
