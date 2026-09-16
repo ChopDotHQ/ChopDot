@@ -48,8 +48,11 @@ jobs:
           exit 1
       - name: Run Golden Gate A browser walkthrough
         run: node prototypes/integrated-product-preview-v2/browser-qa.mjs
-      - name: Capture all Gate A review screens
+      - name: Capture primary Gate A review screens
         run: node prototypes/integrated-product-preview-v2/capture-gate-a.mjs
+      - name: Capture remaining Gate A review screens
+        if: always()
+        run: node prototypes/integrated-product-preview-v2/capture-gate-a-remaining.mjs
       - name: Upload Gate A evidence
         if: always()
         uses: actions/upload-artifact@v4
