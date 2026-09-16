@@ -1,0 +1,57 @@
+name: Integrated Product Preview V2
+
+on:
+  push:
+    branches:
+      - preview/golden-faithful-v2
+    paths:
+      - 'prototypes/integrated-product-preview-v2/**'
+      - 'docs/integrated-preview-v2/**'
+      - '.github/workflows/integrated-preview-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Validate Gate A structure
+        run: node prototypes/integrated-product-preview-v2/validate.mjs
+
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --include=optional
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start static server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/chopdot-preview-v2.log 2>&1 &
+          for i in {1..20}; do
+            curl -fsS http://127.0.0.1:4173/prototypes/integrated-product-preview-v2/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/chopdot-preview-v2.log
+          exit 1
+      - name: Run Golden Gate A browser walkthrough
+        run: node prototypes/integrated-product-preview-v2/browser-qa.mjs
+      - name: Upload Gate A evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integrated-preview-v2-gate-a-${{ github.sha }}
+          path: prototypes/integrated-product-preview-v2/artifacts/
+          if-no-files-found: warn
