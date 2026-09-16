@@ -3,6 +3,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
 import {
+  acceptedPersistenceDestinationDigest,
   createFencedExecutionOwnershipAuthority,
   createInMemoryExecutionOwnershipFrontierAuthority,
   createInMemoryExecutionOwnershipNamespaceAuthority
@@ -58,7 +59,6 @@ const register = (fin, authority, value) => {
     external_effect_identity: identity(value)
   }), true, `${value.operation_id}: authoritative external effect binds to its request`);
 };
-
 const makeShared = tag => {
   const fin = `phase-c1:financial-authority:destination:${tag}`;
   const namespaceAuthority = createInMemoryExecutionOwnershipNamespaceAuthority({ financialAuthorityNamespace: fin });
@@ -71,150 +71,140 @@ const makeShared = tag => {
   return { fin, namespaceAuthority, frontierAuthority, authority };
 };
 
-eq(acceptance.accepted_destination_revision, 1, 'SI-13 accepted destination fence revision is active');
+eq(acceptance.security_revision, 12, 'security revision 12 SI-13A anti-rollback family is active');
+eq(acceptance.accepted_destination_revision, 2, 'accepted destination revision 2 is active');
 eq(acceptance.execution_ownership_frontier.accepted_effect_destination_is_shared_financial_namespace_authority, true, 'accepted destination is shared by financial authority namespace');
 eq(acceptance.execution_ownership_frontier.one_to_one_financial_to_persistence_namespace_binding, true, 'FIN to persistence binding is one-to-one');
-eq(acceptance.execution_ownership_frontier.competing_persistence_namespace_fails_before_financial_commit, true, 'competing persistence namespace must fail before canonical commit');
-eq(acceptance.cross_authority_atomicity.accepted_destination_fence_is_shared_by_live_and_restore, true, 'live and restore use the same destination fence');
-eq(acceptance.recovery.accepted_destination_binding_survives_restart_and_rollback, true, 'destination binding survives restart and rollback');
-eq(acceptance.recovery.missing_destination_binding_after_materialized_use_fails_closed, true, 'missing destination binding after accepted use fails closed');
+eq(acceptance.execution_ownership_frontier.accepted_destination_binding_is_monotonic_frontier_head, true, 'destination binding lives in the independently resolved monotonic frontier');
+eq(acceptance.execution_ownership_frontier.accepted_destination_head_has_sequence_and_digest, true, 'destination head carries sequence and digest');
+eq(acceptance.execution_ownership_frontier.stale_destination_head_fails_closed, true, 'stale destination head must fail closed');
+eq(acceptance.cross_authority_atomicity.accepted_destination_cas_loss_fails_closed_before_financial_commit, true, 'destination CAS loser fails before financial commit');
+eq(acceptance.recovery.stale_null_or_competing_destination_backup_cannot_rebind_authority, true, 'stale null/P2 backup cannot rebind destination authority');
 
-// Reviewer SI-13 two-instance family: P1 accepts a provider effect under FIN. P2 may
-// reconstruct the same execution owner, but cannot canonically commit that effect under
-// another persistence namespace. The rejection happens before the financial callback.
+// Reviewer SI-13A exact sequence: O0/N0/F -> P1 claim + canonical materialization ->
+// restore stale O0/N0/F -> attempt P2. The P1 claim advances the independently resolved
+// frontier even though the replay digest is unchanged by materialization-only status.
 {
-  const { fin, namespaceAuthority, frontierAuthority, authority } = makeShared('two-instance');
+  const { fin, namespaceAuthority, frontierAuthority, authority } = makeShared('anti-rollback');
   const p1 = 'phase-c1:persistence:P1';
   const p2 = 'phase-c1:persistence:P2';
-  const root = effect('two-instance:root');
+  const root = effect('anti-rollback:root');
   register(fin, authority, root);
 
-  const claim = authority.beginMaterialization(ownershipInput(fin, root));
-  eq(Boolean(claim), true, 'P1 obtains the exact observed-effect materialization claim');
+  const staleOwnership = authority.snapshot();
+  const staleHead = authority.frontierHead();
+  const staleGenesis = authority.namespaceGenesisRecord();
+  const left = createFencedExecutionOwnershipAuthority(staleOwnership, { financialAuthorityNamespace: fin, frontierAuthority, namespaceAuthority });
+  const right = createFencedExecutionOwnershipAuthority(staleOwnership, { financialAuthorityNamespace: fin, frontierAuthority, namespaceAuthority });
+  const leftClaim = left.beginMaterialization(ownershipInput(fin, root));
+  const rightClaim = right.beginMaterialization(ownershipInput(fin, root));
+  eq(Boolean(leftClaim), true, 'P1 exact-current fork obtains observed-effect claim');
+  eq(Boolean(rightClaim), true, 'P2 exact-current fork obtains the same pre-destination claim');
+
   let p1Commits = 0;
-  const p1Receipt = authority.prepareMaterializationCommit({ claim, persistence_namespace: p1 }, () => {
+  const p1Receipt = left.prepareMaterializationCommit({ claim: leftClaim, persistence_namespace: p1 }, () => {
     p1Commits += 1;
     return true;
   });
-  eq(Boolean(p1Receipt), true, 'P1 is admitted through the shared accepted-destination fence');
-  eq(p1Commits, 1, 'P1 financial commit callback executes exactly once');
-  eq(p1Receipt.finalize(), true, 'P1 ownership finalization succeeds');
-  eq(authority.acceptedPersistenceNamespace(), p1, 'FIN is durably bound to P1');
+  eq(Boolean(p1Receipt), true, 'P1 wins the monotonic destination head and reaches canonical callback');
+  eq(p1Commits, 1, 'P1 canonical callback executes exactly once');
+  const wonHead = left.frontierHead();
+  eq(wonHead.sequence > staleHead.sequence, true, 'P1 destination claim advances the outer frontier sequence');
+  eq(wonHead.accepted_destination_head.sequence > staleHead.accepted_destination_head.sequence, true, 'P1 advances destination-head sequence');
+  eq(wonHead.accepted_destination_head.persistence_namespace, p1, 'destination head binds FIN to P1');
+  eq(wonHead.accepted_destination_head.digest !== staleHead.accepted_destination_head.digest, true, 'destination claim changes its independently checked digest');
 
-  const persisted = authority.snapshot();
-  const competitor = createFencedExecutionOwnershipAuthority(persisted, {
-    financialAuthorityNamespace: fin,
-    frontierAuthority,
-    namespaceAuthority
-  });
-  const p2Plan = competitor.planAcceptedLineage({
-    financial_authority_namespace: fin,
-    persistence_namespace: p2,
-    effects: [descriptor(root)]
-  });
-  let p2RestoreCommits = 0;
-  eq(competitor.prepareAcceptedLineageCommit(p2Plan, () => {
-    p2RestoreCommits += 1;
+  let p2Commits = 0;
+  eq(right.prepareMaterializationCommit({ claim: rightClaim, persistence_namespace: p2 }, () => {
+    p2Commits += 1;
     return true;
-  }), null, 'P2 cannot restore/accept the already canonical provider effect');
-  eq(p2RestoreCommits, 0, 'P2 restore is rejected before any second financial commit');
-  eq(competitor.acceptedPersistenceNamespace(), p1, 'P2 cannot rewrite the FIN to persistence binding');
+  }), null, 'concurrent P2 loses because its destination/frontier expected head is stale');
+  eq(p2Commits, 0, 'P2 CAS loser fails before financial callback');
+  eq(right.abortMaterialization(rightClaim), true, 'losing local P2 claim can be abandoned without changing shared destination authority');
+  eq(p1Receipt.finalize(), true, 'P1 ownership finalization succeeds after canonical publication');
+  eq(left.acceptedPersistenceNamespace(), p1, 'P1 remains the authoritative destination after finalization');
 
-  const next = effect('two-instance:next');
-  register(fin, competitor, next);
-  const p2Claim = competitor.beginMaterialization(ownershipInput(fin, next));
-  eq(Boolean(p2Claim), true, 'P2 can observe another exact owner but still lacks destination authority');
-  let p2LiveCommits = 0;
-  eq(competitor.prepareMaterializationCommit({ claim: p2Claim, persistence_namespace: p2 }, () => {
-    p2LiveCommits += 1;
-    return true;
-  }), null, 'P2 live materialization is fenced by the same FIN destination binding');
-  eq(p2LiveCommits, 0, 'P2 live path is rejected before canonical financial commit');
-  eq(competitor.abortMaterialization(p2Claim), true, 'blocked P2 live claim is released locally');
+  throws(
+    () => createFencedExecutionOwnershipAuthority(staleOwnership, { financialAuthorityNamespace: fin, frontierAuthority, namespaceAuthority }),
+    /stale or forked execution ownership frontier/,
+    'stale O0/N0/F cannot restore after P1 destination acceptance'
+  );
 
-  const durableGenesis = competitor.namespaceGenesisRecord();
-  const durableOwnership = competitor.snapshot();
-  const durableFrontier = competitor.frontierHead();
+  // A copied/rehashed portable head is still not authority. Rehash both null and P2
+  // variants correctly, then prove the independently resolved current P1 head wins.
+  for (const candidate of [null, p2]) {
+    const forged = structuredClone(left.snapshot());
+    const destination = forged.execution_ownership_frontier_head.accepted_destination_head;
+    destination.persistence_namespace = candidate;
+    destination.digest = acceptedPersistenceDestinationDigest({
+      financial_authority_namespace: fin,
+      sequence: destination.sequence,
+      persistence_namespace: candidate
+    });
+    throws(
+      () => createFencedExecutionOwnershipAuthority(forged, { financialAuthorityNamespace: fin, frontierAuthority, namespaceAuthority }),
+      /stale or forked execution ownership frontier/,
+      `same-version rehashed ${candidate ?? 'null'} destination record cannot override current P1 head`
+    );
+  }
+
+  // Namespace genesis may be copied from before P1 because it no longer carries mutable
+  // destination truth. Restart succeeds only because destination freshness comes from the
+  // exact independently resolved frontier head.
   const restartedNamespace = createInMemoryExecutionOwnershipNamespaceAuthority({
     financialAuthorityNamespace: fin,
-    initialRecord: durableGenesis
+    initialRecord: staleGenesis
   });
   const restartedFrontier = createInMemoryExecutionOwnershipFrontierAuthority({
     financialAuthorityNamespace: fin,
-    initialHead: durableFrontier
+    initialHead: wonHead
   });
-  const restarted = createFencedExecutionOwnershipAuthority(durableOwnership, {
+  const restarted = createFencedExecutionOwnershipAuthority(left.snapshot(), {
     financialAuthorityNamespace: fin,
     frontierAuthority: restartedFrontier,
     namespaceAuthority: restartedNamespace
   });
-  eq(restarted.acceptedPersistenceNamespace(), p1, 'restart preserves the create-once P1 destination binding');
-  const restartPlan = restarted.planAcceptedLineage({
+  eq(restarted.acceptedPersistenceNamespace(), p1, 'restart resolves P1 from frontier destination head, not mutable genesis');
+  const p2Plan = restarted.planAcceptedLineage({
     financial_authority_namespace: fin,
     persistence_namespace: p2,
     effects: [descriptor(root)]
   });
   let restartCommits = 0;
-  eq(restarted.prepareAcceptedLineageCommit(restartPlan, () => {
+  eq(restarted.prepareAcceptedLineageCommit(p2Plan, () => {
     restartCommits += 1;
     return true;
-  }), null, 'restart cannot replay the accepted effect into P2');
-  eq(restartCommits, 0, 'restart replay is fenced before a second financial commit');
-
-  const resetGenesis = { ...durableGenesis, accepted_persistence_namespace: null };
-  const resetNamespace = createInMemoryExecutionOwnershipNamespaceAuthority({
-    financialAuthorityNamespace: fin,
-    initialRecord: resetGenesis
-  });
-  const resetFrontier = createInMemoryExecutionOwnershipFrontierAuthority({
-    financialAuthorityNamespace: fin,
-    initialHead: durableFrontier
-  });
-  throws(
-    () => createFencedExecutionOwnershipAuthority(durableOwnership, {
-      financialAuthorityNamespace: fin,
-      frontierAuthority: resetFrontier,
-      namespaceAuthority: resetNamespace
-    }),
-    /missing accepted persistence destination authority for materialized namespace/,
-    'accepted ownership plus reset destination authority freezes instead of re-binding'
-  );
+  }), null, 'restart cannot replay accepted lineage into P2');
+  eq(restartCommits, 0, 'restart P2 fails before canonical financial callback');
 }
 
-// A failed financial publication does not release or reassign the FIN namespace itself.
-// The structural destination assignment remains create-once, so a later P2 cannot win by
-// racing after P1's local/financial rollback.
+// Crash/failure after destination claim but before financial publication must strand the
+// namespace on P1 rather than reopen P2. This is deliberately fail-closed.
 {
-  const { fin, namespaceAuthority, frontierAuthority, authority } = makeShared('rollback');
-  const p1 = 'phase-c1:persistence:rollback:P1';
-  const p2 = 'phase-c1:persistence:rollback:P2';
-  const value = effect('rollback:root');
+  const { fin, namespaceAuthority, frontierAuthority, authority } = makeShared('pre-publication-failure');
+  const p1 = 'phase-c1:persistence:failure:P1';
+  const p2 = 'phase-c1:persistence:failure:P2';
+  const value = effect('pre-publication-failure:root');
   register(fin, authority, value);
   const claim = authority.beginMaterialization(ownershipInput(fin, value));
-  eq(Boolean(claim), true, 'rollback family obtains observed-effect claim');
   let failedCommits = 0;
   eq(authority.prepareMaterializationCommit({ claim, persistence_namespace: p1 }, () => {
     failedCommits += 1;
     return false;
-  }), null, 'failed P1 financial publication returns no ownership receipt');
-  eq(failedCommits, 1, 'failed P1 financial callback is attempted once');
-  eq(authority.acceptedPersistenceNamespace(), p1, 'P1 namespace assignment survives financial rollback');
-  eq(authority.abortMaterialization(claim), true, 'failed P1 active claim is released');
+  }), null, 'failed P1 financial publication returns no receipt');
+  eq(failedCommits, 1, 'P1 callback was attempted once after destination claim');
+  eq(authority.acceptedPersistenceNamespace(), p1, 'destination authority stays on P1 after publication failure');
+  eq(authority.abortMaterialization(claim), true, 'failed P1 local materialization claim is released');
 
-  const competitor = createFencedExecutionOwnershipAuthority(authority.snapshot(), {
-    financialAuthorityNamespace: fin,
-    frontierAuthority,
-    namespaceAuthority
-  });
-  const p2Claim = competitor.beginMaterialization(ownershipInput(fin, value));
-  eq(Boolean(p2Claim), true, 'P2 can inspect the still-observed owner after rollback');
+  const current = createFencedExecutionOwnershipAuthority(authority.snapshot(), { financialAuthorityNamespace: fin, frontierAuthority, namespaceAuthority });
+  const retryClaim = current.beginMaterialization(ownershipInput(fin, value));
   let p2Commits = 0;
-  eq(competitor.prepareMaterializationCommit({ claim: p2Claim, persistence_namespace: p2 }, () => {
+  eq(current.prepareMaterializationCommit({ claim: retryClaim, persistence_namespace: p2 }, () => {
     p2Commits += 1;
     return true;
-  }), null, 'P2 cannot seize destination authority after P1 rollback');
-  eq(p2Commits, 0, 'P2 rollback-race path fails before financial commit');
-  eq(competitor.abortMaterialization(p2Claim), true, 'blocked rollback-race claim is released');
+  }), null, 'P2 cannot seize destination after P1 publication failure/crash cut');
+  eq(p2Commits, 0, 'P2 remains fenced before financial publication');
+  eq(current.abortMaterialization(retryClaim), true, 'blocked retry claim is released locally');
 }
 
 console.log(JSON.stringify({ suite: 'phase-c1-accepted-destination-fence', checks, result: 'pass' }));
