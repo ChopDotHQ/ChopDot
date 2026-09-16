@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "echo 'ChopDot Gate A review: no dependency install required'",
-  "buildCommand": "rm -rf gate-a-dist && mkdir -p gate-a-dist/prototypes/integrated-product-preview-v2 gate-a-dist/prototypes/experience-workbench/journeys && cp -R prototypes/integrated-product-preview-v2/. gate-a-dist/prototypes/integrated-product-preview-v2/ && cp -R prototypes/experience-workbench/journeys/01-enter-chopdot gate-a-dist/prototypes/experience-workbench/journeys/ && cp -R prototypes/experience-workbench/journeys/02-home-orientation gate-a-dist/prototypes/experience-workbench/journeys/",
+  "buildCommand": "node scripts/package-preview-v2-gate-a.mjs",
   "outputDirectory": "gate-a-dist",
   "headers": [
     {
