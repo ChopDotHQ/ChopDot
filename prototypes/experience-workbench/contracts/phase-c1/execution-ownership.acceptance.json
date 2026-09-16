@@ -2,7 +2,8 @@
   "$id": "chopdot://contracts/spend-intent/SPEND-01/execution-ownership/acceptance-v1",
   "version": 1,
   "spend_intent_contract": "chopdot://contracts/spend-intent/SPEND-01/v1",
-  "security_revision": 12,
+  "security_revision": 11,
+  "accepted_destination_revision": 1,
   "kind": "rail-neutral-shared-primitive-acceptance",
   "execution_mode_selected": false,
   "dispatch_reservation": {
