@@ -34,10 +34,11 @@
       ]
     }
   ],
-  "rewrites": [
+  "redirects": [
     {
       "source": "/",
-      "destination": "/prototypes/integrated-product-preview-v2/index.html"
+      "destination": "/prototypes/integrated-product-preview-v2/index.html",
+      "permanent": false
     }
   ]
 }
