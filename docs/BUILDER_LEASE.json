@@ -1,7 +1,7 @@
 {
   "version": 2,
   "role": "phase-c1-builder",
-  "status": "waiting_ci",
+  "status": "completed",
   "holder": null,
   "branch": "phase-c1/guest-spend-contract-v1-candidate",
   "fingerprint": "phase-c1|mechanical-repair|35066131783|b61274a4497c1cd60e2926e9349ae1a0c4834f28",
