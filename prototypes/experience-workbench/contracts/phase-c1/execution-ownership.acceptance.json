@@ -1,0 +1,48 @@
+{
+  "$id": "chopdot://contracts/spend-intent/SPEND-01/execution-ownership/acceptance-v1",
+  "version": 1,
+  "spend_intent_contract": "chopdot://contracts/spend-intent/SPEND-01/v1",
+  "security_revision": 9,
+  "kind": "rail-neutral-shared-primitive-acceptance",
+  "execution_mode_selected": false,
+  "dispatch_reservation": {
+    "production_api_result_is_structured": true,
+    "fresh_dispatch_requires_newly_created_reservation": true,
+    "existing_pending_unknown_or_effect_observed_reservation_may_dispatch_fresh_value": false,
+    "boolean_idempotent_success_is_dispatch_authority": false
+  },
+  "cross_authority_atomicity": {
+    "financial_and_execution_ownership_commit_is_atomic_or_crash_safe": true,
+    "fault_points": [
+      "before_financial_publication",
+      "after_financial_publication",
+      "before_ownership_finalization",
+      "after_ownership_finalization"
+    ],
+    "one_side_committed_other_side_observed_is_accepted": false
+  },
+  "pre_authority_quarantine": {
+    "materialization_is_quarantined": true,
+    "may_prepare_local_candidate_financial_state": true,
+    "may_finalize_shared_ownership": false,
+    "canonical_acceptance_must_reconcile_both_authorities_in_one_fence": true
+  },
+  "no_effect_release": {
+    "authoritative_no_effect_required": true,
+    "released_request_ref_is_tombstoned_non_reusable": true,
+    "stale_no_effect_proof_can_release_later_reused_request": false
+  },
+  "recovery": {
+    "restore_reconciles_financial_and_execution_ownership": true,
+    "execution_ownership_digest_binds_financial_effect_owner_set": true,
+    "missing_or_forked_execution_ownership_fails_before_financial_commit": true,
+    "stale_materialization_status_may_reconstruct_only_from_exact_immutable_accepted_lineage": true,
+    "unknown_or_existing_correlation_never_becomes_fresh_dispatch_authority": true
+  },
+  "boundary": {
+    "payment_intent_settlement_separate": true,
+    "concrete_rail_selected": false,
+    "merchant_card_capability_claimed": false,
+    "polkadot_cash_production_ready_claimed": false
+  }
+}

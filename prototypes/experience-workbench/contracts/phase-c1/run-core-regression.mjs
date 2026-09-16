@@ -50,7 +50,7 @@ if (targetName === 'verify-restore-integrity.mjs' || targetName === 'verify-live
 
 if (targetName === 'verify-restore-integrity.mjs') {
   const moneyFixtureMarker = "      authoritative_parent_effect_ref: null\n    },\n    effectMoney: { minorUnits: units, currency: 'XTS', exponent },";
-  const moneyFixtureReplacement = "      authoritative_parent_effect_ref: null,\n      adapter_id: 'adapter_fixture',\n      rail_identity: 'fixture_rail',\n      execution_request_ref: `req:${spendIntentId}:${operationId}:${authoritativeEffectRef}`\n    },\n    effectMoney: { minorUnits: units, currency: 'XTS', exponent },";
+  const moneyFixtureReplacement = "      authoritative_parent_effect_ref: null,\n      adapter_id: 'adapter_fixture',\n      rail_identity: 'fixture_rail',\n      execution_request_ref: 'req:sp_e' + exponent + ':op_e' + exponent + ':rail:e' + exponent\n    },\n    effectMoney: { minorUnits: units, currency: 'XTS', exponent },";
   if (!transformed.includes(moneyFixtureMarker)) throw new Error('verify-restore-integrity.mjs MoneyV1 verified-namespace fixture marker missing');
   transformed = transformed.replace(moneyFixtureMarker, moneyFixtureReplacement);
 }
