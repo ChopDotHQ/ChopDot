@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "waiting_ci",
+  "status": "completed",
   "journey": "Phase-C1",
   "holder": null,
   "fingerprint": "73d7b4f8f5db54b5d7132220ceff2514c183e6d8|phase-c1|authorized-repair-cycle-5691650630|external-effect-identity-revision8",
   "candidate_head": "73d7b4f8f5db54b5d7132220ceff2514c183e6d8",
   "claimed_at": "2026-09-16T04:34:35Z",
   "renewed_at": "2026-09-16T04:34:35Z",
-  "completed_at": null,
+  "completed_at": "2026-09-16T04:42:48Z",
   "expires_at": null,
-  "waiting_reason": "Exact-head Phase C1/CI/Coverage/Smoke/E2E must complete after the bounded operation-conservation revision compatibility repair.",
-  "note": "Reviewer REVISE #38 5691650630 remains governing. Causal product repair paths remain _authoritative-external-effect-state.mjs plus materialization-state.mjs. The current successor only adds a generated regression bridge so the byte-preserved operation-conservation suite asserts security_revision 8 while keeping every conservation scenario unchanged; workflow evidence now checksums that bridge too. No Golden or unrelated product semantics changed."
+  "waiting_reason": null,
+  "note": "Gate C completed after exact-head Phase C1/CI/Coverage/Smoke/E2E all completed green for 73d7b4f8f5db54b5d7132220ceff2514c183e6d8. Exactly one sealed Phase C1 Builder REVIEW REQUEST was published on issue #38 as comment 5692150786, binding successor head/tree/checksums/evidence and separating the causal external-effect identity/live-fence implementation from regression/workflow metadata. Independent Reviewer/Security owns the next disposition."
 }
