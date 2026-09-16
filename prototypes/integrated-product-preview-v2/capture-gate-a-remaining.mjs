@@ -1,0 +1,32 @@
+import { chromium } from 'playwright';
+import { mkdirSync } from 'node:fs';
+const root=process.env.PREVIEW_V2_BASE_URL||'http://127.0.0.1:4173/prototypes/integrated-product-preview-v2/index.html';
+const out=new URL('./artifacts/gate-a-screens/',import.meta.url); mkdirSync(out,{recursive:true});
+const browser=await chromium.launch({headless:true});
+async function open(entry='account'){const ctx=await browser.newContext({viewport:{width:430,height:890}});const page=await ctx.newPage();await page.goto(`${root}?entry=${entry}`,{waitUntil:'networkidle'});return{ctx,page,ui:page.frameLocator('#product-frame')}}
+async function shot(page,file){await page.screenshot({path:new URL(file,out).pathname,fullPage:true})}
+async function hashState(hash,id,file){const{ctx,page,ui}=await open();const frame=page.frames().find(f=>f.url().includes('/01-enter-chopdot/v1-candidate.html'));await frame.goto(`${frame.url().split('#')[0]}#${hash}`,{waitUntil:'networkidle'});await ui.locator(`#entry-screen[data-state="${id}"]`).waitFor();await shot(page,file);await ctx.close()}
+{
+ const{ctx,page,ui}=await open();
+ await ui.getByRole('button',{name:'Use a wallet'}).click();
+ await ui.getByRole('button',{name:/Everyday/}).click();
+ await ui.getByRole('button',{name:'Demo'}).click();
+ await ui.getByRole('button',{name:'Test result: approval declined'}).click();
+ await ui.locator('#entry-screen[data-state="approval-declined"]').waitFor();
+ await shot(page,'13-approval-declined.png'); await ctx.close();
+}
+await hashState('approval-expired','approval-expired','14-approval-expired.png');
+await hashState('offline','offline','15-offline.png');
+await hashState('session-expired','session-expired','16-session-expired.png');
+await hashState('wrong-account','wrong-account','17-wrong-account.png');
+await hashState('load-error','load-error','18-load-error.png');
+{
+ const{ctx,page,ui}=await open('guest-invite');
+ await ui.getByRole('heading',{name:'See the group before you decide.'}).waitFor();
+ await shot(page,'19-guest-private-invite.png');
+ await ui.getByRole('button',{name:'Review invite as guest'}).click();
+ await ui.getByRole('heading',{name:'Context kept. Consent comes next.'}).waitFor();
+ await shot(page,'20-guest-handoff.png'); await ctx.close();
+}
+await browser.close();
+console.log('Captured remaining Gate A screens.');
