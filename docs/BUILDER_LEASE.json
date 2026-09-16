@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "phase-c1-backup-builder",
-  "fingerprint": "ac00660ab37256f532f629c4a99dec0d627d6397|phase-c1|mechanical-failure-run-35055971603|operation-revision-marker",
-  "candidate_head": "ac00660ab37256f532f629c4a99dec0d627d6397",
+  "holder": null,
+  "fingerprint": "73d7b4f8f5db54b5d7132220ceff2514c183e6d8|phase-c1|authorized-repair-cycle-5691650630|external-effect-identity-revision8",
+  "candidate_head": "73d7b4f8f5db54b5d7132220ceff2514c183e6d8",
   "claimed_at": "2026-09-16T04:34:35Z",
   "renewed_at": "2026-09-16T04:34:35Z",
   "completed_at": null,
-  "expires_at": "2026-09-16T04:46:35Z",
-  "waiting_reason": null,
-  "note": "Gate B continuation under Reviewer REVISE #38 5691650630. Exact Phase C1 run 35055971603 is green through core, restore, live-fence, and external-effect identity suites; operation conservation failed mechanically only because its preserved contract revision assertion still expected 7 while the authorized repair is security_revision 8. Update that assertion only; do not widen product semantics."
+  "expires_at": null,
+  "waiting_reason": "Exact-head Phase C1/CI/Coverage/Smoke/E2E must complete after the bounded operation-conservation revision compatibility repair.",
+  "note": "Reviewer REVISE #38 5691650630 remains governing. Causal product repair paths remain _authoritative-external-effect-state.mjs plus materialization-state.mjs. The current successor only adds a generated regression bridge so the byte-preserved operation-conservation suite asserts security_revision 8 while keeping every conservation scenario unchanged; workflow evidence now checksums that bridge too. No Golden or unrelated product semantics changed."
 }
