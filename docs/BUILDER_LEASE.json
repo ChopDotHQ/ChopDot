@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "completed",
   "journey": "Phase-C1",
-  "holder": "fast-builder-A",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5690474117|candidate-74fe2c6|live-materialization-fence",
   "candidate_head": "a099369d9ba3b452e0ff135e9ffa842990c55e13",
   "claimed_at": "2026-09-16T01:55:56Z",
-  "renewed_at": "2026-09-16T01:55:56Z",
-  "completed_at": null,
-  "expires_at": "2026-09-16T02:07:56Z",
+  "renewed_at": "2026-09-16T01:58:00Z",
+  "completed_at": "2026-09-16T01:58:00Z",
+  "expires_at": null,
   "waiting_reason": null,
-  "note": "Gate C handoff completion in progress for exact unchanged green successor a099369d9ba3b452e0ff135e9ffa842990c55e13. Candidate/product bytes are frozen during this claim; this claim protects only the sealed handoff write and final lease completion."
+  "note": "Gate C completed for exact unchanged successor a099369d9ba3b452e0ff135e9ffa842990c55e13 / tree e007d3f4670db389b5c306806401778997abf5c5 after Phase C1, CI, Coverage, Smoke, and E2E completed green. Sealed Phase C1 Builder REVIEW REQUEST: #38 comment 5690880920. Evidence artifact 10425563671, digest sha256:6346cef55420e5895c5cb5b0167cd3f4ebfe0534a01623a904bd052adf3d8a60. Independent Reviewer owns the next disposition."
 }
