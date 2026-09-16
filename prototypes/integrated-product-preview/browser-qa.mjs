@@ -24,7 +24,7 @@ for (const vp of viewports) {
 
   await page.goto(`${base}#enter`, { waitUntil: 'networkidle' });
   await page.locator('[data-action="continue-guest"]').click();
-  await page.waitForFunction(() => location.hash === '#home');
+  await page.locator('.app-content[data-journey="02"]').waitFor();
   await page.screenshot({ path: new URL(`home-${vp.name}.png`, out).pathname, fullPage: true });
 
   const guest = await page.evaluate(() => JSON.parse(localStorage.getItem('chopdot.integrated-preview.v1')));
@@ -34,7 +34,7 @@ for (const vp of viewports) {
 
   await page.goto(`${base}#account`, { waitUntil: 'networkidle' });
   await page.locator('[data-action="link-account"]').click();
-  await page.waitForFunction(() => location.hash === '#account');
+  await page.locator('.app-content[data-journey="27"]').waitFor();
   const linked = await page.evaluate(() => JSON.parse(localStorage.getItem('chopdot.integrated-preview.v1')));
   if (linked.participant.id !== participantBefore) throw new Error('Guest → account changed Participant identity');
   if (!linked.participant.accountLinked) throw new Error('Account link did not materialize');
@@ -44,27 +44,28 @@ for (const vp of viewports) {
   await page.locator('#expense-title').fill('Browser QA dinner');
   await page.locator('#expense-amount').fill('96');
   await page.locator('[data-action="add-expense"]').click();
-  await page.waitForFunction(() => location.hash === '#review');
+  await page.locator('.app-content[data-journey="07"]').waitFor();
   await page.locator('[data-action="agree-expense"]').click();
-  await page.waitForFunction(() => location.hash === '#position');
+  await page.locator('.app-content[data-journey="10"]').waitFor();
   report.continuity.push(`${vp.name}: expense→review→position`);
 
   await page.goto(`${base}#settle`, { waitUntil: 'networkidle' });
   await page.locator('[data-action="start-settlement"]').click();
-  await page.waitForFunction(() => location.hash === '#settlement-result');
+  await page.locator('.app-content[data-journey="12"]').waitFor();
   await page.locator('[data-action="settlement-unknown"]').click();
-  await page.waitForFunction(() => location.hash === '#recovery');
+  await page.locator('.app-content[data-journey="28"]').waitFor();
   const recoveryText = await page.locator('.app-content').innerText();
   if (!recoveryText.includes('Payment outcome unknown')) throw new Error('J28 unknown-payment recovery was not visible');
   await page.screenshot({ path: new URL(`recovery-${vp.name}.png`, out).pathname, fullPage: true });
   await page.locator('[data-action="resolve-failure"]').click();
-  await page.waitForFunction(() => location.hash === '#settlement-result');
+  await page.locator('.app-content[data-journey="12"]').waitFor();
   const resultText = await page.locator('.app-content').innerText();
   if (!resultText.includes('Payment verified')) throw new Error('Recovery did not return to verified settlement');
   report.continuity.push(`${vp.name}: settlement unknown→J28→verified result`);
 
   for (const journey of JOURNEYS) {
     await page.goto(`${base}#${journey.slug}`, { waitUntil: 'networkidle' });
+    await page.locator(`.app-content[data-journey="${journey.id}"]`).waitFor();
     const marker = await page.locator('.app-content').getAttribute('data-journey');
     if (marker !== journey.id) throw new Error(`Route mismatch: expected J${journey.id}, got ${marker}`);
     const visible = await page.locator('.app-content').isVisible();
