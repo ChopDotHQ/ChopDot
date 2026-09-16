@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "waiting_ci",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
-  "fingerprint": "ac00660ab37256f532f629c4a99dec0d627d6397|phase-c1|authorized-repair-cycle-5691650630|external-effect-identity-revision8",
+  "holder": "phase-c1-backup-builder",
+  "fingerprint": "ac00660ab37256f532f629c4a99dec0d627d6397|phase-c1|mechanical-failure-run-35055971603|operation-revision-marker",
   "candidate_head": "ac00660ab37256f532f629c4a99dec0d627d6397",
-  "claimed_at": "2026-09-16T04:31:40Z",
-  "renewed_at": "2026-09-16T04:31:40Z",
+  "claimed_at": "2026-09-16T04:34:35Z",
+  "renewed_at": "2026-09-16T04:34:35Z",
   "completed_at": null,
-  "expires_at": null,
-  "waiting_reason": "Exact-head Phase C1/CI/Coverage/Smoke/E2E must complete after the bounded revision-8 external-identity/live-fence composition repair.",
-  "note": "Reviewer REVISE #38 5691650630 remains governing. Causal external-effect uniqueness implementation began at 34f1076b34b1043b33c88cd24f638458bc93d78d. ac00660ab37256f532f629c4a99dec0d627d6397 additionally repairs the discovered composition defect in materialization-state.mjs: inner speculative restore compares only the revision-7 core-head projection after the revision-8 layer has independently validated the full decorated external-identity head; the outer live mutation fence still requires the exact full decorated head. No Golden or unrelated product semantics changed."
+  "expires_at": "2026-09-16T04:46:35Z",
+  "waiting_reason": null,
+  "note": "Gate B continuation under Reviewer REVISE #38 5691650630. Exact Phase C1 run 35055971603 is green through core, restore, live-fence, and external-effect identity suites; operation conservation failed mechanically only because its preserved contract revision assertion still expected 7 while the authorized repair is security_revision 8. Update that assertion only; do not widen product semantics."
 }
