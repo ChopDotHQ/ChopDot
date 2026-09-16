@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "waiting_ci",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
-  "fingerprint": "a099369d9ba3b452e0ff135e9ffa842990c55e13|phase-c1|review-revise-5691650630|authoritative-external-effect-identity",
+  "holder": "phase-c1-backup-builder",
+  "fingerprint": "34f1076b34b1043b33c88cd24f638458bc93d78d|phase-c1|mechanical-failure-run-35054906235|revision8-core-regression-fixture",
   "candidate_head": "34f1076b34b1043b33c88cd24f638458bc93d78d",
-  "claimed_at": "2026-09-16T04:02:32Z",
-  "renewed_at": "2026-09-16T04:15:52Z",
+  "claimed_at": "2026-09-16T04:17:58Z",
+  "renewed_at": "2026-09-16T04:17:58Z",
   "completed_at": null,
-  "expires_at": null,
-  "waiting_reason": "exact-head Phase C1 / CI / Coverage / Smoke / E2E checks are running for successor 34f1076b34b1043b33c88cd24f638458bc93d78d",
-  "note": "Authorized repair from Reviewer #38 5691650630 / Supervisor #38 5691781700 produced exact successor 34f1076b34b1043b33c88cd24f638458bc93d78d / tree 9660c90b71c48fe238ce1ac0aa850a586e123a76. Candidate bytes are frozen while external exact-head checks run; Gate C may seal only after all five required workflows are green and no newer disposition/head/handoff exists."
+  "expires_at": "2026-09-16T04:29:58Z",
+  "waiting_reason": null,
+  "note": "Gate B: exact Phase C1 run 35054906235 failed mechanically at core regression because the preserved revision-7 verifier still asserts spend.security_revision=7 after the authorized revision-8 contract repair. Same authorized Reviewer REVISE cycle; candidate/product semantics remain bounded to external-effect identity."
 }
