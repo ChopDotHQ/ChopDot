@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "waiting_ci",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
+  "holder": "phase-c1-backup-repair-pickup",
   "fingerprint": "73d7b4f8f5db54b5d7132220ceff2514c183e6d8|phase-c1|authorized-repair-cycle-5692378762|external-effect-ownership-revision9",
   "candidate_head": "dfeb640910db2dfffb07c39758d32efe45efe8bb",
-  "claimed_at": "2026-09-16T05:16:30Z",
-  "renewed_at": "2026-09-16T05:34:00Z",
+  "claimed_at": "2026-09-16T05:56:34Z",
+  "renewed_at": "2026-09-16T05:56:34Z",
   "completed_at": null,
-  "expires_at": null,
-  "waiting_reason": "Exact-head Phase C1/CI/Coverage/Smoke/E2E are running for dfeb640910db2dfffb07c39758d32efe45efe8bb after the authorized revision-9 execution-ownership repair. No writer capacity is reserved while Actions run.",
-  "note": "Formal Reviewer REVISE #38 comment 5692378762 consumed. Candidate now contains the causal first-claim ownership/shared-financial-namespace/full-decorated-restore-fence repair plus deterministic adjacent-family coverage. Seal only after all five exact-head workflows are green."
+  "expires_at": "2026-09-16T06:08:34Z",
+  "waiting_reason": null,
+  "note": "Gate B consumed for exact mechanical Phase C1 failure on dfeb640910db2dfffb07c39758d32efe45efe8bb: verify-regression-baseline.mjs requires failure_semantics.transport_or_timeout_after_possible_dispatch_must_be_unknown=true, but revision-9 contract omitted the previously-cleared invariant. Bounded repair only; Reviewer REVISE #38 comment 5692378762 remains governing authority."
 }
