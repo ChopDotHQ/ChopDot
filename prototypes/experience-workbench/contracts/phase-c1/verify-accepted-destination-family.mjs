@@ -45,26 +45,29 @@ const descriptor = value => ({
   external_effect_identity: identity(value)
 });
 
-for (const kind of ['capture', 'refund', 'reversal']) {
-  const fin = `phase-c1:financial-authority:destination-family:${kind}`;
-  const p1 = `phase-c1:persistence:destination-family:${kind}:P1`;
-  const p2 = `phase-c1:persistence:destination-family:${kind}:P2`;
+const cases = [
+  { label: 'capture', kind: 'capture', parent: null },
+  { label: 'partial-capture', kind: 'capture', parent: null },
+  { label: 'refund', kind: 'refund', parent: 'effect:destination-family:capture-parent' },
+  { label: 'reversal', kind: 'reversal', parent: 'effect:destination-family:capture-parent' }
+];
+
+for (const { label, kind, parent } of cases) {
+  const fin = `phase-c1:financial-authority:destination-family:${label}`;
+  const p1 = `phase-c1:persistence:destination-family:${label}:P1`;
+  const p2 = `phase-c1:persistence:destination-family:${label}:P2`;
   const namespaceAuthority = createInMemoryExecutionOwnershipNamespaceAuthority({ financialAuthorityNamespace: fin });
   const frontierAuthority = createInMemoryExecutionOwnershipFrontierAuthority({ financialAuthorityNamespace: fin });
   const seed = createFencedExecutionOwnershipAuthority(null, { financialAuthorityNamespace: fin, frontierAuthority, namespaceAuthority });
-  const value = effect({
-    tag: kind,
-    kind,
-    parent: kind === 'capture' ? null : 'effect:destination-family:capture-parent'
-  });
+  const value = effect({ tag: label, kind, parent });
 
   const reservation = seed.reserveCorrelationForDispatch(correlation(fin, value));
-  eq(reservation?.dispatch_allowed, true, `${kind}: exact request receives one dispatch authority`);
+  eq(reservation?.dispatch_allowed, true, `${label}: exact request receives one dispatch authority`);
   eq(seed.bindAuthoritativeExternalEffect({
     financial_authority_namespace: fin,
     execution_request_ref: value.execution_request_ref,
     external_effect_identity: identity(value)
-  }), true, `${kind}: authoritative external effect is bound before the race`);
+  }), true, `${label}: authoritative external effect is bound before the race`);
 
   // Two exact-current state instances fork before any accepted destination exists.
   const shared = seed.snapshot();
@@ -72,31 +75,31 @@ for (const kind of ['capture', 'refund', 'reversal']) {
   const right = createFencedExecutionOwnershipAuthority(shared, { financialAuthorityNamespace: fin, frontierAuthority, namespaceAuthority });
   const leftClaim = left.beginMaterialization(ownershipInput(fin, value));
   const rightClaim = right.beginMaterialization(ownershipInput(fin, value));
-  eq(Boolean(leftClaim), true, `${kind}: P1 exact-current fork obtains an observed-effect claim`);
-  eq(Boolean(rightClaim), true, `${kind}: P2 exact-current fork independently obtains the same observed-effect claim`);
+  eq(Boolean(leftClaim), true, `${label}: P1 exact-current fork obtains an observed-effect claim`);
+  eq(Boolean(rightClaim), true, `${label}: P2 exact-current fork independently obtains the same observed-effect claim`);
 
   let p1Commits = 0;
   const p1Receipt = left.prepareMaterializationCommit({ claim: leftClaim, persistence_namespace: p1 }, () => {
     p1Commits += 1;
     return true;
   });
-  eq(Boolean(p1Receipt), true, `${kind}: P1 wins the shared FIN destination claim`);
-  eq(p1Commits, 1, `${kind}: P1 canonical callback executes once`);
-  eq(p1Receipt.finalize(), true, `${kind}: P1 ownership finalizes once`);
+  eq(Boolean(p1Receipt), true, `${label}: P1 wins the shared monotonic FIN destination head`);
+  eq(p1Commits, 1, `${label}: P1 canonical callback executes once`);
+  eq(p1Receipt.finalize(), true, `${label}: P1 ownership finalizes once`);
 
   let p2Commits = 0;
   eq(right.prepareMaterializationCommit({ claim: rightClaim, persistence_namespace: p2 }, () => {
     p2Commits += 1;
     return true;
-  }), null, `${kind}: competing exact-current P2 is rejected by the shared destination fence`);
-  eq(p2Commits, 0, `${kind}: P2 loses before canonical financial publication`);
-  eq(right.abortMaterialization(rightClaim), true, `${kind}: losing P2 claim is released locally`);
-  eq(left.acceptedPersistenceNamespace(), p1, `${kind}: FIN remains create-once bound to P1`);
+  }), null, `${label}: competing exact-current P2 is rejected by stale destination/frontier authority`);
+  eq(p2Commits, 0, `${label}: P2 loses before canonical financial publication`);
+  eq(right.abortMaterialization(rightClaim), true, `${label}: losing P2 claim is released locally`);
+  eq(left.acceptedPersistenceNamespace(), p1, `${label}: FIN remains monotonic-bound to P1`);
 
-  // Restart from durable accepted ownership + durable namespace record and prove the same
-  // effect cannot be restored into P2. This is intentionally repeated for every terminal
-  // effect family while parent/value conservation stays covered by the existing combined
-  // and operation-conservation suites.
+  // Restart from durable accepted ownership plus the exact current independent frontier.
+  // The same effect cannot be restored into P2. This repeats the destination anti-rollback
+  // family for full capture, partial capture, refund, and reversal while MoneyV1/parent
+  // conservation remains independently gated by the operation-conservation suites.
   const restartedNamespace = createInMemoryExecutionOwnershipNamespaceAuthority({
     financialAuthorityNamespace: fin,
     initialRecord: left.namespaceGenesisRecord()
@@ -119,9 +122,9 @@ for (const kind of ['capture', 'refund', 'reversal']) {
   eq(restarted.prepareAcceptedLineageCommit(p2Plan, () => {
     restartCommits += 1;
     return true;
-  }), null, `${kind}: restart cannot rematerialize accepted effect into P2`);
-  eq(restartCommits, 0, `${kind}: restart P2 is rejected before financial publication`);
-  eq(restarted.acceptedPersistenceNamespace(), p1, `${kind}: restart preserves P1 destination authority`);
+  }), null, `${label}: restart cannot rematerialize accepted effect into P2`);
+  eq(restartCommits, 0, `${label}: restart P2 is rejected before financial publication`);
+  eq(restarted.acceptedPersistenceNamespace(), p1, `${label}: restart preserves P1 destination authority`);
 }
 
 console.log(JSON.stringify({ suite: 'phase-c1-accepted-destination-family', checks, result: 'pass' }));
