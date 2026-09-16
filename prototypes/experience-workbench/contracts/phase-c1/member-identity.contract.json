@@ -1,0 +1,254 @@
+{
+  "$id": "chopdot://contracts/member-identity/GUEST-01/v1",
+  "version": 1,
+  "security_revision": 2,
+  "scope": "group",
+  "identity_key": "participant_id",
+  "identity_key_semantics": "immutable durable group-scoped ledger reference",
+  "states": [
+    "guest",
+    "account_backed",
+    "linked",
+    "unresolved"
+  ],
+  "provenance": [
+    "invite",
+    "import",
+    "local",
+    "account"
+  ],
+  "never_merge_on": [
+    "display_name",
+    "email"
+  ],
+  "base_capabilities": [
+    "ledger_participate",
+    "expense_reference",
+    "split_reference",
+    "history_reference",
+    "export_participant",
+    "recover_participant"
+  ],
+  "account_gated_capabilities": [
+    "fund_spend",
+    "sign_spend",
+    "group_admin",
+    "membership_admin",
+    "payment_destination_control",
+    "settlement_confirmation"
+  ],
+  "capability_model": {
+    "guest_credential": "group_scoped_participant_capability",
+    "guest_holds_credential": true,
+    "concrete_authenticator_mechanism_selected": false,
+    "organizer_proxy_signature_for_guest": false,
+    "knowledge_of_participant_id_is_authority": false,
+    "remove_account_key_checks_to_enable_guest": false,
+    "guest": {
+      "read": [
+        "joined_group_member_visible_ledger",
+        "own_participant_record",
+        "own_export_recovery_material"
+      ],
+      "write": [
+        "submit_expense_draft",
+        "submit_split_input",
+        "update_own_non_authority_profile"
+      ],
+      "approve": [],
+      "cannot": [
+        "fund_spend",
+        "sign_spend",
+        "group_admin",
+        "membership_admin",
+        "payment_destination_control",
+        "settlement_confirmation"
+      ]
+    },
+    "account_backed": {
+      "extra_capabilities_require_verified_binding_and_policy": true,
+      "account_binding_does_not_change_economic_subject": true
+    }
+  },
+  "guest_authority": {
+    "model": "participant_controlled_group_scoped_capability",
+    "mechanism_boundary": "Concrete cryptographic/host authenticator is implementation-level; product authority requires current proof bound to the durable Participant and exact mutation scope.",
+    "binding_required": [
+      "group_id",
+      "participant_id",
+      "capability_id",
+      "capability_version",
+      "policy_version"
+    ],
+    "mutation_proof_required": [
+      "group_id",
+      "participant_id",
+      "capability_id",
+      "capability_version",
+      "policy_version",
+      "command_id",
+      "state_version",
+      "scope_digest",
+      "payload_digest",
+      "nonce",
+      "proof_ref"
+    ],
+    "participant_id_or_display_metadata_alone_is_authority": false,
+    "organizer_membership_authority_may_impersonate_guest": false,
+    "current_capability_version_required": true,
+    "current_policy_version_required": true,
+    "command_id_is_idempotency_identity": true,
+    "nonce_replay_allowed": false,
+    "effect_time_revalidation_required": true,
+    "revocation": {
+      "supported": true,
+      "revoked_or_superseded_version_may_authorize": false,
+      "revocation_advances_or_invalidates_capability_version": true
+    },
+    "serialization": {
+      "capability_labels_are_authoritative": false,
+      "imported_or_restored_capability_labels_self_grant_authority": false,
+      "active_authenticator_secret_may_be_in_broad_export": false
+    },
+    "recovery": {
+      "preserve_participant_id": true,
+      "must_reestablish_current_authority_from_explicit_proof_and_policy": true,
+      "may_rotate_guest_credential_without_replacing_participant": true,
+      "writes_resume_before_revalidation": false
+    }
+  },
+  "cross_group_privacy": {
+    "policy": "group_scoped_unlinkability",
+    "group_visible_participant_ids_unlinkable_across_groups": true,
+    "group_surfaces_may_expose_stable_cross_group_account_identifier": false,
+    "private_product_account_binding_may_span_groups": true,
+    "polkadot_per_application_alias_alone_satisfies_group_unlinkability": false
+  },
+  "link_operation": {
+    "identity_key": "link_operation_id",
+    "target_is_existing_participant_id": true,
+    "participant_state_while_nonterminal": "guest",
+    "guest_ledger_participation_remains_valid_while_pending_or_unknown": true,
+    "states": [
+      "prepared",
+      "proof_verified",
+      "activation_pending",
+      "binding_pending",
+      "binding_committed",
+      "known_pre_effect_failed",
+      "unknown",
+      "cancelled",
+      "mismatch"
+    ],
+    "matching_account_proof_is_terminal_success": false,
+    "terminal_success_requires": [
+      "account_proof_verified",
+      "account_activation_verified",
+      "durable_binding_commit",
+      "authoritative_binding_readback"
+    ],
+    "account_gated_capabilities_before_terminal_success": false,
+    "unknown_reuses_same_link_operation_id": true,
+    "unknown_may_start_fresh_link_operation": false,
+    "known_pre_effect_failure_requires_no_effect_proof": true,
+    "fresh_link_after_failure_requires_verified_no_effect": true,
+    "possible_effect_failure_maps_to": "unknown",
+    "failure_after_dispatch_without_authoritative_no_effect_proof_maps_to": "unknown",
+    "binding_commit_changes_participant_id": false,
+    "binding_commit_changes_historical_ownership_refs": false,
+    "historical_ownership_mutation_before_binding_commit": false
+  },
+  "rules": {
+    "guest_is_durable_participant": true,
+    "full_account_required_for_ledger_participation": false,
+    "upgrade_preserves_participant_id": true,
+    "link_preserves_ledger_references": true,
+    "link_never_rewrites_historical_ownership": true,
+    "link_is_staged_and_atomic": true,
+    "matching_proof_alone_completes_link": false,
+    "link_commit_requires_account_activation_binding_and_readback": true,
+    "pending_or_unknown_link_preserves_guest_authority": true,
+    "pending_or_unknown_link_grants_account_capabilities": false,
+    "unknown_link_must_reconcile_same_operation_before_retry": true,
+    "known_pre_effect_link_failure_may_retry_only_after_no_effect_proof": true,
+    "guest_authority_requires_explicit_group_scoped_capability": true,
+    "guest_mutation_requires_current_participant_controlled_proof": true,
+    "serialized_capability_labels_are_non_authoritative": true,
+    "guest_may_not_bypass_existing_authority_checks": true,
+    "organizer_may_not_proxy_sign_for_guest": true,
+    "claim_requires_explicit_target_participant_id": true,
+    "claim_requires_account_proof": true,
+    "collision_or_mismatch_state": "unresolved",
+    "collision_may_silently_merge": false,
+    "account_requirement_may_remove_guest_history": false,
+    "export_must_preserve_participant_id": true,
+    "recovery_must_preserve_participant_id": true
+  },
+  "transitions": [
+    {
+      "from": "guest",
+      "action": "begin_account_link",
+      "to": "guest",
+      "preserve": ["participant_id", "expense_refs", "split_refs", "history_refs", "historical_ownership", "guest_authority"]
+    },
+    {
+      "from": "guest",
+      "action": "matching_account_proof_verified",
+      "to": "guest",
+      "preserve": ["participant_id", "expense_refs", "split_refs", "history_refs", "historical_ownership", "guest_authority"]
+    },
+    {
+      "from": "guest",
+      "action": "account_activation_or_binding_pending",
+      "to": "guest",
+      "preserve": ["participant_id", "expense_refs", "split_refs", "history_refs", "historical_ownership", "guest_authority"]
+    },
+    {
+      "from": "guest",
+      "action": "link_outcome_unknown",
+      "to": "guest",
+      "preserve": ["participant_id", "expense_refs", "split_refs", "history_refs", "historical_ownership", "guest_authority", "link_operation_id"]
+    },
+    {
+      "from": "guest",
+      "action": "verified_durable_binding_commit",
+      "to": "linked",
+      "preserve": ["participant_id", "expense_refs", "split_refs", "history_refs", "historical_ownership"]
+    },
+    {
+      "from": "guest",
+      "action": "link_known_pre_effect_failed",
+      "to": "guest",
+      "preserve": ["exact_pre_link_participant_graph"]
+    },
+    {
+      "from": "guest",
+      "action": "link_cancelled_before_effect",
+      "to": "guest",
+      "preserve": ["exact_pre_link_participant_graph"]
+    },
+    {
+      "from": "guest",
+      "action": "link_mismatch_or_collision",
+      "to": "unresolved",
+      "preserve": ["participant_id", "expense_refs", "split_refs", "history_refs", "historical_ownership"]
+    },
+    {
+      "from": "unresolved",
+      "action": "resolve_with_verified_durable_binding_commit",
+      "to": "linked",
+      "preserve": ["participant_id", "expense_refs", "split_refs", "history_refs", "historical_ownership"]
+    },
+    {
+      "from": "account_backed",
+      "action": "participate",
+      "to": "account_backed",
+      "preserve": ["participant_id"]
+    }
+  ],
+  "record_shape": {
+    "required": ["group_id", "participant_id", "state", "provenance", "capabilities", "created_at"],
+    "optional": ["display_name", "contact_hint", "linked_account_id", "link_proof_ref", "recovery_ref", "guest_capability_ref", "capability_version", "policy_version", "active_link_operation_id"],
+    "capabilities_field_is_descriptive_cache_only": true
+  }
+}

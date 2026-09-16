@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "record_kind": "selective-post-j28-contract-lock",
+  "dry_run": true,
+  "dry_run_marker": "DRY_RUN_NOT_HUMAN_AUTHORITY",
+  "dry_run_note": "Rehearsal of the post-approval Phase C1 selective re-lock produced on an isolated throwaway branch. Devinson has NOT approved this package. This record carries no human, product or canonical authority and must never be merged.",
+  "human_approval": false,
+  "human_approval_record": null,
+  "approved_by": "DRY_RUN_NOT_HUMAN_AUTHORITY",
+  "package": {
+    "name": "phase-c1-guest-spend-contract-v1",
+    "scope": "selective post-J28 GUEST-01 + rail-neutral SPEND-01 contract/acceptance package",
+    "source_branch": "phase-c1/guest-spend-contract-v1-candidate",
+    "causal_semantic_generation": "7d4ddf29da8c150a5768d830d403a26245b8f835",
+    "causal_si13a_implementation": "e6cf1482c4fd6464afdac778c6eb4b81983cae78",
+    "mechanical_acceptance_repair": "31e7d15410a3128b82dfbb995f3186cfae1a1f74",
+    "exact_green_witness": "424653e3a760b3ffb6399d69843e4289042916fe",
+    "witness_tree": "7d11f5418f9fcfc343a06a5d2166ed157e4c3fa0",
+    "coordination_head_at_seal": "9f3c1324a3b6ba1df258668a3f18550ee08c3431",
+    "reviewer_receipt_comment_id": "5698468135",
+    "reviewer_classification": "GOLDEN-READY / CONTRACT-READY",
+    "evidence_artifact": "10447153897",
+    "evidence_artifact_sha256": "70a967fed89f7ac38449516ce27779814feafc6544336e4c50f802467aecaf99"
+  },
+  "materialized_from_canonical": "bfc171fbfe1407d9dda2ad1d90174a13e2431442",
+  "reviewed_file_count": 32,
+  "contract_checksums": {
+    "member-identity.contract.json": "5a2cdbbf95b635e50f6563702077055bcdc20586c2badb0beab72042907cf8d0",
+    "spend-intent.contract.json": "7d4396361af40a50ca582999df058c85a0daf5ee99619c359f3ad4d753961704",
+    "execution-ownership.acceptance.json": "d611c1e794d375ea284739794c6fd341b2962ee9a196160f5c018f2322ba86bb",
+    "materialization-state.mjs": "2481de0cf3666f47c4670eafd026d837fdae55f493a9b704bd435399cedab96a",
+    "execution-ownership-frontier.mjs": "790a30bea11735c3fb951aa10cc976de6ca80a7a0d9d097873f2b31b658d6049",
+    "j01-phase-c1-guest-v1-candidate.html": "5cb05bc612cffea16595e64bd20a3b2de05ca68ffab72e8ee7aa647d0a4c4bed",
+    "j04-phase-c1-guest-v1-candidate.html": "ce51fd7257637eaa3c731f114036ec1649d47af2252d739b4a3aab9efb3017a5"
+  },
+  "acceptance_revisions": {
+    "security_revision": 12,
+    "accepted_destination_revision": 2
+  },
+  "invariants_preserved": {
+    "golden_count": 28,
+    "approved_golden_html_changed": false,
+    "journeys_registry_changed": false,
+    "golden_artifact_locks_changed": false,
+    "goldens_manifest_changed": false,
+    "typography_note": "TYPO-01 deferred"
+  },
+  "scope_boundary": {
+    "execution_mode_selected": false,
+    "concrete_rail_or_provider_selected": false,
+    "merchant_card_capability_claimed": false,
+    "journey_29_created": false,
+    "product_integrator_enabled": false,
+    "production_implementation_authorized": false,
+    "protected_merge_or_deploy_authorized": false
+  },
+  "production_start_hardening_carried_forward": [
+    "destination-CAS-before-financial-publication recovery resynchronization API (J25/storage adapter)",
+    "frontier adapter thrown-CAS local rollback normalization",
+    "replay-digest claim precision: digest binds replay/dispatch + owner identity, not full materialization-only state"
+  ]
+}

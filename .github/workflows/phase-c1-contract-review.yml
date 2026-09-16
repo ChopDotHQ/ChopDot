@@ -1,0 +1,113 @@
+name: Phase C1 selective contract review
+
+on:
+  push:
+    branches:
+      - 'phase-c1/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  phase-c1-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify GUEST-01 and SPEND-01 core invariants
+        run: node prototypes/experience-workbench/contracts/phase-c1/run-core-regression.mjs verify.mjs
+      - name: Verify SpendIntent restore integrity core
+        run: node prototypes/experience-workbench/contracts/phase-c1/run-core-regression.mjs verify-restore-integrity.mjs
+      - name: Verify SpendIntent restore authority contract
+        run: node prototypes/experience-workbench/contracts/phase-c1/verify-restore-authority-contract.mjs
+      - name: Verify SpendIntent live materialization authority fence
+        run: node prototypes/experience-workbench/contracts/phase-c1/run-core-regression.mjs verify-live-materialization-authority.mjs
+      - name: Verify authoritative external-effect identity family
+        run: node prototypes/experience-workbench/contracts/phase-c1/verify-external-effect-identity.mjs
+      - name: Verify fresh-unknown dispatch authority fails closed
+        run: node prototypes/experience-workbench/contracts/phase-c1/verify-dispatch-authority.mjs
+      - name: Verify execution-ownership anti-rollback frontier
+        run: node prototypes/experience-workbench/contracts/phase-c1/verify-execution-ownership-frontier.mjs
+      - name: Verify cross-authority atomicity and recovery family
+        run: node prototypes/experience-workbench/contracts/phase-c1/verify-cross-authority-atomicity.mjs
+      - name: Verify fenced ownership + canonical materialization combined family
+        run: node prototypes/experience-workbench/contracts/phase-c1/verify-fenced-cross-authority-atomicity.mjs
+      - name: Verify accepted-effect destination fence across state instances
+        run: node prototypes/experience-workbench/contracts/phase-c1/verify-accepted-destination-fence.mjs
+      - name: Verify accepted destination race family for capture refund reversal
+        run: node prototypes/experience-workbench/contracts/phase-c1/verify-accepted-destination-family.mjs
+      - name: Verify SpendIntent cumulative operation conservation
+        run: node prototypes/experience-workbench/contracts/phase-c1/run-operation-conservation-regression.mjs
+      - name: Browser and layout QA at canonical mobile viewports
+        run: node prototypes/experience-workbench/contracts/phase-c1/qa.mjs
+      - name: Preserve existing workbench Golden invariants
+        run: npm --prefix prototypes/experience-workbench run gate
+      - name: Prove approved Golden bytes are untouched
+        shell: bash
+        run: |
+          BASE=bfc171fbfe1407d9dda2ad1d90174a13e2431442
+          git diff --name-only "$BASE"...HEAD | tee /tmp/phase-c1-changed-paths.txt
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { createHash } from 'node:crypto';
+          import assert from 'node:assert/strict';
+          const base = 'bfc171fbfe1407d9dda2ad1d90174a13e2431442';
+          const root = 'prototypes/experience-workbench';
+          const manifest = JSON.parse(execFileSync('git', ['show', `${base}:${root}/registry/goldens.manifest.json`], {encoding:'utf8'}));
+          assert.equal(manifest.golden_count, 28);
+          for (const entry of manifest.entries) {
+            const file = `${root}/${entry.prototype_path}`;
+            const before = execFileSync('git', ['show', `${base}:${file}`]);
+            const after = execFileSync('git', ['show', `HEAD:${file}`]);
+            const digest = value => createHash('sha256').update(value).digest('hex');
+            assert.equal(digest(before), entry.sha256, `base checksum ${file}`);
+            assert.equal(digest(after), entry.sha256, `candidate checksum ${file}`);
+            assert.deepEqual(after, before, `immutable Golden changed: ${file}`);
+          }
+          console.log(JSON.stringify({suite:'phase-c1-golden-regression',goldens:manifest.entries.length,result:'pass'}));
+          NODE
+      - name: Record candidate checksums
+        shell: bash
+        run: |
+          sha256sum \
+            prototypes/experience-workbench/journeys/01-enter-chopdot/phase-c1-guest-v1-candidate.html \
+            prototypes/experience-workbench/journeys/04-invite-join/phase-c1-guest-v1-candidate.html \
+            prototypes/experience-workbench/contracts/phase-c1/member-identity.contract.json \
+            prototypes/experience-workbench/contracts/phase-c1/spend-intent.contract.json \
+            prototypes/experience-workbench/contracts/phase-c1/execution-ownership.acceptance.json \
+            prototypes/experience-workbench/contracts/phase-c1/materialization-state.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/execution-ownership-frontier.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/_materialization-state-core.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/_authoritative-external-effect-state.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/run-core-regression.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/run-operation-conservation-regression.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-restore-integrity.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-restore-authority-contract.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-live-materialization-authority.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-external-effect-identity.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-dispatch-authority.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-execution-ownership-frontier.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-cross-authority-atomicity.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-fenced-cross-authority-atomicity.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-accepted-destination-fence.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-accepted-destination-family.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-operation-conservation.mjs \
+            vercel.json \
+            | tee prototypes/experience-workbench/contracts/phase-c1/artifacts/checksums.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase-c1-review-evidence-${{ github.sha }}
+          path: prototypes/experience-workbench/contracts/phase-c1/artifacts/
+          if-no-files-found: error
