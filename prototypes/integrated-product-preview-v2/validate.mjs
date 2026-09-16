@@ -1,32 +1,10 @@
 import { readFileSync } from 'node:fs';
-
-const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
-const app = read('./app.js');
-const html = read('./index.html');
-
-const requiredSources = [
-  '../experience-workbench/journeys/01-enter-chopdot/v1-candidate.html',
-  '../experience-workbench/journeys/01-enter-chopdot/phase-c1-guest-v1-candidate.html',
-  '../experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons.html',
-];
-
-for (const source of requiredSources) {
-  if (!app.includes(source)) throw new Error(`Missing canonical Gate A source: ${source}`);
-}
-
-if (!html.includes('id="product-frame"')) throw new Error('Golden host iframe missing');
-if (!app.includes("state.route === 'home-reference' && state.verified")) {
-  throw new Error('J01 verified handoff to real J02 is not explicit');
-}
-
-const forbiddenV1Shortcuts = [
-  'Continue as guest',
-  'Use existing account',
-  'participant-devinson-001',
-  "['⌂','◎','◴','◉'",
-];
-for (const token of forbiddenV1Shortcuts) {
-  if (app.includes(token) || html.includes(token)) throw new Error(`V1 shortcut leaked into V2: ${token}`);
-}
-
-console.log('Gate A structural fidelity validation passed.');
+const read=(path)=>readFileSync(new URL(path,import.meta.url),'utf8');
+const app=read('./app.js');const html=read('./index.html');const css=read('./styles.css');const browserQa=read('./browser-qa.mjs');
+for(const source of ['../experience-workbench/journeys/01-enter-chopdot/v1-candidate.html','../experience-workbench/journeys/01-enter-chopdot/phase-c1-guest-v1-candidate.html','../experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons.html']) if(!app.includes(source)) throw new Error(`Missing canonical Gate A source: ${source}`);
+if(!html.includes('id="product-frame"')) throw new Error('Golden host iframe missing');
+for(const token of ['createSessionAuthority',"establishedBy: 'live-j01-verified-transition'",'connectedAccount: null','projectHome','applyGuestProductMode','stageOutboundControls']) if(!app.includes(token)) throw new Error(`Missing Gate A continuity/security mechanism: ${token}`);
+if(!css.includes('html[data-review-mode="true"] .stage-meta')) throw new Error('Reviewer chrome is not explicitly gated');
+for(const token of ['stale storage/DOM connected residue ignored','direct-J02','refresh/restart','guest→sign-in']) if(!browserQa.includes(token)) throw new Error(`Missing Gate A stateful acceptance family: ${token}`);
+for(const token of ['Continue as guest','Use existing account','participant-devinson-001',"['⌂','◎','◴','◉'"]) if(app.includes(token)||html.includes(token)) throw new Error(`V1 shortcut leaked into V2: ${token}`);
+console.log('Gate A structural fidelity + continuity/security validation passed.');
