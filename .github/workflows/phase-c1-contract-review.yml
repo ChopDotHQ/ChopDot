@@ -45,6 +45,8 @@ jobs:
         run: node prototypes/experience-workbench/contracts/phase-c1/verify-fenced-cross-authority-atomicity.mjs
       - name: Verify accepted-effect destination fence across state instances
         run: node prototypes/experience-workbench/contracts/phase-c1/verify-accepted-destination-fence.mjs
+      - name: Verify accepted destination race family for capture refund reversal
+        run: node prototypes/experience-workbench/contracts/phase-c1/verify-accepted-destination-family.mjs
       - name: Verify SpendIntent cumulative operation conservation
         run: node prototypes/experience-workbench/contracts/phase-c1/run-operation-conservation-regression.mjs
       - name: Browser and layout QA at canonical mobile viewports
@@ -100,6 +102,7 @@ jobs:
             prototypes/experience-workbench/contracts/phase-c1/verify-cross-authority-atomicity.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-fenced-cross-authority-atomicity.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-accepted-destination-fence.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-accepted-destination-family.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-operation-conservation.mjs \
             vercel.json \
             | tee prototypes/experience-workbench/contracts/phase-c1/artifacts/checksums.sha256
