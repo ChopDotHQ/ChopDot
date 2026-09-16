@@ -1,18 +1,20 @@
 // Canonical Phase C1 rail-neutral materialization state model.
 //
 // The internal core retains the already-reviewed proof, MoneyV1, lineage,
-// conservation, snapshot and restore rules. This public wrapper adds the missing
-// accepted-head invariant for live mutation after a state has become authoritative:
-// every namespace-bound post-restore financial materialization is prepared off to
-// the side, then admitted only by commitUnderAuthoritativeHeadFence while the exact
-// independently resolved current head remains valid. Fence/CAS/storage failure or a
-// stale head therefore causes zero mutation of the accepted local financial state.
+// conservation, snapshot and restore rules. The authoritative external-effect layer
+// adds adapter/rail-scoped identity, cross-Intent uniqueness and parent-namespace
+// preservation. This public wrapper then enforces the accepted-head invariant for
+// live mutation after a state has become authoritative: every namespace-bound
+// post-restore financial materialization is prepared off to the side, then admitted
+// only by commitUnderAuthoritativeHeadFence while the exact independently resolved
+// current head remains valid. Fence/CAS/storage failure or a stale head therefore
+// causes zero mutation of accepted local financial state.
 //
 // A namespace-bound state that has never successfully restored/accepted an
 // authoritative head remains a local candidate/quarantine. It may be built to
 // propose an initial head, but it is not accepted authoritative financial state.
 
-import { createCanonicalMaterializationState as createCoreMaterializationState } from './_materialization-state-core.mjs';
+import { createCanonicalMaterializationState as createCoreMaterializationState } from './_authoritative-external-effect-state.mjs';
 
 const present = value =>
   value !== null &&
@@ -25,7 +27,9 @@ const sameHeadIdentity = (left, right) =>
   left?.namespace === right?.namespace &&
   left?.snapshot_version === right?.snapshot_version &&
   left?.generation === right?.generation &&
-  left?.lineage_digest === right?.lineage_digest;
+  left?.lineage_digest === right?.lineage_digest &&
+  left?.external_identity_version === right?.external_identity_version &&
+  left?.external_identity_digest === right?.external_identity_digest;
 
 const cloneAcceptedCore = ({
   persisted,
@@ -145,8 +149,7 @@ export const createCanonicalMaterializationState = ({
   return {
     materialize,
     getIntentMoney: spendIntentId => core.getIntentMoney(spendIntentId),
-    getEffect: (spendIntentId, operationId, authoritativeEffectRef) =>
-      core.getEffect(spendIntentId, operationId, authoritativeEffectRef),
+    getEffect: (...args) => core.getEffect(...args),
     checkpoint: () => core.checkpoint(),
     headCandidate: () => core.headCandidate(),
     snapshot: () => core.snapshot(),

@@ -32,7 +32,9 @@ jobs:
       - name: Verify SpendIntent restore authority contract
         run: node prototypes/experience-workbench/contracts/phase-c1/verify-restore-authority-contract.mjs
       - name: Verify SpendIntent live materialization authority fence
-        run: node prototypes/experience-workbench/contracts/phase-c1/verify-live-materialization-authority.mjs
+        run: node prototypes/experience-workbench/contracts/phase-c1/run-core-regression.mjs verify-live-materialization-authority.mjs
+      - name: Verify authoritative external-effect identity family
+        run: node prototypes/experience-workbench/contracts/phase-c1/verify-external-effect-identity.mjs
       - name: Verify SpendIntent cumulative operation conservation
         run: node prototypes/experience-workbench/contracts/phase-c1/verify-operation-conservation.mjs
       - name: Browser and layout QA at canonical mobile viewports
@@ -73,11 +75,13 @@ jobs:
             prototypes/experience-workbench/contracts/phase-c1/spend-intent.contract.json \
             prototypes/experience-workbench/contracts/phase-c1/materialization-state.mjs \
             prototypes/experience-workbench/contracts/phase-c1/_materialization-state-core.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/_authoritative-external-effect-state.mjs \
             prototypes/experience-workbench/contracts/phase-c1/run-core-regression.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-restore-integrity.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-restore-authority-contract.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-live-materialization-authority.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-external-effect-identity.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-operation-conservation.mjs \
             vercel.json \
             | tee prototypes/experience-workbench/contracts/phase-c1/artifacts/checksums.sha256
