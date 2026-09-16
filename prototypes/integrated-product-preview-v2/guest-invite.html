@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>ChopDot — Guest invite</title>
+<style>
+:root{--bg:#f7f7f8;--surface:#fff;--surface2:#f0f0f2;--ink:#111113;--secondary:#66666d;--muted:#929299;--border:#e6e6e9;--accent:#e6007a;--accent-soft:#fde9f3;--shadow:0 1px 2px rgba(0,0,0,.025),0 10px 28px rgba(0,0,0,.05);--font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif}
+*{box-sizing:border-box;min-width:0}html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--ink);font-family:var(--font)}button{font:inherit}.app{min-height:100vh;min-height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:var(--bg)}
+.header{padding:calc(15px + env(safe-area-inset-top)) 16px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,.04)}.brand{display:flex;align-items:center;gap:9px;font-weight:770;font-size:17px;letter-spacing:-.02em}.mark{width:26px;height:26px;border-radius:50%;background:var(--accent);position:relative;overflow:hidden;flex:none}.mark:after{content:"";position:absolute;left:-5px;right:-5px;top:11px;height:4px;background:#fff;transform:rotate(-35deg)}
+.content{padding:24px 16px 18px;overflow:auto}.eyebrow{font-size:11px;color:var(--secondary);margin-bottom:7px}.hero{font-size:29px;line-height:1.04;letter-spacing:-.045em;margin:0 0 9px;font-weight:780}.lede{font-size:13px;line-height:1.48;color:var(--secondary);margin:0 0 18px}.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}.invite-row{display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;align-items:center;padding:15px}.iconbox{width:40px;height:40px;border-radius:50%;background:var(--surface2);display:grid;place-items:center}.icon{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.title{font-size:14px;font-weight:740}.meta{font-size:11px;color:var(--secondary);margin-top:3px}.privacy{padding:13px 15px;border-top:1px solid var(--border);font-size:12px;line-height:1.45;color:var(--secondary)}.status{margin-top:14px;background:var(--accent-soft);border-radius:14px;padding:12px 13px;font-size:12px;line-height:1.45;color:#7c174f}.status strong{display:block;color:#3f102b;margin-bottom:2px}.hidden{display:none!important}
+.footer{padding:10px 16px calc(14px + env(safe-area-inset-bottom));display:grid;gap:8px;background:rgba(255,255,255,.96);border-top:1px solid var(--border)}.primary,.secondary,.text{min-height:48px;border-radius:14px;border:0;font-weight:730;cursor:pointer}.primary{background:#111113;color:#fff}.secondary{background:var(--surface2);color:var(--ink)}.text{background:transparent;color:var(--secondary);min-height:38px}.small{font-size:11px;color:var(--secondary);line-height:1.45;margin-top:12px}
+</style>
+</head>
+<body data-state="invite" data-participant-created="false">
+<section class="app" id="invite-screen">
+<header class="header"><div class="brand"><span class="mark"></span><span>ChopDot</span></div></header>
+<main class="content"><div class="eyebrow">Private invite</div><h1 class="hero">Your invite is waiting.</h1><p class="lede">See the group context first. Joining is still a separate decision.</p><section class="card"><div class="invite-row"><span class="iconbox"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2M17 4a4 4 0 0 1 0 8M22 21v-2a4 4 0 0 0-3-3.9"/></svg></span><div><div class="title">Geneva Weekend</div><div class="meta">Devinson invited you · 3 people · CHF</div></div></div><div class="privacy">Expenses stay private until you choose to join.</div></section><p class="small">You can review this invite as a guest without creating a full account first.</p></main>
+<footer class="footer"><button class="primary" id="guest-review">Review invite as guest</button><button class="secondary" id="sign-in">Sign in instead</button><button class="text" id="not-now">Not now</button></footer>
+</section>
+<section class="app hidden" id="handoff-screen">
+<header class="header"><div class="brand"><span class="mark"></span><span>ChopDot</span></div></header>
+<main class="content"><div class="eyebrow">Invite ready</div><h1 class="hero">You haven’t joined yet.</h1><p class="lede">Your invite context is kept. The next step is still your decision.</p><section class="card"><div class="invite-row"><span class="iconbox"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2M17 4a4 4 0 0 1 0 8M22 21v-2a4 4 0 0 0-3-3.9"/></svg></span><div><div class="title">Geneva Weekend</div><div class="meta">Devinson invited you · 3 people · CHF</div></div></div><div class="privacy">No membership or account-backed authority is created until you explicitly continue through the join flow.</div></section><div class="status"><strong>Nothing changed yet</strong>Your guest path keeps the invite context without silently joining the group.</div></main>
+<footer class="footer"><button class="primary" id="continue-j04">Continue to invite</button><button class="secondary" id="back-to-invite">Back</button></footer>
+</section>
+<script>
+const invite=document.getElementById('invite-screen');const handoff=document.getElementById('handoff-screen');
+function show(which){const isInvite=which==='invite';invite.classList.toggle('hidden',!isInvite);handoff.classList.toggle('hidden',isInvite);document.body.dataset.state=which;document.body.dataset.participantCreated='false';}
+document.getElementById('guest-review').onclick=()=>show('handoff');
+document.getElementById('back-to-invite').onclick=()=>show('invite');
+document.getElementById('continue-j04').onclick=()=>{document.body.dataset.outcome='j04-private-invite'};
+document.getElementById('sign-in').onclick=()=>{document.body.dataset.outcome='account-entry'};
+document.getElementById('not-now').onclick=()=>{document.body.dataset.outcome='cancel'};
+show('invite');
+</script>
+</body>
+</html>
