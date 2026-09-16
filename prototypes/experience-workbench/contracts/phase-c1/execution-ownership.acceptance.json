@@ -2,7 +2,7 @@
   "$id": "chopdot://contracts/spend-intent/SPEND-01/execution-ownership/acceptance-v1",
   "version": 1,
   "spend_intent_contract": "chopdot://contracts/spend-intent/SPEND-01/v1",
-  "security_revision": 11,
+  "security_revision": 12,
   "kind": "rail-neutral-shared-primitive-acceptance",
   "execution_mode_selected": false,
   "dispatch_reservation": {
@@ -24,7 +24,11 @@
     "namespace_genesis_is_create_once_and_replay_protected": true,
     "null_frontier_is_not_genesis_proof": true,
     "existing_namespace_missing_frontier_fails_closed": true,
-    "missing_namespace_genesis_authority_fails_closed": true
+    "missing_namespace_genesis_authority_fails_closed": true,
+    "accepted_effect_destination_is_shared_financial_namespace_authority": true,
+    "one_to_one_financial_to_persistence_namespace_binding": true,
+    "accepted_destination_binding_is_create_once": true,
+    "competing_persistence_namespace_fails_before_financial_commit": true
   },
   "cross_authority_atomicity": {
     "financial_and_execution_ownership_commit_is_atomic_or_crash_safe": true,
@@ -35,7 +39,8 @@
       "after_ownership_finalization"
     ],
     "one_side_committed_other_side_observed_is_accepted": false,
-    "fenced_ownership_and_canonical_materialization_combined_suite_required": true
+    "fenced_ownership_and_canonical_materialization_combined_suite_required": true,
+    "accepted_destination_fence_is_shared_by_live_and_restore": true
   },
   "pre_authority_quarantine": {
     "materialization_is_quarantined": true,
@@ -56,7 +61,9 @@
     "stale_materialization_status_may_reconstruct_only_from_exact_immutable_accepted_lineage": true,
     "unknown_or_existing_correlation_never_becomes_fresh_dispatch_authority": true,
     "stale_pending_unknown_observed_or_tombstone_snapshot_fails_closed": true,
-    "missing_frontier_after_prior_namespace_use_freezes_dispatch_and_materialization": true
+    "missing_frontier_after_prior_namespace_use_freezes_dispatch_and_materialization": true,
+    "accepted_destination_binding_survives_restart_and_rollback": true,
+    "missing_destination_binding_after_materialized_use_fails_closed": true
   },
   "boundary": {
     "payment_intent_settlement_separate": true,
