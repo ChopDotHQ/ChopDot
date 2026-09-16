@@ -2,8 +2,8 @@
   "$id": "chopdot://contracts/spend-intent/SPEND-01/execution-ownership/acceptance-v1",
   "version": 1,
   "spend_intent_contract": "chopdot://contracts/spend-intent/SPEND-01/v1",
-  "security_revision": 11,
-  "accepted_destination_revision": 1,
+  "security_revision": 12,
+  "accepted_destination_revision": 2,
   "kind": "rail-neutral-shared-primitive-acceptance",
   "execution_mode_selected": false,
   "dispatch_reservation": {
@@ -29,6 +29,9 @@
     "accepted_effect_destination_is_shared_financial_namespace_authority": true,
     "one_to_one_financial_to_persistence_namespace_binding": true,
     "accepted_destination_binding_is_create_once": true,
+    "accepted_destination_binding_is_monotonic_frontier_head": true,
+    "accepted_destination_head_has_sequence_and_digest": true,
+    "stale_destination_head_fails_closed": true,
     "competing_persistence_namespace_fails_before_financial_commit": true
   },
   "cross_authority_atomicity": {
@@ -41,7 +44,8 @@
     ],
     "one_side_committed_other_side_observed_is_accepted": false,
     "fenced_ownership_and_canonical_materialization_combined_suite_required": true,
-    "accepted_destination_fence_is_shared_by_live_and_restore": true
+    "accepted_destination_fence_is_shared_by_live_and_restore": true,
+    "accepted_destination_cas_loss_fails_closed_before_financial_commit": true
   },
   "pre_authority_quarantine": {
     "materialization_is_quarantined": true,
@@ -64,7 +68,8 @@
     "stale_pending_unknown_observed_or_tombstone_snapshot_fails_closed": true,
     "missing_frontier_after_prior_namespace_use_freezes_dispatch_and_materialization": true,
     "accepted_destination_binding_survives_restart_and_rollback": true,
-    "missing_destination_binding_after_materialized_use_fails_closed": true
+    "missing_destination_binding_after_materialized_use_fails_closed": true,
+    "stale_null_or_competing_destination_backup_cannot_rebind_authority": true
   },
   "boundary": {
     "payment_intent_settlement_separate": true,
