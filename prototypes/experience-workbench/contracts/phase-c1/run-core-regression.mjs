@@ -21,9 +21,18 @@ const marker = "from './materialization-state.mjs'";
 if (!source.includes(marker)) {
   throw new Error(`${targetName} no longer imports the canonical materialization module as expected`);
 }
-let transformed = source.replace(marker, "from './_authoritative-external-effect-state.mjs'");
-if (transformed === source || transformed.includes(marker)) {
-  throw new Error(`${targetName} core-regression transform was incomplete`);
+
+// The generic invariant and restore-integrity suites are preserved core regressions:
+// run them directly against the revision-8 external-effect layer so their old assertions
+// remain focused on proof/MoneyV1/lineage/conservation/restore behavior. The live-authority
+// suite is different: its subject is the PUBLIC materialization wrapper's exact-head fence,
+// so bypassing that wrapper would invalidate the test itself.
+let transformed = source;
+if (targetName !== 'verify-live-materialization-authority.mjs') {
+  transformed = source.replace(marker, "from './_authoritative-external-effect-state.mjs'");
+  if (transformed === source || transformed.includes(marker)) {
+    throw new Error(`${targetName} core-regression transform was incomplete`);
+  }
 }
 
 // verify.mjs intentionally preserves the complete previously-cleared revision-7 suite.
