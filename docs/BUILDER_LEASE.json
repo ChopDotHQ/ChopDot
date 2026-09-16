@@ -1,16 +1,16 @@
 {
   "version": 2,
   "role": "phase-c1-builder",
-  "status": "waiting_ci",
-  "holder": null,
+  "status": "claimed",
+  "holder": "phase-c1-builder-repair-pickup",
   "branch": "phase-c1/guest-spend-contract-v1-candidate",
-  "fingerprint": "phase-c1|mechanical-repair|35064540730|1a1196e9694be422d28c1bfea7248012b591e03f",
-  "claimed_from_head": "1a1196e9694be422d28c1bfea7248012b591e03f",
+  "fingerprint": "phase-c1|mechanical-repair|35065134837|bcb3c921ddc3d92a169574e1865486ba94382159",
+  "claimed_from_head": "bcb3c921ddc3d92a169574e1865486ba94382159",
   "candidate_head": "bcb3c921ddc3d92a169574e1865486ba94382159",
-  "expires_at": null,
+  "expires_at": "2026-09-16T07:04:46Z",
   "authority": {
     "reviewer_receipt_comment": 5692378762,
     "security_acceptance_crossref_comment": 5692896808,
-    "mechanical_failure_run": 35064540730
+    "mechanical_failure_run": 35065134837
   }
 }
