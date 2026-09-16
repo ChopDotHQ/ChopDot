@@ -1,13 +1,13 @@
 {
   "version": 2,
   "role": "phase-c1-builder",
-  "status": "claimed",
-  "holder": "phase-c1-builder-watcher",
+  "status": "waiting_ci",
+  "holder": null,
   "branch": "phase-c1/guest-spend-contract-v1-candidate",
-  "fingerprint": "phase-c1|reviewer-revise|5697172684|524217590dc8eba278b192787fd72ec05d4cd122",
+  "fingerprint": "phase-c1|reviewer-revise|5697172684|si13a-monotonic-destination|7d4ddf29da8c150a5768d830d403a26245b8f835",
   "claimed_from_head": "524217590dc8eba278b192787fd72ec05d4cd122",
-  "candidate_head": "efbe89747ffdec94aa18096b9808e274f36e3c6e",
-  "expires_at": "2026-09-16T12:28:00Z",
+  "candidate_head": "7d4ddf29da8c150a5768d830d403a26245b8f835",
+  "expires_at": null,
   "authority": {
     "reviewer_receipt_comment": 5697172684,
     "builder_handoff_comment": 5697076809,
