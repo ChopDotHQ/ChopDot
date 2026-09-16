@@ -36,7 +36,7 @@ jobs:
       - name: Verify authoritative external-effect identity family
         run: node prototypes/experience-workbench/contracts/phase-c1/verify-external-effect-identity.mjs
       - name: Verify SpendIntent cumulative operation conservation
-        run: node prototypes/experience-workbench/contracts/phase-c1/verify-operation-conservation.mjs
+        run: node prototypes/experience-workbench/contracts/phase-c1/run-operation-conservation-regression.mjs
       - name: Browser and layout QA at canonical mobile viewports
         run: node prototypes/experience-workbench/contracts/phase-c1/qa.mjs
       - name: Preserve existing workbench Golden invariants
@@ -77,6 +77,7 @@ jobs:
             prototypes/experience-workbench/contracts/phase-c1/_materialization-state-core.mjs \
             prototypes/experience-workbench/contracts/phase-c1/_authoritative-external-effect-state.mjs \
             prototypes/experience-workbench/contracts/phase-c1/run-core-regression.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/run-operation-conservation-regression.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-restore-integrity.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-restore-authority-contract.mjs \
