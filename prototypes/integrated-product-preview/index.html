@@ -6,6 +6,24 @@
   <meta name="theme-color" content="#f7f7f8" />
   <title>ChopDot — Integrated Product Preview</title>
   <link rel="stylesheet" href="./styles.css" />
+  <style>
+    /* Normal product mode keeps reviewer/journey machinery hidden until explicitly opened. */
+    @media (min-width:861px) {
+      .preview-lab { grid-template-columns: 1fr !important; }
+      .reviewer-panel {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        bottom: 24px;
+        width: 340px;
+        z-index: 30;
+        transform: translateX(calc(100% + 52px));
+        transition: transform .2s ease;
+      }
+      .reviewer-panel.open { transform: translateX(0); }
+      .reviewer-toggle { display:grid !important; place-items:center; }
+    }
+  </style>
 </head>
 <body>
   <main class="preview-lab">
