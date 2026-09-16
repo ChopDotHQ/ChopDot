@@ -26,6 +26,18 @@ if (transformed === source || transformed.includes(marker)) {
   throw new Error(`${targetName} core-regression transform was incomplete`);
 }
 
+// verify.mjs intentionally preserves the complete previously-cleared revision-7 suite.
+// The revision-8 successor changes only the contract revision marker here; the new
+// external-effect identity family is exercised separately by its focused verifier.
+if (targetName === 'verify.mjs') {
+  const revisionMarker = "eq(spend.security_revision, 7, 'security revision 7 carries integrated parent conservation');";
+  const revisionReplacement = "eq(spend.security_revision, 8, 'security revision 8 carries integrated parent conservation plus authoritative external-effect identity');";
+  if (!transformed.includes(revisionMarker)) {
+    throw new Error('verify.mjs revision-7 regression marker missing');
+  }
+  transformed = transformed.replace(revisionMarker, revisionReplacement);
+}
+
 // Older restore/live authority fixtures model an already-accepted proof seam and
 // predate the revision-8 external namespace fields. Add one deterministic rail-neutral
 // verified namespace only to those generated regression fixtures; production code
