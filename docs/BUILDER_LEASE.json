@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "completed",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
-  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5689695425|candidate-645aa912|commit-fencing",
+  "holder": "primary-builder",
+  "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5690474117|candidate-74fe2c6|live-materialization-fence",
   "candidate_head": "74fe2c6c6bc9504da66c08016b8b08784def395e",
-  "claimed_at": "2026-09-16T00:55:30Z",
-  "renewed_at": "2026-09-16T01:01:00Z",
-  "completed_at": "2026-09-16T01:01:00Z",
-  "expires_at": null,
+  "claimed_at": "2026-09-16T01:16:04Z",
+  "renewed_at": "2026-09-16T01:16:04Z",
+  "completed_at": null,
+  "expires_at": "2026-09-16T01:28:04Z",
   "waiting_reason": null,
-  "note": "Gate C consumed successfully. Sealed Phase C1 Builder REVIEW REQUEST posted at #38 comment 5690424450 for exact unchanged candidate 74fe2c6c6bc9504da66c08016b8b08784def395e after Phase C1/CI/Coverage/Smoke/E2E all completed green. Independent Reviewer owns the next disposition."
+  "note": "Gate B claimed from exact Reviewer REVISE #38 comment 5690474117. Bounded repair: fence every namespace-bound authoritative live materialization against the exact independently resolved head, with zero local mutation on stale head/CAS/fence/storage failure; preserve rail-neutral scope and all Golden bytes."
 }
