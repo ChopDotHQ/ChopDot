@@ -1,13 +1,13 @@
 {
   "version": 2,
   "role": "phase-c1-builder",
-  "status": "waiting_ci",
-  "holder": null,
+  "status": "claimed",
+  "holder": "chatgpt-phase-c1-builder",
   "branch": "phase-c1/guest-spend-contract-v1-candidate",
   "fingerprint": "phase-c1|reviewer-revise|5695349015|981f5f8391fe739acd2332fe6379eb4129f823c0",
   "claimed_from_head": "981f5f8391fe739acd2332fe6379eb4129f823c0",
   "candidate_head": "bd9acebc56e88ef7d5a4a6b736f0c893d739d299",
-  "expires_at": null,
+  "expires_at": "2026-09-16T10:20:00Z",
   "authority": {
     "reviewer_receipt_comment": 5695349015,
     "builder_handoff_comment": 5695080466,
