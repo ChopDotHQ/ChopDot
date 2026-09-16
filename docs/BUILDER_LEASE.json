@@ -7,7 +7,7 @@
   "fingerprint": "phase-c1|reviewer-revise|5695349015|981f5f8391fe739acd2332fe6379eb4129f823c0",
   "claimed_from_head": "981f5f8391fe739acd2332fe6379eb4129f823c0",
   "candidate_head": "d56fe34cf70869dbf59b27a1bdfb593672e7379c",
-  "expires_at": "2026-09-16T10:09:30Z",
+  "expires_at": "2026-09-16T10:18:00Z",
   "authority": {
     "reviewer_receipt_comment": 5695349015,
     "builder_handoff_comment": 5695080466,
