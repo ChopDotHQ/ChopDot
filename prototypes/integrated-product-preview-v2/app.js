@@ -15,8 +15,6 @@ let monitorTimer = null;
 let lastEntryState = null;
 let sessionAuthority = null;
 let pendingInvite = null;
-let entryTrace = [];
-let lastTraceFingerprint = '';
 
 document.documentElement.dataset.reviewMode = reviewerMode ? 'true' : 'false';
 
@@ -109,61 +107,36 @@ function stopMonitor() {
   monitorTimer = null;
 }
 
-function resetEntryTrace() {
-  entryTrace = [];
-  lastTraceFingerprint = '';
+function resetEntryState() {
   lastEntryState = null;
   sessionAuthority = null;
 }
 
-function observeEntryState(state) {
-  if (!state?.route) return;
-  const fingerprint = [state.route, state.challenge, state.request, state.verified, state.email, state.name, state.method, state.approval, state.destination, state.events?.length || 0].join('|');
-  if (fingerprint === lastTraceFingerprint) return;
-  lastTraceFingerprint = fingerprint;
-  entryTrace.push({
-    route: state.route,
-    verified: Boolean(state.verified),
-    method: state.method || null,
-    destination: state.destination || null,
-    challenge: Number(state.challenge || 0),
-    request: Number(state.request || 0),
-    eventCount: Array.isArray(state.events) ? state.events.length : 0,
-  });
-  if (entryTrace.length > 48) entryTrace.shift();
-}
-
-function routesSeenInOrder(required) {
-  let cursor = 0;
-  for (const item of entryTrace) {
-    if (item.route === required[cursor]) cursor += 1;
-    if (cursor === required.length) return true;
-  }
-  return false;
-}
-
-function eventTypes(state) {
-  return new Set(Array.isArray(state.events) ? state.events.map((event) => event?.type).filter(Boolean) : []);
+function correlatedEvent(state, type, authority) {
+  if (!Array.isArray(state?.events)) return false;
+  return state.events.some((event) =>
+    event?.type === type &&
+    (!authority || event.authority === authority) &&
+    Number(event.challenge) === Number(state.challenge) &&
+    Number(event.request) === Number(state.request) &&
+    event.destination === state.destination
+  );
 }
 
 function createSessionAuthority(state) {
   if (!state || state.verified !== true) return null;
   if (!['home-reference', 'invite-reference'].includes(state.route)) return null;
   if (!['home', 'invite'].includes(state.destination)) return null;
-
-  const events = eventTypes(state);
-  if (!events.has('SessionVerified') || !events.has('EntryDestinationOpened')) return null;
+  if (!correlatedEvent(state, 'SessionVerified', 'demo-provider')) return null;
+  if (!correlatedEvent(state, 'EntryDestinationOpened', 'viewer')) return null;
 
   let participant;
   if (state.method === 'email') {
     const email = String(state.email || '').trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
-    const requiredRoutes = state.isNew
-      ? ['email', 'code', 'profile', 'ready', state.route]
-      : ['email', 'code', 'ready', state.route];
-    if (!routesSeenInOrder(requiredRoutes)) return null;
-    if (!events.has('SignInCodeRequested') || !events.has('SignInCodeVerificationRequested')) return null;
-    if (state.isNew && !events.has('DisplayNameSaved')) return null;
+    if (!correlatedEvent(state, 'SignInCodeRequested', 'person')) return null;
+    if (!correlatedEvent(state, 'SignInCodeVerificationRequested', 'person')) return null;
+    if (state.isNew && !correlatedEvent(state, 'DisplayNameSaved', 'person')) return null;
     const displayName = String(state.name || '').trim();
     if (!displayName) return null;
     participant = Object.freeze({
@@ -175,11 +148,7 @@ function createSessionAuthority(state) {
   } else if (state.method === 'wallet') {
     const account = String(state.account || '').trim();
     if (!account) return null;
-    const requiredRoutes = state.isNew
-      ? ['wallet', 'approval-waiting', 'profile', 'ready', state.route]
-      : ['wallet', 'approval-waiting', 'ready', state.route];
-    if (!routesSeenInOrder(requiredRoutes)) return null;
-    if (!events.has('SignInApprovalRequested')) return null;
+    if (!correlatedEvent(state, 'SignInApprovalRequested', 'person')) return null;
     const displayName = String(state.name || '').trim();
     if (!displayName) return null;
     participant = Object.freeze({
@@ -281,7 +250,6 @@ function watchGoldenEntry() {
     if (!demo?.get) return;
     const state = demo.get();
     if (!state?.route) return;
-    observeEntryState(state);
     lastEntryState = clone(state);
 
     if (state.verified && ['home-reference', 'invite-reference'].includes(state.route)) {
@@ -300,7 +268,7 @@ function openCanonicalInviteFromGuest() {
   stopMonitor();
   pendingInvite = Object.freeze({ title: 'Geneva Weekend', inviter: 'Devinson', people: 3, currency: 'CHF', provenance: 'invite' });
   activeEntryMode = 'invite';
-  resetEntryTrace();
+  resetEntryState();
   currentJourney = 'J01';
   frame.src = `${SOURCES.j01}#invite`;
 }
@@ -362,7 +330,7 @@ function openEntry(mode = activeEntryMode) {
   stopMonitor();
   currentJourney = 'J01';
   sessionAuthority = null;
-  resetEntryTrace();
+  resetEntryState();
   activeEntryMode = mode;
   if (mode === 'guest-invite') {
     frame.src = `${SOURCES.j01GuestInvite}#invite`;
