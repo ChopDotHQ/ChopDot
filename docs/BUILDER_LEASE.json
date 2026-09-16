@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "role": "phase-c1-builder",
+  "status": "claimed",
+  "holder": "phase-c1-contract-builder-watcher",
+  "branch": "phase-c1/guest-spend-contract-v1-candidate",
+  "fingerprint": "phase-c1|mechanical-repair|35064540730|1a1196e9694be422d28c1bfea7248012b591e03f",
+  "claimed_from_head": "1a1196e9694be422d28c1bfea7248012b591e03f",
+  "candidate_head": "1a1196e9694be422d28c1bfea7248012b591e03f",
+  "expires_at": "2026-09-16T06:54:00Z",
+  "authority": {
+    "reviewer_receipt_comment": 5692378762,
+    "security_acceptance_crossref_comment": 5692896808,
+    "mechanical_failure_run": 35064540730
+  }
+}
