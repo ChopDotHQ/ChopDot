@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "phase-c1-backup-repair-pickup",
+  "holder": null,
   "fingerprint": "73d7b4f8f5db54b5d7132220ceff2514c183e6d8|phase-c1|authorized-repair-cycle-5692378762|external-effect-ownership-revision9",
-  "candidate_head": "dfeb640910db2dfffb07c39758d32efe45efe8bb",
+  "candidate_head": "9a016bf1b533fe39e347d66d9488d6791355f4ae",
   "claimed_at": "2026-09-16T05:56:34Z",
-  "renewed_at": "2026-09-16T05:56:34Z",
+  "renewed_at": "2026-09-16T06:05:20Z",
   "completed_at": null,
-  "expires_at": "2026-09-16T06:08:34Z",
-  "waiting_reason": null,
-  "note": "Gate B consumed for exact mechanical Phase C1 failure on dfeb640910db2dfffb07c39758d32efe45efe8bb: verify-regression-baseline.mjs requires failure_semantics.transport_or_timeout_after_possible_dispatch_must_be_unknown=true, but revision-9 contract omitted the previously-cleared invariant. Bounded repair only; Reviewer REVISE #38 comment 5692378762 remains governing authority."
+  "expires_at": null,
+  "waiting_reason": "Exact-head Phase C1/CI/Coverage/Smoke/E2E are running for 9a016bf1b533fe39e347d66d9488d6791355f4ae after Gate B restored the previously-cleared post-dispatch timeout=>unknown contract invariant. No writer capacity is reserved while Actions run.",
+  "note": "Formal Reviewer REVISE #38 comment 5692378762 remains the governing repair authority. Mechanical predecessor failure was Phase C1 run 35059591004: verify-regression-baseline.mjs expected failure_semantics.transport_or_timeout_after_possible_dispatch_must_be_unknown=true and revision-9 contract had omitted it. Successor changes only that lost invariant; Vercel suppression policy already remains present at root vercel.json. Seal only after all five exact-head workflows are green."
 }
