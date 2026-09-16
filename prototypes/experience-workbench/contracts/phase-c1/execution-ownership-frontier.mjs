@@ -7,11 +7,16 @@
 // pending/unknown correlations, observed external-effect bindings and request tombstones.
 // Materialization-only status changes are normalized so the financial commit path can
 // advance independently without weakening replay protection.
+//
+// Namespace genesis is a separate durable authority. A missing ownership frontier is
+// never proof that a namespace is new: once genesis exists, loss/reset/unavailability of
+// the frontier fails closed rather than empty-bootstrapping replay authority.
 
 import { createHash } from 'node:crypto';
 import { createInMemoryExecutionOwnershipAuthority } from './materialization-state.mjs';
 
 const FRONTIER_VERSION = 1;
+const GENESIS_VERSION = 1;
 const present = value => value !== null && value !== undefined && (typeof value !== 'string' || value.trim().length > 0);
 const clone = value => structuredClone(value);
 const keyOf = value => JSON.stringify([
@@ -60,6 +65,35 @@ const headFor = (financialAuthorityNamespace, sequence, snapshot) => ({
   digest: executionOwnershipReplayDigest(snapshot)
 });
 
+const validGenesis = (record, financialAuthorityNamespace) => record &&
+  record.version === GENESIS_VERSION &&
+  record.financial_authority_namespace === financialAuthorityNamespace &&
+  present(record.genesis_replay_digest);
+
+const genesisFor = (financialAuthorityNamespace, snapshot) => ({
+  version: GENESIS_VERSION,
+  financial_authority_namespace: financialAuthorityNamespace,
+  genesis_replay_digest: executionOwnershipReplayDigest(snapshot)
+});
+
+// Acceptance-model seam for an independently durable, create-once namespace existence
+// record. Production adapters must provide equivalent replay-protected/append-only
+// semantics. Resetting the ownership frontier does not reset this authority.
+export const createInMemoryExecutionOwnershipNamespaceAuthority = ({ financialAuthorityNamespace, initialRecord = null } = {}) => {
+  if (!present(financialAuthorityNamespace)) throw new Error('execution ownership namespace authority requires financial authority namespace');
+  let current = initialRecord ? clone(initialRecord) : null;
+  if (current && !validGenesis(current, financialAuthorityNamespace)) throw new Error('invalid execution ownership namespace genesis record');
+
+  const read = () => current ? clone(current) : null;
+  const claimGenesis = snapshot => {
+    if (current !== null) return null;
+    current = genesisFor(financialAuthorityNamespace, snapshot);
+    return read();
+  };
+
+  return { read, claimGenesis };
+};
+
 export const createInMemoryExecutionOwnershipFrontierAuthority = ({ financialAuthorityNamespace, initialHead = null } = {}) => {
   if (!present(financialAuthorityNamespace)) throw new Error('execution ownership frontier requires financial authority namespace');
   let current = initialHead ? clone(initialHead) : null;
@@ -91,12 +125,16 @@ const failureFor = method => method === 'reserveCorrelationForDispatch' ? null :
 export const createFencedExecutionOwnershipAuthority = (persisted = null, {
   financialAuthorityNamespace,
   frontierAuthority,
+  namespaceAuthority,
   faultInjector = () => {}
 } = {}) => {
   if (!present(financialAuthorityNamespace)) throw new Error('fenced execution ownership requires financial authority namespace');
   if (!frontierAuthority || typeof frontierAuthority.read !== 'function' || typeof frontierAuthority.bootstrap !== 'function' ||
       typeof frontierAuthority.commit !== 'function') {
     throw new Error('independent execution ownership frontier authority required');
+  }
+  if (!namespaceAuthority || typeof namespaceAuthority.read !== 'function' || typeof namespaceAuthority.claimGenesis !== 'function') {
+    throw new Error('independent execution ownership namespace genesis authority required');
   }
 
   const persistedHead = persisted?.execution_ownership_frontier_head ? clone(persisted.execution_ownership_frontier_head) : null;
@@ -107,7 +145,13 @@ export const createFencedExecutionOwnershipAuthority = (persisted = null, {
 
   const rawDigest = () => executionOwnershipReplayDigest(raw.snapshot());
   const authoritative = frontierAuthority.read();
+  let genesis = namespaceAuthority.read();
+  if (genesis !== null && !validGenesis(genesis, financialAuthorityNamespace)) {
+    throw new Error('invalid execution ownership namespace genesis authority');
+  }
+
   if (persisted) {
+    if (genesis === null) throw new Error('missing execution ownership namespace genesis authority');
     if (!persistedHead || persistedHead.version !== FRONTIER_VERSION ||
         persistedHead.financial_authority_namespace !== financialAuthorityNamespace ||
         persistedHead.digest !== rawDigest() || !sameHead(authoritative, persistedHead)) {
@@ -115,9 +159,15 @@ export const createFencedExecutionOwnershipAuthority = (persisted = null, {
     }
     localHead = persistedHead;
   } else if (authoritative === null) {
+    if (genesis !== null) throw new Error('missing execution ownership frontier for existing namespace');
+    genesis = namespaceAuthority.claimGenesis(raw.snapshot());
+    if (!genesis || !validGenesis(genesis, financialAuthorityNamespace) || genesis.genesis_replay_digest !== rawDigest()) {
+      throw new Error('execution ownership namespace genesis race');
+    }
     localHead = frontierAuthority.bootstrap(raw.snapshot());
     if (!localHead) throw new Error('execution ownership frontier bootstrap race');
   } else {
+    if (genesis === null) throw new Error('missing execution ownership namespace genesis authority');
     const emptyHead = headFor(financialAuthorityNamespace, authoritative.sequence, raw.snapshot());
     if (authoritative.financial_authority_namespace !== financialAuthorityNamespace || authoritative.digest !== emptyHead.digest) {
       throw new Error('existing execution ownership frontier requires exact current snapshot');
@@ -127,6 +177,7 @@ export const createFencedExecutionOwnershipAuthority = (persisted = null, {
 
   const assertAuthoritativeFrontier = () => sameHead(frontierAuthority.read(), localHead) && rawDigest() === localHead.digest;
   const frontierHead = () => clone(localHead);
+  const namespaceGenesisRecord = () => clone(genesis);
   const snapshot = () => ({ ...raw.snapshot(), execution_ownership_frontier_head: frontierHead() });
 
   const mutateReplayAuthority = (method, input) => {
@@ -174,6 +225,7 @@ export const createFencedExecutionOwnershipAuthority = (persisted = null, {
     digestForFinancialEffects: (...args) => requireFresh('digestForFinancialEffects', ...args),
     assertAuthoritativeFrontier,
     frontierHead,
+    namespaceGenesisRecord,
     snapshot
   };
 };
