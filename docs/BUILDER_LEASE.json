@@ -7,9 +7,9 @@
   "fingerprint": "a099369d9ba3b452e0ff135e9ffa842990c55e13|phase-c1|review-revise-5691650630|authoritative-external-effect-identity",
   "candidate_head": "a099369d9ba3b452e0ff135e9ffa842990c55e13",
   "claimed_at": "2026-09-16T04:02:32Z",
-  "renewed_at": "2026-09-16T04:02:32Z",
+  "renewed_at": "2026-09-16T04:05:52Z",
   "completed_at": null,
-  "expires_at": "2026-09-16T04:14:32Z",
+  "expires_at": "2026-09-16T04:17:52Z",
   "waiting_reason": null,
   "note": "Formal Phase C1 Reviewer REVISE #38 comment 5691650630 remains governing for exact a099369d9ba3b452e0ff135e9ffa842990c55e13 / tree e007d3f4670db389b5c306806401778997abf5c5; Supervisor handback #38 5691781700 assigns the bounded rail-neutral authoritative external-effect identity/dedupe/parent-namespace repair to Builder."
 }
