@@ -25,11 +25,33 @@ const apply = (state, { ref, kind, units, parent = null, spend = 'sp_restore', o
     authorizedMoney
   });
 
-const stateForHead = (head, namespace = NAMESPACE, verifyAuthoritativeHeadTransition) => createCanonicalMaterializationState({
-  persistenceNamespace: namespace,
-  resolveAuthoritativeHead: () => head,
-  verifyAuthoritativeHeadTransition
-});
+const sameHead = (left, right) =>
+  left?.head_version === right?.head_version &&
+  left?.domain === right?.domain &&
+  left?.namespace === right?.namespace &&
+  left?.snapshot_version === right?.snapshot_version &&
+  left?.generation === right?.generation &&
+  left?.lineage_digest === right?.lineage_digest &&
+  (left?.prior_generation ?? null) === (right?.prior_generation ?? null) &&
+  (left?.prior_lineage_digest ?? null) === (right?.prior_lineage_digest ?? null) &&
+  (left?.owner_scoped_cas_token ?? null) === (right?.owner_scoped_cas_token ?? null);
+
+const fenceFor = (resolveHead, beforeCommit = () => {}) => ({ expected_head, commit }) => {
+  if (!sameHead(resolveHead(), expected_head)) return false;
+  beforeCommit();
+  if (!sameHead(resolveHead(), expected_head)) return false;
+  return commit() === true;
+};
+
+const stateForHead = (head, namespace = NAMESPACE, verifyAuthoritativeHeadTransition) => {
+  const resolveHead = () => head;
+  return createCanonicalMaterializationState({
+    persistenceNamespace: namespace,
+    resolveAuthoritativeHead: resolveHead,
+    verifyAuthoritativeHeadTransition,
+    commitUnderAuthoritativeHeadFence: fenceFor(resolveHead)
+  });
+};
 const findEffect = (snapshot, key) => snapshot.effects.find(([candidate]) => candidate === key)?.[1];
 const findIntent = (snapshot, key) => snapshot.intents.find(([candidate]) => candidate === key)?.[1];
 const transitionToken = (prior, next) =>
@@ -43,8 +65,7 @@ const transitionHead = (next, prior, token = transitionToken(prior, next)) => ({
 const verifyTransitionShape = ({ prior_head, next_head, owner_scoped_cas_token }) =>
   owner_scoped_cas_token === transitionToken(prior_head, next_head);
 
-// Reviewer REVISE: partial_capture is one rail-neutral root capture kind, not an adjustment.
-// Missing parent is the valid case; any supplied parent fails rather than being silently discarded.
+// partial_capture is a rail-neutral root capture, not an adjustment.
 let partialCaptureHead = null;
 const partialCaptureLive = createCanonicalMaterializationState({
   persistenceNamespace: NAMESPACE,
@@ -57,7 +78,7 @@ const partialCaptureSnapshot = partialCaptureLive.snapshot();
 const partialCaptureCheckpoint = partialCaptureLive.checkpoint();
 partialCaptureHead = partialCaptureLive.headCandidate();
 const partialCaptureRestart = stateForHead(partialCaptureHead);
-eq(partialCaptureRestart.restore(partialCaptureSnapshot, partialCaptureCheckpoint), true, 'root partial capture survives exact restart/restore');
+eq(partialCaptureRestart.restore(partialCaptureSnapshot, partialCaptureCheckpoint), true, 'root partial capture survives exact restart/restore inside fence');
 eq(partialCaptureRestart.getEffect('sp_restore', 'op_restore', 'rail:partial:root').kind, 'partial_capture', 'restored partial capture keeps its economic kind');
 eq(partialCaptureRestart.getEffect('sp_restore', 'op_restore', 'rail:partial:root').authoritative_parent_effect_ref ?? null, null, 'restored root partial capture has no parent lineage');
 eq(partialCaptureRestart.getEffect('sp_restore', 'op_restore', 'rail:partial:root').remaining_unadjusted_units, 750n, 'root partial capture preserves adjustable remaining capacity');
@@ -80,13 +101,17 @@ const partialHead = live.headCandidate();
 resolvedHead = partialHead;
 
 const restarted = stateForHead(partialHead);
-eq(restarted.restore(partialSnapshot, partialCheckpoint), true, 'clean snapshot restores against independent namespace-bound head and backup checkpoint');
+eq(restarted.restore(partialSnapshot, partialCheckpoint), true, 'clean snapshot restores against independent head/checkpoint inside exact-head fence');
 eq(restarted.getEffect('sp_restore', 'op_restore', 'rail:cap:A').remaining_unadjusted_units, 400n, 'clean restore reconstructs parent remainder');
 eq(restarted.getIntentMoney('sp_restore').minorUnits, 4400n, 'clean restore reconstructs aggregate net');
 
 rejects(() => createCanonicalMaterializationState({ persistenceNamespace: NAMESPACE }).restore(partialSnapshot, partialCheckpoint), 'restore without authoritative-head resolver fails closed');
 rejects(() => stateForHead(partialHead).restore(partialSnapshot), 'restore without backup checkpoint fails closed');
 rejects(() => createCanonicalMaterializationState({ resolveAuthoritativeHead: () => partialHead }).restore(partialSnapshot, partialCheckpoint), 'restore without persistence namespace fails closed');
+rejects(() => createCanonicalMaterializationState({
+  persistenceNamespace: NAMESPACE,
+  resolveAuthoritativeHead: () => partialHead
+}).restore(partialSnapshot, partialCheckpoint), 'restart/process recreation without authoritative commit-fence reacquisition fails closed');
 
 const inflatedRemainder = structuredClone(partialSnapshot);
 findEffect(inflatedRemainder, 'sp_restore:op_restore:rail:cap:A').remaining_unadjusted_units = '1000';
@@ -126,7 +151,7 @@ const freshAtC4 = stateForHead(exhaustedHead);
 rejects(() => freshAtC4.restore(partialSnapshot, partialCheckpoint), 'fresh startup rejects valid stale C3 snapshot when authoritative head is C4');
 
 const restoredC4 = stateForHead(exhaustedHead);
-eq(restoredC4.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'exact authoritative C4 snapshot restores');
+eq(restoredC4.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'exact authoritative C4 snapshot restores inside exact-head fence');
 eq(restoredC4.getEffect('sp_restore', 'op_restore', 'rail:cap:A').remaining_unadjusted_units, 0n, 'exact C4 restore preserves exhausted parent');
 eq(apply(restoredC4, { ref: 'rail:refund:A:fresh', kind: 'refund', units: 1, parent: 'rail:cap:A' }), false, 'C4 restart cannot rematerialize consumed parent value');
 
@@ -145,7 +170,12 @@ eq(apply(fork, { ref: 'rail:refund:A:500', kind: 'refund', units: 500, parent: '
 eq(apply(fork, { ref: 'rail:refund:B:100', kind: 'refund', units: 100, parent: 'rail:cap:B' }), true, 'fork adjustment 2 materializes');
 const forkHead = fork.headCandidate();
 let dynamicHead = exhaustedHead;
-const forkProbe = createCanonicalMaterializationState({ persistenceNamespace: NAMESPACE, resolveAuthoritativeHead: () => dynamicHead });
+const resolveForkHead = () => dynamicHead;
+const forkProbe = createCanonicalMaterializationState({
+  persistenceNamespace: NAMESPACE,
+  resolveAuthoritativeHead: resolveForkHead,
+  commitUnderAuthoritativeHeadFence: fenceFor(resolveForkHead)
+});
 eq(forkProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'fork probe accepts authoritative C4 first');
 dynamicHead = forkHead;
 rejects(() => forkProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), 'same-generation different-digest authoritative head is rejected as fork');
@@ -159,40 +189,43 @@ const c5Checkpoint = newerBackupState.checkpoint();
 const c5Head = newerBackupState.headCandidate();
 rejects(() => stateForHead(exhaustedHead).restore(c5Snapshot, c5Checkpoint), 'backup newer than accepted C4 head cannot self-promote authority');
 
-// Reviewer REVISE: a higher head is accepted only as an exact-prior-bound, owner-scoped
-// CAS/equivalent transition whose immutable effect lineage extends the accepted frontier.
+// Higher head requires exact prior binding, owner-scoped CAS/equivalent and descendant lineage.
 let transitionResolvedHead = exhaustedHead;
+const resolveTransitionHead = () => transitionResolvedHead;
 const transitionProbe = createCanonicalMaterializationState({
   persistenceNamespace: NAMESPACE,
-  resolveAuthoritativeHead: () => transitionResolvedHead,
-  verifyAuthoritativeHeadTransition: verifyTransitionShape
+  resolveAuthoritativeHead: resolveTransitionHead,
+  verifyAuthoritativeHeadTransition: verifyTransitionShape,
+  commitUnderAuthoritativeHeadFence: fenceFor(resolveTransitionHead)
 });
 eq(transitionProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'transition probe starts from exact C4');
 transitionResolvedHead = transitionHead(c5Head, exhaustedHead);
-eq(transitionProbe.restore(c5Snapshot, c5Checkpoint), true, 'exact C4 to C5 descendant transition with prior-head CAS proof is accepted');
+eq(transitionProbe.restore(c5Snapshot, c5Checkpoint), true, 'exact C4 to C5 descendant transition with prior-head CAS proof commits inside exact-head fence');
 eq(transitionProbe.getEffect('sp_restore', 'op_restore', 'rail:cap:B').remaining_unadjusted_units, 3999n, 'valid C5 descendant applies only its new bounded adjustment');
 
 let bareAdvanceHead = exhaustedHead;
+const resolveBareAdvanceHead = () => bareAdvanceHead;
 const bareAdvanceProbe = createCanonicalMaterializationState({
   persistenceNamespace: NAMESPACE,
-  resolveAuthoritativeHead: () => bareAdvanceHead,
-  verifyAuthoritativeHeadTransition: verifyTransitionShape
+  resolveAuthoritativeHead: resolveBareAdvanceHead,
+  verifyAuthoritativeHeadTransition: verifyTransitionShape,
+  commitUnderAuthoritativeHeadFence: fenceFor(resolveBareAdvanceHead)
 });
 eq(bareAdvanceProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'bare-advance probe starts at C4');
 bareAdvanceHead = c5Head;
 rejects(() => bareAdvanceProbe.restore(c5Snapshot, c5Checkpoint), 'higher generation without exact prior-head/CAS transition metadata is rejected');
 
 let noVerifierHead = exhaustedHead;
+const resolveNoVerifierHead = () => noVerifierHead;
 const noVerifierProbe = createCanonicalMaterializationState({
   persistenceNamespace: NAMESPACE,
-  resolveAuthoritativeHead: () => noVerifierHead
+  resolveAuthoritativeHead: resolveNoVerifierHead,
+  commitUnderAuthoritativeHeadFence: fenceFor(resolveNoVerifierHead)
 });
 eq(noVerifierProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'no-verifier probe starts at C4');
 noVerifierHead = transitionHead(c5Head, exhaustedHead);
 rejects(() => noVerifierProbe.restore(c5Snapshot, c5Checkpoint), 'higher generation without owner-scoped transition verifier is rejected');
 
-// Internally-valid higher-generation fork that claims C4 as predecessor still fails because
-// its immutable lineage omits/substitutes previously accepted effects.
 const divergent = createCanonicalMaterializationState({ persistenceNamespace: NAMESPACE });
 eq(apply(divergent, { ref: 'rail:cap:A', kind: 'capture', units: 1000 }), true, 'divergent C5 capture A materializes');
 eq(apply(divergent, { ref: 'rail:cap:B', kind: 'capture', units: 4000 }), true, 'divergent C5 capture B materializes');
@@ -203,10 +236,12 @@ const divergentSnapshot = divergent.snapshot();
 const divergentCheckpoint = divergent.checkpoint();
 const divergentTransitionHead = transitionHead(divergent.headCandidate(), exhaustedHead);
 let divergentResolvedHead = exhaustedHead;
+const resolveDivergentHead = () => divergentResolvedHead;
 const divergentProbe = createCanonicalMaterializationState({
   persistenceNamespace: NAMESPACE,
-  resolveAuthoritativeHead: () => divergentResolvedHead,
-  verifyAuthoritativeHeadTransition: verifyTransitionShape
+  resolveAuthoritativeHead: resolveDivergentHead,
+  verifyAuthoritativeHeadTransition: verifyTransitionShape,
+  commitUnderAuthoritativeHeadFence: fenceFor(resolveDivergentHead)
 });
 eq(divergentProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'divergent-lineage probe starts at C4');
 const beforeDivergentAdvance = divergentProbe.snapshot();
@@ -214,12 +249,14 @@ divergentResolvedHead = divergentTransitionHead;
 rejects(() => divergentProbe.restore(divergentSnapshot, divergentCheckpoint), 'higher-generation fork that omits accepted immutable effects is rejected despite plausible transition metadata');
 eq(divergentProbe.snapshot(), beforeDivergentAdvance, 'divergent higher-generation rejection leaves C4 state unchanged');
 
-// A competing next-head publication that loses owner-scoped CAS cannot become restore authority.
+// Competing next-head publication rejected by transition verifier cannot become authority.
 let rejectedCasHead = exhaustedHead;
+const resolveRejectedCasHead = () => rejectedCasHead;
 const rejectedCasProbe = createCanonicalMaterializationState({
   persistenceNamespace: NAMESPACE,
-  resolveAuthoritativeHead: () => rejectedCasHead,
-  verifyAuthoritativeHeadTransition: () => false
+  resolveAuthoritativeHead: resolveRejectedCasHead,
+  verifyAuthoritativeHeadTransition: () => false,
+  commitUnderAuthoritativeHeadFence: fenceFor(resolveRejectedCasHead)
 });
 eq(rejectedCasProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'competing-CAS probe starts at C4');
 const beforeRejectedCas = rejectedCasProbe.snapshot();
@@ -227,28 +264,70 @@ rejectedCasHead = transitionHead(c5Head, exhaustedHead, 'cas:losing-writer');
 rejects(() => rejectedCasProbe.restore(c5Snapshot, c5Checkpoint), 'competing next-head publication rejected by owner-scoped CAS/equivalent cannot restore');
 eq(rejectedCasProbe.snapshot(), beforeRejectedCas, 'rejected competing head causes zero partial local mutation');
 
-// TOCTOU: re-resolve the authority immediately before commit. If another writer advances
-// the head after validation, the stale read cannot commit backward over the newer frontier.
-eq(apply(newerBackupState, { ref: 'rail:refund:B:1:second', kind: 'refund', units: 1, parent: 'rail:cap:B' }), true, 'C5 fixture can advance to C6 for concurrent-head simulation');
+// Build C6 and inject it after C5 validation but inside the commit fence.
+eq(apply(newerBackupState, { ref: 'rail:refund:B:1:second', kind: 'refund', units: 1, parent: 'rail:cap:B' }), true, 'C5 fixture advances to C6 for fenced TOCTOU simulation');
 const c6Head = newerBackupState.headCandidate();
 const c6TransitionHead = transitionHead(c6Head, c5Head);
-let resolverMode = 'baseline';
-let transitionResolveCalls = 0;
+let concurrentHead = exhaustedHead;
+let injectCompetingHead = false;
+const resolveConcurrentHead = () => concurrentHead;
 const concurrentProbe = createCanonicalMaterializationState({
   persistenceNamespace: NAMESPACE,
-  resolveAuthoritativeHead: () => {
-    if (resolverMode === 'baseline') return exhaustedHead;
-    transitionResolveCalls += 1;
-    return transitionResolveCalls === 1 ? transitionHead(c5Head, exhaustedHead) : c6TransitionHead;
-  },
-  verifyAuthoritativeHeadTransition: verifyTransitionShape
+  resolveAuthoritativeHead: resolveConcurrentHead,
+  verifyAuthoritativeHeadTransition: verifyTransitionShape,
+  commitUnderAuthoritativeHeadFence: fenceFor(resolveConcurrentHead, () => {
+    if (injectCompetingHead) concurrentHead = c6TransitionHead;
+  })
 });
 eq(concurrentProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'concurrency probe starts at C4');
 const beforeConcurrentAdvance = concurrentProbe.snapshot();
-resolverMode = 'concurrent';
-transitionResolveCalls = 0;
-rejects(() => concurrentProbe.restore(c5Snapshot, c5Checkpoint), 'head changing from C5 to C6 between validation and commit rejects stale restore');
-eq(concurrentProbe.snapshot(), beforeConcurrentAdvance, 'TOCTOU head-change rejection is atomic');
+concurrentHead = transitionHead(c5Head, exhaustedHead);
+injectCompetingHead = true;
+rejects(() => concurrentProbe.restore(c5Snapshot, c5Checkpoint), 'C5 to C6 publication inside commit fence rejects stale C5 restore before local mutation');
+eq(concurrentProbe.snapshot(), beforeConcurrentAdvance, 'fenced C5/C6 race leaves authoritative local financial state unchanged');
+eq(concurrentProbe.getEffect('sp_restore', 'op_restore', 'rail:cap:B').remaining_unadjusted_units, 4000n, 'fenced race preserves C4 parent capacity rather than admitting stale C5 consumption');
+
+// Simulated fence/storage failure before commit leaves every local financial structure unchanged.
+let storageFenceHead = exhaustedHead;
+let failStorageFence = false;
+const resolveStorageFenceHead = () => storageFenceHead;
+const storageFenceProbe = createCanonicalMaterializationState({
+  persistenceNamespace: NAMESPACE,
+  resolveAuthoritativeHead: resolveStorageFenceHead,
+  verifyAuthoritativeHeadTransition: verifyTransitionShape,
+  commitUnderAuthoritativeHeadFence: ({ expected_head, commit }) => {
+    if (!sameHead(resolveStorageFenceHead(), expected_head)) return false;
+    if (failStorageFence) throw new Error('simulated authoritative fence/storage failure');
+    return commit() === true;
+  }
+});
+eq(storageFenceProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'storage-failure probe starts at C4');
+const beforeStorageFailure = storageFenceProbe.snapshot();
+storageFenceHead = transitionHead(c5Head, exhaustedHead);
+failStorageFence = true;
+rejects(() => storageFenceProbe.restore(c5Snapshot, c5Checkpoint), 'storage/fence failure rejects C5 restore');
+eq(storageFenceProbe.snapshot(), beforeStorageFailure, 'storage/fence failure preserves parent capacity, dedupe, aggregates and lineage');
+
+// Even a fence implementation that commits then reports failure is rolled back locally.
+let postCommitFenceHead = exhaustedHead;
+let rejectAfterCommit = false;
+const resolvePostCommitFenceHead = () => postCommitFenceHead;
+const postCommitFenceProbe = createCanonicalMaterializationState({
+  persistenceNamespace: NAMESPACE,
+  resolveAuthoritativeHead: resolvePostCommitFenceHead,
+  verifyAuthoritativeHeadTransition: verifyTransitionShape,
+  commitUnderAuthoritativeHeadFence: ({ expected_head, commit }) => {
+    if (!sameHead(resolvePostCommitFenceHead(), expected_head)) return false;
+    const committed = commit();
+    return rejectAfterCommit ? false : committed;
+  }
+});
+eq(postCommitFenceProbe.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'post-commit fence probe starts at C4');
+const beforePostCommitReject = postCommitFenceProbe.snapshot();
+postCommitFenceHead = transitionHead(c5Head, exhaustedHead);
+rejectAfterCommit = true;
+rejects(() => postCommitFenceProbe.restore(c5Snapshot, c5Checkpoint), 'fence invalidation after callback commit is treated as failed restore');
+eq(postCommitFenceProbe.snapshot(), beforePostCommitReject, 'failed fence rolls back any tentative local commit byte-for-byte structurally');
 
 const wrongDomainHead = { ...exhaustedHead, domain: 'OTHER:materialization' };
 rejects(() => stateForHead(wrongDomainHead).restore(exhaustedSnapshot, exhaustedCheckpoint), 'wrong authoritative-head domain is rejected');
@@ -273,13 +352,40 @@ reordered.effects.reverse();
 reordered.intents.reverse();
 reordered.authoritativeEffects.reverse();
 const reorderedState = stateForHead(exhaustedHead);
-eq(reorderedState.restore(reordered, exhaustedCheckpoint), true, 'out-of-order persisted rows reconstruct deterministically');
+eq(reorderedState.restore(reordered, exhaustedCheckpoint), true, 'out-of-order persisted rows reconstruct deterministically inside fence');
 eq(reorderedState.getEffect('sp_restore', 'op_restore', 'rail:cap:A').remaining_unadjusted_units, 0n, 'out-of-order recovery preserves exhausted parent');
 
 const atomicProbe = stateForHead(partialHead);
 eq(atomicProbe.restore(partialSnapshot, partialCheckpoint), true, 'atomic probe starts from valid restored state');
 const beforeFailedRestore = atomicProbe.snapshot();
-rejects(() => atomicProbe.restore(aggregateDrift, partialCheckpoint), 'inconsistent restore is rejected before commit');
+rejects(() => atomicProbe.restore(aggregateDrift, partialCheckpoint), 'inconsistent restore is rejected before fenced commit');
 eq(atomicProbe.snapshot(), beforeFailedRestore, 'failed restore leaves prior state byte-for-byte structurally unchanged');
+
+// MoneyV1 exactness: large integer units and representative exponents survive fenced restart without Number conversion.
+for (const exponent of [0, 3, 8, 12]) {
+  const namespace = `phase-c1:money-e${exponent}`;
+  const units = 9007199254740993123456789n + BigInt(exponent);
+  const authorized = { minorUnits: units + 1000n, currency: 'XTS', exponent };
+  const exact = createCanonicalMaterializationState({ persistenceNamespace: namespace });
+  eq(exact.materialize({
+    state: 'captured',
+    proofAccepted: true,
+    expected: {
+      spend_intent_id: `sp_e${exponent}`,
+      operation_id: `op_e${exponent}`,
+      authoritative_effect_ref: `rail:e${exponent}`,
+      effect_kind: 'capture',
+      authoritative_parent_effect_ref: null
+    },
+    effectMoney: { minorUnits: units, currency: 'XTS', exponent },
+    authorizedMoney: authorized
+  }), true, `MoneyV1 exponent ${exponent} capture materializes exactly`);
+  const exactSnapshot = exact.snapshot();
+  const exactCheckpoint = exact.checkpoint();
+  const exactHead = exact.headCandidate();
+  const exactRestart = stateForHead(exactHead, namespace);
+  eq(exactRestart.restore(exactSnapshot, exactCheckpoint), true, `MoneyV1 exponent ${exponent} restores inside exact-head fence`);
+  eq(exactRestart.getIntentMoney(`sp_e${exponent}`).minorUnits, units, `MoneyV1 exponent ${exponent} preserves large integer units exactly`);
+}
 
 console.log(JSON.stringify({ suite: 'phase-c1-restore-integrity', checks, result: 'pass' }));
