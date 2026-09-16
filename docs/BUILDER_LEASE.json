@@ -1,15 +1,19 @@
 {
   "version": 2,
-  "role": "builder",
-  "status": "waiting_ci",
+  "role": "phase-c1-builder",
+  "status": "completed",
   "journey": "Phase-C1",
   "holder": null,
-  "fingerprint": "73d7b4f8f5db54b5d7132220ceff2514c183e6d8|phase-c1|authorized-repair-cycle-5692378762|external-effect-ownership-revision9",
-  "candidate_head": "9a016bf1b533fe39e347d66d9488d6791355f4ae",
-  "claimed_at": "2026-09-16T05:56:34Z",
-  "renewed_at": "2026-09-16T06:05:20Z",
-  "completed_at": null,
+  "branch": "phase-c1/guest-spend-contract-v1-candidate",
+  "fingerprint": "phase-c1|verified-complete|5699652005|7d4ddf29da8c150a5768d830d403a26245b8f835",
+  "candidate_head": "7d4ddf29da8c150a5768d830d403a26245b8f835",
+  "completed_at": "2026-09-16T15:02:11Z",
   "expires_at": null,
-  "waiting_reason": "Exact-head Phase C1/CI/Coverage/Smoke/E2E are running for 9a016bf1b533fe39e347d66d9488d6791355f4ae after Gate B restored the previously-cleared post-dispatch timeout=>unknown contract invariant. No writer capacity is reserved while Actions run.",
-  "note": "Formal Reviewer REVISE #38 comment 5692378762 remains the governing repair authority. Mechanical predecessor failure was Phase C1 run 35059591004: verify-regression-baseline.mjs expected failure_semantics.transport_or_timeout_after_possible_dispatch_must_be_unknown=true and revision-9 contract had omitted it. Successor changes only that lost invariant; Vercel suppression policy already remains present at root vercel.json. Seal only after all five exact-head workflows are green."
+  "authority": {
+    "builder_handoff_comment": 5698129448,
+    "reviewer_receipt_comment": 5698468135,
+    "human_approval_comment": 5699165571,
+    "supervisor_closure_comment": 5699652005
+  },
+  "note": "Phase C1 selective contract package is human-approved, materialized, resulting-state verified, and closed. This lease reserves no writer capacity. Any production implementation or later semantic mutation requires a separate explicit authority transition and a fresh eligible lease cycle."
 }
