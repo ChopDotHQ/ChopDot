@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "waiting_ci",
+  "status": "claimed",
   "journey": "Phase-C1",
-  "holder": null,
+  "holder": "primary-builder",
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5689695425|candidate-645aa912|commit-fencing",
   "candidate_head": "74fe2c6c6bc9504da66c08016b8b08784def395e",
-  "claimed_at": "2026-09-15T23:53:22Z",
-  "renewed_at": "2026-09-16T00:06:30Z",
+  "claimed_at": "2026-09-16T00:14:30Z",
+  "renewed_at": "2026-09-16T00:14:30Z",
   "completed_at": null,
-  "expires_at": null,
-  "waiting_reason": "Exact successor 74fe2c6c6bc9504da66c08016b8b08784def395e pushed for formal Reviewer REVISE #38 5689695425 / Supervisor handback 5689775272; Phase C1/CI/Coverage/Smoke/E2E exact-head checks are running. No sealed successor REVIEW REQUEST exists yet.",
-  "note": "Bounded commit-fencing successor: causal implementation in materialization-state.mjs requires restore financial mutation to execute only inside an exact authoritative-head fence, with rollback on fence/storage rejection. Contract and adversarial evidence include C5->C6 publication inside the fence, restart fence reacquisition, verifier/CAS rejection, storage failure, stale/fork/dedupe/aggregate/parent/MoneyV1 preservation."
+  "expires_at": "2026-09-16T00:26:30Z",
+  "waiting_reason": null,
+  "note": "Gate C mechanical follow-up on exact 74fe2c6c6bc9504da66c08016b8b08784def395e: Phase C1/CI/Coverage/Smoke are green; E2E run 35038265835 failed in unrelated MVP sectional selector after inventory suite passed. Claiming exact waiting_ci state to diagnose/retry fail-closed without changing product bytes unless a reproducible Builder-actionable defect exists."
 }
