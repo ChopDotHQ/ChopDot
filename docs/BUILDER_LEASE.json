@@ -1,16 +1,16 @@
 {
   "version": 2,
   "role": "phase-c1-builder",
-  "status": "completed",
-  "holder": null,
+  "status": "claimed",
+  "holder": "phase-c1-builder-watcher",
   "branch": "phase-c1/guest-spend-contract-v1-candidate",
-  "fingerprint": "phase-c1|reviewer-revise|5695349015|981f5f8391fe739acd2332fe6379eb4129f823c0",
-  "claimed_from_head": "981f5f8391fe739acd2332fe6379eb4129f823c0",
-  "candidate_head": "bd9acebc56e88ef7d5a4a6b736f0c893d739d299",
-  "expires_at": null,
+  "fingerprint": "phase-c1|reviewer-revise|5696511130|b2328aacd08dd100f5b146609a2448b18a422fce",
+  "claimed_from_head": "b2328aacd08dd100f5b146609a2448b18a422fce",
+  "candidate_head": "b2328aacd08dd100f5b146609a2448b18a422fce",
+  "expires_at": "2026-09-16T11:28:45Z",
   "authority": {
-    "reviewer_receipt_comment": 5695349015,
-    "builder_handoff_comment": 5695862613,
-    "security_acceptance_crossref_comment": 5694995063
+    "reviewer_receipt_comment": 5696511130,
+    "builder_handoff_comment": null,
+    "security_acceptance_crossref_comment": 5696241318
   }
 }
