@@ -51,6 +51,19 @@ if (targetName === 'verify-restore-integrity.mjs' || targetName === 'verify-live
   transformed = transformed.replace(fixtureMarker, fixtureReplacement);
 }
 
+// The MoneyV1 exactness loop in the preserved restore-integrity regression uses an
+// inline proof object instead of the shared fixture helper above. Decorate that generated
+// proof with the same deterministic rail-neutral namespace so the old MoneyV1 test keeps
+// testing integer/partition/restore behavior rather than failing on the new proof shape.
+if (targetName === 'verify-restore-integrity.mjs') {
+  const moneyFixtureMarker = "      authoritative_parent_effect_ref: null\n    },\n    effectMoney: { minorUnits: units, currency: 'XTS', exponent },";
+  const moneyFixtureReplacement = "      authoritative_parent_effect_ref: null,\n      adapter_id: 'adapter_fixture',\n      rail_identity: 'fixture_rail'\n    },\n    effectMoney: { minorUnits: units, currency: 'XTS', exponent },";
+  if (!transformed.includes(moneyFixtureMarker)) {
+    throw new Error('verify-restore-integrity.mjs MoneyV1 verified-namespace fixture marker missing');
+  }
+  transformed = transformed.replace(moneyFixtureMarker, moneyFixtureReplacement);
+}
+
 try {
   fs.writeFileSync(generatedPath, transformed);
   await import(`${pathToFileURL(generatedPath).href}?run=${Date.now()}`);
