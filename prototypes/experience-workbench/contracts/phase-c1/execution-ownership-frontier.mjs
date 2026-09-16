@@ -8,18 +8,20 @@
 // Materialization-only status changes are normalized so the financial commit path can
 // advance independently without weakening replay protection.
 //
-// Namespace genesis is a separate durable authority. A missing ownership frontier is
-// never proof that a namespace is new: once genesis exists, loss/reset/unavailability of
-// the frontier fails closed rather than empty-bootstrapping replay authority. The same
-// authority also carries a create-once accepted persistence destination. That mapping is
-// scoped to the financial-authority namespace and prevents two independent persistence
-// namespaces from canonically applying the same accepted external effect.
+// Namespace genesis is a separate durable create-once authority. A missing ownership
+// frontier is never proof that a namespace is new: once genesis exists, loss/reset or
+// unavailability of the frontier fails closed rather than empty-bootstrapping replay
+// authority. Canonical persistence-destination acceptance is NOT trusted from genesis or
+// portable state. It is carried by a sequence+digest destination sub-head inside the same
+// independently resolved CAS frontier, so a stale null/P1/P2 record cannot roll FIN
+// destination authority backward or sideways after a winner has been accepted.
 
 import { createHash } from 'node:crypto';
 import { createInMemoryExecutionOwnershipAuthority } from './materialization-state.mjs';
 
 const FRONTIER_VERSION = 1;
 const GENESIS_VERSION = 1;
+const DESTINATION_HEAD_VERSION = 1;
 const present = value => value !== null && value !== undefined && (typeof value !== 'string' || value.trim().length > 0);
 const clone = value => structuredClone(value);
 const keyOf = value => JSON.stringify([
@@ -56,41 +58,83 @@ const replayRows = snapshot => ({
 export const executionOwnershipReplayDigest = snapshot =>
   createHash('sha256').update(JSON.stringify(replayRows(snapshot))).digest('hex');
 
+export const acceptedPersistenceDestinationDigest = ({
+  financial_authority_namespace,
+  sequence,
+  persistence_namespace
+}) => createHash('sha256').update(JSON.stringify({
+  version: DESTINATION_HEAD_VERSION,
+  financial_authority_namespace,
+  sequence,
+  persistence_namespace: persistence_namespace ?? null
+})).digest('hex');
+
+const destinationHeadFor = (financialAuthorityNamespace, sequence, persistenceNamespace = null) => ({
+  version: DESTINATION_HEAD_VERSION,
+  financial_authority_namespace: financialAuthorityNamespace,
+  sequence,
+  persistence_namespace: persistenceNamespace ?? null,
+  digest: acceptedPersistenceDestinationDigest({
+    financial_authority_namespace: financialAuthorityNamespace,
+    sequence,
+    persistence_namespace: persistenceNamespace ?? null
+  })
+});
+
+const validDestinationHead = (head, financialAuthorityNamespace) => head &&
+  head.version === DESTINATION_HEAD_VERSION &&
+  head.financial_authority_namespace === financialAuthorityNamespace &&
+  Number.isSafeInteger(head.sequence) && head.sequence >= 0 &&
+  (head.persistence_namespace === null || present(head.persistence_namespace)) &&
+  head.digest === acceptedPersistenceDestinationDigest({
+    financial_authority_namespace: financialAuthorityNamespace,
+    sequence: head.sequence,
+    persistence_namespace: head.persistence_namespace ?? null
+  });
+
+const sameDestinationHead = (left, right) =>
+  validDestinationHead(left, left?.financial_authority_namespace) &&
+  validDestinationHead(right, right?.financial_authority_namespace) &&
+  left.financial_authority_namespace === right.financial_authority_namespace &&
+  left.sequence === right.sequence &&
+  left.persistence_namespace === right.persistence_namespace &&
+  left.digest === right.digest;
+
 const sameHead = (left, right) =>
   left?.version === FRONTIER_VERSION && right?.version === FRONTIER_VERSION &&
   left?.financial_authority_namespace === right?.financial_authority_namespace &&
-  left?.sequence === right?.sequence && left?.digest === right?.digest;
+  left?.sequence === right?.sequence && left?.digest === right?.digest &&
+  sameDestinationHead(left?.accepted_destination_head, right?.accepted_destination_head);
 
-const headFor = (financialAuthorityNamespace, sequence, snapshot) => ({
+const headFor = (financialAuthorityNamespace, sequence, snapshot, acceptedDestinationHead = null) => ({
   version: FRONTIER_VERSION,
   financial_authority_namespace: financialAuthorityNamespace,
   sequence,
-  digest: executionOwnershipReplayDigest(snapshot)
+  digest: executionOwnershipReplayDigest(snapshot),
+  accepted_destination_head: acceptedDestinationHead
+    ? clone(acceptedDestinationHead)
+    : destinationHeadFor(financialAuthorityNamespace, 0, null)
 });
 
 const validGenesis = (record, financialAuthorityNamespace) => record &&
   record.version === GENESIS_VERSION &&
   record.financial_authority_namespace === financialAuthorityNamespace &&
-  present(record.genesis_replay_digest) &&
-  (!Object.hasOwn(record, 'accepted_persistence_namespace') || record.accepted_persistence_namespace === null || present(record.accepted_persistence_namespace));
+  present(record.genesis_replay_digest);
 
 const genesisFor = (financialAuthorityNamespace, snapshot) => ({
   version: GENESIS_VERSION,
   financial_authority_namespace: financialAuthorityNamespace,
-  genesis_replay_digest: executionOwnershipReplayDigest(snapshot),
-  accepted_persistence_namespace: null
+  genesis_replay_digest: executionOwnershipReplayDigest(snapshot)
 });
 
 // Acceptance-model seam for an independently durable, create-once namespace existence
 // record. Production adapters must provide equivalent replay-protected/append-only
-// semantics. Resetting the ownership frontier does not reset this authority. The accepted
-// persistence destination is also create-once: once a FIN namespace commits toward P1,
-// another state object using P2 cannot claim the same financial authority namespace.
+// semantics. Accepted persistence destination is intentionally NOT stored here: freshness
+// for that mutation is resolved by the independent frontier's destination sub-head.
 export const createInMemoryExecutionOwnershipNamespaceAuthority = ({ financialAuthorityNamespace, initialRecord = null } = {}) => {
   if (!present(financialAuthorityNamespace)) throw new Error('execution ownership namespace authority requires financial authority namespace');
   let current = initialRecord ? clone(initialRecord) : null;
   if (current && !validGenesis(current, financialAuthorityNamespace)) throw new Error('invalid execution ownership namespace genesis record');
-  if (current && !Object.hasOwn(current, 'accepted_persistence_namespace')) current.accepted_persistence_namespace = null;
 
   const read = () => current ? clone(current) : null;
   const claimGenesis = snapshot => {
@@ -98,22 +142,16 @@ export const createInMemoryExecutionOwnershipNamespaceAuthority = ({ financialAu
     current = genesisFor(financialAuthorityNamespace, snapshot);
     return read();
   };
-  const claimAcceptedPersistenceNamespace = persistenceNamespace => {
-    if (current === null || !present(persistenceNamespace)) return null;
-    const existing = current.accepted_persistence_namespace ?? null;
-    if (existing !== null) return existing === persistenceNamespace ? read() : null;
-    current = { ...current, accepted_persistence_namespace: persistenceNamespace };
-    return read();
-  };
 
-  return { read, claimGenesis, claimAcceptedPersistenceNamespace };
+  return { read, claimGenesis };
 };
 
 export const createInMemoryExecutionOwnershipFrontierAuthority = ({ financialAuthorityNamespace, initialHead = null } = {}) => {
   if (!present(financialAuthorityNamespace)) throw new Error('execution ownership frontier requires financial authority namespace');
   let current = initialHead ? clone(initialHead) : null;
   if (current && (current.version !== FRONTIER_VERSION || current.financial_authority_namespace !== financialAuthorityNamespace ||
-      !Number.isSafeInteger(current.sequence) || current.sequence < 0 || !present(current.digest))) {
+      !Number.isSafeInteger(current.sequence) || current.sequence < 0 || !present(current.digest) ||
+      !validDestinationHead(current.accepted_destination_head, financialAuthorityNamespace))) {
     throw new Error('invalid execution ownership frontier head');
   }
 
@@ -125,14 +163,36 @@ export const createInMemoryExecutionOwnershipFrontierAuthority = ({ financialAut
   };
   const commit = ({ expected_head, next_snapshot, commit: apply }) => {
     if (!sameHead(current, expected_head) || typeof apply !== 'function') return null;
-    const next = headFor(financialAuthorityNamespace, current.sequence + 1, next_snapshot);
+    const next = headFor(
+      financialAuthorityNamespace,
+      current.sequence + 1,
+      next_snapshot,
+      current.accepted_destination_head
+    );
     if (next.digest === current.digest) return null;
     if (apply() !== true) return null;
     current = next;
     return read();
   };
+  const claimAcceptedPersistenceNamespace = ({ expected_head, persistence_namespace, commit: apply }) => {
+    if (!sameHead(current, expected_head) || !present(persistence_namespace) || typeof apply !== 'function') return null;
+    const existing = current.accepted_destination_head.persistence_namespace;
+    if (existing !== null) return existing === persistence_namespace ? read() : null;
+    const nextDestination = destinationHeadFor(
+      financialAuthorityNamespace,
+      current.accepted_destination_head.sequence + 1,
+      persistence_namespace
+    );
+    if (apply() !== true) return null;
+    current = {
+      ...current,
+      sequence: current.sequence + 1,
+      accepted_destination_head: nextDestination
+    };
+    return read();
+  };
 
-  return { read, bootstrap, commit };
+  return { read, bootstrap, commit, claimAcceptedPersistenceNamespace };
 };
 
 const failureFor = method => method === 'reserveCorrelationForDispatch' ? null : false;
@@ -145,12 +205,11 @@ export const createFencedExecutionOwnershipAuthority = (persisted = null, {
 } = {}) => {
   if (!present(financialAuthorityNamespace)) throw new Error('fenced execution ownership requires financial authority namespace');
   if (!frontierAuthority || typeof frontierAuthority.read !== 'function' || typeof frontierAuthority.bootstrap !== 'function' ||
-      typeof frontierAuthority.commit !== 'function') {
+      typeof frontierAuthority.commit !== 'function' || typeof frontierAuthority.claimAcceptedPersistenceNamespace !== 'function') {
     throw new Error('independent execution ownership frontier authority required');
   }
-  if (!namespaceAuthority || typeof namespaceAuthority.read !== 'function' || typeof namespaceAuthority.claimGenesis !== 'function' ||
-      typeof namespaceAuthority.claimAcceptedPersistenceNamespace !== 'function') {
-    throw new Error('independent execution ownership namespace genesis/destination authority required');
+  if (!namespaceAuthority || typeof namespaceAuthority.read !== 'function' || typeof namespaceAuthority.claimGenesis !== 'function') {
+    throw new Error('independent execution ownership namespace genesis authority required');
   }
 
   const persistedHead = persisted?.execution_ownership_frontier_head ? clone(persisted.execution_ownership_frontier_head) : null;
@@ -170,7 +229,8 @@ export const createFencedExecutionOwnershipAuthority = (persisted = null, {
     if (genesis === null) throw new Error('missing execution ownership namespace genesis authority');
     if (!persistedHead || persistedHead.version !== FRONTIER_VERSION ||
         persistedHead.financial_authority_namespace !== financialAuthorityNamespace ||
-        persistedHead.digest !== rawDigest() || !sameHead(authoritative, persistedHead)) {
+        persistedHead.digest !== rawDigest() || !validDestinationHead(persistedHead.accepted_destination_head, financialAuthorityNamespace) ||
+        !sameHead(authoritative, persistedHead)) {
       throw new Error('stale or forked execution ownership frontier');
     }
     localHead = persistedHead;
@@ -184,8 +244,14 @@ export const createFencedExecutionOwnershipAuthority = (persisted = null, {
     if (!localHead) throw new Error('execution ownership frontier bootstrap race');
   } else {
     if (genesis === null) throw new Error('missing execution ownership namespace genesis authority');
-    const emptyHead = headFor(financialAuthorityNamespace, authoritative.sequence, raw.snapshot());
-    if (authoritative.financial_authority_namespace !== financialAuthorityNamespace || authoritative.digest !== emptyHead.digest) {
+    const emptyHead = headFor(
+      financialAuthorityNamespace,
+      authoritative.sequence,
+      raw.snapshot(),
+      authoritative.accepted_destination_head
+    );
+    if (authoritative.financial_authority_namespace !== financialAuthorityNamespace || authoritative.digest !== emptyHead.digest ||
+        !sameDestinationHead(authoritative.accepted_destination_head, emptyHead.accepted_destination_head)) {
       throw new Error('existing execution ownership frontier requires exact current snapshot');
     }
     localHead = authoritative;
@@ -196,7 +262,7 @@ export const createFencedExecutionOwnershipAuthority = (persisted = null, {
     (snapshot?.effect_owners ?? []).some(row => row?.materialization_status === 'materialized') ||
     (snapshot?.correlations ?? []).some(row => row?.status === 'materialized') ||
     acceptedNamespaces(snapshot).length > 0;
-  const authoritativeAcceptedDestination = () => namespaceAuthority.read()?.accepted_persistence_namespace ?? null;
+  const authoritativeAcceptedDestination = () => localHead?.accepted_destination_head?.persistence_namespace ?? null;
   const assertPersistedDestinationIntegrity = () => {
     const snapshot = raw.snapshot();
     const destinations = acceptedNamespaces(snapshot);
@@ -225,8 +291,14 @@ export const createFencedExecutionOwnershipAuthority = (persisted = null, {
     if (hasMaterializedOwnership(raw.snapshot())) {
       throw new Error('missing accepted persistence destination authority for materialized namespace');
     }
-    const claimed = namespaceAuthority.claimAcceptedPersistenceNamespace(persistenceNamespace);
-    return claimed?.accepted_persistence_namespace === persistenceNamespace;
+    const claimed = frontierAuthority.claimAcceptedPersistenceNamespace({
+      expected_head: localHead,
+      persistence_namespace: persistenceNamespace,
+      commit: () => true
+    });
+    if (!claimed || claimed.accepted_destination_head?.persistence_namespace !== persistenceNamespace) return false;
+    localHead = claimed;
+    return true;
   };
 
   const mutateReplayAuthority = (method, input) => {
