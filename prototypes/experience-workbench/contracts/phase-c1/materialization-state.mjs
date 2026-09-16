@@ -21,13 +21,16 @@ const present = value =>
   value !== undefined &&
   (typeof value !== 'string' || value.trim().length > 0);
 
-const sameHeadIdentity = (left, right) =>
+const sameCoreHeadIdentity = (left, right) =>
   left?.head_version === right?.head_version &&
   left?.domain === right?.domain &&
   left?.namespace === right?.namespace &&
   left?.snapshot_version === right?.snapshot_version &&
   left?.generation === right?.generation &&
-  left?.lineage_digest === right?.lineage_digest &&
+  left?.lineage_digest === right?.lineage_digest;
+
+const sameHeadIdentity = (left, right) =>
+  sameCoreHeadIdentity(left, right) &&
   left?.external_identity_version === right?.external_identity_version &&
   left?.external_identity_digest === right?.external_identity_digest;
 
@@ -40,7 +43,13 @@ const cloneAcceptedCore = ({
 }) => {
   const resolveCloneHead = () => authoritativeHead;
   const cloneFence = ({ expected_head, commit }) => {
-    if (!sameHeadIdentity(resolveCloneHead(), expected_head)) return false;
+    // The revision-8 external-effect layer validates the decorated authoritative
+    // head (including external_identity_digest) before it delegates restore into
+    // the revision-7 core. The inner core intentionally projects that head to its
+    // own canonical fields before invoking its restore fence. Compare that exact
+    // projection here; the outer live-materialization fence below still requires
+    // the full decorated revision-8 head identity before accepted state can move.
+    if (!sameCoreHeadIdentity(resolveCloneHead(), expected_head)) return false;
     return commit() === true;
   };
   const clone = createCoreMaterializationState({
