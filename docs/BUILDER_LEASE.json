@@ -5,11 +5,11 @@
   "journey": "Phase-C1",
   "holder": "primary-builder",
   "fingerprint": "73d7b4f8f5db54b5d7132220ceff2514c183e6d8|phase-c1|authorized-repair-cycle-5692378762|external-effect-ownership-revision9",
-  "candidate_head": "73d7b4f8f5db54b5d7132220ceff2514c183e6d8",
+  "candidate_head": "b61ee080df2a1f7473daffbd2056ab837776e2a9",
   "claimed_at": "2026-09-16T05:16:30Z",
-  "renewed_at": "2026-09-16T05:23:00Z",
+  "renewed_at": "2026-09-16T05:27:00Z",
   "completed_at": null,
-  "expires_at": "2026-09-16T05:35:00Z",
+  "expires_at": "2026-09-16T05:39:00Z",
   "waiting_reason": null,
-  "note": "Phase C1 Reviewer REVISE #38 comment 5692378762 authorizes the bounded external-effect first-claim ownership, authoritative namespace, pending/unknown durability, and full revision-8 restore-fence repair on candidate 73d7b4f8f5db54b5d7132220ceff2514c183e6d8."
+  "note": "Phase C1 Reviewer REVISE #38 comment 5692378762 repair in progress. Public materialization wrapper now enforces durable execution ownership correlation and full decorated restore fencing; candidate head advanced under this lease."
 }
