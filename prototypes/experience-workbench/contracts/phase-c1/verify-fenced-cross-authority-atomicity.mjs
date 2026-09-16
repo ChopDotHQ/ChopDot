@@ -107,7 +107,8 @@ const bundle = (tag, { exponent = 2, units = '1000', faultInjector = () => {} } 
   return { fin, persistence, namespaceAuthority, frontierAuthority, authority: acceptedAuthority, state: accepted, headRef, root };
 };
 
-eq(acceptance.security_revision, 11, 'security revision 11 namespace-genesis family is active');
+eq(acceptance.security_revision, 12, 'security revision 12 accepted-destination family is active');
+eq(acceptance.accepted_destination_revision, 2, 'accepted destination revision 2 monotonic frontier family is active');
 eq(acceptance.execution_ownership_frontier.bootstrap_requires_independent_namespace_genesis_authority, true, 'combined suite requires independent genesis authority');
 eq(acceptance.cross_authority_atomicity.fenced_ownership_and_canonical_materialization_combined_suite_required, true, 'combined fenced ownership/materialization suite is mandatory');
 eq(acceptance.recovery.missing_frontier_after_prior_namespace_use_freezes_dispatch_and_materialization, true, 'missing frontier after prior use freezes the combined authority');
