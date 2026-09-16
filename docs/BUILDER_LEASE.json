@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "role": "phase-c1-builder",
+  "status": "completed",
+  "journey": "Phase-C1",
+  "holder": null,
+  "branch": "phase-c1/guest-spend-contract-v1-candidate",
+  "fingerprint": "phase-c1|verified-complete|5699652005|7d4ddf29da8c150a5768d830d403a26245b8f835",
+  "candidate_head": "7d4ddf29da8c150a5768d830d403a26245b8f835",
+  "completed_at": "2026-09-16T15:02:11Z",
+  "expires_at": null,
+  "authority": {
+    "builder_handoff_comment": 5698129448,
+    "reviewer_receipt_comment": 5698468135,
+    "human_approval_comment": 5699165571,
+    "supervisor_closure_comment": 5699652005
+  },
+  "note": "Phase C1 selective contract package is human-approved, materialized, resulting-state verified, and closed. This lease reserves no writer capacity. Any production implementation or later semantic mutation requires a separate explicit authority transition and a fresh eligible lease cycle."
+}
