@@ -2,7 +2,7 @@
   "$id": "chopdot://contracts/spend-intent/SPEND-01/execution-ownership/acceptance-v1",
   "version": 1,
   "spend_intent_contract": "chopdot://contracts/spend-intent/SPEND-01/v1",
-  "security_revision": 9,
+  "security_revision": 10,
   "kind": "rail-neutral-shared-primitive-acceptance",
   "execution_mode_selected": false,
   "dispatch_reservation": {
@@ -10,6 +10,16 @@
     "fresh_dispatch_requires_newly_created_reservation": true,
     "existing_pending_unknown_or_effect_observed_reservation_may_dispatch_fresh_value": false,
     "boolean_idempotent_success_is_dispatch_authority": false
+  },
+  "execution_ownership_frontier": {
+    "required_for_production_adapter_acceptance": true,
+    "covers_pending_unknown_effect_observed_and_tombstones": true,
+    "financial_authority_namespace_bound": true,
+    "monotonic_cas_or_append_only_equivalent_required": true,
+    "restore_requires_exact_latest_frontier": true,
+    "dispatch_requires_exact_latest_frontier": true,
+    "concurrent_frontier_advance_fails_closed": true,
+    "materialized_financial_owner_digest_alone_is_sufficient": false
   },
   "cross_authority_atomicity": {
     "financial_and_execution_ownership_commit_is_atomic_or_crash_safe": true,
@@ -35,9 +45,11 @@
   "recovery": {
     "restore_reconciles_financial_and_execution_ownership": true,
     "execution_ownership_digest_binds_financial_effect_owner_set": true,
+    "ownership_frontier_binds_replay_dispatch_state_beyond_materialized_effects": true,
     "missing_or_forked_execution_ownership_fails_before_financial_commit": true,
     "stale_materialization_status_may_reconstruct_only_from_exact_immutable_accepted_lineage": true,
-    "unknown_or_existing_correlation_never_becomes_fresh_dispatch_authority": true
+    "unknown_or_existing_correlation_never_becomes_fresh_dispatch_authority": true,
+    "stale_pending_unknown_observed_or_tombstone_snapshot_fails_closed": true
   },
   "boundary": {
     "payment_intent_settlement_separate": true,
