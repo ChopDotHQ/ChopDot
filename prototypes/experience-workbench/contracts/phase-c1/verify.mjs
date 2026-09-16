@@ -26,6 +26,7 @@ eq(spend.materialization.adjustable_capture_state.refund_and_reversal_share_one_
 eq(spend.materialization.adjustable_capture_state.parent_remaining_decrements_atomically_after_proof_and_authoritative_effect_dedupe, true, 'parent decrement occurs only after proof and dedupe');
 eq(spend.recovery.parent_adjustment_remaining_must_be_preserved_or_authoritatively_reconstructed, true, 'recovery preserves parent remaining truth');
 eq(spend.recovery.restore_may_recreate_consumed_parent_value, false, 'restore cannot recreate consumed parent value');
+eq(spend.recovery.restore_commit_requires_authoritative_head_fence_or_transaction, true, 'restore commit is fenced to exact authoritative head');
 
 const present = value =>
   value !== null &&
@@ -40,6 +41,21 @@ const moneyFrom = obj => {
 };
 const samePartition = (a, b) => a.currency === b.currency && a.exponent === b.exponent;
 const parentRequired = kind => spend.proof.adjustment_parent_binding.required_for_kinds.includes(kind);
+const sameHead = (left, right) =>
+  left?.head_version === right?.head_version &&
+  left?.domain === right?.domain &&
+  left?.namespace === right?.namespace &&
+  left?.snapshot_version === right?.snapshot_version &&
+  left?.generation === right?.generation &&
+  left?.lineage_digest === right?.lineage_digest &&
+  (left?.prior_generation ?? null) === (right?.prior_generation ?? null) &&
+  (left?.prior_lineage_digest ?? null) === (right?.prior_lineage_digest ?? null) &&
+  (left?.owner_scoped_cas_token ?? null) === (right?.owner_scoped_cas_token ?? null);
+const fenceFor = resolveHead => ({ expected_head, commit }) => {
+  if (!sameHead(resolveHead(), expected_head)) return false;
+  if (!sameHead(resolveHead(), expected_head)) return false;
+  return commit() === true;
+};
 
 const baseExpected = {
   spend_intent_id:'sp_parent', operation_id:'op_parent', effect_id:'effect_base',
@@ -142,11 +158,13 @@ eq(materializer.getIntentMoney('sp_parent').minorUnits, 4400n, 'first refund upd
 const persistedAfterRefund = materializer.snapshot();
 const checkpointAfterRefund = materializer.checkpoint();
 authoritativeHead = materializer.headCandidate();
+const resolveRestartHead = () => authoritativeHead;
 const restarted = createCanonicalMaterializationState({
   persistenceNamespace: MATERIALIZATION_NAMESPACE,
-  resolveAuthoritativeHead: () => authoritativeHead
+  resolveAuthoritativeHead: resolveRestartHead,
+  commitUnderAuthoritativeHeadFence: fenceFor(resolveRestartHead)
 });
-eq(restarted.restore(persistedAfterRefund, checkpointAfterRefund), true, 'restart restores canonical materialization state against namespace-bound authoritative head');
+eq(restarted.restore(persistedAfterRefund, checkpointAfterRefund), true, 'restart restores canonical materialization state inside exact-head fence');
 materializer = restarted;
 eq(materializer.getEffect('sp_parent','op_parent','rail:cap:A').remaining_unadjusted_units, 400n, 'restart preserves consumed parent capacity');
 
@@ -213,11 +231,13 @@ eq(orderedState.materialize({
 const exhaustedSnapshot = materializer.snapshot();
 const exhaustedCheckpoint = materializer.checkpoint();
 authoritativeHead = materializer.headCandidate();
+const resolveExhaustedHead = () => authoritativeHead;
 const restoredExhausted = createCanonicalMaterializationState({
   persistenceNamespace: MATERIALIZATION_NAMESPACE,
-  resolveAuthoritativeHead: () => authoritativeHead
+  resolveAuthoritativeHead: resolveExhaustedHead,
+  commitUnderAuthoritativeHeadFence: fenceFor(resolveExhaustedHead)
 });
-eq(restoredExhausted.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'exhausted parent state restores against namespace-bound authoritative head');
+eq(restoredExhausted.restore(exhaustedSnapshot, exhaustedCheckpoint), true, 'exhausted parent state restores inside exact-head fence');
 eq(restoredExhausted.getEffect('sp_parent','op_parent','rail:cap:A').remaining_unadjusted_units, 0n, 'restore keeps exhausted parent at zero');
 materializer = restoredExhausted;
 eq(deriveEffect({ state:'reversed', proof:proofFor(freshAfterExhaustion), expected:freshAfterExhaustion }), false, 'restore cannot recreate consumed parent capacity');
