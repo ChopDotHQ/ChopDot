@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "primary-builder",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5689695425|candidate-645aa912|commit-fencing",
   "candidate_head": "74fe2c6c6bc9504da66c08016b8b08784def395e",
   "claimed_at": "2026-09-16T00:14:30Z",
   "renewed_at": "2026-09-16T00:14:30Z",
   "completed_at": null,
-  "expires_at": "2026-09-16T00:26:30Z",
-  "waiting_reason": null,
-  "note": "Gate C mechanical follow-up on exact 74fe2c6c6bc9504da66c08016b8b08784def395e: Phase C1/CI/Coverage/Smoke are green; E2E run 35038265835 failed in unrelated MVP sectional selector after inventory suite passed. Claiming exact waiting_ci state to diagnose/retry fail-closed without changing product bytes unless a reproducible Builder-actionable defect exists."
+  "expires_at": null,
+  "waiting_reason": "Exact 74fe2c6c6bc9504da66c08016b8b08784def395e has Phase C1/CI/Coverage/Smoke green. Initial E2E run 35038265835 failed only in an unrelated MVP sectional selector after the broader inventory suite passed. Failed Cypress job 104612157147 was re-run as an exact-head mechanical-flake check; wait for attempt 2 before any candidate mutation or sealed handoff.",
+  "note": "No product/candidate bytes changed in Gate C triage. If E2E attempt 2 succeeds, consume Gate D and seal the existing 74fe2c successor. If it reproduces the same failure, claim and repair only the mechanical test/harness defect without weakening coverage, preserving the bounded C1 product diff."
 }
