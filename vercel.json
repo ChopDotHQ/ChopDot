@@ -1,24 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "git": {
-    "deploymentEnabled": {
-      "ops/*": false,
-      "ux/*": false,
-      "phase-c1/*": false,
-      "integration/*": false,
-      "security/*": false,
-      "research/*": false
-    }
-  },
-  "installCommand": "npm ci --include=optional",
-  "buildCommand": "npm run build",
+  "installCommand": "echo 'ChopDot Gate A review: no dependency install required'",
+  "buildCommand": "rm -rf gate-a-dist && mkdir -p gate-a-dist/prototypes/integrated-product-preview-v2 gate-a-dist/prototypes/experience-workbench/journeys && cp -R prototypes/integrated-product-preview-v2/. gate-a-dist/prototypes/integrated-product-preview-v2/ && cp -R prototypes/experience-workbench/journeys/01-enter-chopdot gate-a-dist/prototypes/experience-workbench/journeys/ && cp -R prototypes/experience-workbench/journeys/02-home-orientation gate-a-dist/prototypes/experience-workbench/journeys/",
+  "outputDirectory": "gate-a-dist",
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https: wss: wss://rpc.polkadot.io wss://polkadot-asset-hub-rpc.polkadot.io wss://relay.walletconnect.com wss://relay.walletconnect.org; frame-ancestors 'none'; frame-src https://verify.walletconnect.org https://verify.walletconnect.com; child-src 'none'; base-uri 'self'; form-action 'self'"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'none'; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
         },
         {
           "key": "X-Content-Type-Options",
@@ -26,27 +17,27 @@
         },
         {
           "key": "X-Frame-Options",
-          "value": "DENY"
+          "value": "SAMEORIGIN"
         },
         {
           "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
+          "value": "no-referrer"
         },
         {
           "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), geolocation=(), payment=(self)"
+          "value": "camera=(), microphone=(), geolocation=(), payment=()"
         },
         {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=63072000; includeSubDomains; preload"
+          "key": "X-Robots-Tag",
+          "value": "noindex"
         }
       ]
     }
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/",
+      "destination": "/prototypes/integrated-product-preview-v2/index.html"
     }
   ]
 }
