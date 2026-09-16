@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "completed",
   "journey": "Phase-C1",
-  "holder": "fast-builder-A",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5689695425|candidate-645aa912|commit-fencing",
   "candidate_head": "74fe2c6c6bc9504da66c08016b8b08784def395e",
   "claimed_at": "2026-09-16T00:55:30Z",
-  "renewed_at": "2026-09-16T00:55:30Z",
-  "completed_at": null,
-  "expires_at": "2026-09-16T01:07:30Z",
+  "renewed_at": "2026-09-16T01:01:00Z",
+  "completed_at": "2026-09-16T01:01:00Z",
+  "expires_at": null,
   "waiting_reason": null,
-  "note": "Gate C green-wait handoff completion claimed after exact-head revalidation. Candidate/product bytes remain unchanged; this lease covers only the sealed review handoff and completion write."
+  "note": "Gate C consumed successfully. Sealed Phase C1 Builder REVIEW REQUEST posted at #38 comment 5690424450 for exact unchanged candidate 74fe2c6c6bc9504da66c08016b8b08784def395e after Phase C1/CI/Coverage/Smoke/E2E all completed green. Independent Reviewer owns the next disposition."
 }
