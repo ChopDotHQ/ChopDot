@@ -1,7 +1,7 @@
 {
   "version": 2,
   "role": "phase-c1-builder",
-  "status": "waiting_ci",
+  "status": "completed",
   "holder": null,
   "branch": "phase-c1/guest-spend-contract-v1-candidate",
   "fingerprint": "phase-c1|reviewer-revise|5697172684|si13a-monotonic-destination|7d4ddf29da8c150a5768d830d403a26245b8f835",
@@ -10,7 +10,8 @@
   "expires_at": null,
   "authority": {
     "reviewer_receipt_comment": 5697172684,
-    "builder_handoff_comment": 5697076809,
-    "security_acceptance_crossref_comment": 5696963144
+    "builder_handoff_comment": 5698129448,
+    "security_acceptance_crossref_comment": 5696963144,
+    "security_advisory_comment": 5697659319
   }
 }
