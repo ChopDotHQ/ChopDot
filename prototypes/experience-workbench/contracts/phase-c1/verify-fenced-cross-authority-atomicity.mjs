@@ -216,6 +216,7 @@ eq(acceptance.recovery.missing_frontier_after_prior_namespace_use_freezes_dispat
   const sample = bundle('parent', { units: '1000' });
   const refund = effect({ tag: 'parent:refund', kind: 'refund', units: '400', parent: sample.root.authoritative_effect_ref });
   refund.spend_intent_id = sample.root.spend_intent_id;
+  refund.operation_id = sample.root.operation_id;
   register(sample.fin, sample.authority, refund);
   eq(apply(sample.state, refund, 2, '1000'), true, 'parent-bound refund materializes once');
   const acceptedFinancial = sample.state.snapshot();
