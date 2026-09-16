@@ -138,15 +138,24 @@ eq(spend.recovery.restore_commit_fence_binds_external_identity_digest, true, 're
   eq(apply(restarted, rootA, 'rb:unknown:A'), true, 'A reconciles exact preserved operation once after restart');
 }
 
-// Shared financial authority closes namespace sharding and exact-once across state objects.
+// Shared financial authority closes namespace sharding only after canonical acceptance.
+// Pre-authority candidate materialization remains quarantined and must not globally burn
+// the shared external effect; the restore/fence step atomically accepts the financial
+// lineage and execution-ownership scope before another persistence shard is rejected.
 {
   const authority = createInMemoryExecutionOwnershipAuthority();
   const rootA = expected({ ref:'effect:shared-authority', request:'req:shared:A' });
   registerAuthoritative({ authority, readback:'rb:shared:A', effect:rootA });
-  const left = stateFor({ authority, persistence:'phase-c1:shard:left', financialNamespace:FIN });
+  const candidate = stateFor({ authority, persistence:'phase-c1:shard:left', financialNamespace:FIN });
+  eq(apply(candidate, rootA, 'rb:shared:A'), true, 'first shard may prepare quarantined local financial state');
+  const snapshot = candidate.snapshot();
+  const checkpoint = candidate.checkpoint();
+  const headRef = { current:candidate.headCandidate() };
+  const fence = ({ expected_head, commit }) => sameHead(headRef.current, expected_head) && commit() === true;
+  const acceptedLeft = stateFor({ authority, persistence:'phase-c1:shard:left', financialNamespace:FIN, headRef, fence });
+  eq(acceptedLeft.restore(snapshot, checkpoint), true, 'first shard becomes canonical only through the exact accepted-head fence');
   const right = stateFor({ authority, persistence:'phase-c1:shard:right', financialNamespace:FIN });
-  eq(apply(left, rootA, 'rb:shared:A'), true, 'first state object materializes exact owner');
-  eq(apply(right, rootA, 'rb:shared:A'), false, 'second persistence shard cannot independently materialize same external effect');
+  eq(apply(right, rootA, 'rb:shared:A'), false, 'second persistence shard cannot materialize an already accepted external effect');
   eq(right.getIntentMoney('sp_a'), null, 'rejected shard remains financially untouched');
 }
 
