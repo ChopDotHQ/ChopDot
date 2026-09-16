@@ -138,16 +138,46 @@ Integration adds shared fixture state for participant, session, groups, members,
 
 The same underlying object identity must survive transitions. Navigation cannot manufacture a state change.
 
-### 3. Human-first gate
+### 3. Screenshot + transition audit
 
-Automation is necessary but not sufficient.
+Every stage must capture its meaningful user-visible states and review them as a contact sheet before acceptance.
+
+Review twice:
+- screen-by-screen for hierarchy, copy, icons, density, target sizes and accidental reviewer/prototype UI;
+- sequence-as-product for persona, object, value, terminology, visual-system and authority continuity.
+
+The screenshot exercise is evidence, not product authority. The exact repeatable process lives in `docs/ux-quality/PROCESS.md`.
+
+### 4. UX Laws V1 review
+
+After Golden fidelity and continuity are coherent enough to judge, but before human acceptance, every stage applies the seven-law review in `docs/ux-quality/UX_LAWS_V1.md`:
+- Hick’s Law;
+- Peak-End Rule;
+- Zeigarnik Effect;
+- Tesler’s Law;
+- Jakob’s Law;
+- Miller’s Law / chunking;
+- Fitts’s Law.
+
+Use `docs/ux-quality/JOURNEY_UX_REVIEW_TEMPLATE.md` and record concrete evidence/findings rather than an overall numeric UX score.
+
+BLOCKER and MAJOR UX findings must be resolved or explicitly human-deferred with rationale before acceptance.
+
+A UX-law recommendation may not silently override a Golden, product contract, financial/security invariant, identity boundary or recovery truth. Record any conflict and stop for the smallest explicit product decision.
+
+### 5. Human-first gate
+
+Automation and heuristic review are necessary but not sufficient.
 
 A stage cannot be called accepted until:
 1. automated structural/browser checks pass;
 2. side-by-side Golden comparison passes for the integrated journeys;
-3. Devinson has a usable preview URL for that stage and can judge the real experience.
+3. screenshot/contact-sheet + transition audit is complete;
+4. applicable UX Laws V1 checks are complete and material findings resolved/deferred;
+5. refreshed evidence exists after material fixes;
+6. Devinson has a usable preview URL for that stage and judges the real experience.
 
-### 4. No scope widening
+### 6. No scope widening
 
 V2 remains a deterministic non-production prototype. It does not authorize real authentication provider integration, funds, signing, provider/rail selection, Product Integrator, protected merge, production deployment, secrets, or app-store publication.
 
@@ -161,7 +191,20 @@ V2 must test more than routes:
 - test sign-out → entry;
 - test Add Expense through visible UI from Home/Group Home;
 - test recovery from the owning journey and return to that journey;
-- keep state/identity continuity checks from V1.
+- keep state/identity continuity checks from V1;
+- generate screenshot/contact-sheet evidence for every bounded stage;
+- keep UX-law findings tied to exact screens/transitions and source SHA.
+
+## Process learning loop
+
+After Gates A and B, review the review process itself before expanding the checklist:
+- which laws repeatedly find useful defects;
+- which checks create noise;
+- what human review catches that the framework misses;
+- whether the process materially slows implementation;
+- whether a second layer such as Nielsen’s usability heuristics, accessibility criteria or host-platform guidance would earn its cost.
+
+Do not add more framework simply to make the checklist longer.
 
 ## Stop rule
 
