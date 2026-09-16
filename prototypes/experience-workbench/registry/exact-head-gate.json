@@ -43,5 +43,24 @@
   "all_prior_golden_artifacts_preserved": true,
   "typography_note": "TYPO-01 deferred",
   "gate_requirement": "Satisfied: exact source ec67add06888ab99212f3a4a533951195259030b preserved all 28 Golden checksums and passed Prototype workbench 34931601970, CI 34931601940, Coverage 34931601934, Smoke 34931601933 and E2E Cypress 34931601957; Journey 28 remains bound to approved HTML SHA-256 7ef254016da0755860fd0ede62840e7668d40406fdac850aad8c5e0ac4d12dfc.",
-  "prototype_only": true
+  "prototype_only": true,
+  "phase_c1_selective_contract": {
+    "human_approval": true,
+    "human_approval_comment_id": "5699165571",
+    "human_approval_record": "https://github.com/ChopDotHQ/ChopDot/issues/38#issuecomment-5699165571",
+    "approved_by": "Devinson",
+    "approval_request_comment_id": "5698628742",
+    "record": "registry/phase-c1-contract-lock.json",
+    "materialization_status": "approved-materialized-verification-pending",
+    "exact_green_witness": "424653e3a760b3ffb6399d69843e4289042916fe",
+    "causal_semantic_generation": "7d4ddf29da8c150a5768d830d403a26245b8f835",
+    "reviewer_receipt_comment_id": "5698468135",
+    "reviewer_classification": "GOLDEN-READY / CONTRACT-READY",
+    "changes_approved_golden_html": false,
+    "changes_golden_count": false,
+    "is_a_journey": false,
+    "journey_29_created": false,
+    "execution_mode_selected": false,
+    "product_integrator_enabled": false
+  }
 }

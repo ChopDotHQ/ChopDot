@@ -1,4 +1,15 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "deploymentEnabled": {
+      "ops/*": false,
+      "ux/*": false,
+      "phase-c1/*": false,
+      "integration/*": false,
+      "security/*": false,
+      "research/*": false
+    }
+  },
   "installCommand": "npm ci --include=optional",
   "buildCommand": "npm run build",
   "headers": [
@@ -33,6 +44,9 @@
     }
   ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }

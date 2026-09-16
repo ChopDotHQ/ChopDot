@@ -1,0 +1,80 @@
+{
+  "$id": "chopdot://contracts/spend-intent/SPEND-01/execution-ownership/acceptance-v1",
+  "version": 1,
+  "spend_intent_contract": "chopdot://contracts/spend-intent/SPEND-01/v1",
+  "security_revision": 12,
+  "accepted_destination_revision": 2,
+  "kind": "rail-neutral-shared-primitive-acceptance",
+  "execution_mode_selected": false,
+  "dispatch_reservation": {
+    "production_api_result_is_structured": true,
+    "fresh_dispatch_requires_newly_created_reservation": true,
+    "existing_pending_unknown_or_effect_observed_reservation_may_dispatch_fresh_value": false,
+    "boolean_idempotent_success_is_dispatch_authority": false
+  },
+  "execution_ownership_frontier": {
+    "required_for_production_adapter_acceptance": true,
+    "covers_pending_unknown_effect_observed_and_tombstones": true,
+    "financial_authority_namespace_bound": true,
+    "monotonic_cas_or_append_only_equivalent_required": true,
+    "restore_requires_exact_latest_frontier": true,
+    "dispatch_requires_exact_latest_frontier": true,
+    "concurrent_frontier_advance_fails_closed": true,
+    "materialized_financial_owner_digest_alone_is_sufficient": false,
+    "bootstrap_requires_independent_namespace_genesis_authority": true,
+    "namespace_genesis_is_create_once_and_replay_protected": true,
+    "null_frontier_is_not_genesis_proof": true,
+    "existing_namespace_missing_frontier_fails_closed": true,
+    "missing_namespace_genesis_authority_fails_closed": true,
+    "accepted_effect_destination_is_shared_financial_namespace_authority": true,
+    "one_to_one_financial_to_persistence_namespace_binding": true,
+    "accepted_destination_binding_is_create_once": true,
+    "accepted_destination_binding_is_monotonic_frontier_head": true,
+    "accepted_destination_head_has_sequence_and_digest": true,
+    "stale_destination_head_fails_closed": true,
+    "competing_persistence_namespace_fails_before_financial_commit": true
+  },
+  "cross_authority_atomicity": {
+    "financial_and_execution_ownership_commit_is_atomic_or_crash_safe": true,
+    "fault_points": [
+      "before_financial_publication",
+      "after_financial_publication",
+      "before_ownership_finalization",
+      "after_ownership_finalization"
+    ],
+    "one_side_committed_other_side_observed_is_accepted": false,
+    "fenced_ownership_and_canonical_materialization_combined_suite_required": true,
+    "accepted_destination_fence_is_shared_by_live_and_restore": true,
+    "accepted_destination_cas_loss_fails_closed_before_financial_commit": true
+  },
+  "pre_authority_quarantine": {
+    "materialization_is_quarantined": true,
+    "may_prepare_local_candidate_financial_state": true,
+    "may_finalize_shared_ownership": false,
+    "canonical_acceptance_must_reconcile_both_authorities_in_one_fence": true
+  },
+  "no_effect_release": {
+    "authoritative_no_effect_required": true,
+    "released_request_ref_is_tombstoned_non_reusable": true,
+    "stale_no_effect_proof_can_release_later_reused_request": false
+  },
+  "recovery": {
+    "restore_reconciles_financial_and_execution_ownership": true,
+    "execution_ownership_digest_binds_financial_effect_owner_set": true,
+    "ownership_frontier_binds_replay_dispatch_state_beyond_materialized_effects": true,
+    "missing_or_forked_execution_ownership_fails_before_financial_commit": true,
+    "stale_materialization_status_may_reconstruct_only_from_exact_immutable_accepted_lineage": true,
+    "unknown_or_existing_correlation_never_becomes_fresh_dispatch_authority": true,
+    "stale_pending_unknown_observed_or_tombstone_snapshot_fails_closed": true,
+    "missing_frontier_after_prior_namespace_use_freezes_dispatch_and_materialization": true,
+    "accepted_destination_binding_survives_restart_and_rollback": true,
+    "missing_destination_binding_after_materialized_use_fails_closed": true,
+    "stale_null_or_competing_destination_backup_cannot_rebind_authority": true
+  },
+  "boundary": {
+    "payment_intent_settlement_separate": true,
+    "concrete_rail_selected": false,
+    "merchant_card_capability_claimed": false,
+    "polkadot_cash_production_ready_claimed": false
+  }
+}
