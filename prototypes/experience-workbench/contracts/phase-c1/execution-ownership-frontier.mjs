@@ -10,7 +10,10 @@
 //
 // Namespace genesis is a separate durable authority. A missing ownership frontier is
 // never proof that a namespace is new: once genesis exists, loss/reset/unavailability of
-// the frontier fails closed rather than empty-bootstrapping replay authority.
+// the frontier fails closed rather than empty-bootstrapping replay authority. The same
+// authority also carries a create-once accepted persistence destination. That mapping is
+// scoped to the financial-authority namespace and prevents two independent persistence
+// namespaces from canonically applying the same accepted external effect.
 
 import { createHash } from 'node:crypto';
 import { createInMemoryExecutionOwnershipAuthority } from './materialization-state.mjs';
@@ -68,21 +71,26 @@ const headFor = (financialAuthorityNamespace, sequence, snapshot) => ({
 const validGenesis = (record, financialAuthorityNamespace) => record &&
   record.version === GENESIS_VERSION &&
   record.financial_authority_namespace === financialAuthorityNamespace &&
-  present(record.genesis_replay_digest);
+  present(record.genesis_replay_digest) &&
+  (!Object.hasOwn(record, 'accepted_persistence_namespace') || record.accepted_persistence_namespace === null || present(record.accepted_persistence_namespace));
 
 const genesisFor = (financialAuthorityNamespace, snapshot) => ({
   version: GENESIS_VERSION,
   financial_authority_namespace: financialAuthorityNamespace,
-  genesis_replay_digest: executionOwnershipReplayDigest(snapshot)
+  genesis_replay_digest: executionOwnershipReplayDigest(snapshot),
+  accepted_persistence_namespace: null
 });
 
 // Acceptance-model seam for an independently durable, create-once namespace existence
 // record. Production adapters must provide equivalent replay-protected/append-only
-// semantics. Resetting the ownership frontier does not reset this authority.
+// semantics. Resetting the ownership frontier does not reset this authority. The accepted
+// persistence destination is also create-once: once a FIN namespace commits toward P1,
+// another state object using P2 cannot claim the same financial authority namespace.
 export const createInMemoryExecutionOwnershipNamespaceAuthority = ({ financialAuthorityNamespace, initialRecord = null } = {}) => {
   if (!present(financialAuthorityNamespace)) throw new Error('execution ownership namespace authority requires financial authority namespace');
   let current = initialRecord ? clone(initialRecord) : null;
   if (current && !validGenesis(current, financialAuthorityNamespace)) throw new Error('invalid execution ownership namespace genesis record');
+  if (current && !Object.hasOwn(current, 'accepted_persistence_namespace')) current.accepted_persistence_namespace = null;
 
   const read = () => current ? clone(current) : null;
   const claimGenesis = snapshot => {
@@ -90,8 +98,15 @@ export const createInMemoryExecutionOwnershipNamespaceAuthority = ({ financialAu
     current = genesisFor(financialAuthorityNamespace, snapshot);
     return read();
   };
+  const claimAcceptedPersistenceNamespace = persistenceNamespace => {
+    if (current === null || !present(persistenceNamespace)) return null;
+    const existing = current.accepted_persistence_namespace ?? null;
+    if (existing !== null) return existing === persistenceNamespace ? read() : null;
+    current = { ...current, accepted_persistence_namespace: persistenceNamespace };
+    return read();
+  };
 
-  return { read, claimGenesis };
+  return { read, claimGenesis, claimAcceptedPersistenceNamespace };
 };
 
 export const createInMemoryExecutionOwnershipFrontierAuthority = ({ financialAuthorityNamespace, initialHead = null } = {}) => {
@@ -133,8 +148,9 @@ export const createFencedExecutionOwnershipAuthority = (persisted = null, {
       typeof frontierAuthority.commit !== 'function') {
     throw new Error('independent execution ownership frontier authority required');
   }
-  if (!namespaceAuthority || typeof namespaceAuthority.read !== 'function' || typeof namespaceAuthority.claimGenesis !== 'function') {
-    throw new Error('independent execution ownership namespace genesis authority required');
+  if (!namespaceAuthority || typeof namespaceAuthority.read !== 'function' || typeof namespaceAuthority.claimGenesis !== 'function' ||
+      typeof namespaceAuthority.claimAcceptedPersistenceNamespace !== 'function') {
+    throw new Error('independent execution ownership namespace genesis/destination authority required');
   }
 
   const persistedHead = persisted?.execution_ownership_frontier_head ? clone(persisted.execution_ownership_frontier_head) : null;
@@ -175,10 +191,43 @@ export const createFencedExecutionOwnershipAuthority = (persisted = null, {
     localHead = authoritative;
   }
 
+  const acceptedNamespaces = snapshot => [...new Set((snapshot?.accepted_scopes ?? []).map(row => row?.persistence_namespace).filter(present))];
+  const hasMaterializedOwnership = snapshot =>
+    (snapshot?.effect_owners ?? []).some(row => row?.materialization_status === 'materialized') ||
+    (snapshot?.correlations ?? []).some(row => row?.status === 'materialized') ||
+    acceptedNamespaces(snapshot).length > 0;
+  const authoritativeAcceptedDestination = () => namespaceAuthority.read()?.accepted_persistence_namespace ?? null;
+  const assertPersistedDestinationIntegrity = () => {
+    const snapshot = raw.snapshot();
+    const destinations = acceptedNamespaces(snapshot);
+    if (destinations.length > 1) throw new Error('accepted execution ownership spans multiple persistence namespaces');
+    const authoritativeDestination = authoritativeAcceptedDestination();
+    if (authoritativeDestination === null && hasMaterializedOwnership(snapshot)) {
+      throw new Error('missing accepted persistence destination authority for materialized namespace');
+    }
+    if (authoritativeDestination !== null && destinations.some(value => value !== authoritativeDestination)) {
+      throw new Error('accepted persistence destination conflicts with durable execution ownership');
+    }
+  };
+  assertPersistedDestinationIntegrity();
+
   const assertAuthoritativeFrontier = () => sameHead(frontierAuthority.read(), localHead) && rawDigest() === localHead.digest;
   const frontierHead = () => clone(localHead);
-  const namespaceGenesisRecord = () => clone(genesis);
+  const namespaceGenesisRecord = () => clone(namespaceAuthority.read());
   const snapshot = () => ({ ...raw.snapshot(), execution_ownership_frontier_head: frontierHead() });
+
+  const claimAcceptedDestination = persistenceNamespace => {
+    if (!present(persistenceNamespace)) return false;
+    if (!assertAuthoritativeFrontier()) return false;
+    assertPersistedDestinationIntegrity();
+    const existing = authoritativeAcceptedDestination();
+    if (existing !== null) return existing === persistenceNamespace;
+    if (hasMaterializedOwnership(raw.snapshot())) {
+      throw new Error('missing accepted persistence destination authority for materialized namespace');
+    }
+    const claimed = namespaceAuthority.claimAcceptedPersistenceNamespace(persistenceNamespace);
+    return claimed?.accepted_persistence_namespace === persistenceNamespace;
+  };
 
   const mutateReplayAuthority = (method, input) => {
     if (!assertAuthoritativeFrontier()) return failureFor(method);
@@ -211,6 +260,15 @@ export const createFencedExecutionOwnershipAuthority = (persisted = null, {
     return raw[method](...args);
   };
 
+  const prepareMaterializationCommit = (input, commitFinancial) => {
+    if (!assertAuthoritativeFrontier() || !claimAcceptedDestination(input?.persistence_namespace)) return null;
+    return raw.prepareMaterializationCommit(input, commitFinancial);
+  };
+  const prepareAcceptedLineageCommit = (plan, commitFinancial) => {
+    if (!assertAuthoritativeFrontier() || !claimAcceptedDestination(plan?.persistence_namespace)) return null;
+    return raw.prepareAcceptedLineageCommit(plan, commitFinancial);
+  };
+
   return {
     reserveCorrelation,
     reserveCorrelationForDispatch,
@@ -219,13 +277,14 @@ export const createFencedExecutionOwnershipAuthority = (persisted = null, {
     releaseCorrelationAfterNoEffect,
     beginMaterialization: input => assertAuthoritativeFrontier() ? raw.beginMaterialization(input) : null,
     abortMaterialization: claim => raw.abortMaterialization(claim),
-    prepareMaterializationCommit: (input, commitFinancial) => assertAuthoritativeFrontier() ? raw.prepareMaterializationCommit(input, commitFinancial) : null,
-    prepareAcceptedLineageCommit: (plan, commitFinancial) => assertAuthoritativeFrontier() ? raw.prepareAcceptedLineageCommit(plan, commitFinancial) : null,
+    prepareMaterializationCommit,
+    prepareAcceptedLineageCommit,
     planAcceptedLineage: input => requireFresh('planAcceptedLineage', input),
     digestForFinancialEffects: (...args) => requireFresh('digestForFinancialEffects', ...args),
     assertAuthoritativeFrontier,
     frontierHead,
     namespaceGenesisRecord,
+    acceptedPersistenceNamespace: authoritativeAcceptedDestination,
     snapshot
   };
 };
