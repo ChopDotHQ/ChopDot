@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "phase-c1-backup-builder",
-  "fingerprint": "e2d140086f62cdb5007310952f0618906bcfd61e|phase-c1|mechanical-failure-run-35055568284|live-fence-fixture",
-  "candidate_head": "e2d140086f62cdb5007310952f0618906bcfd61e",
+  "holder": null,
+  "fingerprint": "47f82774c248a1dbaedface7946bba40c65beffa|phase-c1|authorized-repair-cycle-5691650630|external-effect-identity-revision8",
+  "candidate_head": "47f82774c248a1dbaedface7946bba40c65beffa",
   "claimed_at": "2026-09-16T04:28:41Z",
   "renewed_at": "2026-09-16T04:28:41Z",
   "completed_at": null,
-  "expires_at": "2026-09-16T04:40:41Z",
-  "waiting_reason": null,
-  "note": "Gate B continuation in the same authorized Reviewer REVISE cycle: exact Phase C1 run 35055568284 failed mechanically in the preserved live-materialization authority regression after the revision-8 external-effect identity wrapper was introduced. Preserve the live-fence assertion; adapt only the old fixture/bridge needed to exercise it under revision 8."
+  "expires_at": null,
+  "waiting_reason": "Exact-head Phase C1/CI/Coverage/Smoke/E2E must complete after preserving the public live-authority fence regression under the revision-8 fixture bridge.",
+  "note": "Authorized Reviewer REVISE #38 5691650630 remains governing. Causal product repair remains 34f1076b34b1043b33c88cd24f638458bc93d78d in the authoritative external-effect identity layer; 857cb52fb859ff75db9acb12fd8a783609761e34, e2d140086f62cdb5007310952f0618906bcfd61e, and 47f82774c248a1dbaedface7946bba40c65beffa are bounded regression/workflow compatibility repairs. The live-fence assertion is preserved and now runs through the public materialization-state wrapper rather than bypassing it."
 }
