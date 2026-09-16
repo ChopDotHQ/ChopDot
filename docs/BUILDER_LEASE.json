@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "primary-builder",
+  "holder": null,
   "fingerprint": "bfc171fbfe1407d9dda2ad1d90174a13e2431442|phase-c1|review-revise-5690474117|candidate-74fe2c6|live-materialization-fence",
-  "candidate_head": "74fe2c6c6bc9504da66c08016b8b08784def395e",
+  "candidate_head": "a099369d9ba3b452e0ff135e9ffa842990c55e13",
   "claimed_at": "2026-09-16T01:16:04Z",
-  "renewed_at": "2026-09-16T01:16:04Z",
+  "renewed_at": "2026-09-16T01:22:10Z",
   "completed_at": null,
-  "expires_at": "2026-09-16T01:28:04Z",
-  "waiting_reason": null,
-  "note": "Gate B claimed from exact Reviewer REVISE #38 comment 5690474117. Bounded repair: fence every namespace-bound authoritative live materialization against the exact independently resolved head, with zero local mutation on stale head/CAS/fence/storage failure; preserve rail-neutral scope and all Golden bytes."
+  "expires_at": null,
+  "waiting_reason": "exact Phase C1/CI/Coverage/Smoke/E2E checks pending for live-materialization fence successor",
+  "note": "Gate B consumed from Reviewer REVISE #38 comment 5690474117 / Supervisor handback 5690561848. Exact successor a099369d9ba3b452e0ff135e9ffa842990c55e13 fences post-restore live authoritative materialization against the independently resolved head, adds zero-mutation stale/CAS/fence/storage/duplicate/out-of-order acceptance tests, and preserves the previously reviewed materialization core plus all Golden bytes. No sealed review handoff until exact required checks are green."
 }
