@@ -35,6 +35,8 @@ jobs:
         run: node prototypes/experience-workbench/contracts/phase-c1/run-core-regression.mjs verify-live-materialization-authority.mjs
       - name: Verify authoritative external-effect identity family
         run: node prototypes/experience-workbench/contracts/phase-c1/verify-external-effect-identity.mjs
+      - name: Verify fresh-unknown dispatch authority fails closed
+        run: node prototypes/experience-workbench/contracts/phase-c1/verify-dispatch-authority.mjs
       - name: Verify cross-authority atomicity and recovery family
         run: node prototypes/experience-workbench/contracts/phase-c1/verify-cross-authority-atomicity.mjs
       - name: Verify SpendIntent cumulative operation conservation
@@ -86,6 +88,7 @@ jobs:
             prototypes/experience-workbench/contracts/phase-c1/verify-restore-authority-contract.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-live-materialization-authority.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-external-effect-identity.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-dispatch-authority.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-cross-authority-atomicity.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-operation-conservation.mjs \
             vercel.json \

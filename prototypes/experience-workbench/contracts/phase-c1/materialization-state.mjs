@@ -136,6 +136,7 @@ export const createInMemoryExecutionOwnershipAuthority = (persisted = null, { fa
         execution_request_ref: existing.execution_request_ref
       };
     }
+    if (value.status !== 'pending') return null;
     correlations.set(key, value);
     return {
       accepted: true,
