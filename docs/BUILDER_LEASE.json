@@ -1,15 +1,15 @@
 {
   "version": 2,
   "role": "builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Phase-C1",
-  "holder": "phase-c1-backup-builder",
-  "fingerprint": "857cb52fb859ff75db9acb12fd8a783609761e34|phase-c1|mechanical-failure-run-35055107499|revision8-money-fixture",
-  "candidate_head": "857cb52fb859ff75db9acb12fd8a783609761e34",
+  "holder": null,
+  "fingerprint": "e2d140086f62cdb5007310952f0618906bcfd61e|phase-c1|authorized-repair-cycle-5691650630|external-effect-identity-revision8",
+  "candidate_head": "e2d140086f62cdb5007310952f0618906bcfd61e",
   "claimed_at": "2026-09-16T04:17:58Z",
   "renewed_at": "2026-09-16T04:25:29Z",
   "completed_at": null,
-  "expires_at": "2026-09-16T04:37:29Z",
-  "waiting_reason": null,
-  "note": "Gate B continuation in the same authorized Reviewer REVISE cycle: exact Phase C1 run 35055107499 failed mechanically because the preserved MoneyV1 restore fixture predates required revision-8 adapter_id/rail_identity proof namespace fields. Repair remains fixture/workflow-only; product semantics remain bounded to the already-authorized authoritative external-effect identity repair."
+  "expires_at": null,
+  "waiting_reason": "Exact-head Phase C1/CI/Coverage/Smoke/E2E must complete after mechanical core-regression fixture repair before a sealed Builder handoff may be published.",
+  "note": "Authorized Reviewer REVISE #38 5691650630 remains the governing repair authority. Causal product repair is the external-effect identity implementation introduced at 34f1076b34b1043b33c88cd24f638458bc93d78d; successor 857cb52fb859ff75db9acb12fd8a783609761e34 and e2d140086f62cdb5007310952f0618906bcfd61e only adapt preserved regression fixtures/workflow plumbing to revision 8. No Golden/product semantics widened."
 }
