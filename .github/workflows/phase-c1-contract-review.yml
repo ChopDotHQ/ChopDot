@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - 'phase-c1/**'
+      # Post-approval: the selective C1 contracts live in canonical, so the suite
+      # must keep gating there. Without this the package lands unguarded.
+      - 'ux/**'
+      # DRY-RUN ONLY: exercises the suite on the isolated rehearsal branch.
+      - 'claude/**'
   workflow_dispatch:
 
 permissions:
