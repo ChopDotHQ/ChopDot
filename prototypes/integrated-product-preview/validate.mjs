@@ -5,10 +5,10 @@ import { dirname, resolve } from 'node:path';
 import { JOURNEYS, JOURNEY_BY_ID, JOURNEY_BY_SLUG } from './journeys.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const required = ['index.html','styles.css','journeys.js','state.js','platform.js','app.js'];
+const required = ['index.html','styles.css','journeys.js','state.js','platform.js','app.js','browser-qa.mjs'];
 for (const file of required) readFileSync(resolve(here, file), 'utf8');
 
-for (const file of ['journeys.js','state.js','platform.js','app.js','validate.mjs']) {
+for (const file of ['journeys.js','state.js','platform.js','app.js','browser-qa.mjs','validate.mjs']) {
   execFileSync(process.execPath, ['--check', resolve(here, file)], { stdio: 'inherit' });
 }
 
