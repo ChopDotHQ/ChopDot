@@ -1,8 +1,8 @@
 (function(){
 'use strict';
-const M=EntryModel;let s=M.initial(),emailProviderEvidence=null;const host=document.getElementById('entry-screen');
+const M=EntryModel;let s=M.initial(),emailProviderEvidence=null,walletProviderEvidence=null;const host=document.getElementById('entry-screen');
 const P={back:'<path d="m15 18-6-6 6-6"/>',chevron:'<path d="m9 18 6-6-6-6"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/>',people:'<circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2M17 4a4 4 0 0 1 0 8M22 21v-2a4 4 0 0 0-3-3.9"/>',check:'<path d="m5 12 4 4L19 6"/>',receipt:'<path d="M5 3h14v18l-3-2-4 2-4-2-3 2V3Z"/><path d="M9 7h6M9 11h6M9 15h3"/>',wallet:'<path d="M20 8V5a2 2 0 0 0-2-2H5a3 3 0 0 0 0 6h15v11H5a3 3 0 0 1-3-3V6"/><path d="M20 12h-5v5h5"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',lock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',x:'<path d="m6 6 12 12M6 18 18 6"/>',alert:'<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 17h.01"/>',refresh:'<path d="M20 7v5h-5M4 17v-5h5"/><path d="M5 8a8 8 0 0 1 13-3l2 2M4 17l2 2a8 8 0 0 0 13-3"/>',wifi:'<path d="m2 2 20 20M2 8a16 16 0 0 1 4-3M9 4a16 16 0 0 1 13 4M5 12a11 11 0 0 1 4-2M13 10a11 11 0 0 1 6 2M8 16a6 6 0 0 1 8 0M12 20h.01"/>'};
-const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
 const icon=n=>`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
 const btn=(t,e,style='primary',extra='')=>`<button type="button" class="${style}" data-action="${e}" ${extra}>${t}</button>`;
 const head=(title,back='welcome',brand=false)=>brand?`<header class="root-header"><div class="brand"><span class="mark"></span>ChopDot</div><button class="entry-demobadge" data-action="HELP">Demo</button></header>`:`<header class="detail-header"><button class="icon-btn" aria-label="Back" data-action="GO" data-route="${back}">${icon('back')}</button><div class="header-title"><b>${title}</b><span>${s.destination==='invite'?'Geneva Weekend':'ChopDot'}</span></div><button class="entry-demobadge" data-action="HELP">Demo</button></header>`;
@@ -38,13 +38,16 @@ function render(){
 }
 function go(event,payload={},replace=false){
  const before=s.route;
- if(['START_OVER','INVITE','EMAIL','WALLET','BACK_TO_EMAIL','REAUTH'].includes(event))emailProviderEvidence=null;
+ if(['START_OVER','INVITE','EMAIL','WALLET','BACK_TO_EMAIL','REAUTH'].includes(event)){emailProviderEvidence=null;walletProviderEvidence=null;}
+ if(event==='CANCEL_APPROVAL')walletProviderEvidence=null;
  s=M.apply(s,event,payload);
  if((event==='SEND_CODE'||event==='RESEND')&&s.route==='code')emailProviderEvidence=M.emailProviderEvidence(s);
+ if(event==='REQUEST_APPROVAL'&&s.route==='approval-waiting')walletProviderEvidence=M.walletProviderEvidence(s);
  if(event==='VERIFY_CODE'&&s.route!=='code')emailProviderEvidence=null;
+ if(event==='APPROVAL_RESULT'&&!['approval-waiting','approval-unknown'].includes(s.route))walletProviderEvidence=null;
  const fragment='#'+s.route+(s.destination==='invite'?'/invite':'');if(replace)history.replaceState(null,'',fragment);else if(before!==s.route||location.hash!==fragment)history.pushState(null,'',fragment);render();
 }
-function fixture(name){s=M.initial();emailProviderEvidence=null;
+function fixture(name){s=M.initial();emailProviderEvidence=null;walletProviderEvidence=null;
  if(name==='invite')s=M.apply(s,'INVITE');
  if(name==='returning'){s.email='dev@example.com';s.route='email';}
  if(name==='reauth')s=M.apply(s,'REAUTH',{destination:'invite'});
@@ -57,7 +60,7 @@ function fixture(name){s=M.initial();emailProviderEvidence=null;
  document.addEventListener('submit',e=>{e.preventDefault();if(e.target.id==='email-form'){s=M.apply(s,'SET_EMAIL',{value:document.getElementById('email').value});go('SEND_CODE');}if(e.target.id==='code-form')go('VERIFY_CODE',M.emailVerificationResult(emailProviderEvidence,document.getElementById('code').value));if(e.target.id==='profile-form')go('PROFILE',{name:document.getElementById('name').value});});
  document.addEventListener('click',e=>{
  const f=e.target.closest('[data-fixture]');if(f){fixture(f.dataset.fixture);return;}
- const d=e.target.closest('[data-demo-result]');if(d){go('APPROVAL_RESULT',{request:s.request,result:d.dataset.demoResult});return;}
+ const d=e.target.closest('[data-demo-result]');if(d){go('APPROVAL_RESULT',M.walletApprovalResult(walletProviderEvidence,d.dataset.demoResult));return;}
  const net=e.target.closest('[data-online]');if(net){s.online=net.dataset.online==='true';s.notice=s.online?'Demo connection restored.':'Demo connection is offline.';render();return;}
  const t=e.target.closest('[data-action]');if(!t)return;const a=t.dataset.action;
  if(a==='HELP'){document.getElementById('demo-help')?.toggleAttribute('hidden');return;}
@@ -68,6 +71,6 @@ function fixture(name){s=M.initial();emailProviderEvidence=null;
  window.addEventListener('popstate',()=>{s=M.apply(s,'NAVIGATE',{route:location.hash.slice(1).split('/')[0]||'welcome'});render();});
  document.addEventListener('input',e=>{if(e.target.id==='email')s=M.apply(s,'SET_EMAIL',{value:e.target.value});});
  const clone=value=>value==null?null:JSON.parse(JSON.stringify(value));
- window.EntryDemo={get:()=>clone(s),dispatch:go,fixture,emailProviderEvidence:()=>clone(emailProviderEvidence),deliverEmailProviderEvidence:value=>{emailProviderEvidence=clone(value);},emailResult:code=>M.emailVerificationResult(emailProviderEvidence,code)};
+ window.EntryDemo={get:()=>clone(s),dispatch:go,fixture,emailProviderEvidence:()=>clone(emailProviderEvidence),deliverEmailProviderEvidence:value=>{emailProviderEvidence=clone(value);},emailResult:code=>M.emailVerificationResult(emailProviderEvidence,code),walletProviderEvidence:()=>clone(walletProviderEvidence),deliverWalletProviderEvidence:value=>{walletProviderEvidence=clone(value);},walletResult:result=>M.walletApprovalResult(walletProviderEvidence,result)};
  const parts=location.hash.slice(1).split('/');let requested=parts[0];if(parts[1]==='invite')s.destination='invite';if(['code','profile','ready','home-reference','invite-reference'].includes(requested))requested='email';if(requested==='invite')fixture('invite');else if(requested==='session-expired')fixture('reauth');else if(requested==='offline')fixture('offline');else go('NAVIGATE',{route:requested||'welcome'},true);
 })();
