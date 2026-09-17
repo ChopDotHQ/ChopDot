@@ -54,6 +54,8 @@ jobs:
         run: node prototypes/experience-workbench/contracts/phase-c1/run-operation-conservation-regression.mjs
       - name: Browser and layout QA at canonical mobile viewports
         run: node prototypes/experience-workbench/contracts/phase-c1/qa.mjs
+      - name: Verify selective J01 subject-bound identity family
+        run: node prototypes/experience-workbench/contracts/phase-c1/verify-j01-subject-binding-browser.mjs
       - name: Preserve existing workbench Golden invariants
         run: npm --prefix prototypes/experience-workbench run gate
       - name: Prove approved Golden bytes are untouched
@@ -84,6 +86,11 @@ jobs:
         shell: bash
         run: |
           sha256sum \
+            prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html \
+            prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs \
+            prototypes/experience-workbench/journeys/01-enter-chopdot/source/ui.js \
+            prototypes/experience-workbench/journeys/01-enter-chopdot/source/test-subject-binding.cjs \
+            prototypes/experience-workbench/journeys/01-enter-chopdot/source/decision-history.md \
             prototypes/experience-workbench/journeys/01-enter-chopdot/phase-c1-guest-v1-candidate.html \
             prototypes/experience-workbench/journeys/04-invite-join/phase-c1-guest-v1-candidate.html \
             prototypes/experience-workbench/contracts/phase-c1/member-identity.contract.json \
@@ -106,6 +113,7 @@ jobs:
             prototypes/experience-workbench/contracts/phase-c1/verify-fenced-cross-authority-atomicity.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-accepted-destination-fence.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-accepted-destination-family.mjs \
+            prototypes/experience-workbench/contracts/phase-c1/verify-j01-subject-binding-browser.mjs \
             prototypes/experience-workbench/contracts/phase-c1/verify-operation-conservation.mjs \
             vercel.json \
             | tee prototypes/experience-workbench/contracts/phase-c1/artifacts/checksums.sha256
