@@ -15,7 +15,18 @@
       <span>Entry + Home · Golden-faithful integration</span>
     </div>
     <section class="device" aria-label="ChopDot preview">
-      <iframe id="product-frame" title="ChopDot" allow="clipboard-write"></iframe>
+      <section id="front-door" class="front-door" aria-label="Enter ChopDot">
+        <div class="front-brand">
+          <div class="front-wordmark" aria-label="ChopDot"><span class="front-mark" aria-hidden="true"></span><span>ChopDot</span></div>
+          <p class="front-tagline">Share &amp; chop.</p>
+        </div>
+        <div class="front-actions">
+          <button id="guest-entry" class="front-button front-primary" type="button">Try as guest</button>
+          <button id="create-account" class="front-button front-secondary" type="button">Create account</button>
+          <p class="front-signin">Already have an account? <button id="sign-in" class="front-link" type="button">Sign in</button></p>
+        </div>
+      </section>
+      <iframe id="product-frame" title="ChopDot" allow="clipboard-write" hidden></iframe>
     </section>
   </main>
   <script type="module" src="./app.js"></script>
