@@ -1,19 +1,20 @@
 {
   "version": 2,
   "role": "phase-c1-builder",
-  "status": "waiting_ci",
-  "holder": null,
+  "status": "claimed",
+  "holder": "chopdot-contract-repair-backup",
   "branch": "phase-c1/j01-subject-binding-v1-candidate",
   "fingerprint": "phase-c1|post-c1-review-repair|5706680718|j01-verified-subject-binding|9128bb55d8aed29b5c31fb6d769af39f2651cb76",
   "claimed_from_head": "9128bb55d8aed29b5c31fb6d769af39f2651cb76",
   "candidate_head": "3eba915cf9f50e99b0d4f22033d44240e87ff5d7",
-  "expires_at": null,
+  "expires_at": "2026-09-17T01:29:00Z",
   "authority": {
     "reviewer_receipt_comment": 5706680718,
     "supervisor_handback_comment": 5706715269,
     "security_finding_comment": 5706466823,
     "security_crossref_comment": 5706467912,
-    "mechanical_failure_run": 35169433655,
+    "security_followup_comment": 5706910997,
+    "mechanical_failure_runs": [35169433655, 35169673196],
     "live_predecessor_sha256": "383170c06d4e6bc4d6b658664fff6ae0f2eb003cf202ca5e8f8617fb06ae8f46"
   }
 }
