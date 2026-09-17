@@ -100,6 +100,8 @@ function applyGuestProductMode(doc) {
   if (badge) badge.textContent = 'Private invite';
   const handoffProof = doc.getElementById('handoff-proof');
   if (handoffProof) handoffProof.textContent = 'Nothing is joined yet. Your place is created only after you explicitly choose to join.';
+  const handoffDone = doc.getElementById('handoff-done');
+  if (handoffDone) handoffDone.textContent = 'Continue';
 }
 
 function stopMonitor() {
