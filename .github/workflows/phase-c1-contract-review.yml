@@ -88,7 +88,9 @@ jobs:
           sha256sum \
             prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html \
             prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs \
+            prototypes/experience-workbench/journeys/01-enter-chopdot/source/ui.js \
             prototypes/experience-workbench/journeys/01-enter-chopdot/source/test-subject-binding.cjs \
+            prototypes/experience-workbench/journeys/01-enter-chopdot/source/decision-history.md \
             prototypes/experience-workbench/journeys/01-enter-chopdot/phase-c1-guest-v1-candidate.html \
             prototypes/experience-workbench/journeys/04-invite-join/phase-c1-guest-v1-candidate.html \
             prototypes/experience-workbench/contracts/phase-c1/member-identity.contract.json \
