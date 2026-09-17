@@ -13,6 +13,7 @@ function freshVerificationEpoch(){
 }
 const requestIdentity=(epoch,counter)=>`${epoch}:${counter}`;
 const emailProviderResultsByRequest=new Map();
+const walletProviderResultsByRequest=new Map();
 function rotateRequest(n){n.requestCounter=(Number.isSafeInteger(n.requestCounter)?n.requestCounter:0)+1;n.request=requestIdentity(n.verificationEpoch,n.requestCounter);}
 function clearPending(n){n.pendingSubject=null;n.pendingMethod=null;n.pendingRequest=null;n.pendingChallenge=0;n.pendingDestination=null;n.pendingEpoch=null;}
 function clearVerified(n){n.verified=false;n.verifiedSubject=null;n.verifiedMethod=null;n.verifiedRequest=null;n.verifiedChallenge=0;n.verifiedDestination=null;n.verifiedEpoch=null;}
@@ -35,6 +36,21 @@ function emailVerificationResult(evidence,code){
  const result={code:String(code??'')};
  if(!evidence||typeof evidence!=='object'||typeof evidence.providerRequestId!=='string'||typeof evidence.request!=='string'||!Number.isSafeInteger(evidence.challenge)||typeof evidence.subject!=='string'||typeof evidence.destination!=='string'||typeof evidence.epoch!=='string')return result;
  return {...result,providerRequestId:evidence.providerRequestId,request:evidence.request,challenge:evidence.challenge,subject:evidence.subject,destination:evidence.destination,epoch:evidence.epoch};
+}
+function issueWalletProviderEvidence(n){
+ if(!n||n.route!=='approval-waiting'||n.method!=='wallet'||!n.pendingRequest||!n.pendingSubject||!n.pendingDestination||!n.pendingEpoch||n.pendingChallenge!==0)return null;
+ const evidence={providerRequestId:freshVerificationEpoch(),request:n.pendingRequest,challenge:0,subject:n.pendingSubject,destination:n.pendingDestination,epoch:n.pendingEpoch};
+ walletProviderResultsByRequest.set(n.pendingRequest,evidence);
+ return evidence;
+}
+function walletProviderEvidence(n){
+ const evidence=n&&walletProviderResultsByRequest.get(n.pendingRequest);
+ return evidence?{...evidence}:null;
+}
+function walletApprovalResult(evidence,result){
+ const output={result:String(result??'')};
+ if(!evidence||typeof evidence!=='object'||typeof evidence.providerRequestId!=='string'||typeof evidence.request!=='string'||evidence.challenge!==0||typeof evidence.subject!=='string'||typeof evidence.destination!=='string'||typeof evidence.epoch!=='string')return output;
+ return {...output,providerRequestId:evidence.providerRequestId,request:evidence.request,challenge:0,subject:evidence.subject,destination:evidence.destination,epoch:evidence.epoch};
 }
 function initial(){const verificationEpoch=freshVerificationEpoch();return {route:'welcome',destination:'home',email:'',name:'',method:null,account:null,verified:false,isNew:true,challenge:0,expired:false,online:true,approval:'none',requestCounter:0,request:requestIdentity(verificationEpoch,0),verificationEpoch,expectedIdentity:null,error:'',notice:'',events:[],joined:false,pendingSubject:null,pendingMethod:null,pendingRequest:null,pendingChallenge:0,pendingDestination:null,pendingEpoch:null,verifiedSubject:null,verifiedMethod:null,verifiedRequest:null,verifiedChallenge:0,verifiedDestination:null,verifiedEpoch:null};}
 function apply(s,event,payload={}){
@@ -89,10 +105,15 @@ function apply(s,event,payload={}){
  case 'REQUEST_APPROVAL':{
   n.method='wallet';n.account=payload.account||'Everyday';
   if(!n.online){n.route='offline';break;}
-  rotateRequest(n);n.approval='waiting';clearVerified(n);n.pendingSubject=walletSubject(n.account);n.pendingMethod='wallet';n.pendingRequest=n.request;n.pendingChallenge=0;n.pendingDestination=n.destination;n.pendingEpoch=n.verificationEpoch;n.route='approval-waiting';emit('SignInApprovalRequested','person',n.pendingSubject);break;}
+  rotateRequest(n);n.approval='waiting';clearVerified(n);n.pendingSubject=walletSubject(n.account);n.pendingMethod='wallet';n.pendingRequest=n.request;n.pendingChallenge=0;n.pendingDestination=n.destination;n.pendingEpoch=n.verificationEpoch;n.route='approval-waiting';issueWalletProviderEvidence(n);emit('SignInApprovalRequested','person',n.pendingSubject);break;}
  case 'APPROVAL_RESULT':{
-  const subject=walletSubject(n.account);const eventSubject=payload.subject??n.pendingSubject,eventDestination=payload.destination??n.pendingDestination,eventEpoch=payload.epoch??n.pendingEpoch;
-  const correlated=n.pendingEpoch===n.verificationEpoch&&eventEpoch===n.pendingEpoch&&payload.request===n.pendingRequest&&eventSubject===n.pendingSubject&&eventDestination===n.pendingDestination&&n.request===n.pendingRequest&&n.pendingMethod==='wallet'&&n.pendingSubject===subject&&n.pendingDestination===n.destination&&n.method==='wallet'&&['waiting','unknown'].includes(n.approval);
+  const subject=walletSubject(n.account);
+  const evidenceComplete=typeof payload.providerRequestId==='string'&&typeof payload.request==='string'&&payload.challenge===0&&typeof payload.subject==='string'&&typeof payload.destination==='string'&&typeof payload.epoch==='string';
+  if(!evidenceComplete)break;
+  const eventRequest=payload.request,eventSubject=payload.subject,eventDestination=payload.destination,eventEpoch=payload.epoch;
+  const issued=walletProviderResultsByRequest.get(eventRequest);
+  const providerBound=!!issued&&issued.providerRequestId===payload.providerRequestId&&issued.request===eventRequest&&issued.challenge===0&&issued.subject===eventSubject&&issued.destination===eventDestination&&issued.epoch===eventEpoch;
+  const correlated=providerBound&&n.pendingEpoch===n.verificationEpoch&&eventEpoch===n.pendingEpoch&&eventRequest===n.pendingRequest&&payload.challenge===n.pendingChallenge&&eventSubject===n.pendingSubject&&eventDestination===n.pendingDestination&&n.request===n.pendingRequest&&n.pendingMethod==='wallet'&&n.pendingSubject===subject&&n.pendingDestination===n.destination&&n.method==='wallet'&&['waiting','unknown'].includes(n.approval);
   if(!correlated)break;
   if(payload.result==='approved'){
    if(n.expectedIdentity&&String(n.expectedIdentity).trim().toLowerCase()!==subject){invalidateAuthority(n);n.route='wrong-account';break;}
@@ -110,5 +131,5 @@ function apply(s,event,payload={}){
  }
  return n;
 }
-const api={STATES,initial,apply,normalizeEmail,currentSubject,verificationCurrent,emailProviderEvidence,emailVerificationResult};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.EntryModel=api;
+const api={STATES,initial,apply,normalizeEmail,currentSubject,verificationCurrent,emailProviderEvidence,emailVerificationResult,walletProviderEvidence,walletApprovalResult};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.EntryModel=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
