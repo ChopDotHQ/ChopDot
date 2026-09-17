@@ -20,6 +20,11 @@ function verificationCurrent(n){
  const subject=currentSubject(n);
  return !!(n.verified&&subject&&n.verifiedEpoch===n.verificationEpoch&&n.verifiedSubject===subject&&n.verifiedMethod===n.method&&n.verifiedRequest===n.request&&n.verifiedDestination===n.destination&&(n.method!=='email'||n.verifiedChallenge===n.challenge));
 }
+function emailVerificationResult(n,code){
+ const result={code:String(code??'')};
+ if(!n||n.route!=='code'||n.method!=='email'||!n.pendingRequest||!n.pendingSubject||!n.pendingDestination||!n.pendingEpoch||!Number.isSafeInteger(n.pendingChallenge)||n.pendingChallenge<1)return result;
+ return {...result,request:n.pendingRequest,challenge:n.pendingChallenge,subject:n.pendingSubject,destination:n.pendingDestination,epoch:n.pendingEpoch};
+}
 function initial(){const verificationEpoch=freshVerificationEpoch();return {route:'welcome',destination:'home',email:'',name:'',method:null,account:null,verified:false,isNew:true,challenge:0,expired:false,online:true,approval:'none',requestCounter:0,request:requestIdentity(verificationEpoch,0),verificationEpoch,expectedIdentity:null,error:'',notice:'',events:[],joined:false,pendingSubject:null,pendingMethod:null,pendingRequest:null,pendingChallenge:0,pendingDestination:null,pendingEpoch:null,verifiedSubject:null,verifiedMethod:null,verifiedRequest:null,verifiedChallenge:0,verifiedDestination:null,verifiedEpoch:null};}
 function apply(s,event,payload={}){
  const n=JSON.parse(JSON.stringify(s)); n.error='';n.notice='';
@@ -47,7 +52,9 @@ function apply(s,event,payload={}){
  case 'VERIFY_CODE':{
   if(n.route!=='code'||n.method!=='email'||n.challenge<1)break;
   const subject=emailSubject(n.email);
-  const eventRequest=payload.request??n.pendingRequest,eventChallenge=payload.challenge??n.pendingChallenge,eventSubject=payload.subject??n.pendingSubject,eventDestination=payload.destination??n.pendingDestination,eventEpoch=payload.epoch??n.pendingEpoch;
+  const evidenceComplete=typeof payload.request==='string'&&Number.isSafeInteger(payload.challenge)&&typeof payload.subject==='string'&&typeof payload.destination==='string'&&typeof payload.epoch==='string';
+  if(!evidenceComplete){invalidateAuthority(n,{rotate:true});n.route='email';n.error='Request a fresh code for this email.';break;}
+  const eventRequest=payload.request,eventChallenge=payload.challenge,eventSubject=payload.subject,eventDestination=payload.destination,eventEpoch=payload.epoch;
   const correlated=n.pendingEpoch===n.verificationEpoch&&eventEpoch===n.pendingEpoch&&n.pendingMethod==='email'&&n.pendingSubject===subject&&n.pendingRequest===n.request&&n.pendingChallenge===n.challenge&&n.pendingDestination===n.destination&&eventRequest===n.pendingRequest&&eventChallenge===n.pendingChallenge&&eventSubject===n.pendingSubject&&eventDestination===n.pendingDestination;
   if(!correlated){invalidateAuthority(n,{rotate:true});n.route='email';n.error='Request a fresh code for this email.';break;}
   emit('SignInCodeVerificationRequested','person',n.pendingSubject);
@@ -90,5 +97,5 @@ function apply(s,event,payload={}){
  }
  return n;
 }
-const api={STATES,initial,apply,normalizeEmail,currentSubject,verificationCurrent};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.EntryModel=api;
+const api={STATES,initial,apply,normalizeEmail,currentSubject,verificationCurrent,emailVerificationResult};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.EntryModel=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
