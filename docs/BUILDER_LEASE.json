@@ -1,14 +1,14 @@
 {
   "version": 2,
   "role": "phase-c1-builder",
-  "status": "waiting_ci",
+  "status": "completed",
   "holder": null,
   "branch": "phase-c1/j01-subject-binding-v1-candidate",
   "fingerprint": "phase-c1|j01-email-provider-result-binding|5708896186|5707441287|5708182785|9128bb55d8aed29b5c31fb6d769af39f2651cb76",
   "claimed_from_head": "1a821ecd5356b3c18a2c12cbc97b745b9870a4d8",
   "candidate_head": "777d76d5b3f356ea85d9c1af24e3417b97022aa6",
   "expires_at": null,
-  "handoff_comment": null,
+  "handoff_comment": 5709655452,
   "authority": {
     "reviewer_receipt_comment": 5708896186,
     "predecessor_builder_handoff_comment": 5708416535,
