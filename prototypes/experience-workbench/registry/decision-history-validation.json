@@ -2,7 +2,7 @@
   "ok": true,
   "scope": "documentation structure and artifact preservation",
   "covered_journeys": 28,
-  "decision_entries": 90,
+  "decision_entries": 91,
   "all_golden_locks_pass": true,
   "coverage": [
     {
@@ -10,11 +10,11 @@
       "version": "v1",
       "approval": "design-approved",
       "status": "golden",
-      "decisions": 1,
+      "decisions": 2,
       "source_path": "journeys/01-enter-chopdot/source/decision-history.md",
-      "source_sha256": "6a0241d947f170cd528dc7ff66a671b8a0a5ed018e6f015239f5b691caebfd89",
+      "source_sha256": "049f8cfe2d53aa6491774bbda6d7360b2fa9520d1a18facd991060458a1e2bb5",
       "spec_path": "journeys/01-enter-chopdot/spec.md",
-      "spec_sha256": "c142612c9f9357294c5aaf40796a8351399215fa8610a6a71d60e7dbc3698bbd"
+      "spec_sha256": "ed79aa774a17d4d8322d1881163097f598fc08291604cdb2ef0b5f4933aaea17"
     },
     {
       "journey": "02",
