@@ -76,7 +76,6 @@ function apply(s,event,payload={}){
   if(String(payload.code)!=='123456'){n.error='That code does not match. Try again.';break;}
   if(n.expectedIdentity&&normalizeEmail(n.email)!==normalizeEmail(n.expectedIdentity)){invalidateAuthority(n);n.route='wrong-account';break;}
   n.verified=true;n.verifiedSubject=n.pendingSubject;n.verifiedMethod='email';n.verifiedRequest=n.pendingRequest;n.verifiedChallenge=n.pendingChallenge;n.verifiedDestination=n.pendingDestination;n.verifiedEpoch=n.pendingEpoch;
-  emailProviderResultsByRequest.delete(eventRequest);
   n.isNew=normalizeEmail(n.email)!=='dev@example.com';n.name=n.isNew?'':'Dev';n.route=n.isNew?'profile':'ready';emit('SessionVerified','demo-provider',n.verifiedSubject);break;}
  case 'RESEND':
   if(n.route!=='code'||n.method!=='email')break;
