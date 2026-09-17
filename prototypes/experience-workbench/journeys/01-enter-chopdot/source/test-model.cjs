@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict');const M=require('./model.cjs');let n=0;
 function eq(a,b){assert.deepEqual(a,b);n++;}
-const emailResult=(state,code='123456')=>M.emailVerificationResult(state,code);
+const emailResult=(state,code='123456')=>M.emailVerificationResult(M.emailProviderEvidence(state),code);
 let s=M.initial();eq(s.verified,false);eq(M.apply(s,'NAVIGATE',{route:'ready'}).route,'welcome');eq(M.apply(s,'VERIFY_CODE',{code:'123456'}).verified,false);
 s=M.apply(s,'INVITE');s=M.apply(s,'EMAIL');s=M.apply(s,'SET_EMAIL',{value:'bad'});s=M.apply(s,'SEND_CODE');eq(s.route,'email');eq(s.error,'Enter a valid email address.');
 s=M.apply(s,'SET_EMAIL',{value:'sam@example.com'});s=M.apply(s,'SEND_CODE');eq(s.route,'code');eq(s.destination,'invite');
@@ -15,5 +15,5 @@ s=M.apply(s,'REFRESH_APPROVAL');eq(s.route,'approval-unknown');eq(s.verified,fal
 s=M.apply(s,'REQUEST_APPROVAL',{account:'Everyday'});s=M.apply(s,'APPROVAL_RESULT',{request:s.request,result:'approved'});eq(s.route,'ready');eq(s.destination,'invite');eq(s.verified,true);
 s=M.apply(s,'EMAIL');eq(s.verified,false);
 s=M.apply(M.initial(),'INVITE');s.online=false;s.email='sam@example.com';s=M.apply(s,'SEND_CODE');eq(s.route,'offline');eq(s.destination,'invite');s=M.apply(s,'RETRY_CONNECTION');eq(s.route,'offline');s.online=true;s=M.apply(s,'RETRY_CONNECTION');eq(s.route,'email');eq(s.destination,'invite');
-let bare=M.initial();bare=M.apply(bare,'EMAIL');bare=M.apply(bare,'SET_EMAIL',{value:'dev@example.com'});bare=M.apply(bare,'SEND_CODE');bare=M.apply(bare,'VERIFY_CODE',{code:'123456'});eq(bare.verified,false);eq(bare.route,'email');eq(bare.error,'Request a fresh code for this email.');
+let bare=M.initial();bare=M.apply(bare,'EMAIL');bare=M.apply(bare,'SET_EMAIL',{value:'dev@example.com'});bare=M.apply(bare,'SEND_CODE');const currentStateCannotBecomeEvidence=M.emailVerificationResult(bare,'123456');eq(Object.hasOwn(currentStateCannotBecomeEvidence,'request'),false);bare=M.apply(bare,'VERIFY_CODE',currentStateCannotBecomeEvidence);eq(bare.verified,false);eq(bare.route,'email');eq(bare.error,'Request a fresh code for this email.');
 eq(s.events.some(x=>/Payment|Joined/.test(x.type)),false);console.log(JSON.stringify({ok:true,checks:n}));
