@@ -34,19 +34,26 @@
     "classification": "decision-history and generated governance validation only; no product/runtime/Golden byte change after the approved materialization"
   },
   "resulting_state_verification": {
-    "status": "pending",
-    "verified_source_head": null,
-    "verified_source_tree": null,
-    "verified_on": null,
-    "workflow_runs": {},
-    "workflow_conclusion": null,
-    "phase_c1_evidence_artifact": null,
-    "phase_c1_evidence_artifact_sha256": null,
+    "status": "verified",
+    "verified_source_head": "e0fe61ea95952e836ea521527c9f43ef9b04fafb",
+    "verified_source_tree": "5f3b5641ae7d4c138ab51fe8fbf6c69191d08f85",
+    "verified_on": "2026-09-17T15:41:07Z",
+    "workflow_runs": {
+      "prototype_workbench_gate": "35236211385",
+      "phase_c1_selective_contract_review": "35236211387",
+      "coverage": "35236211494",
+      "smoke": "35236211313",
+      "ci": "35236211426",
+      "e2e_cypress": "35236211382"
+    },
+    "workflow_conclusion": "success",
+    "phase_c1_evidence_artifact": "10503488600",
+    "phase_c1_evidence_artifact_sha256": "3af9923a1633cc32c497df6b99bfae4f088fa9a587afe95ae23faf394ce2298c",
     "golden_regression": {
       "goldens": 28,
-      "result": "pass-prewrite-provenance"
+      "result": "pass"
     },
-    "note": "Exact-head authority reconciliation is materialized from the nonsemantic post-materialization child. Fresh resulting-state workflows must complete successfully on the exact reconciliation source before this lock can return to verified."
+    "note": "Fresh resulting-state verification completed successfully on the exact authority-reconciliation source. All six required workflows passed on e0fe61ea95952e836ea521527c9f43ef9b04fafb, and the Phase C1 run proved all 28 approved Golden files byte-identical to the immutable manifest. This lock seal changes authority metadata only; Product Integrator and Production Start remain unauthorized."
   },
   "reviewed_file_count": 7,
   "contract_checksums": {
