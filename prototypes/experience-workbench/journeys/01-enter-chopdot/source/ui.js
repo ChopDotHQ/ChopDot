@@ -44,10 +44,10 @@ function fixture(name){s=M.initial();
  if(name==='offline'){s.destination='invite';s.online=false;s.email='sam@example.com';s.route='offline';}
  if(name==='wallet'){s=M.apply(s,'WALLET');}
  if(name==='ready'){s={...s,verified:true,method:'email',name:'Dev',email:'dev@example.com',isNew:false,route:'ready'};}
- if(name==='expired'){s={...s,method:'email',route:'code',email:'sam@example.com',expired:true,challenge:1};}
+ if(name==='expired'){s=M.apply(s,'EMAIL');s=M.apply(s,'SET_EMAIL',{value:'sam@example.com'});s=M.apply(s,'SEND_CODE');s.expired=true;}
  go('NAVIGATE',{route:s.route});
 }
- document.addEventListener('submit',e=>{e.preventDefault();if(e.target.id==='email-form'){s=M.apply(s,'SET_EMAIL',{value:document.getElementById('email').value});go('SEND_CODE');}if(e.target.id==='code-form')go('VERIFY_CODE',{code:document.getElementById('code').value});if(e.target.id==='profile-form')go('PROFILE',{name:document.getElementById('name').value});});
+ document.addEventListener('submit',e=>{e.preventDefault();if(e.target.id==='email-form'){s=M.apply(s,'SET_EMAIL',{value:document.getElementById('email').value});go('SEND_CODE');}if(e.target.id==='code-form')go('VERIFY_CODE',M.emailVerificationResult(s,document.getElementById('code').value));if(e.target.id==='profile-form')go('PROFILE',{name:document.getElementById('name').value});});
  document.addEventListener('click',e=>{
  const f=e.target.closest('[data-fixture]');if(f){fixture(f.dataset.fixture);return;}
  const d=e.target.closest('[data-demo-result]');if(d){go('APPROVAL_RESULT',{request:s.request,result:d.dataset.demoResult});return;}
@@ -60,6 +60,6 @@ function fixture(name){s=M.initial();
  });
  window.addEventListener('popstate',()=>{s=M.apply(s,'NAVIGATE',{route:location.hash.slice(1).split('/')[0]||'welcome'});render();});
  document.addEventListener('input',e=>{if(e.target.id==='email')s=M.apply(s,'SET_EMAIL',{value:e.target.value});});
- window.EntryDemo={get:()=>JSON.parse(JSON.stringify(s)),dispatch:go,fixture};
+ window.EntryDemo={get:()=>JSON.parse(JSON.stringify(s)),dispatch:go,fixture,emailResult:code=>M.emailVerificationResult(s,code)};
  const parts=location.hash.slice(1).split('/');let requested=parts[0];if(parts[1]==='invite')s.destination='invite';if(['code','profile','ready','home-reference','invite-reference'].includes(requested))requested='email';if(requested==='invite')fixture('invite');else if(requested==='session-expired')fixture('reauth');else if(requested==='offline')fixture('offline');else go('NAVIGATE',{route:requested||'welcome'},true);
 })();
