@@ -2,9 +2,25 @@
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;background:#ececef}
 body{min-height:100vh;min-height:100dvh;overflow:hidden}
+button{font:inherit}
 .preview-stage{width:100vw;height:100vh;height:100dvh;display:grid;place-items:center;padding:28px;position:relative}
-.device{width:min(430px,100%);height:min(890px,calc(100dvh - 56px));border-radius:34px;overflow:hidden;background:#f7f7f8;border:1px solid rgba(0,0,0,.12);box-shadow:0 30px 75px rgba(0,0,0,.17)}
+.device{width:min(430px,100%);height:min(890px,calc(100dvh - 56px));border-radius:34px;overflow:hidden;background:#f7f7f8;border:1px solid rgba(0,0,0,.12);box-shadow:0 30px 75px rgba(0,0,0,.17);position:relative}
 #product-frame{display:block;width:100%;height:100%;border:0;background:#f7f7f8}
+#product-frame[hidden]{display:none}
+.front-door{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;background:#f7f7f8;padding:calc(58px + env(safe-area-inset-top)) 24px calc(28px + env(safe-area-inset-bottom));color:#111113}
+.front-door[hidden]{display:none}
+.front-brand{margin:auto 0 0;text-align:center;transform:translateY(-34px)}
+.front-wordmark{display:inline-flex;align-items:center;gap:11px;font-size:30px;font-weight:790;letter-spacing:-.045em}
+.front-mark{width:42px;height:42px;border-radius:50%;background:#e6007a;position:relative;overflow:hidden;flex:none;box-shadow:0 8px 24px rgba(230,0,122,.18)}
+.front-mark:after{content:"";position:absolute;left:-8px;right:-8px;top:18px;height:6px;background:#f7f7f8;transform:rotate(-35deg)}
+.front-tagline{margin:14px 0 0;font-size:23px;line-height:1.1;font-weight:620;font-style:italic;letter-spacing:-.035em}
+.front-actions{margin-top:auto;display:grid;gap:11px}
+.front-button{width:100%;min-height:58px;border-radius:17px;border:1px solid transparent;font-weight:740;font-size:16px;letter-spacing:-.01em;cursor:pointer}
+.front-primary{background:#111113;color:#fff;border-color:#111113}
+.front-secondary{background:#fff;color:#111113;border-color:#d8d8dd}
+.front-button:focus-visible,.front-link:focus-visible{outline:3px solid rgba(230,0,122,.28);outline-offset:3px}
+.front-signin{margin:7px 0 0;text-align:center;font-size:14px;color:#66666d}
+.front-link{border:0;background:transparent;padding:4px;color:#e6007a;font-weight:740;cursor:pointer}
 .stage-meta{position:fixed;left:18px;top:18px;display:flex;align-items:center;gap:8px;font-size:11px;color:#66666d;z-index:5}
 .stage-pill{display:inline-flex;align-items:center;min-height:26px;padding:0 9px;border-radius:999px;background:#fff;border:1px solid #dcdce0;color:#111113;font-weight:750}
 @media(max-width:860px){
