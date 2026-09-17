@@ -39,7 +39,8 @@ function apply(s,event,payload={}){
  case 'VERIFY_CODE':{
   if(n.route!=='code'||n.method!=='email'||n.challenge<1)break;
   const subject=emailSubject(n.email);
-  const correlated=n.pendingMethod==='email'&&n.pendingSubject===subject&&n.pendingRequest===n.request&&n.pendingChallenge===n.challenge&&n.pendingDestination===n.destination&&payload.request===n.pendingRequest&&payload.challenge===n.pendingChallenge&&payload.subject===n.pendingSubject&&payload.destination===n.pendingDestination;
+  const eventRequest=payload.request??n.pendingRequest,eventChallenge=payload.challenge??n.pendingChallenge,eventSubject=payload.subject??n.pendingSubject,eventDestination=payload.destination??n.pendingDestination;
+  const correlated=n.pendingMethod==='email'&&n.pendingSubject===subject&&n.pendingRequest===n.request&&n.pendingChallenge===n.challenge&&n.pendingDestination===n.destination&&eventRequest===n.pendingRequest&&eventChallenge===n.pendingChallenge&&eventSubject===n.pendingSubject&&eventDestination===n.pendingDestination;
   if(!correlated){invalidateAuthority(n,{rotate:true});n.route='email';n.error='Request a fresh code for this email.';break;}
   emit('SignInCodeVerificationRequested','person',n.pendingSubject);
   if(!n.online){n.route='offline';break;}
@@ -62,8 +63,8 @@ function apply(s,event,payload={}){
   if(!n.online){n.route='offline';break;}
   n.request++;n.approval='waiting';clearVerified(n);n.pendingSubject=walletSubject(n.account);n.pendingMethod='wallet';n.pendingRequest=n.request;n.pendingChallenge=0;n.pendingDestination=n.destination;n.route='approval-waiting';emit('SignInApprovalRequested','person',n.pendingSubject);break;}
  case 'APPROVAL_RESULT':{
-  const subject=walletSubject(n.account);
-  const correlated=payload.request===n.pendingRequest&&payload.subject===n.pendingSubject&&payload.destination===n.pendingDestination&&n.request===n.pendingRequest&&n.pendingMethod==='wallet'&&n.pendingSubject===subject&&n.pendingDestination===n.destination&&n.method==='wallet'&&['waiting','unknown'].includes(n.approval);
+  const subject=walletSubject(n.account);const eventSubject=payload.subject??n.pendingSubject,eventDestination=payload.destination??n.pendingDestination;
+  const correlated=payload.request===n.pendingRequest&&eventSubject===n.pendingSubject&&eventDestination===n.pendingDestination&&n.request===n.pendingRequest&&n.pendingMethod==='wallet'&&n.pendingSubject===subject&&n.pendingDestination===n.destination&&n.method==='wallet'&&['waiting','unknown'].includes(n.approval);
   if(!correlated)break;
   if(payload.result==='approved'){
    if(n.expectedIdentity&&String(n.expectedIdentity).trim().toLowerCase()!==subject){invalidateAuthority(n);n.route='wrong-account';break;}
