@@ -1,13 +1,13 @@
 {
   "version": 2,
   "role": "phase-c1-builder",
-  "status": "claimed",
-  "holder": "phase-c1-builder-backup",
+  "status": "waiting_ci",
+  "holder": null,
   "branch": "phase-c1/j01-subject-binding-v1-candidate",
   "fingerprint": "phase-c1|j01-proof-epoch-repair|5707911597|5707441287|9128bb55d8aed29b5c31fb6d769af39f2651cb76",
   "claimed_from_head": "f3e5ffd3932925bd975d1f101964c1f42e59da0a",
   "candidate_head": "0f90ef0e1da5461e42ee1427868623f3d3bd5fec",
-  "expires_at": "2026-09-17T04:19:00Z",
+  "expires_at": null,
   "handoff_comment": null,
   "authority": {
     "reviewer_receipt_comment": 5707911597,
