@@ -334,11 +334,11 @@ function addGuestGroupPeopleCss(doc) {
     .guest-group-person-copy b{display:block;font-size:13px}
     .guest-group-person-copy span{display:block;margin-top:2px;font-size:10px;color:var(--muted)}
     .guest-group-add-row{display:grid;grid-template-columns:1fr auto;gap:8px}
-    .guest-group-add-row input{min-width:0;height:42px;border:1px solid var(--line);border-radius:12px;padding:0 12px;background:#fff;color:var(--ink);font:inherit;font-size:13px;outline:none}
+    .guest-group-add-row input{min-width:0;height:42px;border:1px solid var(--border);border-radius:12px;padding:0 12px;background:#fff;color:var(--ink);font:inherit;font-size:13px;outline:none}
     .guest-group-add-row input:focus{border-color:#111}
     .guest-group-add-row button,.guest-group-editor-done{min-height:42px;border-radius:12px;font:inherit;font-weight:750;cursor:pointer}
     .guest-group-add-row button{border:0;background:#111;color:#fff;padding:0 14px}
-    .guest-group-editor-done{width:100%;margin-top:9px;border:1px solid var(--line);background:#fff;color:var(--ink)}
+    .guest-group-editor-done{width:100%;margin-top:9px;border:1px solid var(--border);background:#fff;color:var(--ink)}
   `;
   doc.head.appendChild(style);
 }
