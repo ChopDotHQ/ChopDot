@@ -56,12 +56,12 @@ for(const vp of [{width:393,height:852},{width:430,height:890}]){
   product=page.frameLocator('#product-frame');
 
   // Human-walkthrough regression: guest drafts may add name-only local people without creating an account.
-  await product.getByText('Paid by',{exact:true}).click();
+  await product.getByRole('link',{name:/Paid by Who covered it/}).click();
   await product.getByRole('heading',{name:'Who paid?'}).waitFor();
   await product.getByRole('button',{name:/Add person/}).click();
   await product.getByLabel('Person name').fill('Jeanine');
   await product.locator('.guest-person-editor').getByRole('button',{name:'Add person'}).click();
-  await product.getByText('Paid by',{exact:true}).waitFor();
+  await product.getByRole('link',{name:/Paid by Who covered it/}).waitFor();
   await product.getByText('Jeanine',{exact:true}).waitFor();
 
   await product.getByText('Split equally',{exact:true}).click();
