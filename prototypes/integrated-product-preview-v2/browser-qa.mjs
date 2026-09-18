@@ -69,7 +69,25 @@ for(const vp of [{width:393,height:852},{width:430,height:890}]){
   product=page.frameLocator('#product-frame');
   await product.getByText('Local Weekend',{exact:true}).waitFor();
   await product.getByText('1 expense',{exact:true}).waitFor();
-  report.paths.push('front door → honest guest Home → Golden J03 local group → Golden J05 local expense → invite/account boundary → Not now + reload preserve local work');
+
+  await product.getByRole('button',{name:'Invite someone'}).click();
+  await page.getByRole('button',{name:'Create account'}).click();
+  product=page.frameLocator('#product-frame');
+  await product.locator('#entry-screen[data-state="email"]').waitFor();
+  await product.getByLabel('Email').fill('sam@example.com');
+  await product.getByRole('button',{name:'Send code'}).click();
+  await product.getByLabel('6-digit code').fill('123456');
+  await product.getByRole('button',{name:'Continue'}).click();
+  await product.getByLabel('Your name').fill('Sam');
+  await product.getByRole('button',{name:'Continue'}).click();
+  await product.getByRole('button',{name:'Open ChopDot'}).click();
+  await page.waitForFunction(()=>window.ChopDotPreviewV2?.getCurrentJourney()==='J02'&&window.ChopDotPreviewV2?.getHomeMode()==='converted');
+  product=page.frameLocator('#product-frame');
+  await product.getByRole('heading',{name:'Your work is still here.'}).waitFor();
+  await product.getByText('Local Weekend',{exact:true}).waitFor();
+  await product.getByText('1 expense',{exact:true}).waitFor();
+  await page.screenshot({path:new URL('gate-a-converted-home-430x890.png',out).pathname,fullPage:true});
+  report.paths.push('front door → guest local group + expense → share boundary → Not now/reload preserve → Create account preserves same local work');
   await context.close();
 }
 
