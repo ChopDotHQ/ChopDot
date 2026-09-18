@@ -51,7 +51,7 @@ function applyProductMode(doc) {
 
 function loadGuestState() {
   try {
-    const parsed = JSON.parse(window.sessionStorage.getItem(GUEST_KEY) || 'null');
+    const parsed = JSON.parse(window.localStorage.getItem(GUEST_KEY) || 'null');
     return {
       mode: 'guest-local',
       accountCreated: false,
@@ -68,7 +68,7 @@ function loadGuestState() {
 
 function saveGuestState(patch) {
   const next = { ...loadGuestState(), ...patch };
-  window.sessionStorage.setItem(GUEST_KEY, JSON.stringify(next));
+  window.localStorage.setItem(GUEST_KEY, JSON.stringify(next));
   return next;
 }
 
