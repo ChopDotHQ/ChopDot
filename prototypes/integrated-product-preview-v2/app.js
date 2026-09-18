@@ -283,7 +283,6 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
         </div>
         <div class="group-status">
           <div class="status-left"><span class="status-dot"></span><span class="status-text clamp">${converted ? 'Ready to share' : 'Saved on this device'}</span></div>
-          <span class="status-action">Open</span>
         </div>
       </section>
       <div class="local-actions">
@@ -305,12 +304,92 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
 
   const centerAdd = doc.querySelector('.add-tab');
   if (centerAdd) {
-    centerAdd.addEventListener('click', (event) => {
-      event.preventDefault();
-      if (loadGuestState().group) openGuestExpense();
-      else openGuestCreateGroup();
-    }, { once: true });
+    if (!state.group) {
+      centerAdd.style.visibility = 'hidden';
+      centerAdd.style.pointerEvents = 'none';
+      centerAdd.setAttribute('aria-hidden', 'true');
+      centerAdd.tabIndex = -1;
+    } else {
+      centerAdd.addEventListener('click', (event) => {
+        event.preventDefault();
+        openGuestExpense();
+      }, { once: true });
+    }
   }
+}
+
+function addGuestGroupPeopleCss(doc) {
+  if (doc.getElementById('chopdot-local-group-people')) return;
+  const style = doc.createElement('style');
+  style.id = 'chopdot-local-group-people';
+  style.textContent = `
+    .guest-group-people-editor{margin-top:12px;padding:14px 14px 12px}
+    .guest-group-editor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .guest-group-editor-head b{display:block;font-size:14px}
+    .guest-group-editor-head span{display:block;margin-top:2px;font-size:11px;line-height:1.4;color:var(--muted)}
+    .guest-group-person-list{display:grid;gap:8px;margin-bottom:12px}
+    .guest-group-person{display:flex;align-items:center;gap:10px;min-height:42px}
+    .guest-group-person-avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#f0f0f3;font-size:12px;font-weight:750}
+    .guest-group-person-copy{min-width:0}
+    .guest-group-person-copy b{display:block;font-size:13px}
+    .guest-group-person-copy span{display:block;margin-top:2px;font-size:10px;color:var(--muted)}
+    .guest-group-add-row{display:grid;grid-template-columns:1fr auto;gap:8px}
+    .guest-group-add-row input{min-width:0;height:42px;border:1px solid var(--line);border-radius:12px;padding:0 12px;background:#fff;color:var(--ink);font:inherit;font-size:13px;outline:none}
+    .guest-group-add-row input:focus{border-color:#111}
+    .guest-group-add-row button,.guest-group-editor-done{min-height:42px;border-radius:12px;font:inherit;font-weight:750;cursor:pointer}
+    .guest-group-add-row button{border:0;background:#111;color:#fff;padding:0 14px}
+    .guest-group-editor-done{width:100%;margin-top:9px;border:1px solid var(--line);background:#fff;color:var(--ink)}
+  `;
+  doc.head.appendChild(style);
+}
+
+function renderGuestGroupPeopleEditor(doc, screen) {
+  addGuestGroupPeopleCss(doc);
+  let panel = screen.querySelector('.guest-group-people-editor');
+  if (!panel) {
+    panel = doc.createElement('section');
+    panel.className = 'card guest-group-people-editor';
+    screen.querySelector('.group-card')?.after(panel);
+  }
+
+  const state = loadGuestState();
+  const rows = [
+    `<div class="guest-group-person"><span class="guest-group-person-avatar">Y</span><div class="guest-group-person-copy"><b>You</b><span>Already here</span></div></div>`,
+    ...state.people.map((person) => `<div class="guest-group-person"><span class="guest-group-person-avatar">${person.initials || initialsFor(person.name)}</span><div class="guest-group-person-copy"><b>${person.name}</b><span>You can invite them later</span></div></div>`),
+  ].join('');
+
+  panel.innerHTML = `
+    <div class="guest-group-editor-head"><div><b>People in this split</b><span>Add names now. Invite them only when you're ready to share.</span></div></div>
+    <div class="guest-group-person-list">${rows}</div>
+    <div class="guest-group-add-row">
+      <input aria-label="Person name" maxlength="60" autocomplete="off" placeholder="e.g. Jeanine" />
+      <button type="button">Add</button>
+    </div>
+    <button class="guest-group-editor-done" type="button">Done</button>
+  `;
+
+  const input = panel.querySelector('input');
+  const add = panel.querySelector('.guest-group-add-row button');
+  const commit = () => {
+    const name = String(input.value || '').trim();
+    if (!name) {
+      input.focus();
+      return;
+    }
+    const latest = loadGuestState();
+    const id = `local-person-${Date.now()}`;
+    const nextPeople = [...latest.people, { id, name, initials: initialsFor(name), localDraft: true }];
+    const nextParticipants = Array.from(new Set([...(latest.selectedParticipantIds || ['self']), id]));
+    saveGuestState({ people: nextPeople, selectedParticipantIds: nextParticipants });
+    syncGuestGroupSuccess(doc);
+    renderGuestGroupPeopleEditor(doc, screen);
+  };
+  add.addEventListener('click', commit);
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') commit();
+  });
+  panel.querySelector('.guest-group-editor-done').addEventListener('click', () => panel.remove());
+  input.focus();
 }
 
 function syncGuestGroupSuccess(doc) {
@@ -321,12 +400,26 @@ function syncGuestGroupSuccess(doc) {
     if (!screen) continue;
     const title = screen.querySelector('.success-title');
     if (title) title.textContent = `${state.group.name} is ready.`;
+    const successSub = screen.querySelector('.success-sub');
+    if (successSub) successSub.textContent = 'Add people or add an expense.';
     const name = screen.querySelector('.group-name');
     if (name) name.textContent = state.group.name;
+    const peopleCount = 1 + state.people.length;
     const meta = screen.querySelector('.group-meta');
-    if (meta) {
-      const peopleCount = 1 + state.people.length;
-      meta.textContent = `${state.group.currency} · ${peopleCount === 1 ? 'only you' : `${peopleCount} people`}`;
+    if (meta) meta.textContent = `${state.group.currency} · ${peopleCount === 1 ? 'only you' : `${peopleCount} people`}`;
+    const peopleStat = screen.querySelector('.group-state .state-item:first-child b');
+    if (peopleStat) peopleStat.textContent = String(peopleCount);
+    const emptyTitle = screen.querySelector('.empty-title');
+    if (emptyTitle) emptyTitle.textContent = 'Add people to this split.';
+    const emptySub = screen.querySelector('.empty-sub');
+    if (emptySub) emptySub.textContent = 'You can invite them later.';
+    const addPeople = screen.querySelector('a[href="#invite-handoff"]');
+    if (addPeople) {
+      for (const node of addPeople.childNodes) {
+        if (node.nodeType === 3 && node.textContent.trim()) node.textContent = ' Add people';
+      }
+      if (!addPeople.textContent.trim().includes('Add people')) addPeople.append('Add people');
+      addPeople.setAttribute('aria-label', 'Add people');
     }
     const balance = screen.querySelector('.group-balance');
     if (balance) balance.textContent = state.group.currency === 'EUR' ? '€0.00' : state.group.currency === 'USD' ? '$0.00' : 'CHF 0.00';
@@ -366,7 +459,8 @@ function applyGuestCreateGroupState(doc) {
     if (href === '#invite-handoff') {
       event.preventDefault();
       rememberGroup(loadGuestState().group?.currency || pendingCurrency);
-      showAccountWall();
+      const screen = anchor.closest('.screen');
+      if (screen) renderGuestGroupPeopleEditor(doc, screen);
       return;
     }
 
@@ -447,7 +541,7 @@ function openLocalPersonEditor(doc, context) {
       <button class="guest-person-save" type="button">Add person</button>
       <button class="guest-person-cancel" type="button">Cancel</button>
     </div>
-    <div class="guest-local-note" style="margin-top:8px">Local draft only. They are not invited yet.</div>
+    <div class="guest-local-note" style="margin-top:8px">You can invite them later.</div>
   `;
   list.after(editor);
   const input = editor.querySelector('input');
@@ -489,7 +583,7 @@ function makeGuestPersonRow(doc, person, { context, selected }) {
   const name = doc.createElement('b');
   name.textContent = person.name;
   const sub = doc.createElement('span');
-  sub.textContent = person.self ? (selected ? 'Selected' : 'You') : (person.id.startsWith('local-person-') ? 'Local draft' : 'Member');
+  sub.textContent = person.self ? (selected ? 'Selected' : 'You') : (person.id.startsWith('local-person-') ? 'You can invite later' : 'Member');
   copy.append(name, sub);
 
   const indicator = doc.createElement('span');
@@ -525,7 +619,7 @@ function makeAddPersonRow(doc, context) {
   const row = doc.createElement('button');
   row.type = 'button';
   row.className = 'member guest-add-person';
-  row.innerHTML = `<span class="avatar">+</span><div><b>Add person</b><span>Local draft · no invite yet</span></div><span></span>`;
+  row.innerHTML = `<span class="avatar">+</span><div><b>Add person</b><span>Add now. Invite later.</span></div><span></span>`;
   row.addEventListener('click', () => openLocalPersonEditor(doc, context));
   return row;
 }
