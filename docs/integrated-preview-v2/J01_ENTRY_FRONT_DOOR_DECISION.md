@@ -147,3 +147,25 @@ Gate A remains unaccepted until:
 5. screenshots are re-captured at the canonical mobile viewports;
 6. the front door and guest/account transition are re-checked against the UX Laws;
 7. Devinson confirms the resulting entry experience feels like the right ChopDot front door.
+
+
+## Guest starter dependency adjustment
+
+The guest-first product decision changes the minimum experience needed to judge Gate A. A person cannot meaningfully evaluate `Continue as guest` if the preview stops at an empty Home.
+
+For the **review slice only**, Gate A therefore pulls forward the smallest already-approved Golden dependencies required to exercise the guest promise:
+
+- J03 Create a Group V2 — used to create a local draft group;
+- J05 Add an Expense V1 — used for the local common-case amount + description path.
+
+This is not permission to expand into the full later J03/J05 ownership graph, J04 shared invite implementation, J06/J07 review/correction, J08 Group Home, or production persistence. The purpose is narrowly to prove:
+
+`front door → honest first-use Home → local group → local expense → Invite someone → account boundary`
+
+The account wall remains the first shared/account-backed boundary. Choosing `Not now` must preserve the local group and expense.
+
+### J05 source restoration note
+
+The approved J05 entry HTML references `source/styles.css`, but that stylesheet is absent from the sealed repository source even though the source README and Visual QA record it as part of the reviewed journey. The Gate A review branch restores a **review-only stylesheet** using the documented J02/J03 Golden token language and J05 Visual QA constraints so the approved J05 markup can be rendered and tested.
+
+This restoration is not a new J05 Golden, does not mutate canonical sealed authority, and requires human visual review before any claim that the reconstructed source is an exact historical byte-for-byte Golden.
