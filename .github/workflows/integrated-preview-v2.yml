@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - preview/golden-faithful-v2
+      - review/golden-faithful-v2-gate-a
     paths:
       - 'prototypes/integrated-product-preview-v2/**'
       - 'docs/integrated-preview-v2/**'
