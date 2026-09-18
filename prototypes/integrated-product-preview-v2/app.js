@@ -57,12 +57,18 @@ function loadGuestState() {
       accountCreated: false,
       participantCreated: false,
       group: null,
+      people: [],
       expenses: [],
+      selectedPayerId: 'self',
+      selectedParticipantIds: ['self'],
       ...parsed,
+      people: Array.isArray(parsed?.people) ? parsed.people : [],
       expenses: Array.isArray(parsed?.expenses) ? parsed.expenses : [],
+      selectedPayerId: typeof parsed?.selectedPayerId === 'string' ? parsed.selectedPayerId : 'self',
+      selectedParticipantIds: Array.isArray(parsed?.selectedParticipantIds) ? parsed.selectedParticipantIds : ['self'],
     };
   } catch {
-    return { mode: 'guest-local', accountCreated: false, participantCreated: false, group: null, expenses: [] };
+    return { mode: 'guest-local', accountCreated: false, participantCreated: false, group: null, people: [], expenses: [], selectedPayerId: 'self', selectedParticipantIds: ['self'] };
   }
 }
 
@@ -265,12 +271,14 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
   } else {
     const expenseCount = state.expenses.length;
     const noun = expenseCount === 1 ? 'expense' : 'expenses';
+    const peopleCount = 1 + state.people.length;
+    const peopleLabel = peopleCount === 1 ? 'only you' : `${peopleCount} people`;
     content.innerHTML = `
       <div><div class="eyebrow">${converted ? 'Account ready' : 'Saved locally'}</div><h1 class="hero">${converted ? 'Your work is still here.' : 'Keep going.'}</h1></div>
       <div class="section-head"><h2 class="h2">Your groups</h2></div>
       <section class="card group">
         <div class="group-top">
-          <div><div class="group-name clamp">${state.group.name}</div><div class="group-meta clamp">${state.group.currency} · only you${converted ? '' : ' · local'}</div></div>
+          <div><div class="group-name clamp">${state.group.name}</div><div class="group-meta clamp">${state.group.currency} · ${peopleLabel}${converted ? '' : ' · local'}</div></div>
           <div class="group-balance">${expenseCount} ${noun}</div>
         </div>
         <div class="group-status">
@@ -316,7 +324,10 @@ function syncGuestGroupSuccess(doc) {
     const name = screen.querySelector('.group-name');
     if (name) name.textContent = state.group.name;
     const meta = screen.querySelector('.group-meta');
-    if (meta) meta.textContent = `${state.group.currency} · only you`;
+    if (meta) {
+      const peopleCount = 1 + state.people.length;
+      meta.textContent = `${state.group.currency} · ${peopleCount === 1 ? 'only you' : `${peopleCount} people`}`;
+    }
     const balance = screen.querySelector('.group-balance');
     if (balance) balance.textContent = state.group.currency === 'EUR' ? '€0.00' : state.group.currency === 'USD' ? '$0.00' : 'CHF 0.00';
     if (!screen.querySelector('.guest-local-note')) {
@@ -376,46 +387,238 @@ function formatMoney(currency, value) {
   return `CHF ${amount.toFixed(2)}`;
 }
 
+
+function localPeople(state = loadGuestState()) {
+  return [
+    { id: 'self', name: 'You', initials: 'Y', self: true },
+    ...state.people.map((person) => ({
+      id: person.id,
+      name: person.name,
+      initials: person.initials || initialsFor(person.name),
+      self: false,
+    })),
+  ];
+}
+
+function initialsFor(name) {
+  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return '?';
+  return parts.slice(0, 2).map((part) => part[0].toUpperCase()).join('');
+}
+
+function personById(id, state = loadGuestState()) {
+  return localPeople(state).find((person) => person.id === id) || localPeople(state)[0];
+}
+
+function addGuestExpenseCss(doc) {
+  if (doc.getElementById('chopdot-local-expense')) return;
+  const style = doc.createElement('style');
+  style.id = 'chopdot-local-expense';
+  style.textContent = `
+    .guest-member-button{width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+    .guest-add-person{width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+    .guest-add-person .avatar{display:grid;place-items:center;background:var(--surface2);color:var(--ink);font-size:20px;font-weight:500}
+    .guest-person-editor{margin-top:12px;padding:14px;border:1px solid var(--border);border-radius:18px;background:var(--surface)}
+    .guest-person-editor label{display:block;font-size:11px;color:var(--secondary);margin-bottom:7px}
+    .guest-person-editor input{width:100%;height:44px;border:1px solid var(--border);border-radius:13px;padding:0 12px;background:#fff;color:var(--ink);font:inherit;font-size:14px;outline:none}
+    .guest-person-editor input:focus{border-color:#111}
+    .guest-person-actions{display:flex;gap:8px;margin-top:10px}
+    .guest-person-actions button{min-height:40px;border-radius:12px;padding:0 14px;font:inherit;font-weight:700;cursor:pointer}
+    .guest-person-save{flex:1;border:0;background:#111;color:#fff}
+    .guest-person-cancel{border:1px solid var(--border);background:#fff;color:var(--ink)}
+    .guest-local-note{font-size:11px;color:var(--secondary)}
+  `;
+  doc.head.appendChild(style);
+}
+
+function openLocalPersonEditor(doc, context) {
+  addGuestExpenseCss(doc);
+  const screen = doc.getElementById(context === 'payer' ? 'payer' : 'split');
+  const list = screen?.querySelector('.member-list');
+  if (!screen || !list) return;
+  screen.querySelector('.guest-person-editor')?.remove();
+
+  const editor = doc.createElement('section');
+  editor.className = 'guest-person-editor';
+  editor.innerHTML = `
+    <label>Person name</label>
+    <input aria-label="Person name" maxlength="60" autocomplete="off" placeholder="e.g. Jeanine" />
+    <div class="guest-person-actions">
+      <button class="guest-person-save" type="button">Add person</button>
+      <button class="guest-person-cancel" type="button">Cancel</button>
+    </div>
+    <div class="guest-local-note" style="margin-top:8px">Local draft only. They are not invited yet.</div>
+  `;
+  list.after(editor);
+  const input = editor.querySelector('input');
+  input.focus();
+
+  editor.querySelector('.guest-person-cancel').addEventListener('click', () => editor.remove());
+  editor.querySelector('.guest-person-save').addEventListener('click', () => {
+    const name = String(input.value || '').trim();
+    if (!name) {
+      input.focus();
+      return;
+    }
+    const state = loadGuestState();
+    const id = `local-person-${Date.now()}`;
+    const nextPeople = [...state.people, { id, name, initials: initialsFor(name), localDraft: true }];
+    const nextParticipants = Array.from(new Set([...(state.selectedParticipantIds || ['self']), id]));
+    saveGuestState({
+      people: nextPeople,
+      selectedParticipantIds: nextParticipants,
+      ...(context === 'payer' ? { selectedPayerId: id } : {}),
+    });
+    renderGuestExpensePeople(doc);
+    syncGuestExpenseEntry(doc);
+    if (context === 'payer') frame.contentWindow.location.hash = '#entry';
+  });
+}
+
+function makeGuestPersonRow(doc, person, { context, selected }) {
+  const row = doc.createElement('button');
+  row.type = 'button';
+  row.className = 'member guest-member-button';
+  row.dataset.personId = person.id;
+
+  const avatar = doc.createElement('span');
+  avatar.className = person.self ? 'avatar you' : 'avatar';
+  avatar.textContent = person.self ? 'Y' : person.initials;
+
+  const copy = doc.createElement('div');
+  const name = doc.createElement('b');
+  name.textContent = person.name;
+  const sub = doc.createElement('span');
+  sub.textContent = person.self ? (selected ? 'Selected' : 'You') : (person.id.startsWith('local-person-') ? 'Local draft' : 'Member');
+  copy.append(name, sub);
+
+  const indicator = doc.createElement('span');
+  indicator.className = context === 'payer' ? `radio${selected ? ' on' : ''}` : `select${selected ? ' on' : ''}`;
+  if (context === 'split' && selected) indicator.innerHTML = svg('<path d="m5 12 4 4L19 6"></path>');
+
+  row.append(avatar, copy, indicator);
+  row.addEventListener('click', () => {
+    const state = loadGuestState();
+    if (context === 'payer') {
+      saveGuestState({ selectedPayerId: person.id });
+      renderGuestExpensePeople(doc);
+      syncGuestExpenseEntry(doc);
+      frame.contentWindow.location.hash = '#entry';
+      return;
+    }
+
+    const selectedIds = new Set(state.selectedParticipantIds || ['self']);
+    if (selectedIds.has(person.id)) {
+      if (selectedIds.size === 1) return;
+      selectedIds.delete(person.id);
+    } else {
+      selectedIds.add(person.id);
+    }
+    saveGuestState({ selectedParticipantIds: Array.from(selectedIds) });
+    renderGuestExpensePeople(doc);
+    syncGuestExpenseEntry(doc);
+  });
+  return row;
+}
+
+function makeAddPersonRow(doc, context) {
+  const row = doc.createElement('button');
+  row.type = 'button';
+  row.className = 'member guest-add-person';
+  row.innerHTML = `<span class="avatar">+</span><div><b>Add person</b><span>Local draft · no invite yet</span></div><span></span>`;
+  row.addEventListener('click', () => openLocalPersonEditor(doc, context));
+  return row;
+}
+
+function renderGuestExpensePeople(doc) {
+  addGuestExpenseCss(doc);
+  const state = loadGuestState();
+  const people = localPeople(state);
+  const selectedParticipants = new Set(state.selectedParticipantIds || ['self']);
+
+  const payerList = doc.querySelector('#payer .member-list');
+  if (payerList) {
+    payerList.replaceChildren();
+    for (const person of people) {
+      payerList.appendChild(makeGuestPersonRow(doc, person, {
+        context: 'payer',
+        selected: person.id === (state.selectedPayerId || 'self'),
+      }));
+    }
+    payerList.appendChild(makeAddPersonRow(doc, 'payer'));
+  }
+
+  const splitList = doc.querySelector('#split .member-list');
+  if (splitList) {
+    splitList.replaceChildren();
+    for (const person of people) {
+      splitList.appendChild(makeGuestPersonRow(doc, person, {
+        context: 'split',
+        selected: selectedParticipants.has(person.id),
+      }));
+    }
+    splitList.appendChild(makeAddPersonRow(doc, 'split'));
+  }
+}
+
+function syncGuestExpenseEntry(doc) {
+  const state = loadGuestState();
+  const group = state.group;
+  if (!group) return;
+
+  const amountInput = doc.querySelector('#entry .amount');
+  const descriptionInput = doc.querySelector('#entry .description');
+  const amount = Number(amountInput?.value || 0);
+  const description = String(descriptionInput?.value || 'Expense').trim() || 'Expense';
+  const payer = personById(state.selectedPayerId || 'self', state);
+  const selectedIds = (state.selectedParticipantIds || ['self']).filter((id) => localPeople(state).some((person) => person.id === id));
+  const participantIds = selectedIds.length ? selectedIds : ['self'];
+  const participantCount = participantIds.length;
+  const share = participantCount ? amount / participantCount : amount;
+
+  const entryHeader = doc.querySelector('#entry .header-title span');
+  if (entryHeader) entryHeader.textContent = group.name;
+  const currency = doc.querySelector('#entry .currency');
+  if (currency) currency.textContent = group.currency;
+
+  const payerRow = doc.querySelector('#entry a[href="#payer"]');
+  if (payerRow) {
+    const value = payerRow.querySelector('.row-value');
+    if (value?.firstChild) value.firstChild.textContent = `${payer.name} `;
+  }
+
+  const splitRow = doc.querySelector('#entry a[href="#split"]');
+  if (splitRow) {
+    const sub = splitRow.querySelector('.row-sub');
+    const value = splitRow.querySelector('.row-value');
+    if (sub) sub.textContent = `${participantCount} ${participantCount === 1 ? 'person' : 'people'} · ${formatMoney(group.currency, share)} each`;
+    if (value?.firstChild) value.firstChild.textContent = participantCount === localPeople(state).length ? 'Everyone ' : `${participantCount} selected `;
+  }
+
+  const payerHeader = doc.querySelector('#payer .header-title span');
+  if (payerHeader) payerHeader.textContent = `${description} · ${formatMoney(group.currency, amount)}`;
+  const splitHeader = doc.querySelector('#split .header-title span');
+  if (splitHeader) splitHeader.textContent = formatMoney(group.currency, amount);
+
+  for (const row of doc.querySelectorAll('#split .guest-member-button')) {
+    const personId = row.dataset.personId;
+    const copy = row.querySelector('div span');
+    if (copy && participantIds.includes(personId)) copy.textContent = formatMoney(group.currency, share);
+  }
+}
+
 function applyGuestExpenseState(doc) {
   const state = loadGuestState();
   const group = state.group;
   if (!doc?.body || !group) return;
 
-  const syncEntry = () => {
-    const amountInput = doc.querySelector('#entry .amount');
-    const amount = Number(amountInput?.value || 0);
-    for (const header of doc.querySelectorAll('.header-title span')) {
-      if (/Zurich Weekend|Dinner · CHF 128|CHF 128/.test(header.textContent || '')) {
-        header.textContent = header.closest('#entry') ? group.name : header.textContent;
-      }
-    }
-    const currency = doc.querySelector('#entry .currency');
-    if (currency) currency.textContent = group.currency;
-    const splitRow = doc.querySelector('#entry a[href="#split"]');
-    if (splitRow) {
-      const sub = splitRow.querySelector('.row-sub');
-      const value = splitRow.querySelector('.row-value');
-      if (sub) sub.textContent = `1 person · ${formatMoney(group.currency, amount)} each`;
-      if (value) value.childNodes[0].textContent = 'You ';
-    }
-    const splitHeader = doc.querySelector('#split .header-title span');
-    if (splitHeader) splitHeader.textContent = formatMoney(group.currency, amount);
-    const splitMember = doc.querySelector('#split .member .avatar.you')?.closest('.member');
-    if (splitMember) {
-      const share = splitMember.querySelector('span:not(.avatar):not(.select)');
-      if (share) share.textContent = formatMoney(group.currency, amount);
-    }
-  };
-
-  for (const selector of ['#payer .member', '#split .member']) {
-    for (const member of doc.querySelectorAll(selector)) {
-      if (!member.querySelector('.avatar.you')) member.style.display = 'none';
-    }
-  }
+  renderGuestExpensePeople(doc);
 
   const amountInput = doc.querySelector('#entry .amount');
-  if (amountInput) amountInput.addEventListener('input', syncEntry);
-  syncEntry();
+  const descriptionInput = doc.querySelector('#entry .description');
+  if (amountInput) amountInput.addEventListener('input', () => syncGuestExpenseEntry(doc));
+  if (descriptionInput) descriptionInput.addEventListener('input', () => syncGuestExpenseEntry(doc));
+  syncGuestExpenseEntry(doc);
 
   const syncSuccess = () => {
     const latest = loadGuestState();
@@ -423,18 +626,23 @@ function applyGuestExpenseState(doc) {
     if (!expense) return;
     const success = doc.querySelector('#success');
     if (!success) return;
+    const payer = personById(expense.payerId || 'self', latest);
+    const participantCount = Array.isArray(expense.participantIds) && expense.participantIds.length ? expense.participantIds.length : 1;
+    const shareAmount = Number(expense.amount || 0) / participantCount;
     const header = success.querySelector('.header-title span');
     if (header) header.textContent = group.name;
     const h1 = success.querySelector('h1');
     if (h1) h1.textContent = `${expense.description} added.`;
     const p = success.querySelector('.success-wrap > p');
-    if (p) p.textContent = 'Saved locally.';
+    if (p) p.textContent = `Split between ${participantCount} ${participantCount === 1 ? 'person' : 'people'} · saved locally.`;
     const label = success.querySelector('.receipt-top b');
     if (label) label.textContent = expense.description;
+    const receiptMeta = success.querySelector('.receipt-meta');
+    if (receiptMeta) receiptMeta.textContent = `${payer.name} paid · Today`;
     const total = success.querySelector('.receipt-amount');
     if (total) total.textContent = formatMoney(group.currency, expense.amount);
     const share = success.querySelector('.shares b');
-    if (share) share.textContent = formatMoney(group.currency, expense.amount);
+    if (share) share.textContent = formatMoney(group.currency, shareAmount);
   };
 
   doc.addEventListener('click', (event) => {
@@ -442,12 +650,27 @@ function applyGuestExpenseState(doc) {
     if (!anchor) return;
     const href = anchor.getAttribute('href');
 
+    if (href === '#group' && anchor.closest('#entry')) {
+      event.preventDefault();
+      openGuestHome();
+      return;
+    }
+
     if (href === '#success' && anchor.closest('#entry')) {
       const amount = Number(doc.querySelector('#entry .amount')?.value || 0);
       const description = String(doc.querySelector('#entry .description')?.value || '').trim() || 'Expense';
       const latest = loadGuestState();
+      const payerId = latest.selectedPayerId || 'self';
+      const participantIds = (latest.selectedParticipantIds || ['self']).filter((id) => localPeople(latest).some((person) => person.id === id));
       saveGuestState({
-        expenses: [...latest.expenses, { id: `local-expense-${latest.expenses.length + 1}`, amount, description, currency: group.currency }],
+        expenses: [...latest.expenses, {
+          id: `local-expense-${latest.expenses.length + 1}`,
+          amount,
+          description,
+          currency: group.currency,
+          payerId,
+          participantIds: participantIds.length ? participantIds : ['self'],
+        }],
       });
       window.setTimeout(syncSuccess, 0);
     }
@@ -458,7 +681,13 @@ function applyGuestExpenseState(doc) {
     }
   });
 
-  frame.contentWindow?.addEventListener('hashchange', syncSuccess);
+  frame.contentWindow?.addEventListener('hashchange', () => {
+    if (frame.contentWindow.location.hash === '#group') {
+      openGuestHome();
+      return;
+    }
+    syncSuccess();
+  });
 }
 
 function enterAuthFormIfNeeded(doc) {
