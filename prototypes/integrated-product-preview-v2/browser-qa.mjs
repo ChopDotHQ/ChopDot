@@ -5,7 +5,7 @@ const base=process.env.PREVIEW_V2_BASE_URL||'http://127.0.0.1:4173/prototypes/in
 const out=new URL('./artifacts/',import.meta.url);mkdirSync(out,{recursive:true});
 const report={gate:'A',viewports:[],paths:[],errors:[]};
 const browser=await chromium.launch({headless:true});
-const watch=(page,label)=>{page.on('pageerror',e=>report.errors.push(`${label}: ${String(e)}`));page.on('console',m=>{if(m.type()==='error')report.errors.push(`${label}: ${m.text()}`)})};
+const watch=(page,label)=>{page.on('pageerror',e=>report.errors.push(`${label}: ${String(e)}`));page.on('console',m=>{if(m.type()==='error'&&!m.text().startsWith('Failed to load resource:'))report.errors.push(`${label}: ${m.text()}`)});page.on('response',res=>{if(res.status()>=400&&!res.url().endsWith('/favicon.ico'))report.errors.push(`${label}: HTTP ${res.status()} ${res.url()}`)})};
 const mature=['You’re almost square.','2 things need you','Zurich Weekend','Apartment','Ski Trip','Polkadot wallet'];
 
 for(const vp of [{width:393,height:852},{width:430,height:890}]){
