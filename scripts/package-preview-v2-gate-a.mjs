@@ -23,5 +23,7 @@ mkdirSync(`${out}/prototypes/experience-workbench/journeys`, { recursive: true }
 cpSync('prototypes/integrated-product-preview-v2', `${out}/prototypes/integrated-product-preview-v2`, { recursive: true });
 cpSync(j01, `${out}/prototypes/experience-workbench/journeys/01-enter-chopdot`, { recursive: true });
 cpSync('prototypes/experience-workbench/journeys/02-home-orientation', `${out}/prototypes/experience-workbench/journeys/02-home-orientation`, { recursive: true });
+cpSync('prototypes/experience-workbench/journeys/03-create-group', `${out}/prototypes/experience-workbench/journeys/03-create-group`, { recursive: true });
+cpSync('prototypes/experience-workbench/journeys/05-add-expense', `${out}/prototypes/experience-workbench/journeys/05-add-expense`, { recursive: true });
 
-console.log(`Packaged Golden-faithful V2 Gate A review slice with approved J01 ${actualJ01Sha256}.`);
+console.log(`Packaged Golden-faithful V2 Gate A guest-starter slice with approved J01 ${actualJ01Sha256}.`);
