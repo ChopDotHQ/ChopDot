@@ -12,6 +12,7 @@ for(const vp of [{width:393,height:852},{width:430,height:890}]){
   const context=await browser.newContext({viewport:vp});const page=await context.newPage();watch(page,`guest-${vp.width}x${vp.height}`);
   await page.goto(base,{waitUntil:'networkidle'});
   await page.getByText('Share & chop.',{exact:true}).waitFor();
+  await page.screenshot({path:new URL(`gate-a-front-door-${vp.width}x${vp.height}.png`,out).pathname,fullPage:true});
   await page.getByRole('button',{name:'Continue as guest'}).click();
   await page.waitForFunction(()=>window.ChopDotPreviewV2?.getCurrentJourney()==='J02'&&window.ChopDotPreviewV2?.getHomeMode()==='guest');
   const product=page.frameLocator('#product-frame');
@@ -37,11 +38,13 @@ for(const vp of [{width:393,height:852},{width:430,height:890}]){
   await product.getByRole('link',{name:'Create group'}).click();
   await product.getByRole('heading',{name:'Local Weekend is ready.'}).waitFor();
   await product.locator('#success').getByText('Local draft · saved on this device').waitFor();
+  await page.screenshot({path:new URL('gate-a-local-group-created-430x890.png',out).pathname,fullPage:true});
   await product.getByRole('link',{name:/Add expense/}).click();
   await page.waitForFunction(()=>window.ChopDotPreviewV2?.getCurrentJourney()==='J05');
   product=page.frameLocator('#product-frame');
   await product.getByLabel('Amount').fill('42');
   await product.getByLabel('Description').fill('Coffee');
+  await page.screenshot({path:new URL('gate-a-local-add-expense-430x890.png',out).pathname,fullPage:true});
   await product.getByRole('link',{name:'Add expense'}).last().click();
   await product.getByRole('heading',{name:'Coffee added.'}).waitFor();
   await product.getByText('Saved locally.').waitFor();
@@ -53,13 +56,20 @@ for(const vp of [{width:393,height:852},{width:430,height:890}]){
   await product.getByRole('button',{name:'Invite someone'}).click();
   await page.getByRole('heading',{name:'Ready to share?'}).waitFor();
   await page.getByText("Everything you've done stays.",{exact:true}).waitFor();
+  await page.screenshot({path:new URL('gate-a-account-boundary-430x890.png',out).pathname,fullPage:true});
   await page.getByRole('button',{name:'Not now'}).click();
   await page.waitForFunction(()=>window.ChopDotPreviewV2?.getCurrentJourney()==='J02');
   product=page.frameLocator('#product-frame');
   await product.getByText('Local Weekend',{exact:true}).waitFor();
   await product.getByText('1 expense',{exact:true}).waitFor();
   await page.screenshot({path:new URL('gate-a-local-loop-430x890.png',out).pathname,fullPage:true});
-  report.paths.push('front door → honest guest Home → Golden J03 local group → Golden J05 local expense → invite/account boundary → Not now preserves local work');
+  await page.reload({waitUntil:'networkidle'});
+  await page.getByRole('button',{name:'Continue as guest'}).click();
+  await page.waitForFunction(()=>window.ChopDotPreviewV2?.getCurrentJourney()==='J02'&&window.ChopDotPreviewV2?.getHomeMode()==='guest');
+  product=page.frameLocator('#product-frame');
+  await product.getByText('Local Weekend',{exact:true}).waitFor();
+  await product.getByText('1 expense',{exact:true}).waitFor();
+  report.paths.push('front door → honest guest Home → Golden J03 local group → Golden J05 local expense → invite/account boundary → Not now + reload preserve local work');
   await context.close();
 }
 
