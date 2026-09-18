@@ -22,7 +22,7 @@ Use this copy and hierarchy as the next bounded J01 prototype target:
 
 *Share & chop.*
 
-**[ Try as guest ]**
+**[ Continue as guest ]**
 
 **[ Create account ]**
 
@@ -36,16 +36,18 @@ It should orient the person, express ChopDot in one short line, and let them cho
 
 ## Entry modes
 
-### 1. Try as guest
+### 1. Continue as guest
 
-`Try as guest` enters a real local ChopDot experience without requiring authentication first.
+`Continue as guest` enters a real local ChopDot experience without requiring authentication first.
 
-Guest exploration should be able to support, at minimum, a bounded local-first experience such as:
-- entering Home / orientation;
+Guest exploration should support a bounded local-first experience such as:
+- entering an honest first-use Home / orientation state;
 - creating local draft group state;
 - adding and editing local draft expenses;
 - trying split mechanics and seeing resulting local balances;
 - understanding how ChopDot works before supplying an account identity.
+
+The guest Home must not impersonate a mature account. It must not show someone else's fake balances, notifications, groups, connected wallet, or other account-backed state as if it belongs to the guest.
 
 Guest exploration must not pretend that local-only state is already shared, synced, recovered across devices, or authorized for money movement.
 
@@ -71,7 +73,13 @@ The account requirement should appear when an action actually needs a durable sh
 
 > **Invite someone / begin sharing a locally created group with another person.**
 
+The current Gate A prototype temporarily routes guest `Start a group` / Add actions into account creation. That is now explicitly considered **too early** and must be corrected before Gate A acceptance. Starting a local draft is not, by itself, an account-required action.
+
 At that boundary ChopDot should explain the immediate reason for the account and preserve the person's local work through the transition.
+
+The reassurance should stay simple and explicit:
+
+> **Everything you've done stays.**
 
 Conceptually:
 
@@ -113,7 +121,7 @@ The following established semantics remain in force unless separately reviewed:
 
 ## Contextual entry exception
 
-When ChopDot is opened from meaningful context such as a group invitation, a small amount of context-specific information may appear because it changes the person's immediate decision.
+When ChopDot is opened from meaningful context such as a group invitation, the invite context should take precedence over the generic front door because ChopDot already knows why the person arrived. A small amount of context-specific information may appear because it changes the person's immediate decision.
 
 The invitation path must continue to support reviewing/continuing without requiring a full account first, consistent with the approved guest-participant direction.
 
@@ -132,10 +140,10 @@ These are presentation questions only and must not silently alter the entry/acco
 
 Gate A remains unaccepted until:
 
-1. the selected minimal front door is prototyped;
-2. the guest entry path reaches a believable local ChopDot experience without fake shared/account authority;
-3. `Create account` and `Sign in` are distinguishable and coherent;
-4. existing J01 identity/security semantics remain intact for authenticated paths;
+1. the selected minimal front door uses `Continue as guest` and is prototyped;
+2. the guest entry path reaches an honest first-use/local ChopDot experience without fake mature-account, shared, wallet, or sync authority;
+3. local draft exploration does not require an account merely to start a group or add local draft data; the first account wall appears at a real shared/account-backed capability and preserves local work;
+4. account conversion explicitly reassures the user that existing local work stays, and existing J01 identity/security semantics remain intact for authenticated paths;
 5. screenshots are re-captured at the canonical mobile viewports;
 6. the front door and guest/account transition are re-checked against the UX Laws;
 7. Devinson confirms the resulting entry experience feels like the right ChopDot front door.
