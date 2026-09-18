@@ -21,6 +21,7 @@ for(const vp of [{width:393,height:852},{width:430,height:890}]){
   const body=await product.locator('body').innerText();
   for(const token of mature)if(body.includes(token))throw new Error(`Guest Home leaked mature fixture: ${token}`);
   if(await product.locator('.wallet').isVisible())throw new Error('Guest Home exposed wallet');
+  if(await product.locator('.add-tab').isVisible())throw new Error('First-use Guest Home exposed Add Expense before a group exists');
   await page.screenshot({path:new URL(`gate-a-guest-first-use-${vp.width}x${vp.height}.png`,out).pathname,fullPage:true});
   report.viewports.push(`${vp.width}x${vp.height}`);
   await context.close();
