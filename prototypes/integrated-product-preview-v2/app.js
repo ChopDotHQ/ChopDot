@@ -280,7 +280,7 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
       </section>
       <div class="local-actions">
         <button class="local-action primary guest-add-expense" type="button">${svg(ICONS.receipt)} Add expense</button>
-        <button class="local-action guest-invite" type="button">${svg(ICONS.people)} Invite someone</button>
+        ${converted ? '' : `<button class="local-action guest-invite" type="button">${svg(ICONS.people)} Invite someone</button>`}
       </div>
     `;
   }
@@ -293,7 +293,7 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
   const add = content.querySelector('.guest-add-expense');
   if (add) add.addEventListener('click', openGuestExpense);
   const invite = content.querySelector('.guest-invite');
-  if (invite) invite.addEventListener('click', () => converted ? openInvite('account') : showAccountWall());
+  if (invite) invite.addEventListener('click', showAccountWall);
 
   const centerAdd = doc.querySelector('.add-tab');
   if (centerAdd) {
