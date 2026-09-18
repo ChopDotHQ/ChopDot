@@ -42,6 +42,34 @@ for(const vp of [{width:393,height:852},{width:430,height:890}]){
   await product.getByRole('link',{name:/Add expense/}).click();
   await page.waitForFunction(()=>window.ChopDotPreviewV2?.getCurrentJourney()==='J05');
   product=page.frameLocator('#product-frame');
+
+  // Human-walkthrough regression: Back from Add Expense must return to the real integrated group,
+  // never the isolated Golden's "Journey 08 leads here" handoff artifact.
+  await product.getByRole('link',{name:'Back'}).click();
+  await page.waitForFunction(()=>window.ChopDotPreviewV2?.getCurrentJourney()==='J02');
+  product=page.frameLocator('#product-frame');
+  await product.getByText('Local Weekend',{exact:true}).waitFor();
+  if((await product.locator('body').innerText()).includes('Journey 08 leads here'))throw new Error('J05 Back exposed isolated handoff artifact');
+
+  await product.getByRole('button',{name:'Add expense'}).click();
+  await page.waitForFunction(()=>window.ChopDotPreviewV2?.getCurrentJourney()==='J05');
+  product=page.frameLocator('#product-frame');
+
+  // Human-walkthrough regression: guest drafts may add name-only local people without creating an account.
+  await product.getByText('Paid by',{exact:true}).click();
+  await product.getByRole('heading',{name:'Who paid?'}).waitFor();
+  await product.getByRole('button',{name:/Add person/}).click();
+  await product.getByLabel('Person name').fill('Jeanine');
+  await product.locator('.guest-person-editor').getByRole('button',{name:'Add person'}).click();
+  await product.getByText('Paid by',{exact:true}).waitFor();
+  await product.getByText('Jeanine',{exact:true}).waitFor();
+
+  await product.getByText('Split equally',{exact:true}).click();
+  await product.getByRole('heading',{name:'Who shared it?'}).waitFor();
+  await product.getByText('Jeanine',{exact:true}).waitFor();
+  await product.getByRole('link',{name:'Done'}).click();
+  await product.getByText(/2 people/).waitFor();
+
   await product.getByLabel('Amount').fill('42');
   await product.getByLabel('Description').fill('Coffee');
   await page.screenshot({path:new URL('gate-a-local-add-expense-430x890.png',out).pathname,fullPage:true});
@@ -53,6 +81,10 @@ for(const vp of [{width:393,height:852},{width:430,height:890}]){
   product=page.frameLocator('#product-frame');
   await product.getByText('Local Weekend',{exact:true}).waitFor();
   await product.getByText('1 expense',{exact:true}).waitFor();
+  await product.getByText('2 people',{exact:false}).waitFor();
+  const guestState=await page.evaluate(()=>window.ChopDotPreviewV2?.getGuestState());
+  if(guestState?.people?.length!==1||guestState.people[0]?.name!=='Jeanine')throw new Error('Local draft person did not persist');
+  if(guestState?.expenses?.[0]?.payerId!==guestState.people[0]?.id)throw new Error('Selected local payer was not preserved on expense');
   await product.getByRole('button',{name:'Invite someone'}).click();
   await page.getByRole('heading',{name:'Ready to share?'}).waitFor();
   await page.getByText("Everything you've done stays.",{exact:true}).waitFor();
