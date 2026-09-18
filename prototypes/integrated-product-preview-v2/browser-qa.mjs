@@ -43,7 +43,6 @@ for(const vp of [{width:393,height:852},{width:430,height:890}]){
   await product.locator('#success').getByRole('link',{name:'Add people'}).waitFor();
   if(await product.locator('#success').getByText('Invite people',{exact:true}).count())throw new Error('Guest J03 still exposes invite-first CTA');
   await page.screenshot({path:new URL('gate-a-local-group-created-430x890.png',out).pathname,fullPage:true});
-  await product.locator('#success').getByRole('link',{name:'Add people'}).click();
   await product.getByRole('link',{name:/Add expense/}).click();
   await page.waitForFunction(()=>window.ChopDotPreviewV2?.getCurrentJourney()==='J05');
   product=page.frameLocator('#product-frame');
