@@ -64,7 +64,7 @@ for(const vp of [{width:393,height:852},{width:430,height:890}]){
   await product.getByRole('link',{name:/Paid by Who covered it/}).waitFor();
   await product.getByRole('link',{name:/Paid by Who covered it\? Jeanine/}).waitFor();
 
-  await product.getByText('Split equally',{exact:true}).click();
+  await product.getByRole('link',{name:/Split equally/}).click();
   await product.getByRole('heading',{name:'Who shared it?'}).waitFor();
   await product.locator('#split').getByText('Jeanine',{exact:true}).waitFor();
   await product.getByRole('link',{name:'Done'}).click();
