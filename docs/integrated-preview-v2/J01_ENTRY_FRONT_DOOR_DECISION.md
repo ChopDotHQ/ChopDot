@@ -43,7 +43,8 @@ It should orient the person, express ChopDot in one short line, and let them cho
 Guest exploration should support a bounded local-first experience such as:
 - entering an honest first-use Home / orientation state;
 - creating local draft group state;
-- adding and editing local draft expenses;
+- adding name-only local draft people without inviting or creating account-backed membership;
+- adding and editing local draft expenses, including choosing those local people as payer/participants;
 - trying split mechanics and seeing resulting local balances;
 - understanding how ChopDot works before supplying an account identity.
 
@@ -73,7 +74,7 @@ The account requirement should appear when an action actually needs a durable sh
 
 > **Invite someone / begin sharing a locally created group with another person.**
 
-The current Gate A prototype temporarily routes guest `Start a group` / Add actions into account creation. That is now explicitly considered **too early** and must be corrected before Gate A acceptance. Starting a local draft is not, by itself, an account-required action.
+Starting a local draft group, adding local draft people, or recording local draft expenses is not, by itself, an account-required action. Name-only local people remain local draft references: they are not Participants, members, invitees, accounts, wallets, or shared authority until an explicit later share/invite transition.
 
 At that boundary ChopDot should explain the immediate reason for the account and preserve the person's local work through the transition.
 
@@ -83,7 +84,7 @@ The reassurance should stay simple and explicit:
 
 Conceptually:
 
-`Try as guest → explore locally → create draft group/expenses → Invite someone → Create account → preserve local state → share/invite`
+`Continue as guest → explore locally → create draft group/people/expenses → Invite/share → Create account → preserve local state → share/invite`
 
 No locally created work should disappear merely because the guest creates an account.
 
@@ -130,7 +131,7 @@ The invitation path must continue to support reviewing/continuing without requir
 The copy/hierarchy above is selected. A bounded visual prototype may still compare:
 - vertical positioning and whitespace;
 - centered versus top-aligned wordmark;
-- visual weight of `Try as guest` versus `Create account`;
+- visual weight of `Continue as guest` versus `Create account`;
 - exact treatment of the tertiary `Sign in` action;
 - invite-context presentation.
 
@@ -142,7 +143,7 @@ Gate A remains unaccepted until:
 
 1. the selected minimal front door uses `Continue as guest` and is prototyped;
 2. the guest entry path reaches an honest first-use/local ChopDot experience without fake mature-account, shared, wallet, or sync authority;
-3. local draft exploration does not require an account merely to start a group or add local draft data; the first account wall appears at a real shared/account-backed capability and preserves local work;
+3. local draft exploration does not require an account merely to start a group, add local people, choose payer/participants, or add local expenses; the first account wall appears at a real shared/account-backed capability and preserves local work;
 4. account conversion explicitly reassures the user that existing local work stays, and existing J01 identity/security semantics remain intact for authenticated paths;
 5. screenshots are re-captured at the canonical mobile viewports;
 6. the front door and guest/account transition are re-checked against the UX Laws;
@@ -160,7 +161,7 @@ For the **review slice only**, Gate A therefore pulls forward the smallest alrea
 
 This is not permission to expand into the full later J03/J05 ownership graph, J04 shared invite implementation, J06/J07 review/correction, J08 Group Home, or production persistence. The purpose is narrowly to prove:
 
-`front door → honest first-use Home → local group → local expense → Invite someone → account boundary`
+`front door → honest first-use Home → local group → local people → local expense → Invite/share → account boundary`
 
 The account wall remains the first shared/account-backed boundary. Choosing `Not now` must preserve the local group and expense.
 
