@@ -36,7 +36,7 @@ for(const vp of [{width:393,height:852},{width:430,height:890}]){
   await product.getByLabel('Group name').fill('Local Weekend');
   await product.getByRole('link',{name:'Create group'}).click();
   await product.getByRole('heading',{name:'Local Weekend is ready.'}).waitFor();
-  await product.getByText('Local draft · saved on this device').waitFor();
+  await product.locator('#success').getByText('Local draft · saved on this device').waitFor();
   await product.getByRole('link',{name:/Add expense/}).click();
   await page.waitForFunction(()=>window.ChopDotPreviewV2?.getCurrentJourney()==='J05');
   product=page.frameLocator('#product-frame');
