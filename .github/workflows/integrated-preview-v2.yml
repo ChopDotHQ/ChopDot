@@ -7,6 +7,10 @@ on:
       - review/golden-faithful-v2-gate-a
     paths:
       - 'prototypes/integrated-product-preview-v2/**'
+      - 'prototypes/experience-workbench/journeys/01-enter-chopdot/**'
+      - 'prototypes/experience-workbench/journeys/02-home-orientation/**'
+      - 'prototypes/experience-workbench/journeys/03-create-group/**'
+      - 'prototypes/experience-workbench/journeys/05-add-expense/**'
       - 'docs/integrated-preview-v2/**'
       - '.github/workflows/integrated-preview-v2.yml'
   workflow_dispatch:
