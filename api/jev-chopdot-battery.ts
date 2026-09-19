@@ -276,7 +276,8 @@ export default {
         results,
       };
 
-      console.log('JEV_CHOPDOT_BATTERY_SUMMARY ' + JSON.stringify({ testedAt: payload.testedAt, modelRequested: payload.modelRequested, modelReturned: payload.modelReturned, requestCount: payload.requestCount, questionCount: payload.questionCount, matched: payload.matched, usage: payload.usage }));\n      for (const item of results) console.log('JEV_CHOPDOT_CASE ' + JSON.stringify(item));
+      console.log('JEV_CHOPDOT_BATTERY_SUMMARY ' + JSON.stringify({ testedAt: payload.testedAt, modelRequested: payload.modelRequested, modelReturned: payload.modelReturned, requestCount: payload.requestCount, questionCount: payload.questionCount, matched: payload.matched, usage: payload.usage }));
+      for (const item of results) console.log('JEV_CHOPDOT_CASE ' + JSON.stringify(item));
 
       const rows = results.map((item) => `
         <tr>
