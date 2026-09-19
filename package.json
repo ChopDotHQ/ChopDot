@@ -38,7 +38,7 @@
     "db:stop": "supabase stop",
     "db:status": "supabase status",
     "db:reset": "supabase db reset",
-    "prebuild": "node --experimental-strip-types index.ts"
+    "ai:example": "node --env-file=.env.local --experimental-strip-types index.ts"
   },
   "dependencies": {
     "@automerge/automerge": "^3.2.0",
