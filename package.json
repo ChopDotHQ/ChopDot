@@ -81,6 +81,7 @@
     "@walletconnect/modal": "^2.7.0",
     "@walletconnect/sign-client": "^2.23.0",
     "@walletconnect/types": "^2.23.0",
+    "ai": "^7.0.107",
     "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
