@@ -186,7 +186,7 @@ export default {
   async fetch() {
     try {
       const result = await evaluate({
-        model: gateway.evaluationModel('typesafe-ai/jev-latest'),
+        model: gateway.evaluationModel('typesafe-ai/jev'),
         state: sharedState,
         questions,
         maxRetries: 0,
@@ -217,7 +217,7 @@ export default {
 
       const payload = {
         testedAt: new Date().toISOString(),
-        modelRequested: 'typesafe-ai/jev-latest',
+        modelRequested: 'typesafe-ai/jev',
         modelReturned: result.response.modelId,
         requestCount: 1,
         questionCount: cases.length * gates.length,
