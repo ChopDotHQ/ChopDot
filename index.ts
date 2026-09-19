@@ -6,6 +6,10 @@ export async function inventHoliday() {
     prompt: 'Invent a new holiday and describe its traditions.',
   });
 
+  if (!text.trim()) {
+    throw new Error('AI Gateway returned empty text');
+  }
+
   return text;
 }
 
