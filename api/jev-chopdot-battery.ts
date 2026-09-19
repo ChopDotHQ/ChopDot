@@ -201,57 +201,141 @@ const cases: TestCase[] = [
   },
 ];
 
+const sharedState = {
+  product: 'ChopDot',
+  principles: {
+    local_first: true,
+    account_not_required_for_local_work: true,
+    local_people_are_not_invited_until_share: true,
+    share_is_optional: true,
+    respect_recent_dismissals: true,
+  },
+  cases: Object.fromEntries(cases.map((testCase) => [testCase.id, testCase.state])),
+};
+
+const questions = Object.fromEntries(
+  cases.map((testCase) => [
+    testCase.id,
+    {
+      type: 'choice' as const,
+      instructions:
+        `For case "${testCase.id}" only, choose the single best secondary UX suggestion. Read that case from state.cases["${testCase.id}"]. Preserve ChopDot's local-first behavior. Do not force account creation, do not treat locally added people as already invited, respect recent dismissal of sharing, and avoid nagging immediately after the user completes an action.`,
+      criteria,
+    },
+  ]),
+);
+
+function escapeHtml(value: unknown) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
 export const config = { maxDuration: 60 };
 
 export default {
   async fetch() {
-    const results = [];
-
-    for (const testCase of cases) {
+    try {
+      // One Jev request, twelve parallel typed questions.
       const result = await evaluate({
         model: gateway.evaluationModel('typesafe-ai/jev'),
-        state: testCase.state,
-        questions: {
-          next_suggestion: {
-            type: 'choice',
-            instructions:
-              'Choose the single best secondary UX suggestion for ChopDot right now. ChopDot is local-first: local work should stay usable without an account, adding people locally does not invite them, and sharing is optional. Never turn an optional share suggestion into a forced account prompt. Respect a recent dismissal and avoid nagging immediately after the user completes an action.',
-            criteria,
-          },
+        state: sharedState,
+        questions,
+        maxRetries: 0,
+      });
+
+      const results = cases.map((testCase) => {
+        const answer = result.answers[testCase.id];
+        const choice =
+          answer && answer.type === 'choice'
+            ? (answer.choice as Suggestion)
+            : null;
+
+        return {
+          id: testCase.id,
+          note: testCase.note,
+          expected: testCase.expected,
+          choice,
+          match: choice ? testCase.expected.includes(choice) : false,
+          probabilities:
+            answer && answer.type === 'choice' ? answer.probabilities : null,
+        };
+      });
+
+      const payload = {
+        testedAt: new Date().toISOString(),
+        modelRequested: 'typesafe-ai/jev',
+        modelReturned: result.response.modelId,
+        requestCount: 1,
+        questionCount: results.length,
+        matched: results.filter((item) => item.match).length,
+        usage: result.usage,
+        results,
+      };
+
+      console.log('JEV_CHOPDOT_BATTERY ' + JSON.stringify(payload));
+
+      const rows = results.map((item) => `
+        <tr>
+          <td>${escapeHtml(item.id)}</td>
+          <td>${escapeHtml(item.note)}</td>
+          <td><code>${escapeHtml(item.choice ?? 'NO_ANSWER')}</code></td>
+          <td>${item.match ? '✅' : '❌'}</td>
+          <td><code>${escapeHtml(item.expected.join(' / '))}</code></td>
+        </tr>`
+      ).join('');
+
+      return new Response(`<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Jev × ChopDot</title>
+  <style>
+    body{font-family:system-ui,-apple-system,sans-serif;margin:0;padding:20px;background:#fafafa;color:#111}
+    main{max-width:980px;margin:auto}
+    h1{font-size:24px;margin:0 0 8px}
+    p{color:#555}
+    .score{font-size:20px;font-weight:700;margin:18px 0}
+    .meta{font-size:13px;color:#666;margin-bottom:18px}
+    .wrap{overflow:auto;background:#fff;border:1px solid #ddd;border-radius:14px}
+    table{border-collapse:collapse;width:100%;min-width:780px}
+    th,td{text-align:left;padding:12px;border-bottom:1px solid #eee;vertical-align:top;font-size:13px}
+    th{background:#f5f5f5}
+    code{font-size:12px}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Human Jev vs AI Jev — ChopDot #001</h1>
+  <p>12 ChopDot journey states evaluated as 12 parallel typed questions in one real Jev request.</p>
+  <div class="score">${payload.matched} / ${payload.questionCount} matched the product expectations</div>
+  <div class="meta">Model: ${escapeHtml(payload.modelReturned)} · Gateway requests: 1 · Input tokens: ${escapeHtml(payload.usage?.inputTokens ?? '?')}</div>
+  <div class="wrap">
+    <table>
+      <thead><tr><th>Case</th><th>State</th><th>Jev</th><th></th><th>Expected</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>
+</main>
+</body>
+</html>`, {
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'no-store',
         },
       });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error('JEV_CHOPDOT_ERROR ' + message);
 
-      const answer = result.answers.next_suggestion;
-      const choice =
-        answer && answer.type === 'choice'
-          ? (answer.choice as Suggestion)
-          : null;
-
-      results.push({
-        id: testCase.id,
-        note: testCase.note,
-        expected: testCase.expected,
-        choice,
-        match: choice ? testCase.expected.includes(choice) : false,
-        probabilities:
-          answer && answer.type === 'choice' ? answer.probabilities : null,
-        model: result.response.modelId,
-        usage: result.usage,
+      return new Response(`<!doctype html><html><body style="font-family:system-ui;padding:24px"><h1>Jev test did not run</h1><pre style="white-space:pre-wrap">${escapeHtml(message)}</pre></body></html>`, {
+        status: 500,
+        headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' },
       });
     }
-
-    const payload = {
-      testedAt: new Date().toISOString(),
-      modelRequested: 'typesafe-ai/jev',
-      cases: results.length,
-      matched: results.filter((result) => result.match).length,
-      results,
-    };
-
-    console.log('JEV_CHOPDOT_BATTERY ' + JSON.stringify(payload));
-
-    return Response.json(payload, {
-      headers: { 'Cache-Control': 'no-store' },
-    });
   },
 };
