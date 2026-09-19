@@ -1,21 +1,39 @@
-import { generateText } from 'ai';
+import { experimental_evaluate as evaluate, gateway } from 'ai';
 
-export async function inventHoliday() {
-  const { text } = await generateText({
-    model: 'openai/gpt-5.5',
-    prompt: 'Invent a new holiday and describe its traditions.',
+export async function runJevSmokeTest() {
+  const result = await evaluate({
+    model: gateway.evaluationModel('typesafe-ai/jev'),
+    state: {
+      message: 'The support agent issued a full refund to the customer.',
+    },
+    questions: {
+      refunded: {
+        type: 'boolean',
+        instructions: 'Was a refund issued?',
+      },
+    },
+    providerOptions: {
+      gateway: {
+        zeroDataRetention: true,
+      },
+    },
   });
 
-  if (!text.trim()) {
-    throw new Error('AI Gateway returned empty text');
+  const answer = result.answers.refunded;
+
+  if (!answer || answer.type !== 'boolean') {
+    throw new Error('Jev did not return the expected boolean answer');
   }
 
-  return text;
+  console.log(
+    JSON.stringify({
+      model: result.response.modelId,
+      answer,
+      usage: result.usage,
+    }),
+  );
+
+  return result;
 }
 
-const isDirectRun = process.argv[1]?.endsWith('index.ts');
-
-if (isDirectRun) {
-  const text = await inventHoliday();
-  console.log(text);
-}
+await runJevSmokeTest();
