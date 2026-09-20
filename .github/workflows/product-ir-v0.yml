@@ -24,3 +24,5 @@ jobs:
         run: node research/product-ir-v0/invariant-probe.mjs
       - name: Run model-driven invariant probe
         run: node research/product-ir-v0/model-driven-probe.mjs
+      - name: Run mutation and blast-radius probe
+        run: node research/product-ir-v0/mutation-probe.mjs
