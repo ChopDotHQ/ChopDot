@@ -1,4 +1,6 @@
 // Product IR V0 tiny query surface.
+// Derives blast radius from rule subjects + semantic dependencies.
+//
 // Usage:
 //   node query.mjs decompose ExpenseAccounting
 //   node query.mjs why-untrusted Position SPLIT-003
@@ -15,12 +17,41 @@ function section(name){
  const tail=text.slice(i+marker.length); const n=tail.search(/^\S/m); return n>=0?tail.slice(0,n):tail;
 }
 const list=v=>v.replace(/^\[/,'').replace(/\]$/,'').split(',').map(x=>x.trim()).filter(Boolean);
-function impacts(){
- const out={};let id;
- for(const line of section('impact_rules').split('\n')){
-  let m=line.match(/^  ([A-Z0-9-]+):$/);if(m){id=m[1];out[id]={};continue;}
-  m=line.match(/^    ([a-z_]+): (\[.*\])$/);if(m&&id)out[id][m[1]]=list(m[2]);
- } return out;
+
+function ruleSubjects(){
+ const out={};let id=null;
+ for(const line of section('executable_rules').split('\n')){
+  let m=line.match(/^  - id: (.+)$/);if(m){id=m[1];continue;}
+  m=line.match(/^    subject: (.+)$/);if(m&&id)out[id]=m[1];
+ }
+ return out;
+}
+function dependencies(){
+ const edges=[];let from=null;
+ for(const line of section('semantic_dependencies').split('\n')){
+  let m=line.match(/^  - from: (.+)$/);if(m){from=m[1];continue;}
+  m=line.match(/^    uses: (\[.*\])$/);if(m&&from){for(const to of list(m[1]))edges.push({from,to});}
+ }
+ return edges;
+}
+function downstream(seeds){
+ const reverse=new Map();
+ for(const {from,to} of dependencies()){if(!reverse.has(to))reverse.set(to,new Set());reverse.get(to).add(from);}
+ const seen=new Set(seeds),queue=[...seeds];
+ while(queue.length){const x=queue.shift();for(const dep of reverse.get(x)||[]){if(!seen.has(dep)){seen.add(dep);queue.push(dep);}}}
+ return [...seen].sort();
+}
+function trace(ruleIds){
+ const subjects=ruleSubjects();
+ const seeds=[...new Set(ruleIds.map(id=>{assert.ok(subjects[id],`unknown rule ${id}`);return subjects[id];}))];
+ const nodes=downstream(seeds);
+ return {
+  rules:ruleIds,
+  subjects:seeds.sort(),
+  operations:nodes.filter(x=>x.includes('.')),
+  projections:nodes.filter(x=>/^J\d+$/.test(x)),
+  semantic:nodes.filter(x=>!x.includes('.')&&!/^J\d+$/.test(x))
+ };
 }
 function contract(name){
  const lines=section('composition_contracts').split('\n');let active=false;const out={name};
@@ -32,14 +63,9 @@ function contract(name){
  }
  assert.ok(out.inputs,`unknown composition contract ${name}`);return out;
 }
-function trace(ruleIds){
- const map=impacts();const invalidates=new Set(),operations=new Set(),projections=new Set();
- for(const id of ruleIds){assert.ok(map[id],`unknown rule ${id}`);for(const x of map[id].invalidates||[])invalidates.add(x);for(const x of map[id].affects_operations||[])operations.add(x);for(const x of map[id].affects_projections||[])projections.add(x);}
- return {rules:ruleIds,invalidates:[...invalidates].sort(),operations:[...operations].sort(),projections:[...projections].sort()};
-}
 let result;
 if(command==='decompose') result=contract(target);
-else if(command==='why-untrusted'){const t=trace(arg.split(',').filter(Boolean));assert.ok(t.invalidates.includes(target),`${target} not invalidated by supplied rules`);result={target,...t};}
-else if(command==='impact'){const t=trace(arg.split(',').filter(Boolean));result={change:target,...t};}
+else if(command==='why-untrusted'){const t=trace(arg.split(',').filter(Boolean));assert.ok([...t.semantic,...t.operations,...t.projections].includes(target),`${target} not downstream of supplied rules`);result={target,...t};}
+else if(command==='impact') result={change:target,...trace(arg.split(',').filter(Boolean))};
 else throw new Error(`unknown command ${command}`);
 console.log(JSON.stringify(result,null,2));
