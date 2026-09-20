@@ -1,19 +1,27 @@
 {
   "version": 2,
-  "role": "phase-c1-builder",
-  "status": "completed",
-  "journey": "Phase-C1",
-  "holder": null,
-  "branch": "phase-c1/guest-spend-contract-v1-candidate",
-  "fingerprint": "phase-c1|verified-complete|5699652005|7d4ddf29da8c150a5768d830d403a26245b8f835",
-  "candidate_head": "7d4ddf29da8c150a5768d830d403a26245b8f835",
-  "completed_at": "2026-09-16T15:02:11Z",
-  "expires_at": null,
+  "role": "gate-a-preview-builder",
+  "status": "claimed",
+  "journey": "Gate-A",
+  "holder": "chat-gate-a-closeout",
+  "branch": "review/golden-faithful-v2-gate-a",
+  "fingerprint": "gate-a|money-v1-bound|5752513063|5752932558|04f5978cf71b643d2287cfacf12aaccc76949e67",
+  "candidate_head": "04f5978cf71b643d2287cfacf12aaccc76949e67",
+  "claimed_at": "2026-09-20T22:01:00Z",
+  "renewed_at": "2026-09-20T22:01:00Z",
+  "expires_at": "2026-09-20T22:13:00Z",
   "authority": {
+    "human_request": "Devinson: Can you then finish gate A? — current chat execution instruction, not exact acceptance",
+    "reviewer_receipt_comment": 5752513063,
+    "security_finding_comment": 5752932558,
+    "scope": "Finish the existing preview-only MoneyV1 repair: governing magnitude bound and boundary regression evidence; stop at independent review."
+  },
+  "previous_completed_phase_c1": {
     "builder_handoff_comment": 5698129448,
     "reviewer_receipt_comment": 5698468135,
     "human_approval_comment": 5699165571,
-    "supervisor_closure_comment": 5699652005
+    "supervisor_closure_comment": 5699652005,
+    "completed_at": "2026-09-16T15:02:11Z"
   },
-  "note": "Phase C1 selective contract package is human-approved, materialized, resulting-state verified, and closed. This lease reserves no writer capacity. Any production implementation or later semantic mutation requires a separate explicit authority transition and a fresh eligible lease cycle."
+  "note": "Active preview writer only. Canonical Phase C1/J01 and all 28 Goldens remain sealed at 4ba456e6595330e4ca8e21366e0d827f17e10881. No Gate A acceptance, Gate B, production implementation, protected merge, real identity/payment or rail authority is created. Release immediately to waiting_ci after final push, or completed after sealed handoff."
 }
