@@ -4,6 +4,7 @@
 // deterministic remainder assignment independent of participant input order.
 
 export const PREVIEW_MONEY_EXPONENT = 2;
+export const MONEY_V1_MAX_ABS_MINOR_UNITS = 10n ** 30n;
 
 export function moneyFromPreviewDecimal(decimal, currency, exponent = PREVIEW_MONEY_EXPONENT) {
   if (typeof decimal !== 'string' || !/^(?:\d+)(?:\.\d+)?$/u.test(decimal)) {
@@ -22,6 +23,7 @@ export function moneyFromMinorUnits(minorUnits, currency, exponent = PREVIEW_MON
   if (!Number.isSafeInteger(exponent) || exponent < 0 || exponent > 12) throw new Error('Money exponent is invalid.');
   const amount = typeof minorUnits === 'bigint' ? minorUnits : parseCanonicalInteger(minorUnits);
   if (amount < 0n) throw new Error('Money amount cannot be negative.');
+  assertLimit(amount);
   return { v: 1, minorUnits: amount.toString(), currency, exponent };
 }
 
@@ -126,6 +128,7 @@ function assertMoney(value) {
   }
   const parsed = parseCanonicalInteger(value.minorUnits);
   if (parsed < 0n || parsed.toString() !== value.minorUnits) throw new Error('Money amount is not canonical.');
+  assertLimit(parsed);
   if (!/^[A-Z][A-Z0-9]{2,11}$/u.test(value.currency)) throw new Error('Money currency is invalid.');
   if (!Number.isSafeInteger(value.exponent) || value.exponent < 0 || value.exponent > 12) throw new Error('Money exponent is invalid.');
 }
@@ -133,4 +136,10 @@ function assertMoney(value) {
 function parseCanonicalInteger(value) {
   if (typeof value !== 'string' || !/^(?:0|[1-9]\d*)$/u.test(value)) throw new Error('Money minor units must be a canonical integer.');
   return BigInt(value);
+}
+
+function assertLimit(value) {
+  if (value > MONEY_V1_MAX_ABS_MINOR_UNITS || value < -MONEY_V1_MAX_ABS_MINOR_UNITS) {
+    throw new Error('Money amount exceeds the supported limit.');
+  }
 }
