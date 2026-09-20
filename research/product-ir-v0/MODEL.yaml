@@ -322,6 +322,8 @@ semantic_dependencies:
     uses: [Expense, Funding, Split]
   - from: Position.Recompute
     uses: [ExpenseAccounting]
+  - from: Position
+    uses: [Position.Recompute]
   - from: J05
     uses: [Expense.Create]
   - from: J06
