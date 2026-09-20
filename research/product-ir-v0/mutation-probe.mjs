@@ -1,6 +1,6 @@
 // Product IR V0 mutation + blast-radius probe.
-// Mutates valid semantic fixtures and asks the model which laws fail and
-// which product surfaces become untrustworthy.
+// Mutates valid semantic fixtures and derives downstream impact from
+// violated-rule subjects + semantic dependencies.
 
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -15,6 +15,8 @@ function section(name) {
   const next = tail.search(/^\S/m);
   return next >= 0 ? tail.slice(0,next) : tail;
 }
+function arr(v){ return v.replace(/^\[/,'').replace(/\]$/,'').split(',').map(x=>x.trim()).filter(Boolean); }
+
 function parseRules() {
   const lines=section('executable_rules').split('\n');
   const out=[]; let cur=null;
@@ -26,15 +28,19 @@ function parseRules() {
   }
   if(cur)out.push(cur); return out;
 }
-function arr(v){ return v.replace(/^\[/,'').replace(/\]$/,'').split(',').map(x=>x.trim()).filter(Boolean); }
-function parseImpact(){
-  const lines=section('impact_rules').split('\n'); const out={}; let id=null;
-  for(const line of lines){
-    const m=line.match(/^  ([A-Z0-9-]+):$/); if(m){id=m[1];out[id]={};continue;}
-    const kv=line.match(/^    ([a-z_]+): (\[.*\])$/); if(kv&&id)out[id][kv[1]]=arr(kv[2]);
-  } return out;
+function parseDependencies(){
+  const edges=[];let from=null;
+  for(const line of section('semantic_dependencies').split('\n')){
+    let m=line.match(/^  - from: (.+)$/);if(m){from=m[1];continue;}
+    m=line.match(/^    uses: (\[.*\])$/);if(m&&from){for(const to of arr(m[1]))edges.push({from,to});}
+  }
+  return edges;
 }
-const rules=parseRules(), impacts=parseImpact();
+const rules=parseRules();
+const byId=Object.fromEntries(rules.map(r=>[r.id,r]));
+const reverse=new Map();
+for(const {from,to} of parseDependencies()){if(!reverse.has(to))reverse.set(to,new Set());reverse.get(to).add(from);}
+
 const get=(o,p)=>p.split('.').reduce((v,k)=>v?.[k],o);
 function evalRule(r,e){
  if(r.kind==='sum_equals') return e[r.collection].reduce((n,x)=>n+get(x,r.value_path),0)===get(e,r.equals_path);
@@ -47,16 +53,22 @@ function evalRule(r,e){
  }
  throw new Error('unsupported '+r.kind);
 }
+function downstream(seeds){
+ const seen=new Set(seeds),queue=[...seeds];
+ while(queue.length){const x=queue.shift();for(const dep of reverse.get(x)||[]){if(!seen.has(dep)){seen.add(dep);queue.push(dep);}}}
+ return [...seen].sort();
+}
 function diagnose(e){
  const failed=rules.filter(r=>!evalRule(r,e)).map(r=>r.id);
- const invalidates=new Set(), operations=new Set(), projections=new Set();
- for(const id of failed){
-   const impact=impacts[id]||{};
-   for(const x of impact.invalidates||[])invalidates.add(x);
-   for(const x of impact.affects_operations||[])operations.add(x);
-   for(const x of impact.affects_projections||[])projections.add(x);
- }
- return {failed,invalidates:[...invalidates].sort(),operations:[...operations].sort(),projections:[...projections].sort()};
+ const subjects=[...new Set(failed.map(id=>byId[id].subject))];
+ const nodes=downstream(subjects);
+ return {
+   failed,
+   subjects:subjects.sort(),
+   operations:nodes.filter(x=>x.includes('.')),
+   projections:nodes.filter(x=>/^J\d+$/.test(x)),
+   semantic:nodes.filter(x=>!x.includes('.')&&!/^J\d+$/.test(x))
+ };
 }
 const CHF=n=>({currency:'CHF',minor_units:n});
 const base={
