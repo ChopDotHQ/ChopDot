@@ -26,3 +26,5 @@ jobs:
         run: node research/product-ir-v0/model-driven-probe.mjs
       - name: Run mutation and blast-radius probe
         run: node research/product-ir-v0/mutation-probe.mjs
+      - name: Run decomposition and recomposition probe
+        run: node research/product-ir-v0/composition-probe.mjs
