@@ -258,3 +258,30 @@ executable_rules:
     allocation_collection: allocations
     participant_path: participant
     value_path: amount.minor_units
+
+
+impact_rules:
+  FUND-001:
+    invalidates: [Expense, Position]
+    affects_operations: [Expense.Create, Expense.Edit, Position.Recompute]
+    affects_projections: [J05, J06, J08, J10, J11, J18, J24, J28]
+  FUND-002:
+    invalidates: [Expense, Position]
+    affects_operations: [Expense.Create, Expense.Edit, Position.Recompute]
+    affects_projections: [J05, J06, J08, J10, J11, J18, J24]
+  FUND-003:
+    invalidates: [Expense]
+    affects_operations: [Expense.Create, Expense.Edit]
+    affects_projections: [J05, J06, J18, J24]
+  SPLIT-002:
+    invalidates: [Split, Position]
+    affects_operations: [Expense.Create, Expense.Edit, Position.Recompute]
+    affects_projections: [J05, J06, J08, J10, J11, J18, J24]
+  SPLIT-003:
+    invalidates: [Split, Position]
+    affects_operations: [Expense.Create, Expense.Edit, Position.Recompute]
+    affects_projections: [J05, J06, J08, J10, J11, J18, J24]
+  POSITION-CONSERVATION:
+    invalidates: [Position]
+    affects_operations: [Position.Recompute]
+    affects_projections: [J08, J10, J11]
