@@ -1,3 +1,10 @@
+import {
+  allocationView,
+  formatPreviewMoney,
+  makeAllocationSnapshot,
+  moneyFromPreviewDecimal,
+} from './money-v1.js';
+
 const frame = document.getElementById('product-frame');
 const frontDoor = document.getElementById('front-door');
 const accountWall = document.getElementById('account-wall');
@@ -272,7 +279,6 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
     const expenseCount = state.expenses.length;
     const noun = expenseCount === 1 ? 'expense' : 'expenses';
     const peopleCount = 1 + state.people.length;
-    const peopleLabel = peopleCount === 1 ? 'only you' : `${peopleCount} people`;
     content.innerHTML = `
       <div><div class="eyebrow">${converted ? 'Account ready' : 'Saved locally'}</div><h1 class="hero">${converted ? 'Your work is still here.' : 'Keep going.'}</h1></div>
       <div class="section-head"><h2 class="h2">Your groups</h2></div>
@@ -292,7 +298,6 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
     `;
   }
 
-  // Group names and restored currency labels are data, never markup.
   const localName = content.querySelector('[data-local-group-name]');
   if (localName) localName.textContent = String(state.group?.name || '');
   const localMeta = content.querySelector('[data-local-group-meta]');
@@ -353,8 +358,6 @@ function addGuestGroupPeopleCss(doc) {
 }
 
 function returnToLocalHome() {
-  // Only the current in-memory verified entry can retain converted presentation.
-  // Never promote a stored accountCreated flag or restored session JSON to proof.
   const converted = homeMode === 'converted'
     && lastEntryState?.verified === true
     && lastEntryState?.route === 'home-reference';
@@ -375,19 +378,29 @@ function draftSaveNotice(doc, message = '') {
   }
 }
 
+function tryAllocationSnapshot(amountText, currency, participantIds) {
+  try {
+    return makeAllocationSnapshot(String(amountText || '').trim(), currency, participantIds);
+  } catch {
+    return null;
+  }
+}
+
 function persistLocalExpenseDraft(doc) {
   const current = loadGuestState();
   const amount = doc.querySelector('#entry .amount');
   const description = doc.querySelector('#entry .description');
   if (!current.group || !amount || !description) return false;
+  const participantIds = [...new Set(current.selectedParticipantIds || ['self'])];
   const draft = {
-    version: 1,
+    version: 2,
     groupId: current.group.id,
     currency: current.group.currency,
     amountText: amount.value,
     description: description.value,
     payerId: current.selectedPayerId || 'self',
-    participantIds: [...(current.selectedParticipantIds || ['self'])],
+    participantIds,
+    allocation: tryAllocationSnapshot(amount.value, current.group.currency, participantIds),
     method: 'equal', date: 'today', receipt: null,
   };
   try {
@@ -403,11 +416,10 @@ function persistLocalExpenseDraft(doc) {
 function restoreLocalExpenseDraft(doc) {
   const current = loadGuestState();
   const draft = current.expenseDraft;
-  const matches = draft?.version === 1 && draft.groupId === current.group?.id
+  const matches = (draft?.version === 1 || draft?.version === 2) && draft.groupId === current.group?.id
     && draft.currency === current.group?.currency;
   const amount = doc.querySelector('#entry .amount');
   const description = doc.querySelector('#entry .description');
-  // A new expense is not the Golden's example Dinner. Existing saved records stay intact.
   if (amount) amount.value = matches && typeof draft.amountText === 'string' ? draft.amountText : '';
   if (description) description.value = matches && typeof draft.description === 'string' ? draft.description : '';
   if (matches) {
@@ -418,14 +430,15 @@ function restoreLocalExpenseDraft(doc) {
   }
 }
 
-function localEqualShareView(amount, participantIds) {
-  // Same common-case division as the existing Gate A, shared across all summaries.
-  // Canonical integer allocation/rounding remains a separate Gate B qualification.
+function localEqualShareView(amount, currency, participantIds) {
   const ids = [...new Set(Array.isArray(participantIds) ? participantIds : [])];
-  const value = Number(amount);
-  const total = Number.isFinite(value) ? value : 0;
-  const each = ids.length ? total / ids.length : 0;
-  return { ids, total, count: ids.length, each, self: ids.includes('self') ? each : 0 };
+  if (!ids.length) {
+    const total = moneyFromPreviewDecimal('0', currency);
+    return { ids: [], total, count: 0, allocations: [], amountByParticipant: {}, equal: true, each: null, self: total };
+  }
+  const snapshot = tryAllocationSnapshot(amount, currency, ids)
+    || makeAllocationSnapshot('0', currency, ids);
+  return allocationView(snapshot, ids);
 }
 
 function renderGuestGroupPeopleEditor(doc, screen) {
@@ -436,7 +449,6 @@ function renderGuestGroupPeopleEditor(doc, screen) {
     panel.className = 'card guest-group-people-editor';
     screen.querySelector('.group-card')?.after(panel);
   }
-  // This template is constant. User-provided and restored labels are text nodes below.
   panel.innerHTML = `
     <div class="guest-group-editor-head"><div><b>People in this split</b><span>Add names now. Invite them only when you're ready to share.</span></div></div>
     <div class="guest-group-person-list"></div>
@@ -564,12 +576,15 @@ function applyGuestCreateGroupState(doc) {
 }
 
 function formatMoney(currency, value) {
-  const amount = Number(value || 0);
-  if (currency === 'EUR') return `€${amount.toFixed(2)}`;
-  if (currency === 'USD') return `$${amount.toFixed(2)}`;
-  return `CHF ${amount.toFixed(2)}`;
+  if (value && typeof value === 'object' && typeof value.minorUnits === 'string') {
+    return formatPreviewMoney(value);
+  }
+  try {
+    return formatPreviewMoney(moneyFromPreviewDecimal(String(value ?? 0), currency));
+  } catch {
+    return formatPreviewMoney(moneyFromPreviewDecimal('0', currency));
+  }
 }
-
 
 function localPeople(state = loadGuestState()) {
   return [
@@ -750,38 +765,45 @@ function syncGuestExpenseEntry(doc) {
   const group = state.group;
   if (!group) return;
   persistLocalExpenseDraft(doc);
-  const amount = doc.querySelector('#entry .amount')?.value || 0;
+  const amount = doc.querySelector('#entry .amount')?.value || '0';
   const description = String(doc.querySelector('#entry .description')?.value || 'Expense').trim() || 'Expense';
   const payer = personById(state.selectedPayerId || 'self', state);
   const selected = (state.selectedParticipantIds || ['self']).filter(id => localPeople(state).some(p => p.id === id));
-  const view = localEqualShareView(amount, selected);
+  const persistedDraft = loadGuestState().expenseDraft;
+  let view;
+  try {
+    view = persistedDraft?.allocation
+      ? allocationView(persistedDraft.allocation, selected)
+      : localEqualShareView(amount, group.currency, selected);
+  } catch {
+    view = localEqualShareView('0', group.currency, selected);
+  }
   const set = (selector, value) => { const node = doc.querySelector(selector); if (node) node.textContent = value; };
   set('#entry .header-title span', group.name);
   set('#entry .currency', group.currency);
   const payerValue = doc.querySelector('#entry a[href="#payer"] .row-value');
   if (payerValue?.firstChild) payerValue.firstChild.textContent = `${payer.name} `;
-  set('#entry a[href="#split"] .row-sub', `${view.count} ${view.count === 1 ? 'person' : 'people'} · ${formatMoney(group.currency, view.each)} each`);
+  const shareSummary = view.equal && view.each ? `${formatMoney(group.currency, view.each)} each` : 'exact shares';
+  set('#entry a[href="#split"] .row-sub', `${view.count} ${view.count === 1 ? 'person' : 'people'} · ${shareSummary}`);
   const splitValue = doc.querySelector('#entry a[href="#split"] .row-value');
   if (splitValue?.firstChild) splitValue.firstChild.textContent = view.count === localPeople(state).length ? 'Everyone ' : `${view.count} selected `;
   set('#payer .header-title span', `${description} · ${formatMoney(group.currency, view.total)}`);
   set('#split .header-title span', formatMoney(group.currency, view.total));
   const total = doc.querySelector('#split .split-total');
   if (total) {
-    // Replace only text, retaining the approved SVG affordance.
     for (const child of [...total.childNodes]) if (child.nodeType === 3) child.remove();
-    total.prepend(doc.createTextNode(`${formatMoney(group.currency, view.each)} each `));
+    total.prepend(doc.createTextNode(`${view.equal && view.each ? `${formatMoney(group.currency, view.each)} each` : 'Exact shares'} `));
   }
   for (const row of doc.querySelectorAll('#split .guest-member-button')) {
     const copy = row.querySelector(':scope > div > span');
     if (copy) copy.textContent = view.ids.includes(row.dataset.personId)
-      ? formatMoney(group.currency, view.each) : 'Not included';
+      ? formatMoney(group.currency, view.amountByParticipant[row.dataset.personId]) : 'Not included';
   }
 }
 
 function applyGuestExpenseState(doc) {
   const group = loadGuestState().group;
   if (!doc?.body || !group) return;
-  // The isolated Golden's example shortcut must not replace live local selections.
   for (const shortcut of doc.querySelectorAll('a[href="split-methods.html#split-two"]')) {
     shortcut.hidden = true;
     shortcut.style.display = 'none';
@@ -805,7 +827,13 @@ function applyGuestExpenseState(doc) {
     const success = doc.querySelector('#success');
     if (!expense || !success) return;
     const payer = personById(expense.payerId || 'self', current);
-    const view = localEqualShareView(expense.amount, expense.participantIds || ['self']);
+    let view;
+    try {
+      view = allocationView(expense.allocation, expense.participantIds || ['self']);
+    } catch {
+      success.dataset.moneyState = 'invalid';
+      return;
+    }
     const set = (selector, value) => { const node = success.querySelector(selector); if (node) node.textContent = value; };
     set('.header-title span', group.name);
     set('h1', `${expense.description} added.`);
@@ -814,6 +842,7 @@ function applyGuestExpenseState(doc) {
     set('.receipt-meta', `${payer.name} paid · Today`);
     set('.receipt-amount', formatMoney(expense.currency || group.currency, view.total));
     set('.shares b', formatMoney(expense.currency || group.currency, view.self));
+    success.dataset.moneyState = 'exact';
   };
   const beginAnother = () => {
     if (editing) return;
@@ -837,12 +866,15 @@ function applyGuestExpenseState(doc) {
       event.preventDefault();
       if (!editing) return;
       const raw = String(amountInput?.value || '').trim();
-      const amount = Number(raw);
       const description = String(descriptionInput?.value || '').trim();
       const current = loadGuestState();
       const ids = [...new Set(current.selectedParticipantIds || ['self'])];
       const validIds = new Set(localPeople(current).map(p => p.id));
-      if (!/^(?:\d+)(?:\.\d{1,2})?$/.test(raw) || !Number.isFinite(amount) || amount <= 0) {
+      let exactAllocation = null;
+      try {
+        exactAllocation = makeAllocationSnapshot(raw, group.currency, ids);
+      } catch {}
+      if (!exactAllocation || BigInt(exactAllocation.total.minorUnits) <= 0n) {
         amountInput?.setCustomValidity('Enter an amount greater than zero.');
         amountInput?.reportValidity();
         return;
@@ -860,8 +892,14 @@ function applyGuestExpenseState(doc) {
         saveGuestState({
           expenses: [...current.expenses, {
             id: `local-expense-${current.expenses.length + 1}`,
-            amount, description, currency: group.currency,
-            payerId: current.selectedPayerId || 'self', participantIds: ids,
+            amount: raw,
+            amountText: raw,
+            money: exactAllocation.total,
+            allocation: exactAllocation,
+            description,
+            currency: group.currency,
+            payerId: current.selectedPayerId || 'self',
+            participantIds: ids,
           }],
           expenseDraft: null,
           selectedPayerId: 'self',
