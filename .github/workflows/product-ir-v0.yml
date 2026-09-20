@@ -37,3 +37,5 @@ jobs:
         run: node research/product-ir-v0/change-plan.mjs Funding
       - name: Discover candidate implementation ownership
         run: node research/product-ir-v0/implementation-discovery.mjs
+      - name: Generate agent change packet
+        run: node research/product-ir-v0/agent-change-packet.mjs
