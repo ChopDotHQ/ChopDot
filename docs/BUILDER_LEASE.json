@@ -1,19 +1,19 @@
 {
   "version": 2,
   "role": "gate-a-preview-builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Gate-A",
-  "holder": "chat-gate-a-closeout",
+  "holder": null,
   "branch": "review/golden-faithful-v2-gate-a",
   "fingerprint": "gate-a|money-v1-bound|5752513063|5752932558|04f5978cf71b643d2287cfacf12aaccc76949e67",
-  "candidate_head": "04f5978cf71b643d2287cfacf12aaccc76949e67",
+  "candidate_head": "fe887a49ba622320031fdaa97f59f74ad25337bc",
   "claimed_at": "2026-09-20T22:01:00Z",
-  "renewed_at": "2026-09-20T22:01:00Z",
-  "expires_at": "2026-09-20T22:13:00Z",
+  "expires_at": null,
   "authority": {
     "human_request": "Devinson: Can you then finish gate A? — current chat execution instruction, not exact acceptance",
     "reviewer_receipt_comment": 5752513063,
     "security_finding_comment": 5752932558,
+    "builder_claim_comment": 5752997109,
     "scope": "Finish the existing preview-only MoneyV1 repair: governing magnitude bound and boundary regression evidence; stop at independent review."
   },
   "previous_completed_phase_c1": {
@@ -23,5 +23,5 @@
     "supervisor_closure_comment": 5699652005,
     "completed_at": "2026-09-16T15:02:11Z"
   },
-  "note": "Active preview writer only. Canonical Phase C1/J01 and all 28 Goldens remain sealed at 4ba456e6595330e4ca8e21366e0d827f17e10881. No Gate A acceptance, Gate B, production implementation, protected merge, real identity/payment or rail authority is created. Release immediately to waiting_ci after final push, or completed after sealed handoff."
+  "note": "No exclusive writer held during CI. Bound implementation 920f49bdc77f52ded6cabcfb4f006c6ef746b5b4; boundary evidence a6972305324a7052b558dc43624ea4764773e785; workflow fe887a49ba622320031fdaa97f59f74ad25337bc. Finish one exact handoff after native evidence; do not infer acceptance. Canonical C1/J01/28 Goldens stay sealed. Gate B and production remain held."
 }
