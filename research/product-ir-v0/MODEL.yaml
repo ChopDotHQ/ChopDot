@@ -224,3 +224,37 @@ experiment_change:
       - How do payer contributions interact with beneficiary allocations?
       - Does J10 gross exposure remain derivable without ambiguity?
       - Which downstream Activity/Export/Settlement projections become affected outside V0?
+
+
+executable_rules:
+  - id: FUND-001
+    kind: sum_equals
+    collection: funding
+    value_path: amount.minor_units
+    equals_path: amount.minor_units
+  - id: FUND-002
+    kind: all_equal_path
+    collection: funding
+    value_path: amount.currency
+    equals_path: amount.currency
+  - id: FUND-003
+    kind: all_members_in
+    collection: funding
+    member_path: participant
+    set_path: group_participants
+  - id: SPLIT-002
+    kind: all_equal_path
+    collection: allocations
+    value_path: amount.currency
+    equals_path: amount.currency
+  - id: SPLIT-003
+    kind: sum_equals
+    collection: allocations
+    value_path: amount.minor_units
+    equals_path: amount.minor_units
+  - id: POSITION-CONSERVATION
+    kind: participant_delta_zero_sum
+    funding_collection: funding
+    allocation_collection: allocations
+    participant_path: participant
+    value_path: amount.minor_units
