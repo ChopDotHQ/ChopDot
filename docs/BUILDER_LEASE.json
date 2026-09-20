@@ -1,20 +1,21 @@
 {
   "version": 2,
   "role": "gate-a-preview-builder",
-  "status": "waiting_ci",
+  "status": "claimed",
   "journey": "Gate-A",
-  "holder": null,
+  "holder": "chat-gate-a-closeout",
   "branch": "review/golden-faithful-v2-gate-a",
   "fingerprint": "gate-a|money-v1-bound|5752513063|5752932558|04f5978cf71b643d2287cfacf12aaccc76949e67",
   "candidate_head": "fe887a49ba622320031fdaa97f59f74ad25337bc",
   "claimed_at": "2026-09-20T22:01:00Z",
-  "expires_at": null,
+  "renewed_at": "2026-09-20T22:10:00Z",
+  "expires_at": "2026-09-20T22:22:00Z",
   "authority": {
-    "human_request": "Devinson: Can you then finish gate A? — current chat execution instruction, not exact acceptance",
+    "human_request": "Devinson: Can you then finish gate A? — execution, not exact acceptance",
     "reviewer_receipt_comment": 5752513063,
     "security_finding_comment": 5752932558,
     "builder_claim_comment": 5752997109,
-    "scope": "Finish the existing preview-only MoneyV1 repair: governing magnitude bound and boundary regression evidence; stop at independent review."
+    "scope": "MoneyV1 range closeout and evidence-driven layout correction on the preview-only reconstructed J05 stylesheet. No canonical Golden mutation."
   },
   "previous_completed_phase_c1": {
     "builder_handoff_comment": 5698129448,
@@ -23,5 +24,5 @@
     "supervisor_closure_comment": 5699652005,
     "completed_at": "2026-09-16T15:02:11Z"
   },
-  "note": "No exclusive writer held during CI. Bound implementation 920f49bdc77f52ded6cabcfb4f006c6ef746b5b4; boundary evidence a6972305324a7052b558dc43624ea4764773e785; workflow fe887a49ba622320031fdaa97f59f74ad25337bc. Finish one exact handoff after native evidence; do not infer acceptance. Canonical C1/J01/28 Goldens stay sealed. Gate B and production remain held."
+  "note": "Native range suite passed 46 browser checks plus 6 source checks; original screenshot exposed amount/description overlap at the accepted maximum. Fix only reconstructed preview stylesheet (absent from canonical 4ba456e) and add layout assertions before final handoff. All prior native task and allocation checks stay mandatory. Gate A acceptance, Gate B and production remain held."
 }
