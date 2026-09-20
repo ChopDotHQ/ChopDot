@@ -322,6 +322,8 @@ queries:
 
 
 semantic_dependencies:
+  - from: ExpenseAccounting
+    uses: [Funding, Split]
   - from: Expense
     uses: [Funding, Split]
   - from: Expense.Create
