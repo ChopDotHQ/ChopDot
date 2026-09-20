@@ -79,6 +79,12 @@ try {
       check(`${label}: correcting amount clears validity`, await product(page).getByLabel('Amount', { exact: true }).evaluate(input => input.validity.customError), false);
       check(`${label}: maximum is accepted into exact draft`, current.expenseDraft.allocation.total.minorUnits, String(max));
       check(`${label}: maximum draft allocation conserves`, current.expenseDraft.allocation.allocations.reduce((sum, row) => sum + BigInt(row.amount.minorUnits), 0n).toString(), String(max));
+      check(`${label}: maximum entry summary is contained`, await product(page).locator('#entry a[href="#split"] .row-sub').evaluate(el => el.scrollWidth <= el.clientWidth + 1));
+      await product(page).locator('#entry a[href="#split"]').click();
+      check(`${label}: maximum participant share is contained`, await product(page).locator('#split [data-person-id="self"] > div > span').evaluate(el => el.scrollWidth <= el.clientWidth + 1));
+      check(`${label}: maximum split summary is contained`, await product(page).locator('#split .split-summary').evaluate(el => el.scrollWidth <= el.clientWidth + 1));
+      await capture(page, `gate-a-money-range-split-${label}`);
+      await product(page).locator('#split').getByRole('link', { name: 'Done', exact: true }).click();
 
       // Fault injection changes storage availability, never product or identity state.
       await page.evaluate(() => {
@@ -101,6 +107,19 @@ try {
       check(`${label}: maximum completed allocation conserves`, saved.expenses[0].allocation.allocations.reduce((sum, row) => sum + BigInt(row.amount.minorUnits), 0n).toString(), String(max));
       check(`${label}: maximum receipt consumes exact saved money`, await product(page).locator('#success .receipt-amount').innerText(), `CHF ${maximum}`);
       check(`${label}: maximum receipt is marked exact`, await product(page).locator('#success').getAttribute('data-money-state'), 'exact');
+      const layout = await product(page).locator('#success .receipt-summary').evaluate(card => {
+        const title = card.querySelector('.receipt-top > :first-child');
+        const amount = card.querySelector('.receipt-amount');
+        const shareLabel = card.querySelector('.shares > span');
+        const shareAmount = card.querySelector('.shares > b');
+        return {
+          columnsSeparate: title.getBoundingClientRect().right + 1 <= amount.getBoundingClientRect().left,
+          sharesSeparate: shareLabel.getBoundingClientRect().right + 1 <= shareAmount.getBoundingClientRect().left,
+          textContained: [title, amount, shareAmount].every(el => el.scrollWidth <= el.clientWidth + 1),
+          cardContained: card.scrollWidth <= card.clientWidth + 1,
+        };
+      });
+      for (const [name, passed] of Object.entries(layout)) check(`${label}: maximum receipt ${name}`, passed);
       await capture(page, `gate-a-money-range-maximum-${label}`);
       await reopen(page);
       check(`${label}: maximum saved record survives real reload`, (await state(page)).expenses, saved.expenses);
@@ -109,7 +128,7 @@ try {
       await product(page).locator('#entry a[href="#success"]').click();
       check(`${label}: rejected second expense cannot alter saved records`, (await state(page)).expenses, saved.expenses);
       check(`${label}: range handling creates no account authority`, (await state(page)).accountCreated, false);
-      report.paths.push(`${label}: ordinary max+1 rejection → reload/rejection → correct to max → storage failure/retry → exact receipt → saved reload → second invalid submit`);
+      report.paths.push(`${label}: ordinary max+1 rejection → reload/rejection → correct to max → split/receipt layout → storage failure/retry → exact receipt → saved reload → second invalid submit`);
     } catch (error) {
       await capture(page, `gate-a-money-range-failure-${label}`).catch(() => {});
       throw error;
