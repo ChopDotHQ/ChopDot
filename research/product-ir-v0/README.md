@@ -120,3 +120,8 @@ Stop or shrink if:
 - `EXPERIMENT.md` — questions, benchmark, and acceptance protocol.
 
 Representation choice is intentionally provisional. V0 should teach us whether the semantic model is valuable before choosing CUE, XState, a TypeScript/Zod representation, or a purpose-built DSL.
+
+
+## Executable probe
+
+`invariant-probe.mjs` is the first deliberately tiny executable consumer of the V0 semantics. It checks Funding conservation, beneficiary-allocation conservation, currency consistency, and zero-sum per-expense Position deltas using integer minor units. It does **not** define ChopDot's remainder-allocation policy; the CHF 10 / 3 case only demonstrates that 3.33 + 3.33 + 3.33 is invalid and that a conserving allocation exists.
