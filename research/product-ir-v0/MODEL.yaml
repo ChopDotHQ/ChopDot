@@ -316,6 +316,8 @@ queries:
 
 
 semantic_dependencies:
+  - from: Expense
+    uses: [Funding, Split]
   - from: Expense.Create
     uses: [Expense, Funding, Split]
   - from: Expense.Edit
