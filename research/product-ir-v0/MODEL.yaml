@@ -228,31 +228,37 @@ experiment_change:
 
 executable_rules:
   - id: FUND-001
+    subject: Funding
     kind: sum_equals
     collection: funding
     value_path: amount.minor_units
     equals_path: amount.minor_units
   - id: FUND-002
+    subject: Funding
     kind: all_equal_path
     collection: funding
     value_path: amount.currency
     equals_path: amount.currency
   - id: FUND-003
+    subject: Funding
     kind: all_members_in
     collection: funding
     member_path: participant
     set_path: group_participants
   - id: SPLIT-002
+    subject: Split
     kind: all_equal_path
     collection: allocations
     value_path: amount.currency
     equals_path: amount.currency
   - id: SPLIT-003
+    subject: Split
     kind: sum_equals
     collection: allocations
     value_path: amount.minor_units
     equals_path: amount.minor_units
   - id: POSITION-CONSERVATION
+    subject: Position
     kind: participant_delta_zero_sum
     funding_collection: funding
     allocation_collection: allocations
