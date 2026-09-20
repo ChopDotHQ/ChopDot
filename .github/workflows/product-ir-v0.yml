@@ -39,5 +39,7 @@ jobs:
         run: node research/product-ir-v0/implementation-discovery.mjs
       - name: Discover second-ring implementation neighborhood
         run: node research/product-ir-v0/implementation-discovery-v2.mjs
+      - name: Rank implementation context into budget
+        run: node research/product-ir-v0/implementation-discovery-v3.mjs
       - name: Generate agent change packet
         run: node research/product-ir-v0/agent-change-packet.mjs
