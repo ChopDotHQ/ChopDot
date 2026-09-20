@@ -278,7 +278,7 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
       <div class="section-head"><h2 class="h2">Your groups</h2></div>
       <section class="card group">
         <div class="group-top">
-          <div><div class="group-name clamp">${state.group.name}</div><div class="group-meta clamp">${state.group.currency} · ${peopleLabel}${converted ? '' : ' · local'}</div></div>
+          <div><div class="group-name clamp" data-local-group-name></div><div class="group-meta clamp" data-local-group-meta></div></div>
           <div class="group-balance">${expenseCount} ${noun}</div>
         </div>
         <div class="group-status">
@@ -290,6 +290,15 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
         ${converted ? '' : `<button class="local-action guest-invite" type="button">${svg(ICONS.people)} Invite someone</button>`}
       </div>
     `;
+  }
+
+  // Group names and restored currency labels are data, never markup.
+  const localName = content.querySelector('[data-local-group-name]');
+  if (localName) localName.textContent = String(state.group?.name || '');
+  const localMeta = content.querySelector('[data-local-group-meta]');
+  if (localMeta && state.group) {
+    const count = 1 + state.people.length;
+    localMeta.textContent = `${state.group.currency} · ${count === 1 ? 'only you' : `${count} people`}${converted ? '' : ' · local'}`;
   }
 
   const wallet = doc.querySelector('.wallet');
@@ -343,6 +352,82 @@ function addGuestGroupPeopleCss(doc) {
   doc.head.appendChild(style);
 }
 
+function returnToLocalHome() {
+  // Only the current in-memory verified entry can retain converted presentation.
+  // Never promote a stored accountCreated flag or restored session JSON to proof.
+  const converted = homeMode === 'converted'
+    && lastEntryState?.verified === true
+    && lastEntryState?.route === 'home-reference';
+  openHome(converted ? lastEntryState : null, converted ? 'converted' : 'guest');
+}
+
+function draftSaveNotice(doc, message = '') {
+  let notice = doc.getElementById('local-draft-save-error');
+  if (!notice && message) {
+    notice = doc.createElement('p');
+    notice.id = 'local-draft-save-error';
+    notice.setAttribute('role', 'alert');
+    (doc.querySelector('#entry .app-content') || doc.querySelector('#entry'))?.append(notice);
+  }
+  if (notice) {
+    notice.textContent = message;
+    notice.hidden = !message;
+  }
+}
+
+function persistLocalExpenseDraft(doc) {
+  const current = loadGuestState();
+  const amount = doc.querySelector('#entry .amount');
+  const description = doc.querySelector('#entry .description');
+  if (!current.group || !amount || !description) return false;
+  const draft = {
+    version: 1,
+    groupId: current.group.id,
+    currency: current.group.currency,
+    amountText: amount.value,
+    description: description.value,
+    payerId: current.selectedPayerId || 'self',
+    participantIds: [...(current.selectedParticipantIds || ['self'])],
+    method: 'equal', date: 'today', receipt: null,
+  };
+  try {
+    saveGuestState({ expenseDraft: draft });
+    draftSaveNotice(doc);
+    return true;
+  } catch {
+    draftSaveNotice(doc, "Couldn't save on this device. Your details are still here.");
+    return false;
+  }
+}
+
+function restoreLocalExpenseDraft(doc) {
+  const current = loadGuestState();
+  const draft = current.expenseDraft;
+  const matches = draft?.version === 1 && draft.groupId === current.group?.id
+    && draft.currency === current.group?.currency;
+  const amount = doc.querySelector('#entry .amount');
+  const description = doc.querySelector('#entry .description');
+  // A new expense is not the Golden's example Dinner. Existing saved records stay intact.
+  if (amount) amount.value = matches && typeof draft.amountText === 'string' ? draft.amountText : '';
+  if (description) description.value = matches && typeof draft.description === 'string' ? draft.description : '';
+  if (matches) {
+    saveGuestState({
+      selectedPayerId: draft.payerId,
+      selectedParticipantIds: Array.isArray(draft.participantIds) ? [...draft.participantIds] : [],
+    });
+  }
+}
+
+function localEqualShareView(amount, participantIds) {
+  // Same common-case division as the existing Gate A, shared across all summaries.
+  // Canonical integer allocation/rounding remains a separate Gate B qualification.
+  const ids = [...new Set(Array.isArray(participantIds) ? participantIds : [])];
+  const value = Number(amount);
+  const total = Number.isFinite(value) ? value : 0;
+  const each = ids.length ? total / ids.length : 0;
+  return { ids, total, count: ids.length, each, self: ids.includes('self') ? each : 0 };
+}
+
 function renderGuestGroupPeopleEditor(doc, screen) {
   addGuestGroupPeopleCss(doc);
   let panel = screen.querySelector('.guest-group-people-editor');
@@ -351,43 +436,47 @@ function renderGuestGroupPeopleEditor(doc, screen) {
     panel.className = 'card guest-group-people-editor';
     screen.querySelector('.group-card')?.after(panel);
   }
-
-  const state = loadGuestState();
-  const rows = [
-    `<div class="guest-group-person"><span class="guest-group-person-avatar">Y</span><div class="guest-group-person-copy"><b>You</b><span>Already here</span></div></div>`,
-    ...state.people.map((person) => `<div class="guest-group-person"><span class="guest-group-person-avatar">${person.initials || initialsFor(person.name)}</span><div class="guest-group-person-copy"><b>${person.name}</b><span>You can invite them later</span></div></div>`),
-  ].join('');
-
+  // This template is constant. User-provided and restored labels are text nodes below.
   panel.innerHTML = `
     <div class="guest-group-editor-head"><div><b>People in this split</b><span>Add names now. Invite them only when you're ready to share.</span></div></div>
-    <div class="guest-group-person-list">${rows}</div>
+    <div class="guest-group-person-list"></div>
     <div class="guest-group-add-row">
       <input aria-label="Person name" maxlength="60" autocomplete="off" placeholder="e.g. Jeanine" />
       <button type="button">Add</button>
     </div>
     <button class="guest-group-editor-done" type="button">Done</button>
   `;
-
+  const list = panel.querySelector('.guest-group-person-list');
+  for (const person of localPeople()) {
+    const row = doc.createElement('div');
+    row.className = 'guest-group-person';
+    const avatar = doc.createElement('span');
+    avatar.className = 'guest-group-person-avatar';
+    avatar.textContent = person.self ? 'Y' : String(person.initials || initialsFor(person.name));
+    const copy = doc.createElement('div');
+    copy.className = 'guest-group-person-copy';
+    const name = doc.createElement('b');
+    name.textContent = String(person.name);
+    const hint = doc.createElement('span');
+    hint.textContent = person.self ? 'Already here' : 'You can invite them later';
+    copy.append(name, hint);
+    row.append(avatar, copy);
+    list.append(row);
+  }
   const input = panel.querySelector('input');
-  const add = panel.querySelector('.guest-group-add-row button');
   const commit = () => {
     const name = String(input.value || '').trim();
-    if (!name) {
-      input.focus();
-      return;
-    }
-    const latest = loadGuestState();
+    if (!name) { input.focus(); return; }
+    const current = loadGuestState();
     const id = `local-person-${Date.now()}`;
-    const nextPeople = [...latest.people, { id, name, initials: initialsFor(name), localDraft: true }];
-    const nextParticipants = Array.from(new Set([...(latest.selectedParticipantIds || ['self']), id]));
-    saveGuestState({ people: nextPeople, selectedParticipantIds: nextParticipants });
+    const people = [...current.people, { id, name, initials: initialsFor(name), localDraft: true }];
+    const selectedParticipantIds = [...new Set([...(current.selectedParticipantIds || ['self']), id])];
+    saveGuestState({ people, selectedParticipantIds });
     syncGuestGroupSuccess(doc);
     renderGuestGroupPeopleEditor(doc, screen);
   };
-  add.addEventListener('click', commit);
-  input.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') commit();
-  });
+  panel.querySelector('.guest-group-add-row button').addEventListener('click', commit);
+  input.addEventListener('keydown', event => { if (event.key === 'Enter') commit(); });
   panel.querySelector('.guest-group-editor-done').addEventListener('click', () => panel.remove());
   input.focus();
 }
@@ -563,6 +652,7 @@ function openLocalPersonEditor(doc, context) {
       selectedParticipantIds: nextParticipants,
       ...(context === 'payer' ? { selectedPayerId: id } : {}),
     });
+    editor.remove();
     renderGuestExpensePeople(doc);
     syncGuestExpenseEntry(doc);
     if (context === 'payer') frame.contentWindow.location.hash = '#entry';
@@ -659,128 +749,149 @@ function syncGuestExpenseEntry(doc) {
   const state = loadGuestState();
   const group = state.group;
   if (!group) return;
-
-  const amountInput = doc.querySelector('#entry .amount');
-  const descriptionInput = doc.querySelector('#entry .description');
-  const amount = Number(amountInput?.value || 0);
-  const description = String(descriptionInput?.value || 'Expense').trim() || 'Expense';
+  persistLocalExpenseDraft(doc);
+  const amount = doc.querySelector('#entry .amount')?.value || 0;
+  const description = String(doc.querySelector('#entry .description')?.value || 'Expense').trim() || 'Expense';
   const payer = personById(state.selectedPayerId || 'self', state);
-  const selectedIds = (state.selectedParticipantIds || ['self']).filter((id) => localPeople(state).some((person) => person.id === id));
-  const participantIds = selectedIds.length ? selectedIds : ['self'];
-  const participantCount = participantIds.length;
-  const share = participantCount ? amount / participantCount : amount;
-
-  const entryHeader = doc.querySelector('#entry .header-title span');
-  if (entryHeader) entryHeader.textContent = group.name;
-  const currency = doc.querySelector('#entry .currency');
-  if (currency) currency.textContent = group.currency;
-
-  const payerRow = doc.querySelector('#entry a[href="#payer"]');
-  if (payerRow) {
-    const value = payerRow.querySelector('.row-value');
-    if (value?.firstChild) value.firstChild.textContent = `${payer.name} `;
+  const selected = (state.selectedParticipantIds || ['self']).filter(id => localPeople(state).some(p => p.id === id));
+  const view = localEqualShareView(amount, selected);
+  const set = (selector, value) => { const node = doc.querySelector(selector); if (node) node.textContent = value; };
+  set('#entry .header-title span', group.name);
+  set('#entry .currency', group.currency);
+  const payerValue = doc.querySelector('#entry a[href="#payer"] .row-value');
+  if (payerValue?.firstChild) payerValue.firstChild.textContent = `${payer.name} `;
+  set('#entry a[href="#split"] .row-sub', `${view.count} ${view.count === 1 ? 'person' : 'people'} · ${formatMoney(group.currency, view.each)} each`);
+  const splitValue = doc.querySelector('#entry a[href="#split"] .row-value');
+  if (splitValue?.firstChild) splitValue.firstChild.textContent = view.count === localPeople(state).length ? 'Everyone ' : `${view.count} selected `;
+  set('#payer .header-title span', `${description} · ${formatMoney(group.currency, view.total)}`);
+  set('#split .header-title span', formatMoney(group.currency, view.total));
+  const total = doc.querySelector('#split .split-total');
+  if (total) {
+    // Replace only text, retaining the approved SVG affordance.
+    for (const child of [...total.childNodes]) if (child.nodeType === 3) child.remove();
+    total.prepend(doc.createTextNode(`${formatMoney(group.currency, view.each)} each `));
   }
-
-  const splitRow = doc.querySelector('#entry a[href="#split"]');
-  if (splitRow) {
-    const sub = splitRow.querySelector('.row-sub');
-    const value = splitRow.querySelector('.row-value');
-    if (sub) sub.textContent = `${participantCount} ${participantCount === 1 ? 'person' : 'people'} · ${formatMoney(group.currency, share)} each`;
-    if (value?.firstChild) value.firstChild.textContent = participantCount === localPeople(state).length ? 'Everyone ' : `${participantCount} selected `;
-  }
-
-  const payerHeader = doc.querySelector('#payer .header-title span');
-  if (payerHeader) payerHeader.textContent = `${description} · ${formatMoney(group.currency, amount)}`;
-  const splitHeader = doc.querySelector('#split .header-title span');
-  if (splitHeader) splitHeader.textContent = formatMoney(group.currency, amount);
-
   for (const row of doc.querySelectorAll('#split .guest-member-button')) {
-    const personId = row.dataset.personId;
-    const copy = row.querySelector('div span');
-    if (copy && participantIds.includes(personId)) copy.textContent = formatMoney(group.currency, share);
+    const copy = row.querySelector(':scope > div > span');
+    if (copy) copy.textContent = view.ids.includes(row.dataset.personId)
+      ? formatMoney(group.currency, view.each) : 'Not included';
   }
 }
 
 function applyGuestExpenseState(doc) {
-  const state = loadGuestState();
-  const group = state.group;
+  const group = loadGuestState().group;
   if (!doc?.body || !group) return;
-
+  // The isolated Golden's example shortcut must not replace live local selections.
+  for (const shortcut of doc.querySelectorAll('a[href="split-methods.html#split-two"]')) {
+    shortcut.hidden = true;
+    shortcut.style.display = 'none';
+  }
+  let editing = true;
+  restoreLocalExpenseDraft(doc);
   renderGuestExpensePeople(doc);
-
   const amountInput = doc.querySelector('#entry .amount');
   const descriptionInput = doc.querySelector('#entry .description');
-  if (amountInput) amountInput.addEventListener('input', () => syncGuestExpenseEntry(doc));
-  if (descriptionInput) descriptionInput.addEventListener('input', () => syncGuestExpenseEntry(doc));
+  for (const input of [amountInput, descriptionInput]) {
+    input?.addEventListener('input', () => {
+      input.setCustomValidity('');
+      if (editing) syncGuestExpenseEntry(doc);
+    });
+  }
   syncGuestExpenseEntry(doc);
 
   const syncSuccess = () => {
-    const latest = loadGuestState();
-    const expense = latest.expenses.at(-1);
-    if (!expense) return;
+    const current = loadGuestState();
+    const expense = current.expenses.at(-1);
     const success = doc.querySelector('#success');
-    if (!success) return;
-    const payer = personById(expense.payerId || 'self', latest);
-    const participantCount = Array.isArray(expense.participantIds) && expense.participantIds.length ? expense.participantIds.length : 1;
-    const shareAmount = Number(expense.amount || 0) / participantCount;
-    const header = success.querySelector('.header-title span');
-    if (header) header.textContent = group.name;
-    const h1 = success.querySelector('h1');
-    if (h1) h1.textContent = `${expense.description} added.`;
-    const p = success.querySelector('.success-wrap > p');
-    if (p) p.textContent = `Split between ${participantCount} ${participantCount === 1 ? 'person' : 'people'} · saved locally.`;
-    const label = success.querySelector('.receipt-top b');
-    if (label) label.textContent = expense.description;
-    const receiptMeta = success.querySelector('.receipt-meta');
-    if (receiptMeta) receiptMeta.textContent = `${payer.name} paid · Today`;
-    const total = success.querySelector('.receipt-amount');
-    if (total) total.textContent = formatMoney(group.currency, expense.amount);
-    const share = success.querySelector('.shares b');
-    if (share) share.textContent = formatMoney(group.currency, shareAmount);
+    if (!expense || !success) return;
+    const payer = personById(expense.payerId || 'self', current);
+    const view = localEqualShareView(expense.amount, expense.participantIds || ['self']);
+    const set = (selector, value) => { const node = success.querySelector(selector); if (node) node.textContent = value; };
+    set('.header-title span', group.name);
+    set('h1', `${expense.description} added.`);
+    set('.success-wrap > p', `Split between ${view.count} ${view.count === 1 ? 'person' : 'people'} · saved locally.`);
+    set('.receipt-top b', expense.description);
+    set('.receipt-meta', `${payer.name} paid · Today`);
+    set('.receipt-amount', formatMoney(expense.currency || group.currency, view.total));
+    set('.shares b', formatMoney(expense.currency || group.currency, view.self));
   };
-
-  doc.addEventListener('click', (event) => {
+  const beginAnother = () => {
+    if (editing) return;
+    editing = true;
+    const current = loadGuestState();
+    saveGuestState({ expenseDraft: null, selectedPayerId: 'self', selectedParticipantIds: localPeople(current).map(p => p.id) });
+    restoreLocalExpenseDraft(doc);
+    renderGuestExpensePeople(doc);
+    syncGuestExpenseEntry(doc);
+  };
+  doc.addEventListener('click', event => {
     const anchor = event.target.closest('a[href]');
     if (!anchor) return;
     const href = anchor.getAttribute('href');
-
     if (href === '#group' && anchor.closest('#entry')) {
       event.preventDefault();
-      openGuestHome();
+      if (persistLocalExpenseDraft(doc)) returnToLocalHome();
       return;
     }
-
     if (href === '#success' && anchor.closest('#entry')) {
-      const amount = Number(doc.querySelector('#entry .amount')?.value || 0);
-      const description = String(doc.querySelector('#entry .description')?.value || '').trim() || 'Expense';
-      const latest = loadGuestState();
-      const payerId = latest.selectedPayerId || 'self';
-      const participantIds = (latest.selectedParticipantIds || ['self']).filter((id) => localPeople(latest).some((person) => person.id === id));
-      saveGuestState({
-        expenses: [...latest.expenses, {
-          id: `local-expense-${latest.expenses.length + 1}`,
-          amount,
-          description,
-          currency: group.currency,
-          payerId,
-          participantIds: participantIds.length ? participantIds : ['self'],
-        }],
-      });
-      window.setTimeout(syncSuccess, 0);
+      event.preventDefault();
+      if (!editing) return;
+      const raw = String(amountInput?.value || '').trim();
+      const amount = Number(raw);
+      const description = String(descriptionInput?.value || '').trim();
+      const current = loadGuestState();
+      const ids = [...new Set(current.selectedParticipantIds || ['self'])];
+      const validIds = new Set(localPeople(current).map(p => p.id));
+      if (!/^(?:\d+)(?:\.\d{1,2})?$/.test(raw) || !Number.isFinite(amount) || amount <= 0) {
+        amountInput?.setCustomValidity('Enter an amount greater than zero.');
+        amountInput?.reportValidity();
+        return;
+      }
+      if (!description) {
+        descriptionInput?.setCustomValidity('Enter a description.');
+        descriptionInput?.reportValidity();
+        return;
+      }
+      if (!ids.length || ids.some(id => !validIds.has(id)) || !validIds.has(current.selectedPayerId || 'self')) {
+        draftSaveNotice(doc, 'Choose a payer and the people sharing this expense.');
+        return;
+      }
+      try {
+        saveGuestState({
+          expenses: [...current.expenses, {
+            id: `local-expense-${current.expenses.length + 1}`,
+            amount, description, currency: group.currency,
+            payerId: current.selectedPayerId || 'self', participantIds: ids,
+          }],
+          expenseDraft: null,
+          selectedPayerId: 'self',
+          selectedParticipantIds: localPeople(current).map(person => person.id),
+        });
+      } catch {
+        draftSaveNotice(doc, "Couldn't save on this device. Your details are still here.");
+        return;
+      }
+      editing = false;
+      syncSuccess();
+      frame.contentWindow.location.hash = '#success';
+      return;
     }
-
+    if (href === '#entry' && anchor.closest('#success')) beginAnother();
     if (href === '#group-updated') {
       event.preventDefault();
-      openGuestHome();
+      returnToLocalHome();
     }
   });
-
+  frame.contentWindow?.addEventListener('pagehide', () => { if (editing) persistLocalExpenseDraft(doc); });
   frame.contentWindow?.addEventListener('hashchange', () => {
-    if (frame.contentWindow.location.hash === '#group') {
-      openGuestHome();
+    const hash = frame.contentWindow.location.hash;
+    if (hash === '#group') {
+      if (!editing || persistLocalExpenseDraft(doc)) returnToLocalHome();
+      else frame.contentWindow.location.hash = '#entry';
       return;
     }
-    syncSuccess();
+    if (hash === '#entry' && !editing) beginAnother();
+    if (hash === '#success') syncSuccess();
   });
 }
 
