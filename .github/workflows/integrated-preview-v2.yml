@@ -12,6 +12,7 @@ on:
       - 'prototypes/experience-workbench/journeys/03-create-group/**'
       - 'prototypes/experience-workbench/journeys/05-add-expense/**'
       - 'docs/integrated-preview-v2/**'
+      - 'scripts/package-preview-v2-gate-a.mjs'
       - '.github/workflows/integrated-preview-v2.yml'
   workflow_dispatch:
 
@@ -42,9 +43,31 @@ jobs:
         run: npm ci --include=optional
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Build the exact Gate A preview package
+        run: node scripts/package-preview-v2-gate-a.mjs
+      - name: Record packaged source identities
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+          import { createHash } from 'node:crypto';
+          const paths = [
+            'prototypes/integrated-product-preview-v2/index.html',
+            'prototypes/integrated-product-preview-v2/styles.css',
+            'prototypes/integrated-product-preview-v2/app.js',
+            'prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html',
+            'prototypes/experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons.html',
+            'prototypes/experience-workbench/journeys/03-create-group/v2-golden-candidate.html',
+            'prototypes/experience-workbench/journeys/05-add-expense/source/core.html',
+            'prototypes/experience-workbench/journeys/05-add-expense/source/styles.css',
+          ];
+          const files = Object.fromEntries(paths.map(path => [path, createHash('sha256').update(readFileSync(`gate-a-dist/${path}`)).digest('hex')]));
+          const artifact = 'prototypes/integrated-product-preview-v2/artifacts';
+          mkdirSync(artifact, { recursive: true });
+          writeFileSync(`${artifact}/packaged-source-identities.json`, JSON.stringify({ commit: process.env.GITHUB_SHA, servedRoot: 'gate-a-dist', files }, null, 2));
+          NODE
       - name: Start static server
         run: |
-          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/chopdot-preview-v2.log 2>&1 &
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory gate-a-dist > /tmp/chopdot-preview-v2.log 2>&1 &
           for i in {1..20}; do
             curl -fsS http://127.0.0.1:4173/prototypes/integrated-product-preview-v2/index.html >/dev/null && exit 0
             sleep 1
