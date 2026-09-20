@@ -1,15 +1,14 @@
 {
   "version": 2,
   "role": "gate-a-preview-builder",
-  "status": "claimed",
+  "status": "waiting_ci",
   "journey": "Gate-A",
-  "holder": "chat-gate-a-closeout",
+  "holder": null,
   "branch": "review/golden-faithful-v2-gate-a",
   "fingerprint": "gate-a|money-v1-bound|5752513063|5752932558|04f5978cf71b643d2287cfacf12aaccc76949e67",
-  "candidate_head": "fe887a49ba622320031fdaa97f59f74ad25337bc",
+  "candidate_head": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
   "claimed_at": "2026-09-20T22:01:00Z",
-  "renewed_at": "2026-09-20T22:10:00Z",
-  "expires_at": "2026-09-20T22:22:00Z",
+  "expires_at": null,
   "authority": {
     "human_request": "Devinson: Can you then finish gate A? — execution, not exact acceptance",
     "reviewer_receipt_comment": 5752513063,
@@ -24,5 +23,5 @@
     "supervisor_closure_comment": 5699652005,
     "completed_at": "2026-09-16T15:02:11Z"
   },
-  "note": "Native range suite passed 46 browser checks plus 6 source checks; original screenshot exposed amount/description overlap at the accepted maximum. Fix only reconstructed preview stylesheet (absent from canonical 4ba456e) and add layout assertions before final handoff. All prior native task and allocation checks stay mandatory. Gate A acceptance, Gate B and production remain held."
+  "note": "Non-exclusive exact CI wait. Bound implementation 920f49bdc77f52ded6cabcfb4f006c6ef746b5b4 and reconstructed preview stylesheet d04f9742497b17bef78024a709eeb6682e0eafa3; test head 8548313791e4ef7b436ee742cd18c1fa48d74eeb adds range-layout assertions. Prior fe887a49 native range evidence was functional-pass but its maximum receipt overlapped; final exact screenshots/layout must pass before handoff. Canonical C1/J01/28 Goldens stay sealed. Gate A acceptance, Gate B and production remain held."
 }
