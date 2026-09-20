@@ -31,7 +31,24 @@ types:
       currency: Currency
       participants: ParticipantId[]
 
+  Contribution:
+    purpose: records_who_funded_the_expense
+    fields:
+      participant: ParticipantId
+      amount: Money
+    invariants:
+      - id: FUND-001
+        rule: sum(contribution.amount.minor_units) == expense.amount.minor_units
+      - id: FUND-002
+        rule: all_contribution_currencies_equal_expense_currency
+      - id: FUND-003
+        rule: every_contributor_belongs_to_group
+      - id: FUND-004
+        rule: contributor_uniqueness_policy_must_be_explicit
+        qualification: current_product_is_single_payer_so_multi_payer_uniqueness_is_not_yet_approved_product_law
+
   Allocation:
+    purpose: records_who_consumed_or_owes_the_expense
     fields:
       participant: ParticipantId
       amount: Money
@@ -59,10 +76,15 @@ types:
       amount: Money
       description: NonEmptyString
       payer: ParticipantId
+      funding: Contribution[]
       split: Split
       date: Date
       receipt: OptionalReceipt
       status: [draft, saved, deleted]
+    semantics:
+      funding: who_paid
+      split: who_owes_or_consumed
+      participant_delta: funded_amount_minus_beneficiary_allocation
     invariants:
       - id: EXP-001
         rule: payer_belongs_to_group
@@ -132,7 +154,10 @@ operations:
 
   Position.Recompute:
     kind: pure_derivation_target
-    requires: [POS-001, POS-002, POS-003, POS-004]
+    formula: per_participant_delta = funded_amount - beneficiary_allocation
+    requires: [FUND-001, FUND-002, SPLIT-002, SPLIT-003, POS-001, POS-002, POS-003, POS-004]
+    conservation:
+      rule: sum(per_participant_delta) == 0_per_expense_currency
 
 projections:
   J05:
@@ -147,6 +172,22 @@ projections:
   J10:
     uses: [Position]
     purpose: understand_people_group_and_currency_positions
+  J11:
+    uses: [Position]
+    relation: downstream_consumer
+    purpose: settlement_consumes_derived_obligations
+  J18:
+    uses: [Expense]
+    relation: downstream_projection
+    purpose: activity_and_history_representation
+  J24:
+    uses: [Expense, Split]
+    relation: downstream_projection
+    purpose: portable_export_preserves_financial_semantics
+  J28:
+    uses: [Expense.Create, Expense.Edit]
+    relation: recovery_governor
+    purpose: uncertain_result_idempotency_and_reconciliation
 
 experiment_change:
   id: MULTI_PAYER
@@ -157,6 +198,9 @@ experiment_change:
   expected_impact:
     invariants:
       - EXP-001
+      - FUND-001
+      - FUND-002
+      - FUND-003
       - SPLIT-003
       - POS-002
       - POS-003
@@ -169,6 +213,10 @@ experiment_change:
       - J06
       - J08
       - J10
+      - J11
+      - J18
+      - J24
+      - J28
     migration:
       rule: existing_single_payer_becomes_one_contribution_for_full_expense_amount
     questions:
