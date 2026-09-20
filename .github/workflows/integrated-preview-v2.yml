@@ -54,6 +54,7 @@ jobs:
             'prototypes/integrated-product-preview-v2/index.html',
             'prototypes/integrated-product-preview-v2/styles.css',
             'prototypes/integrated-product-preview-v2/app.js',
+            'prototypes/integrated-product-preview-v2/money-v1.js',
             'prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html',
             'prototypes/experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons.html',
             'prototypes/experience-workbench/journeys/03-create-group/v2-golden-candidate.html',
@@ -76,6 +77,8 @@ jobs:
           exit 1
       - name: Run Golden Gate A browser walkthrough
         run: node prototypes/integrated-product-preview-v2/browser-qa.mjs
+      - name: Run exact MoneyV1 equal-allocation walkthrough
+        run: node prototypes/integrated-product-preview-v2/exact-money-browser-qa.mjs
       - name: Upload Gate A evidence
         if: always()
         uses: actions/upload-artifact@v4
