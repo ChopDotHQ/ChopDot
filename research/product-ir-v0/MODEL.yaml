@@ -1,0 +1,178 @@
+version: product-ir-v0
+status: experimental_non_authoritative
+scope: expense_split_position
+
+sources:
+  authority_commit: 9128bb55d8aed29b5c31fb6d769af39f2651cb76
+  journeys:
+    J05: prototypes/experience-workbench/journeys/05-add-expense/spec.md
+    J06: prototypes/experience-workbench/journeys/06-review-correct-expense/spec.md
+    J08: prototypes/experience-workbench/journeys/08-group-home/spec.md
+    J10: prototypes/experience-workbench/journeys/10-overall-position/spec.md
+
+types:
+  Money:
+    fields:
+      currency: Currency
+      minor_units: Integer
+    invariants:
+      - id: MONEY-001
+        rule: minor_units >= 0
+      - id: MONEY-002
+        rule: arithmetic_never_silently_combines_different_currencies
+
+  Participant:
+    fields:
+      id: ParticipantId
+
+  Group:
+    fields:
+      id: GroupId
+      currency: Currency
+      participants: ParticipantId[]
+
+  Allocation:
+    fields:
+      participant: ParticipantId
+      amount: Money
+
+  Split:
+    fields:
+      method: [equal, exact, shares]
+      participants: ParticipantId[]
+      allocations: Allocation[]
+    invariants:
+      - id: SPLIT-001
+        rule: allocation_participants_are_selected_participants
+      - id: SPLIT-002
+        rule: all_allocation_currencies_equal_expense_currency
+      - id: SPLIT-003
+        rule: sum(allocation.amount.minor_units) == expense.amount.minor_units
+      - id: SPLIT-004
+        rule: equal_split_remainder_policy_must_be_deterministic
+        qualification: policy_not_encoded_in_v0_until_existing_authority_is_identified
+
+  Expense:
+    fields:
+      id: ExpenseId
+      group: GroupId
+      amount: Money
+      description: NonEmptyString
+      payer: ParticipantId
+      split: Split
+      date: Date
+      receipt: OptionalReceipt
+      status: [draft, saved, deleted]
+    invariants:
+      - id: EXP-001
+        rule: payer_belongs_to_group
+      - id: EXP-002
+        rule: split_participants_are_subset_of_group_participants
+      - id: EXP-003
+        rule: saved_expense_has_valid_amount_description_and_split
+
+  Position:
+    kind: derived_read_model
+    derived_from:
+      - saved_expenses
+      - valid_settlement_effects
+      - issue_readiness
+    invariants:
+      - id: POS-001
+        rule: different_currencies_never_combine_silently
+      - id: POS-002
+        rule: person_netting_only_same_two_people_and_same_currency
+      - id: POS-003
+        rule: source_group_lineage_remains_explainable
+      - id: POS-004
+        rule: unresolved_issue_only_marks_dependent_balance_may_change
+
+operations:
+  Expense.Create:
+    inputs: [group, amount, description]
+    defaults:
+      payer: viewer_participant
+      participants: all_group_participants
+      split_method: equal
+      date: today
+      receipt: none
+    transitions:
+      - from: absent
+        event: begin
+        to: draft
+      - from: draft
+        event: save_valid
+        to: saved
+        requires: [EXP-001, EXP-002, EXP-003, SPLIT-001, SPLIT-002, SPLIT-003]
+        effects: [Position.Recompute]
+      - from: draft
+        event: save_failed
+        to: draft
+        guarantees: [entered_details_preserved]
+    recovery:
+      possible_duplicate: warn_without_trapping
+      offline: local_save_allowed_by_J05_contract
+      failure: preserve_entered_details
+
+  Expense.Edit:
+    from: saved
+    authorization: expense_owner_or_authorized_role
+    reuse_controls_from: Expense.Create
+    effects:
+      - update_expense
+      - update_or_reset_review_status_transparently
+      - Position.Recompute
+
+  Expense.Delete:
+    from: saved
+    authorization: expense_owner_or_authorized_role
+    requires: explicit_confirmation
+    to: deleted
+    effects: [Position.Recompute]
+
+  Position.Recompute:
+    kind: pure_derivation_target
+    requires: [POS-001, POS-002, POS-003, POS-004]
+
+projections:
+  J05:
+    uses: [Expense.Create, Expense, Split]
+    purpose: create_shared_expense
+  J06:
+    uses: [Expense, Expense.Edit, Expense.Delete, Split]
+    purpose: understand_and_correct_existing_expense
+  J08:
+    uses: [Expense, Position]
+    purpose: group_overview_and_contextual_handoffs
+  J10:
+    uses: [Position]
+    purpose: understand_people_group_and_currency_positions
+
+experiment_change:
+  id: MULTI_PAYER
+  from:
+    Expense.payer: ParticipantId
+  to:
+    Expense.payers: Contribution[]
+  expected_impact:
+    invariants:
+      - EXP-001
+      - SPLIT-003
+      - POS-002
+      - POS-003
+    operations:
+      - Expense.Create
+      - Expense.Edit
+      - Position.Recompute
+    projections:
+      - J05
+      - J06
+      - J08
+      - J10
+    migration:
+      rule: existing_single_payer_becomes_one_contribution_for_full_expense_amount
+    questions:
+      - Does payer contribution conservation require a new invariant?
+      - How do payer contributions interact with beneficiary allocations?
+      - Does J10 gross exposure remain derivable without ambiguity?
+      - Which downstream Activity/Export/Settlement projections become affected outside V0?
