@@ -1,20 +1,32 @@
 {
   "version": 2,
   "role": "gate-a-preview-builder",
-  "status": "waiting_ci",
+  "status": "completed",
   "journey": "Gate-A",
   "holder": null,
   "branch": "review/golden-faithful-v2-gate-a",
   "fingerprint": "gate-a|money-v1-bound|5752513063|5752932558|04f5978cf71b643d2287cfacf12aaccc76949e67",
   "candidate_head": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
   "claimed_at": "2026-09-20T22:01:00Z",
+  "completed_at": "2026-09-20T22:24:00Z",
   "expires_at": null,
   "authority": {
     "human_request": "Devinson: Can you then finish gate A? — execution, not exact acceptance",
     "reviewer_receipt_comment": 5752513063,
     "security_finding_comment": 5752932558,
     "builder_claim_comment": 5752997109,
+    "builder_review_request_comment": 5753100923,
+    "security_review_request_comment": 5753102982,
     "scope": "MoneyV1 range closeout and evidence-driven layout correction on the preview-only reconstructed J05 stylesheet. No canonical Golden mutation."
+  },
+  "evidence": {
+    "preview_workflow_run": 35540924708,
+    "artifact_id": 10614985795,
+    "artifact_sha256": "49bffb9bfb04f0eb12262f6171194d67133cf844bf6c646b9e410083acbd8157",
+    "native_browser_assertions": 260,
+    "additional_source_checks": 6,
+    "original_pngs": 34,
+    "exact_head_workflows": "Preview V2, CI, Coverage, Smoke, Cypress: all success"
   },
   "previous_completed_phase_c1": {
     "builder_handoff_comment": 5698129448,
@@ -23,5 +35,5 @@
     "supervisor_closure_comment": 5699652005,
     "completed_at": "2026-09-16T15:02:11Z"
   },
-  "note": "Non-exclusive exact CI wait. Bound implementation 920f49bdc77f52ded6cabcfb4f006c6ef746b5b4 and reconstructed preview stylesheet d04f9742497b17bef78024a709eeb6682e0eafa3; test head 8548313791e4ef7b436ee742cd18c1fa48d74eeb adds range-layout assertions. Prior fe887a49 native range evidence was functional-pass but its maximum receipt overlapped; final exact screenshots/layout must pass before handoff. Canonical C1/J01/28 Goldens stay sealed. Gate A acceptance, Gate B and production remain held."
+  "note": "Builder work and one sealed review handoff completed; no writer capacity reserved. Next owner is independent Reviewer/Security, then Supervisor/human Gate A acceptance. Do not re-consume old REVISE events or treat completed Builder work/green CI as Gate A acceptance. Canonical C1/J01/28 Goldens remain sealed at 4ba456e6595330e4ca8e21366e0d827f17e10881. Gate B, Product Integrator and production remain held."
 }
