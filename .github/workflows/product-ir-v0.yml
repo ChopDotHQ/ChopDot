@@ -33,3 +33,5 @@ jobs:
           node research/product-ir-v0/query.mjs decompose ExpenseAccounting
           node research/product-ir-v0/query.mjs why-untrusted Position SPLIT-003
           node research/product-ir-v0/query.mjs impact Expense.funding FUND-001,FUND-002,FUND-003
+      - name: Derive impact from semantic dependencies
+        run: node research/product-ir-v0/derived-impact-probe.mjs
