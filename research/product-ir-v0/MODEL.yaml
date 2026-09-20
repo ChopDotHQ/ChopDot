@@ -313,3 +313,28 @@ queries:
   impact:
     Expense.funding:
       trace_via: [composition_contracts.ExpenseAccounting, impact_rules]
+
+
+semantic_dependencies:
+  - from: Expense.Create
+    uses: [Expense, Funding, Split]
+  - from: Expense.Edit
+    uses: [Expense, Funding, Split]
+  - from: Position.Recompute
+    uses: [ExpenseAccounting]
+  - from: J05
+    uses: [Expense.Create]
+  - from: J06
+    uses: [Expense.Edit, Expense.Delete]
+  - from: J08
+    uses: [Position]
+  - from: J10
+    uses: [Position]
+  - from: J11
+    uses: [Position]
+  - from: J18
+    uses: [Expense]
+  - from: J24
+    uses: [Expense, Split]
+  - from: J28
+    uses: [Expense.Create, Expense.Edit]
