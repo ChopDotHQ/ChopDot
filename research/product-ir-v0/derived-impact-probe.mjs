@@ -49,8 +49,18 @@ for(const c of cases){
  const extraDerived=derivedJourneys.filter(x=>!declared.includes(x));
  report.push({rule:c.rule,seeds:c.seeds,derivedJourneys,declared,missingDeclared,extraDerived});
 }
-// The graph must derive the core accounting consumers without per-rule journey lists.
-for(const row of report){
- for(const j of ['J08','J10','J11']) assert.ok(row.derivedJourneys.includes(j),`${row.rule} failed to derive ${j}`);
+// The derived graph must cover every journey previously named by the hand-authored oracle.
+// Extra derived journeys are intentionally reported for review: they may reveal that the
+// oracle was under-specified, but they do not automatically become product authority.
+for (const row of report) {
+  assert.deepEqual(
+    row.missingDeclared,
+    [],
+    `${row.rule} failed to derive oracle journeys: ${row.missingDeclared.join(', ')}`
+  );
 }
-console.log(JSON.stringify({edgeCount:edges.length,report},null,2));
+console.log(JSON.stringify({
+  edgeCount: edges.length,
+  oracleCoverage: 'complete',
+  report
+}, null, 2));
