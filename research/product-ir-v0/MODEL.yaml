@@ -285,3 +285,31 @@ impact_rules:
     invalidates: [Position]
     affects_operations: [Position.Recompute]
     affects_projections: [J08, J10, J11]
+
+
+composition_contracts:
+  ExpenseAccounting:
+    inputs: [Expense.amount, Expense.funding, Expense.split, Group.participants]
+    requires: [FUND-001, FUND-002, FUND-003, SPLIT-002, SPLIT-003]
+    derives:
+      participant_delta:
+        formula: funded_amount - beneficiary_allocation
+        unit: minor_units_per_currency
+      position_conservation:
+        formula: sum(participant_delta)
+        equals: 0
+    outputs: [Position]
+    consumers: [J08, J10, J11]
+    observers: [J18, J24]
+    recovery_governor: J28
+
+queries:
+  decompose:
+    ExpenseAccounting:
+      returns: [inputs, requires, derives, outputs, consumers, observers, recovery_governor]
+  why_untrusted:
+    Position:
+      trace_via: [composition_contracts.ExpenseAccounting, executable_rules, impact_rules]
+  impact:
+    Expense.funding:
+      trace_via: [composition_contracts.ExpenseAccounting, impact_rules]
