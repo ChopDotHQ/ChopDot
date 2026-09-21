@@ -1,0 +1,1156 @@
+{
+  "schema_version": 1,
+  "schema_id": "chopdot-product-schema-v1-stage-1",
+  "stage": {
+    "id": 1,
+    "name": "Frozen product inventory",
+    "status": "complete"
+  },
+  "purpose": "Pin the exact approved ChopDot product and accepted Gate A integration baseline before semantic normalization or Gate B composition.",
+  "freeze_rules": {
+    "product_truth_frozen": true,
+    "approved_golden_bytes_must_not_change": true,
+    "approved_journey_semantics_must_not_change": true,
+    "gate_a_accepted_product_bytes_must_not_change": true,
+    "product_schema_is_derived_not_authority": true,
+    "implementation_or_research_findings_do_not_redefine_product_truth": true,
+    "unknown_product_policy_remains_unknown": true
+  },
+  "authority": {
+    "product": {
+      "repository": "ChopDotHQ/ChopDot",
+      "branch": "ux/experience-workbench",
+      "commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "tree": "cb424dafedff066fed433e106eb4468bec985d98",
+      "registered_journeys": 28,
+      "golden_count": 28,
+      "status": "validated-frozen",
+      "authority_order": [
+        "registry/progress.json and registry/journeys.json",
+        "registry/approvals/*.json",
+        "registry/golden-artifact-locks.json and registry/goldens.manifest.json",
+        "journey-local spec/state/edge-case/decision-history sources",
+        "DESIGN_CONTRACT.md",
+        "historical prose, screenshots, and implementation code as reference only"
+      ]
+    },
+    "phase_c1": {
+      "canonical_branch": "ux/experience-workbench",
+      "canonical_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "lock": {
+        "path": "prototypes/experience-workbench/registry/phase-c1-contract-lock.json",
+        "git_blob": "54e2ab352955ba3470faa3fa5a8f88571c647ca8"
+      },
+      "contract_tree": {
+        "path": "prototypes/experience-workbench/contracts/phase-c1",
+        "git_tree": "6dbbbfc0da6638b976bf1d6e4829529923e4c35c"
+      },
+      "semantics": "Selective post-J28 contracts are overlays; they do not replace unrelated Golden authority."
+    }
+  },
+  "accepted_integration": {
+    "gate_a": {
+      "status": "accepted-materialized-verified",
+      "closed": true,
+      "accepted_source": {
+        "branch": "review/golden-faithful-v2-gate-a",
+        "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+        "tree": "01691d4fe04dcce9499e11ae26d481eb2a7890c6"
+      },
+      "acceptance_record": {
+        "branch": "ops/chatgpt-work-factory-v1",
+        "branch_head": "5fae995def5eee931aea9e658f75d04407ea7c98",
+        "path": "docs/integrated-preview-v2/GATE_A_ACCEPTANCE.json",
+        "git_blob": "f50cfea11b6ade1b51423af556742a9574bc5de6"
+      },
+      "accepted_scope": "Bounded guest-first preview: entry and Home; one local group with name-only people; common equal-split expense; exact MoneyV1 allocations and range; draft Back/reopen/reload; local save/retry; demonstration account conversion and continuity; literal labels.",
+      "scope_exclusions": [
+        "J08 group reopening and full Gate B core expense loop",
+        "Full J05 alternate split/date/receipt surfaces",
+        "Outbound shared invitations",
+        "Production storage, real authentication and financial execution"
+      ],
+      "browser_assertions": 260,
+      "product_bytes_changed": false,
+      "authority_limits": {
+        "gate_b_authorized": false,
+        "production_start_authorized": false,
+        "product_integrator_enabled": false,
+        "execution_mode_selected": false,
+        "journey_29_created": false,
+        "protected_merge_authorized": false,
+        "deployment_authorized": false,
+        "real_identity_or_payment_authorized": false
+      }
+    },
+    "gate_b": {
+      "status": "not_started_by_product_schema",
+      "plan_source": {
+        "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+        "path": "docs/integrated-preview-v2/PLAN.md",
+        "git_blob": "67e23318b0c96e9d4a1790fd09eac897875f9f92"
+      },
+      "journeys": [
+        "08",
+        "05",
+        "06",
+        "07"
+      ],
+      "goal": "A user can add, inspect, edit/review, agree/question, and return to an updated group without a Golden contract regression.",
+      "schema_prerequisite": "Stage 1-4 product schema checkpoint; no Gate B runtime work is part of Stage 1."
+    }
+  },
+  "source_groups": {
+    "canonical_local_sources": [
+      {
+        "path": "prototypes/experience-workbench/DESIGN_CONTRACT.md",
+        "git_blob": "69311f291cefc0dad7b4994a631193891cbd8ed0"
+      },
+      {
+        "path": "prototypes/experience-workbench/GOLDEN_SCREENS.md",
+        "git_blob": "5f5284723d387fa03c4cf3f991e8f637f2eb5127"
+      },
+      {
+        "path": "prototypes/experience-workbench/REVIEW_PROTOCOL.md",
+        "git_blob": "509d86dbf1e60a6b200b2dd4c2553e4dff9fedf4"
+      },
+      {
+        "path": "prototypes/experience-workbench/registry/README.md",
+        "git_blob": "f025eefafa3f4c11101d7fdee722e3e2a394fb8e"
+      },
+      {
+        "path": "prototypes/experience-workbench/registry/journeys.json",
+        "git_blob": "9d283e2a61ff189c1bba1db4aaf1e9904e985343"
+      },
+      {
+        "path": "prototypes/experience-workbench/registry/progress.json",
+        "git_blob": "3da254b82315d11570c320cf204e13e3373ab788"
+      },
+      {
+        "path": "prototypes/experience-workbench/registry/golden-artifact-locks.json",
+        "git_blob": "ccb4b5797fb872216201955f8dd8e8bf13a84fd6"
+      },
+      {
+        "path": "prototypes/experience-workbench/registry/goldens.manifest.json",
+        "git_blob": "85571828a6a66ce926a4c352cb13b4785035c18e"
+      },
+      {
+        "path": "prototypes/experience-workbench/registry/features.json",
+        "git_blob": "c97e164623e1f8bfc1b7ae0115a28060b3401e25"
+      },
+      {
+        "path": "prototypes/experience-workbench/registry/edge-cases.json",
+        "git_blob": "36210bd689561dea180d436c5dc8e4febc977832"
+      },
+      {
+        "path": "prototypes/experience-workbench/registry/phase-c1-contract-lock.json",
+        "git_blob": "54e2ab352955ba3470faa3fa5a8f88571c647ca8"
+      },
+      {
+        "path": "prototypes/experience-workbench/registry/ux-phase-complete.json",
+        "git_blob": "430a7e8c6f0d8873c4d2fba86a94bbaf017f6a74"
+      },
+      {
+        "path": "prototypes/experience-workbench/docs/MAP_GOVERNANCE.md",
+        "git_blob": "129bf24ecea5bcfc293c3b189819c6debc5d2c5a"
+      },
+      {
+        "path": "prototypes/experience-workbench/docs/PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md",
+        "git_blob": "2a65afd993b797fa6416a025c61ddde46364bec2"
+      },
+      {
+        "path": "prototypes/experience-workbench/docs/STORAGE_AND_REPLAY_CONTRACT.md",
+        "git_blob": "863239ccbb5f0503cd383c1d38b6352bad210b2d"
+      },
+      {
+        "path": "prototypes/experience-workbench/contracts/phase-c1/README.md",
+        "git_blob": "ea60cded73c5b8fb909d567c9739b13dd290cd42"
+      },
+      {
+        "path": "prototypes/experience-workbench/contracts/phase-c1/member-identity.contract.json",
+        "git_blob": "176fdaeb0845e842ff747b597119fb7f7756d918"
+      },
+      {
+        "path": "prototypes/experience-workbench/contracts/phase-c1/spend-intent.contract.json",
+        "git_blob": "d3f66413c0e05ce700ff8305a66bf6a81a51ed18"
+      },
+      {
+        "path": "prototypes/experience-workbench/contracts/phase-c1/execution-ownership.acceptance.json",
+        "git_blob": "4b0a382ace4a3a335e0828ec696c69bd807255c0"
+      },
+      {
+        "path": "prototypes/experience-workbench/shared/POST_J28_PRODUCT_DECISIONS.md",
+        "git_blob": "3663e320c2cbb9354340acfeb622e6da85c4952f"
+      },
+      {
+        "path": "prototypes/experience-workbench/shared/improvements.md",
+        "git_blob": "ab9344c0df6dd7a510ca846847aa2fdcd8e3ebd2"
+      }
+    ],
+    "phase_c1_overlays": [
+      {
+        "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/phase-c1-guest-v1-candidate.html",
+        "git_blob": "2241318dd9dcf61fbf09679af898da534ff1fae3",
+        "classification": "selective overlay; not Golden replacement"
+      },
+      {
+        "path": "prototypes/experience-workbench/journeys/04-invite-join/phase-c1-guest-v1-candidate.html",
+        "git_blob": "2554d517e8f28202731719d70608f447a541ff2a",
+        "classification": "selective overlay; not Golden replacement"
+      }
+    ],
+    "supplementary_coverage": {
+      "features": {
+        "path": "prototypes/experience-workbench/registry/features.json",
+        "git_blob": "c97e164623e1f8bfc1b7ae0115a28060b3401e25",
+        "count": 35,
+        "note": "Capability-to-journey coverage registry. Status fields are not Gate A/B integration status."
+      },
+      "edge_cases": {
+        "path": "prototypes/experience-workbench/registry/edge-cases.json",
+        "git_blob": "36210bd689561dea180d436c5dc8e4febc977832",
+        "count": 41,
+        "note": "Failure/recovery coverage registry. Status fields are not Gate A/B integration status."
+      }
+    },
+    "reference_only": [
+      {
+        "path": "prototypes/experience-workbench/docs/implementation-map.md",
+        "git_blob": "7187298200044780b1c9704157b95fdc072d0325",
+        "reason": "Implementation mapping is reference truth and may lag approved product truth."
+      },
+      {
+        "path": "prototypes/experience-workbench/docs/dead-ends-and-gaps.md",
+        "git_blob": "0da4a1997914147cc1e542a85abf4c33c5b2eb1c",
+        "reason": "Contains historical flags that conflict with later 28-Golden freeze; use only as historical/reference context."
+      }
+    ],
+    "excluded_from_product_truth": [
+      "research/product-ir-v0-* branches and artifacts",
+      "research/product-ir-v0-funding-* branches and artifacts",
+      "research/product-ir-v0-conformance branch and artifacts",
+      "implementation code except when explicitly referenced as implementation evidence",
+      "unapproved future architecture or provider choices"
+    ]
+  },
+  "journeys": [
+    {
+      "id": "01",
+      "name": "Enter ChopDot",
+      "priority": "P0",
+      "phase": "Core loop",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-05",
+      "entry": "App launch or invite link",
+      "exit": "Home or invite acceptance",
+      "next": [
+        "02",
+        "04"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/spec.md",
+        "git_blob": "30597b1bff8b1d21dc5c4117a28a8de7d05b9bbb"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html",
+        "git_blob": "8edc1c37b0b2da000a59b237df3c6849a9a6f1ab",
+        "sha256": "383170c06d4e6bc4d6b658664fff6ae0f2eb003cf202ca5e8f8617fb06ae8f46"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/VISUAL_QA.md",
+        "git_blob": "012bedb00eacfb3de73ff00a1bab5a3b448b5b66"
+      },
+      "contracts": []
+    },
+    {
+      "id": "02",
+      "name": "Home / Orientation",
+      "priority": "P0",
+      "phase": "Core loop",
+      "version": "v1.4",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-03",
+      "entry": "Successful entry or Pots tab",
+      "exit": "Group, task, create group, add expense, position",
+      "next": [
+        "03",
+        "04",
+        "05",
+        "08",
+        "10",
+        "11",
+        "16",
+        "27"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/02-home-orientation/spec.md",
+        "git_blob": "40f7ff742bd457d6b6f08cf60cb7e386d9bb666c"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/02-home-orientation/v1.4-golden.html",
+        "git_blob": "707da42166246a719e9bf0a31fb5ad4c04f1751c",
+        "sha256": "578ff52775d7205b7f2262676f322807849e2f5788f219dc9eacbb9e5d3aec2f"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/02-home-orientation/VISUAL_QA.md",
+        "git_blob": "459d7101b22e0c59dcbb4e8b22eb40dd7f9387db"
+      },
+      "contracts": []
+    },
+    {
+      "id": "03",
+      "name": "Create a Group",
+      "priority": "P0",
+      "phase": "Core loop",
+      "version": "v2",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-03",
+      "entry": "Home → Start a group",
+      "exit": "New group, invite people, or add expense",
+      "next": [
+        "04",
+        "05",
+        "08"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/03-create-group/spec.md",
+        "git_blob": "fe2510af9d6fc37cb9e758b2a71f93fb4f95c0d2"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/03-create-group/v2-golden.html",
+        "git_blob": "522e7adde4780b48838485a1cf06402e35830b3a",
+        "sha256": "683267a9f474a48b9df4278256dc3b51f92e4c2cd5ff7076e5f0af013400804d"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/03-create-group/VISUAL_QA.md",
+        "git_blob": "56defcefe7df84d306e485e38a27ca00b6d85e12"
+      },
+      "contracts": []
+    },
+    {
+      "id": "04",
+      "name": "Invite / Join a Group",
+      "priority": "P0",
+      "phase": "Core loop",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-03",
+      "entry": "Create success, Group Home, or invite link",
+      "exit": "Group Home",
+      "next": [
+        "08",
+        "05",
+        "22"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/04-invite-join/spec.md",
+        "git_blob": "a684d616ef14ebf6d38bd7674a9e4b2a75fcad84"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/04-invite-join/v1-golden.html",
+        "git_blob": "3e3821b9a376e54bd2bfc144f178635ee2cd9591",
+        "sha256": "143f6702e64f608729a79cbd9baf74d087492dc40e8275a46698633ae36c8725"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/04-invite-join/VISUAL_QA.md",
+        "git_blob": "c6c0fc13130b5bf30e931daf03aedb6c13fc5e18"
+      },
+      "contracts": []
+    },
+    {
+      "id": "05",
+      "name": "Add an Expense",
+      "priority": "P0",
+      "phase": "Core loop",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-03",
+      "entry": "Home, Group Home, or Create success",
+      "exit": "Updated group or expense detail",
+      "next": [
+        "06",
+        "07",
+        "08"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/05-add-expense/spec.md",
+        "git_blob": "e1f91491f7ec83f254a493b24c88f8ebc02813fc"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/05-add-expense/v1-golden.html",
+        "git_blob": "2bdabc57e8656155f96b9844fb3dd5f9a5ecb259",
+        "sha256": "1aa7c723f60ada46d739c33749690ea493c8a2121cf85b3f1678a3798d638b23"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/05-add-expense/VISUAL_QA.md",
+        "git_blob": "b3297963ae26de4c654c963b8236b7b83cb474f6"
+      },
+      "contracts": []
+    },
+    {
+      "id": "06",
+      "name": "Review / Correct an Expense",
+      "priority": "P0",
+      "phase": "Core loop",
+      "version": "v1.1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-03",
+      "entry": "Expense row, activity, or review task",
+      "exit": "Group, updated expense, or Journey 07",
+      "next": [
+        "07",
+        "08"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/spec.md",
+        "git_blob": "ad17dadbf0b5c98243a7279ec2ceca7e1610abb8"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/v1.1-golden.html",
+        "git_blob": "0b00abcaafa14a6b44ac8bc7eacdf232ce3bab3c",
+        "sha256": "aece70448ae1979f6a0bf3abfc46affc75da2c1540cb91dbeda32efc8722b55c"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/VISUAL_QA.md",
+        "git_blob": "2ed3aa7287f09f9fc1a2350291ace956f635c296"
+      },
+      "contracts": []
+    },
+    {
+      "id": "07",
+      "name": "Review / Agree / Raise an Issue",
+      "priority": "P0",
+      "phase": "Core loop",
+      "version": "v1.1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-04",
+      "entry": "Home attention, Group Home, or expense detail",
+      "exit": "Resolved expense, waiting state, or group",
+      "next": [
+        "08",
+        "10",
+        "11",
+        "18"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/07-review-agree/spec.md",
+        "git_blob": "6b4cf633c58b36ff3f55924014d39febd147f3f6"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/07-review-agree/v1.1-golden.html",
+        "git_blob": "c92a063e9dfdd8b732d15a25e4ee1e76994ada90",
+        "sha256": "90c11c09125dc8ba8a7d97530b33b7fff685b3a4fd0979992acf3910736db3ce"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/07-review-agree/VISUAL_QA.md",
+        "git_blob": "6e188ee98f14647fe8eb5680912645b3b4c71f01"
+      },
+      "contracts": []
+    },
+    {
+      "id": "08",
+      "name": "Group Home",
+      "priority": "P0",
+      "phase": "Core loop",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-03",
+      "entry": "Home group card, create success, or invite acceptance",
+      "exit": "Expense, member, position, settle, or settings",
+      "next": [
+        "05",
+        "06",
+        "07",
+        "09",
+        "11",
+        "26"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/08-group-home/spec.md",
+        "git_blob": "2d5acbbd8d97d885d258bfd92ddeb7ed61a8e49d"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/08-group-home/v1-golden.html",
+        "git_blob": "a9dcd097865707052c819bcb631d3964ab879e6e",
+        "sha256": "7bd47a9ea9987a2bc0e5912b99cddbfe0fea3f1b16d85aa76d76e919747cecf7"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/08-group-home/VISUAL_QA.md",
+        "git_blob": "ab1ec1fe111379ee52b4ae9d558298ca6bc1b9d6"
+      },
+      "contracts": []
+    },
+    {
+      "id": "09",
+      "name": "Manage People",
+      "priority": "P1",
+      "phase": "Support",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-06",
+      "entry": "People view or Group Home",
+      "exit": "Person detail, group, or settlement",
+      "next": [
+        "11",
+        "13",
+        "20"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/09-manage-people/spec.md",
+        "git_blob": "1438e122385ff5308da39cf49e3473e06f6aa076"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/09-manage-people/v1-candidate.html",
+        "git_blob": "1e5ef4a71606aa40bfaae165686c8c9dcd2472ad",
+        "sha256": "715077633a17cf37ef587988c0aee7f4906403a030d8e0d17d1b0c46aa6cb37d"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/09-manage-people/VISUAL_QA.md",
+        "git_blob": "47d8c0af139ca926768160a7188ccd260782e977"
+      },
+      "contracts": [
+        {
+          "path": "prototypes/experience-workbench/journeys/09-manage-people/phase-c1-consumer-contract.md",
+          "git_blob": "47b8b9622d403213f073e10f651642f5425f5731"
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "name": "Overall Position",
+      "priority": "P0",
+      "phase": "Core loop",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-04",
+      "entry": "Home balance, People tab, or Group Home",
+      "exit": "Person, group, issue, request, or settlement",
+      "next": [
+        "08",
+        "09",
+        "11",
+        "13"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/10-overall-position/spec.md",
+        "git_blob": "ec85055916cf1d337b5b81d871888762b79b2c3f"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/10-overall-position/v1-golden.html",
+        "git_blob": "7ad611b9ce12bd42013f1800575ea6e973f35428",
+        "sha256": "418dee449aa76ed027ea7de520f930f63ebaeb349c0f46735c390a43294d7c98"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/10-overall-position/VISUAL_QA.md",
+        "git_blob": "6b6033923c2ae7918ff53043b3c8375d3fc37437"
+      },
+      "contracts": []
+    },
+    {
+      "id": "11",
+      "name": "Settle Up",
+      "priority": "P0",
+      "phase": "Core loop",
+      "version": "v1.1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-05",
+      "entry": "Home, Group Home, Overall Position, or person detail",
+      "exit": "Settlement confirmation or progress",
+      "next": [
+        "12",
+        "20",
+        "21"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/11-settle-up/spec.md",
+        "git_blob": "e26b003318f6e03d3b36401e39b1cacfdbe85fbe"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/11-settle-up/v1.1-golden-candidate.html",
+        "git_blob": "f165a088c74149a3da149281a2d7b8c25a1ae3ea",
+        "sha256": "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/11-settle-up/VISUAL_QA.md",
+        "git_blob": "bfe4cc02c74b2dd53184736ae495e3daf7bf1e93"
+      },
+      "contracts": [
+        {
+          "path": "prototypes/experience-workbench/journeys/11-settle-up/contract-validation.json",
+          "git_blob": "2c53e4e84230b7816a4dd3f87556416af924b96d"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/11-settle-up/PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md",
+          "git_blob": "2a65afd993b797fa6416a025c61ddde46364bec2"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/11-settle-up/STORAGE_AND_REPLAY_CONTRACT.md",
+          "git_blob": "e720806ed5657222d68c629b027d3f6823ff3a6a"
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "name": "Complete Settlement",
+      "priority": "P0",
+      "phase": "Core loop",
+      "version": "v1.1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-05",
+      "entry": "Settlement initiated",
+      "exit": "Home, Group Home, or settlement history",
+      "next": [
+        "02",
+        "08",
+        "15"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/12-complete-settlement/spec.md",
+        "git_blob": "342697adfcaf93322f25491c951e7a195d63a801"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/12-complete-settlement/v1.1-continuity-candidate.html",
+        "git_blob": "0557f84ed5fa48e6820fa39fd0bad0685f62d429",
+        "sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/12-complete-settlement/VISUAL_QA.md",
+        "git_blob": "622dbb5fed6601e421d0598db92e4ece680bb3ec"
+      },
+      "contracts": []
+    },
+    {
+      "id": "13",
+      "name": "Request Money",
+      "priority": "P1",
+      "phase": "Support",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-06",
+      "entry": "Overall Position, group, or person",
+      "exit": "Request sent or pending",
+      "next": [
+        "18",
+        "14"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/13-request-money/spec.md",
+        "git_blob": "895d065c574a11f8a78bdeb33a1bef42f087efbb"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/13-request-money/v1-candidate.html",
+        "git_blob": "c88c81d2b299248aa686c9219735dba12e36414a",
+        "sha256": "a22664499c4056d95a6cdeb45df85d43fd2055713e80ae8f69020469aa9bb707"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/13-request-money/VISUAL_QA.md",
+        "git_blob": "a62b8b9519f7a66251a104bdf9d56fe875d2666b"
+      },
+      "contracts": []
+    },
+    {
+      "id": "14",
+      "name": "Receive / Share Payment Details",
+      "priority": "P1",
+      "phase": "Support",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-06",
+      "entry": "You, person detail, or settlement",
+      "exit": "QR, bank, or wallet handoff",
+      "next": [
+        "20",
+        "21",
+        "22"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/14-receive-money/spec.md",
+        "git_blob": "5f3685777754ac37f8dda854be82978afe17cd02"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/14-receive-money/v1-candidate.html",
+        "git_blob": "5f57c2d89708dd9469ebf0d97e6f1532bc609da7",
+        "sha256": "5ce877d89157a4203a2e4a2c5fad795a4ecfabf5388dbaecb00bbf28f2f31e1d"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/14-receive-money/VISUAL_QA.md",
+        "git_blob": "24d1412148c4d4adf8bb116815c009103b031b23"
+      },
+      "contracts": []
+    },
+    {
+      "id": "15",
+      "name": "Settlement History",
+      "priority": "P1",
+      "phase": "Support",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-06",
+      "entry": "Settlement result, Group Home, or Activity",
+      "exit": "Receipt, proof, group, or person",
+      "next": [
+        "08",
+        "09",
+        "12"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/15-settlement-history/spec.md",
+        "git_blob": "324147159df2eaaf3e6b3a4595987d9560d3db00"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/15-settlement-history/v1-recovered.html",
+        "git_blob": "dc224be0eddb5f9c1fa337241dedf448ad0d7009",
+        "sha256": "0915e060314e06471d5039e735dca4f2e708940f3a33f2a5890b8758671584e0"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/15-settlement-history/VISUAL_QA.md",
+        "git_blob": "35b4bf2493d4170698a618cc7c18b78d20fa90c8"
+      },
+      "contracts": []
+    },
+    {
+      "id": "16",
+      "name": "Savings Group",
+      "priority": "P1",
+      "phase": "Expansion",
+      "version": "v1.2",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-08",
+      "entry": "Dedicated savings entry",
+      "exit": "Savings group home",
+      "next": [
+        "17",
+        "18"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/16-savings-group/spec.md",
+        "git_blob": "486f35fa5e6f7c183be89c50214751f5993222a4"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/16-savings-group/v1.2-review-candidate.html",
+        "git_blob": "d49a64d25cd3c9e083c5962680ce91b13b7fbf77",
+        "sha256": "dc920000fc4120accab588413ee79095093f8e4223066d7d3a94fb524e5cd0de"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/16-savings-group/review-v1.2/results/VISUAL_QA.md",
+        "git_blob": "20c0e090ebfd700fe413fe6e90d0926723ba7598"
+      },
+      "contracts": []
+    },
+    {
+      "id": "17",
+      "name": "Contribute / Withdraw Savings",
+      "priority": "P1",
+      "phase": "Expansion",
+      "version": "v1.4",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-08",
+      "entry": "Savings group",
+      "exit": "Updated savings group or transaction status",
+      "next": [
+        "16",
+        "18",
+        "21"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/spec.md",
+        "git_blob": "019e30d61cd6c3bb71544925e930b1d3f6575252"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/v1.4-review-candidate.html",
+        "git_blob": "afc05276e0235c53a41ca71965c35f58c4905d9c",
+        "sha256": "a5dad1dc659955d4b70acaa13eced199dd778ff628ab8998d4c7ae83055d4915"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/review-v1.4/results/VISUAL_QA.md",
+        "git_blob": "6080f92c85d81bd51b7bca26042b7de7a8195b4e"
+      },
+      "contracts": []
+    },
+    {
+      "id": "18",
+      "name": "Activity & Notifications",
+      "priority": "P1",
+      "phase": "Support",
+      "version": "v1.1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-08",
+      "entry": "Activity tab or notification",
+      "exit": "Relevant journey or detail",
+      "next": [
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "11",
+        "13",
+        "15"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/18-activity-notifications/spec.md",
+        "git_blob": "72f54eed0313b781160532677ef6aa59eca219f6"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/18-activity-notifications/v1.1-continuity-candidate.html",
+        "git_blob": "f26ff7acea9d904d25bbe76ea7e4ffeaec66050b",
+        "sha256": "d42b518c14fe7c57b2df56c0e92f0ad63424b9971f294ac10df647a0e2cab08e"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/18-activity-notifications/review-v1.1/VISUAL_QA.md",
+        "git_blob": "a55708defc720810a2af2fc6976ffd408fe2d7c8"
+      },
+      "contracts": []
+    },
+    {
+      "id": "19",
+      "name": "Insights",
+      "priority": "P2",
+      "phase": "Expansion",
+      "version": "v1.1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-10",
+      "entry": "Home, Group Home, or You",
+      "exit": "Relevant group or setting",
+      "next": [
+        "08",
+        "27"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/19-insights/spec.md",
+        "git_blob": "0c2024c93a90011c351a6a12a83cfb458b19ee62"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/19-insights/review-v1.1/v1.1-candidate.html",
+        "git_blob": "9df9eb0a821e933f604cfc03fefb54c9c14c6e86",
+        "sha256": "c67973e0efc1068d006d57c4d5690b6c49218bd63f24cb62ab587fbf5b9862da"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/19-insights/review-v1.1/VISUAL_QA.md",
+        "git_blob": "03742cd9f8946716452b495a6ccba9af82d8927f"
+      },
+      "contracts": []
+    },
+    {
+      "id": "20",
+      "name": "Payment Methods",
+      "priority": "P1",
+      "phase": "Support",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-10",
+      "entry": "You, settlement, receive, or person detail",
+      "exit": "Previous context or settlement",
+      "next": [
+        "11",
+        "14",
+        "21",
+        "27"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/20-payment-methods/spec.md",
+        "git_blob": "1c6d4987a79b913d453acba4d857d3528176332a"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/20-payment-methods/review-v1/v1-candidate.html",
+        "git_blob": "46aedb27644aac94bb48b1dc23fdb333e60c3bee",
+        "sha256": "02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/20-payment-methods/review-v1/VISUAL_QA.md",
+        "git_blob": "9b6eb24ea320b80939a7c1286280f51326020d99"
+      },
+      "contracts": []
+    },
+    {
+      "id": "21",
+      "name": "Wallet & Crypto",
+      "priority": "P1",
+      "phase": "Support",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-11",
+      "entry": "Account, settlement, or receive",
+      "exit": "Connected state or signed action",
+      "next": [
+        "11",
+        "12",
+        "14",
+        "17",
+        "27"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/21-wallet-crypto/spec.md",
+        "git_blob": "bb7946f0ede140e9a65e15688184a69c388984be"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html",
+        "git_blob": "697637b03220422318f7f5d11d2fbf4fe6e9aff8",
+        "sha256": "28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/21-wallet-crypto/review-v1/VISUAL_QA.md",
+        "git_blob": "d2804e578d0f0c3f415c04b78fd35bb92254496f"
+      },
+      "contracts": []
+    },
+    {
+      "id": "22",
+      "name": "QR Flows",
+      "priority": "P2",
+      "phase": "Expansion",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-11",
+      "entry": "Invite, You, receive, or settlement",
+      "exit": "Person, group, or payment journey",
+      "next": [
+        "04",
+        "09",
+        "14"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/22-qr-flows/spec.md",
+        "git_blob": "c3dc891ea13eb5425da216b12d28e399180f6372"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/22-qr-flows/v1-candidate.html",
+        "git_blob": "dc9c789bfdb157b50ff573a059e3bf4b8ab4ed07",
+        "sha256": "3bbab5328a71d42866006c6f48088c06759fd0a3a922ee4a91e6fcd7bb75fe23"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/22-qr-flows/review-v1/VISUAL_QA.md",
+        "git_blob": "6fe35768fa3137446a8e93e6063abb3128a7765a"
+      },
+      "contracts": []
+    },
+    {
+      "id": "23",
+      "name": "Import Data / Group",
+      "priority": "P2",
+      "phase": "Expansion",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-14",
+      "entry": "You or group list",
+      "exit": "Imported group or review",
+      "next": [
+        "08",
+        "24",
+        "28"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/23-import/spec.md",
+        "git_blob": "f37970f982faf4407a993aa31a2ddd83a24b1c43"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/23-import/v1-candidate.html",
+        "git_blob": "0f84a832dc0b3b42da82bbe2b6dad0d3f0d3d862",
+        "sha256": "3a6f88274ff59bd7d513d5bbcee57a235465f1d33345df37a0b84ed51a2f6f9d"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/23-import/review-v1/VISUAL_QA.md",
+        "git_blob": "b71250aaa62a2b01b035e8b851f9a225937dba2a"
+      },
+      "contracts": []
+    },
+    {
+      "id": "24",
+      "name": "Export / Portability",
+      "priority": "P2",
+      "phase": "Expansion",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-14",
+      "entry": "Group settings or account",
+      "exit": "Exported artifact or external storage",
+      "next": [],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/24-export-portability/spec.md",
+        "git_blob": "337d7596a7873707cf5036a258b8a0d38485760c"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/24-export-portability/v1-candidate.html",
+        "git_blob": "8ac4dc1e2db2dc8c4edfb6dbc06d212261e65fdf",
+        "sha256": "03d1c2094251dc3ec683108c484bdc84e6f7db08b1c40ce042535a2d186a9b82"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/24-export-portability/review-v1/VISUAL_QA.md",
+        "git_blob": "3cf980b84f10dda8d8b05a2087d78c37d62ac06b"
+      },
+      "contracts": [
+        {
+          "path": "prototypes/experience-workbench/journeys/24-export-portability/phase-c1-consumer-contract.md",
+          "git_blob": "edbdef9aa6fced45895c39ce4cad94cf17c87105"
+        }
+      ]
+    },
+    {
+      "id": "25",
+      "name": "Storage / Backup / Recovery",
+      "priority": "P2",
+      "phase": "Expansion",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-14",
+      "entry": "Security, storage settings, or recovery event",
+      "exit": "Recovered or synced state",
+      "next": [
+        "27",
+        "28"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/25-storage-recovery/spec.md",
+        "git_blob": "c803141387125c1e60171de6941b7a5dbcfd2f6c"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/25-storage-recovery/v1-candidate.html",
+        "git_blob": "8bb2ba5101fe77fb004d3942794731ba28a68b01",
+        "sha256": "785fd02267b1e47e1bde8513a6c91373ee1ce8dd85b35812201f0af92c77ca3f"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/25-storage-recovery/review-v1/VISUAL_QA.md",
+        "git_blob": "c1018516d6e4df06fcf58fb4ac0da51d558811f8"
+      },
+      "contracts": [
+        {
+          "path": "prototypes/experience-workbench/journeys/25-storage-recovery/phase-c1-consumer-contract.md",
+          "git_blob": "049a6134a45d53665429549b703078bd9b530971"
+        }
+      ]
+    },
+    {
+      "id": "26",
+      "name": "Group Lifecycle",
+      "priority": "P1",
+      "phase": "Support",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-15",
+      "entry": "Group settings",
+      "exit": "Group Home or Home",
+      "next": [
+        "02",
+        "08",
+        "24"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/spec.md",
+        "git_blob": "e72699302eb1c08f20e0edc599b416ee4ceb22dc"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/v1-candidate.html",
+        "git_blob": "bb7400e517d900e55f9dd687d706fe021ef96db3",
+        "sha256": "4d93b1b3458aead8d412256f65d0e4c2c2de1b273abc0af58bd89cb56783da28"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/review-v1/VISUAL_QA.md",
+        "git_blob": "d571b6591da443a4cda24088abe48ddcaa9c418e"
+      },
+      "contracts": []
+    },
+    {
+      "id": "27",
+      "name": "Account & Preferences",
+      "priority": "P2",
+      "phase": "Expansion",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-15",
+      "entry": "You or account menu",
+      "exit": "Previous context or signed out",
+      "next": [
+        "01",
+        "19",
+        "20",
+        "21",
+        "23",
+        "25"
+      ],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/27-account-preferences/spec.md",
+        "git_blob": "f517c1e2eba8425bdd1f7ff075608b0bb75ad5fc"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/27-account-preferences/v1-candidate.html",
+        "git_blob": "96c2f1116dfd768b939d1c501fe9f6168d5a6cee",
+        "sha256": "64b730ee19a8713826868af6ca4b39b33d0c48c128b2fce2e90c7beec1dfa560"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/27-account-preferences/review-v1/VISUAL_QA.md",
+        "git_blob": "d1d9af2080bdcbcb33e45a430dfd825bfa4c70b7"
+      },
+      "contracts": [
+        {
+          "path": "prototypes/experience-workbench/journeys/27-account-preferences/phase-c1-consumer-contract.md",
+          "git_blob": "f3dca30497020416bce16c8036901dc3f1c8448b"
+        }
+      ]
+    },
+    {
+      "id": "28",
+      "name": "Things Go Wrong / Recovery",
+      "priority": "P0",
+      "phase": "Cross-cutting",
+      "version": "v1",
+      "product_status": "golden",
+      "approval": "design-approved",
+      "approved_on": "2026-09-15",
+      "entry": "Every journey",
+      "exit": "Recovered state, safe retry, or explicit stop",
+      "next": [],
+      "spec": {
+        "path": "prototypes/experience-workbench/journeys/28-failure-recovery/spec.md",
+        "git_blob": "2b64ad78ba66070928561a08d7eb4fbd9f126846"
+      },
+      "prototype": {
+        "path": "prototypes/experience-workbench/journeys/28-failure-recovery/v1-candidate.html",
+        "git_blob": "52e3f5d0e5b1fe23237603d91aee2ea9a5bebf5c",
+        "sha256": "7ef254016da0755860fd0ede62840e7668d40406fdac850aad8c5e0ac4d12dfc"
+      },
+      "qa": {
+        "path": "prototypes/experience-workbench/journeys/28-failure-recovery/review-v1/VISUAL_QA.md",
+        "git_blob": "2f09e03745a05f0b05d65fcf234b503141eb6b4e"
+      },
+      "contracts": []
+    }
+  ],
+  "inventory_checks": {
+    "journey_count": 28,
+    "unique_journey_ids": 28,
+    "golden_lock_count": 28,
+    "feature_count": 35,
+    "edge_case_count": 41,
+    "all_specs_pinned": true,
+    "all_prototypes_pinned": true,
+    "all_next_refs_resolve": true
+  }
+}
