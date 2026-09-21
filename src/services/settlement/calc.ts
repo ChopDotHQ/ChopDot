@@ -7,7 +7,7 @@
  * Uses decimal.js for arbitrary precision math (crucial for crypto/financials).
  */
 
-import type { Pot } from '../../schema/pot';
+import { getExpenseFunding, type Pot } from '../../schema/pot';
 import Decimal from 'decimal.js';
 
 // Configure Decimal for high precision (20 digits covers 18 decimal crypto tokens + integers)
@@ -65,9 +65,15 @@ export function computeBalances(pot: Pot): Balance[] {
     // Safe conversion of amount to Decimal
     const amount = new Decimal(expense.amount);
     
-    // Track what the payer paid
-    const payerId = expense.paidBy;
-    paid.set(payerId, (paid.get(payerId) || new Decimal(0)).plus(amount));
+    // Track funding independently from beneficiary allocation.
+    // Legacy paidBy is adapted by getExpenseFunding to one full contribution.
+    getExpenseFunding(expense).forEach((contribution) => {
+      const contributionAmount = new Decimal(contribution.amount);
+      paid.set(
+        contribution.memberId,
+        (paid.get(contribution.memberId) || new Decimal(0)).plus(contributionAmount),
+      );
+    });
     
     // Use custom split if available, otherwise fall back to equal split
     if (expense.split && expense.split.length > 0) {
