@@ -116,4 +116,46 @@ describe('Settlement Logic (Decimal Precision)', () => {
     // In standard JS math, this might have artifacts, but check logic
     expect(balB).toBeCloseTo(-0.0000000001, 10);
   });
+
+  it('supports two funders and three beneficiaries without changing split semantics', () => {
+    const pot = createMockPot(['A', 'B', 'C'], [
+      {
+        amount: 100,
+        paidBy: 'A', // legacy compatibility field remains present during research
+        funding: [
+          { memberId: 'A', amount: 70 },
+          { memberId: 'B', amount: 30 },
+        ],
+        split: [
+          { memberId: 'A', amount: 20 },
+          { memberId: 'B', amount: 40 },
+          { memberId: 'C', amount: 40 },
+        ],
+      },
+    ]);
+    // createMockPot is legacy-shaped, so attach the experimental field explicitly.
+    pot.expenses[0].funding = [
+      { memberId: 'A', amount: 70 },
+      { memberId: 'B', amount: 30 },
+    ];
+
+    const balances = computeBalances(pot);
+    expect(balances.find(b => b.memberId === 'A')?.net).toBe(50);
+    expect(balances.find(b => b.memberId === 'B')?.net).toBe(-10);
+    expect(balances.find(b => b.memberId === 'C')?.net).toBe(-40);
+    expect(balances.reduce((sum, b) => sum + b.net, 0)).toBe(0);
+  });
+
+  it('keeps legacy paidBy accounting equivalent to one full funding contribution', () => {
+    const legacy = createMockPot(['A', 'B'], [
+      { amount: 20, paidBy: 'A', split: [{ memberId: 'A', amount: 10 }, { memberId: 'B', amount: 10 }] },
+    ]);
+    const native = createMockPot(['A', 'B'], [
+      { amount: 20, paidBy: 'A', split: [{ memberId: 'A', amount: 10 }, { memberId: 'B', amount: 10 }] },
+    ]);
+    native.expenses[0].funding = [{ memberId: 'A', amount: 20 }];
+
+    expect(computeBalances(native)).toEqual(computeBalances(legacy));
+  });
+
 });
