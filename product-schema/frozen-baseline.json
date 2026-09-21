@@ -519,7 +519,7 @@
       ],
       "artifact_resolution": {
         "entrypoint_kind": "redirect_wrapper_to_structured_source",
-        "status": "incomplete_authority_artifact",
+        "status": "resolved_by_recovered_full_candidate_evidence",
         "resolved_artifacts": [
           {
             "path": "prototypes/experience-workbench/journeys/05-add-expense/source/README.md",
@@ -542,14 +542,48 @@
           "prototypes/experience-workbench/journeys/05-add-expense/source/recovery.html",
           "prototypes/experience-workbench/journeys/05-add-expense/source/styles.css"
         ],
-        "missing_artifacts": [
+        "missing_artifacts": [],
+        "note": "The frozen structured-source slices remain incomplete, but the complete reviewed standalone candidate was recovered from the original review-session Library and its 27-state / 98-link fingerprint matches the frozen approved QA and state inventory.",
+        "historical_missing_artifacts": [
           "prototypes/experience-workbench/journeys/05-add-expense/source/split-methods.html",
           "prototypes/experience-workbench/journeys/05-add-expense/source/details-receipt.html",
           "prototypes/experience-workbench/journeys/05-add-expense/source/payer-variant.html",
           "prototypes/experience-workbench/journeys/05-add-expense/source/recovery.html",
           "prototypes/experience-workbench/journeys/05-add-expense/source/styles.css"
         ],
-        "note": "The frozen Golden entrypoint links into a structured source family whose README declares six slices; five are absent from the frozen authority tree. Do not reconstruct or silently re-scope them."
+        "recovered_artifact": {
+          "path": "product-schema/recovered-evidence/j05-v1-approved-candidate.html",
+          "git_blob": "e98573abc03a9edc224722f32458a1e4c2612e6e",
+          "sha256": "4b0acc8be4ee72dd7fe75933cf533df49d1dc30add3b7552c4199113f3438643",
+          "size_bytes": 52238,
+          "classification": "recovered review-session artifact evidence; schema-side copy, not a mutation of frozen product authority",
+          "origin": {
+            "provider": "ChatGPT Library",
+            "file_id": "file_00000000c45481f48708ff87fb8e8312",
+            "library_file_id": "libfile_b39fdd13e3d48191bd3cd6e5381bfd55",
+            "name": "chopdot-add-expense-v1-golden-candidate.html",
+            "created_at": "2026-09-03T17:48:03.683084+00:00"
+          },
+          "validation": {
+            "explicit_screen_states": 27,
+            "internal_hash_links": 98,
+            "matches_frozen_state_inventory": true,
+            "matches_frozen_visual_qa_counts": true,
+            "required_split_paths": [
+              "equal",
+              "exact",
+              "shares"
+            ],
+            "required_recovery_states": [
+              "missing",
+              "duplicate",
+              "offline",
+              "offline-saved",
+              "error",
+              "locked"
+            ]
+          }
+        }
       }
     },
     {
@@ -1718,23 +1752,47 @@
     "edge_case_count": 41,
     "all_next_refs_resolve": true
   },
-  "authority_blockers": [
+  "authority_blockers": [],
+  "authority_recoveries": [
     {
-      "id": "AUTH-J05-GOLDEN-INCOMPLETE",
+      "id": "RECOVERY-J05-GOLDEN-01",
       "journey": "05",
-      "classification": "frozen_authority_artifact_incomplete",
-      "blocks": [
-        "Gate B Golden-fidelity implementation acceptance"
-      ],
-      "statement": "J05's frozen structured-source README declares six slices, but five are absent from the frozen authority tree.",
-      "missing_artifacts": [
-        "prototypes/experience-workbench/journeys/05-add-expense/source/split-methods.html",
-        "prototypes/experience-workbench/journeys/05-add-expense/source/details-receipt.html",
-        "prototypes/experience-workbench/journeys/05-add-expense/source/payer-variant.html",
-        "prototypes/experience-workbench/journeys/05-add-expense/source/recovery.html",
-        "prototypes/experience-workbench/journeys/05-add-expense/source/styles.css"
-      ],
-      "resolution_rule": "Do not reconstruct or re-scope the approved J05 Golden inside the schema. Recover the approved slices from authoritative evidence/history or make an explicit product-authority decision."
+      "status": "resolved",
+      "original_finding": "AUTH-J05-GOLDEN-INCOMPLETE",
+      "rule": "Use the pinned recovered full candidate for Gate B Golden-fidelity review while preserving the frozen branch and its incomplete structured-source record unchanged.",
+      "evidence": {
+        "path": "product-schema/recovered-evidence/j05-v1-approved-candidate.html",
+        "git_blob": "e98573abc03a9edc224722f32458a1e4c2612e6e",
+        "sha256": "4b0acc8be4ee72dd7fe75933cf533df49d1dc30add3b7552c4199113f3438643",
+        "size_bytes": 52238,
+        "classification": "recovered review-session artifact evidence; schema-side copy, not a mutation of frozen product authority",
+        "origin": {
+          "provider": "ChatGPT Library",
+          "file_id": "file_00000000c45481f48708ff87fb8e8312",
+          "library_file_id": "libfile_b39fdd13e3d48191bd3cd6e5381bfd55",
+          "name": "chopdot-add-expense-v1-golden-candidate.html",
+          "created_at": "2026-09-03T17:48:03.683084+00:00"
+        },
+        "validation": {
+          "explicit_screen_states": 27,
+          "internal_hash_links": 98,
+          "matches_frozen_state_inventory": true,
+          "matches_frozen_visual_qa_counts": true,
+          "required_split_paths": [
+            "equal",
+            "exact",
+            "shares"
+          ],
+          "required_recovery_states": [
+            "missing",
+            "duplicate",
+            "offline",
+            "offline-saved",
+            "error",
+            "locked"
+          ]
+        }
+      }
     }
   ]
 }
