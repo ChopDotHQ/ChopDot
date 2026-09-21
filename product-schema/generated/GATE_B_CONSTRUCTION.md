@@ -1,6 +1,24 @@
 # Generated Gate B Construction Packet
 
-**Derived view — not product authority or implementation authorization. Pre-Gate-B readiness: BLOCKED.**
+**Derived view — not product authority or implementation authorization. Pre-Gate-B readiness: READY_FOR_HUMAN_AUTHORIZATION.**
+
+## Authority recoveries
+
+- **RECOVERY-J05-GOLDEN-01** — Use the pinned recovered full candidate for Gate B Golden-fidelity review while preserving the frozen branch and its incomplete structured-source record unchanged.
+
+## Authority blockers
+
+- None
+
+## Product decisions required
+
+- None
+
+## Resolved authority interpretations
+
+- **RESOLVED-J05-ARTIFACT-01** — The recovered standalone J05 V1 candidate is the Gate B fidelity artifact because its exact 27-state / 98-link fingerprint and required paths match the frozen approved state inventory and visual-QA record.
+- **RESOLVED-EXPENSE-LOCK-01** — Settlement-in-progress is a Group-level expense-mutation lock for create/edit/delete. The later dependent-item dispute rule governs settlement eligibility and does not override this mutation lock.
+- **RESOLVED-EXPENSE-REVIEW-01** — A successful persisted Expense change resets current prior reviews to needs-review-again while preserving review history; owner correction does not resolve an issue without reviewer action in J07.
 
 ## Construction order
 
@@ -8,15 +26,6 @@
 2. J05 — Add an Expense
 3. J06 — Review / Correct an Expense
 4. J07 — Review / Agree / Raise an Issue
-
-## Authority blockers
-
-- **AUTH-J05-GOLDEN-INCOMPLETE** — J05's frozen structured-source README declares six slices, but five are absent from the frozen authority tree.
-
-## Product decisions required
-
-- **POLICY-EXPENSE-LOCK-SCOPE** — Historical J08/J05/J06 behavior includes settlement-related expense mutation locking, while later settlement contracts narrow dependency blocking to affected items. The final mutation-lock scope is not settled by the frozen sources.
-- **POLICY-EXPENSE-REVIEW-INVALIDATION** — Frozen authority establishes that Expense edits may reset/update review and that changed expenses are reviewed again, but it does not fully specify which edit fields invalidate prior review or the exact resulting review-state transition.
 
 ## Inherited accepted Gate A constraints
 
@@ -37,11 +46,13 @@ Refreshed downstream only: `view.position` → Gate C, `view.activity` → Gate 
 - **REQ-J05-DEFAULTS** (defaults): {"required_user_input":["amount","description"],"payer":"you","participants":"everyone","split_method":"equal","date":"today","receipt":"none"}
 - **REQ-J05-DETAIL-PATHS** (editable_paths): {"payer":true,"participants":true,"split_methods":["equal","exact","shares"],"date":true,"receipt":true,"no_common_path_review_page":true}
 - **REQ-J05-RECOVERY** (required_states): ["missing","duplicate","offline","offline_saved","error","locked"]
+- **REQ-J05-LOCK** (effect_guard): {"scope":"group","locked_when":"settlement_in_progress","blocked_operations":["expense.create","expense.edit","expense.delete"],"entered_details_preserved":true}
 
 ### J06 — Review / Correct an Expense
 - **REQ-J06-DETAIL** (ordered_detail): ["amount","name","review_change_status","payer_personal_share_date","split","receipt_history","contextual_actions"]
 - **REQ-J06-PERMISSIONS** (permission_boundary): {"edit_delete":["expense_owner","authorized_role"],"other_member_handoff":"07","fake_edit_controls":false}
 - **REQ-J06-RECOVERY** (required_states): ["saving","save_error","locked","no_permission","offline_detail","offline_edit","offline_saved","conflict","loading","not_found"]
+- **REQ-J06-REVIEW-RESET** (dependent_state_transition): {"on_successful_persisted_edit":"reset_current_reviews_to_needs_review_again","preserve_review_history":true,"open_issue_requires_j07_resolution":true,"owner_edit_cannot_mark_agreed":true}
 
 ### J07 — Review / Agree / Raise an Issue
 - **REQ-J07-LANGUAGE** (literal_language): {"prompt":"Does this look right?","agree":"Looks right","issue":"Something's off","defer":"Not now","reassess_negative":"Still off"}

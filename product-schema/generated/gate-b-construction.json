@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "generated_view": "gate-b-construction",
   "authority": "DERIVED_ONLY",
   "gate": {
@@ -8,7 +8,7 @@
     "status": "planned_not_implemented_by_schema",
     "goal": "A user can add, inspect, edit/review, agree/question, and return to an updated group without a Golden contract regression.",
     "implementation_authorized": false,
-    "pre_gate_b_readiness": "BLOCKED"
+    "pre_gate_b_readiness": "READY_FOR_HUMAN_AUTHORIZATION"
   },
   "construction_order": [
     "08",
@@ -128,7 +128,7 @@
         },
         "artifact_resolution": {
           "entrypoint_kind": "redirect_wrapper_to_structured_source",
-          "status": "incomplete_authority_artifact",
+          "status": "resolved_by_recovered_full_candidate_evidence",
           "resolved_artifacts": [
             {
               "path": "prototypes/experience-workbench/journeys/05-add-expense/source/README.md",
@@ -151,14 +151,48 @@
             "prototypes/experience-workbench/journeys/05-add-expense/source/recovery.html",
             "prototypes/experience-workbench/journeys/05-add-expense/source/styles.css"
           ],
-          "missing_artifacts": [
+          "missing_artifacts": [],
+          "note": "The frozen structured-source slices remain incomplete, but the complete reviewed standalone candidate was recovered from the original review-session Library and its 27-state / 98-link fingerprint matches the frozen approved QA and state inventory.",
+          "historical_missing_artifacts": [
             "prototypes/experience-workbench/journeys/05-add-expense/source/split-methods.html",
             "prototypes/experience-workbench/journeys/05-add-expense/source/details-receipt.html",
             "prototypes/experience-workbench/journeys/05-add-expense/source/payer-variant.html",
             "prototypes/experience-workbench/journeys/05-add-expense/source/recovery.html",
             "prototypes/experience-workbench/journeys/05-add-expense/source/styles.css"
           ],
-          "note": "The frozen Golden entrypoint links into a structured source family whose README declares six slices; five are absent from the frozen authority tree. Do not reconstruct or silently re-scope them."
+          "recovered_artifact": {
+            "path": "product-schema/recovered-evidence/j05-v1-approved-candidate.html",
+            "git_blob": "e98573abc03a9edc224722f32458a1e4c2612e6e",
+            "sha256": "4b0acc8be4ee72dd7fe75933cf533df49d1dc30add3b7552c4199113f3438643",
+            "size_bytes": 52238,
+            "classification": "recovered review-session artifact evidence; schema-side copy, not a mutation of frozen product authority",
+            "origin": {
+              "provider": "ChatGPT Library",
+              "file_id": "file_00000000c45481f48708ff87fb8e8312",
+              "library_file_id": "libfile_b39fdd13e3d48191bd3cd6e5381bfd55",
+              "name": "chopdot-add-expense-v1-golden-candidate.html",
+              "created_at": "2026-09-03T17:48:03.683084+00:00"
+            },
+            "validation": {
+              "explicit_screen_states": 27,
+              "internal_hash_links": 98,
+              "matches_frozen_state_inventory": true,
+              "matches_frozen_visual_qa_counts": true,
+              "required_split_paths": [
+                "equal",
+                "exact",
+                "shares"
+              ],
+              "required_recovery_states": [
+                "missing",
+                "duplicate",
+                "offline",
+                "offline-saved",
+                "error",
+                "locked"
+              ]
+            }
+          }
         },
         "qa": {
           "path": "prototypes/experience-workbench/journeys/05-add-expense/VISUAL_QA.md",
@@ -233,6 +267,27 @@
           ],
           "sources": [
             "J05_STATE"
+          ]
+        },
+        {
+          "id": "REQ-J05-LOCK",
+          "journey": "05",
+          "kind": "effect_guard",
+          "value": {
+            "scope": "group",
+            "locked_when": "settlement_in_progress",
+            "blocked_operations": [
+              "expense.create",
+              "expense.edit",
+              "expense.delete"
+            ],
+            "entered_details_preserved": true
+          },
+          "sources": [
+            "J05",
+            "J05_STATE",
+            "J05_RECOVERED",
+            "J08"
           ]
         }
       ],
@@ -364,6 +419,23 @@
           ],
           "sources": [
             "J06_STATE"
+          ]
+        },
+        {
+          "id": "REQ-J06-REVIEW-RESET",
+          "journey": "06",
+          "kind": "dependent_state_transition",
+          "value": {
+            "on_successful_persisted_edit": "reset_current_reviews_to_needs_review_again",
+            "preserve_review_history": true,
+            "open_issue_requires_j07_resolution": true,
+            "owner_edit_cannot_mark_agreed": true
+          },
+          "sources": [
+            "J06",
+            "J06_STATE",
+            "J07",
+            "J07_STATE"
           ]
         }
       ],
@@ -592,7 +664,9 @@
       "REQ-J06-PERMISSIONS",
       "REQ-J06-RECOVERY",
       "REQ-J07-LANGUAGE",
-      "REQ-J07-ISSUE-LOOP"
+      "REQ-J07-ISSUE-LOOP",
+      "REQ-J05-LOCK",
+      "REQ-J06-REVIEW-RESET"
     ],
     "integration_constraint_refs": [
       "GATEA-MONEY-EQUAL-01"
@@ -775,6 +849,44 @@
         "resolution_owner": "07"
       },
       "sources": [
+        "J07",
+        "J07_STATE"
+      ]
+    },
+    {
+      "id": "REQ-J05-LOCK",
+      "journey": "05",
+      "kind": "effect_guard",
+      "value": {
+        "scope": "group",
+        "locked_when": "settlement_in_progress",
+        "blocked_operations": [
+          "expense.create",
+          "expense.edit",
+          "expense.delete"
+        ],
+        "entered_details_preserved": true
+      },
+      "sources": [
+        "J05",
+        "J05_STATE",
+        "J05_RECOVERED",
+        "J08"
+      ]
+    },
+    {
+      "id": "REQ-J06-REVIEW-RESET",
+      "journey": "06",
+      "kind": "dependent_state_transition",
+      "value": {
+        "on_successful_persisted_edit": "reset_current_reviews_to_needs_review_again",
+        "preserve_review_history": true,
+        "open_issue_requires_j07_resolution": true,
+        "owner_edit_cannot_mark_agreed": true
+      },
+      "sources": [
+        "J06",
+        "J06_STATE",
         "J07",
         "J07_STATE"
       ]
@@ -1000,7 +1112,7 @@
       "kind": "guard",
       "domain": "groups_expenses",
       "identity": [],
-      "meaning": "Effect-time guard that determines whether expense create/edit/delete is currently allowed while settlement-related locking may apply. The exact lock scope is intentionally unresolved.",
+      "meaning": "Group-scoped effect-time guard for Expense create/edit/delete. When the Group is in the approved `settlement in progress` state, expense mutations are locked for that Group.",
       "source_journeys": [
         "05",
         "06",
@@ -1009,6 +1121,7 @@
       "sources": [
         "J05",
         "J05_STATE",
+        "J05_RECOVERED",
         "J06_STATE",
         "J08",
         "J08_DECISION"
@@ -1234,53 +1347,6 @@
       ]
     },
     {
-      "id": "payment.intent",
-      "name": "PaymentIntent",
-      "kind": "entity",
-      "domain": "payments",
-      "identity": [
-        "payment_id",
-        "idempotency_key"
-      ],
-      "meaning": "Typed settlement lifecycle for an already-existing obligation. Preparing/authorizing a payment is distinct from execution, receipt and closure.",
-      "source_journeys": [
-        "11",
-        "12",
-        "15",
-        "18",
-        "28"
-      ],
-      "sources": [
-        "J11",
-        "J12",
-        "PAYMENT_COMPAT",
-        "STORAGE_REPLAY"
-      ]
-    },
-    {
-      "id": "payment.settlement_scope",
-      "name": "SettlementScope",
-      "kind": "value_object",
-      "domain": "payments",
-      "identity": [
-        "payer",
-        "recipient",
-        "currency",
-        "source_item_ids"
-      ],
-      "meaning": "Canonical exact settlement scope: payer, recipient, amount, one currency, source groups/items, selected method, expiry and idempotency identity.",
-      "source_journeys": [
-        "10",
-        "11",
-        "12",
-        "15"
-      ],
-      "sources": [
-        "J11",
-        "PAYMENT_COMPAT"
-      ]
-    },
-    {
       "id": "position.position",
       "name": "Position",
       "kind": "read_model",
@@ -1361,7 +1427,8 @@
         "expense.expense",
         "expense.split",
         "expense.allocation",
-        "expense.receipt"
+        "expense.receipt",
+        "expense.review"
       ],
       "source_journeys": [
         "06"
@@ -1370,9 +1437,10 @@
         "J06"
       ],
       "rules": [
-        "Reuse Journey 05 fields and controls with values prefilled.",
+        "Reuse Journey 05 fields and controls with existing values.",
         "Only the expense owner or an authorized role may edit.",
-        "An edit that invalidates prior review must make that staleness transparent; the exact triggering edits and resulting review-state transition are an explicit product-decision gap."
+        "A successful persisted Expense change resets current prior reviews to needs-review-again while preserving review history.",
+        "An owner edit may answer/correct an issue but cannot itself resolve the reviewer's issue or fabricate agreement."
       ],
       "invalidates": [
         "position.position",
@@ -1396,8 +1464,13 @@
       "dependent_state_effects": [
         {
           "object": "expense.review",
-          "effect": "prior review must not silently remain presented as current when the edit invalidates that review",
-          "policy_ref": "POLICY-EXPENSE-REVIEW-INVALIDATION"
+          "effect": "reset all current prior reviews to needs_review_again after a successful persisted Expense change; preserve prior review history",
+          "law_ref": "LAW-EXP-REVIEW-01"
+        },
+        {
+          "object": "expense.issue",
+          "effect": "open issue remains unresolved until Journey 07 reviewer resolution",
+          "law_ref": "LAW-EXP-02"
         }
       ]
     },
@@ -1655,7 +1728,7 @@
         "payment.intent",
         "payment.settlement_scope"
       ],
-      "rule": "Expense create/edit/delete must evaluate the current mutation guard before effect; a locked result prevents the mutation and preserves user-entered context. The exact settlement dependency scope of the guard is unresolved and must not be invented.",
+      "rule": "While a Group is in the approved `settlement in progress` state, Expense create/edit/delete are locked group-wide. The lock preserves entered context and ends only when the owning settlement flow no longer reports settlement in progress.",
       "constraint": {
         "kind": "effect_guard_required",
         "operations": [
@@ -1664,15 +1737,19 @@
           "expense.delete"
         ],
         "guard": "expense.mutation_guard",
-        "scope_policy": "REQUIRES_PRODUCT_DECISION"
+        "scope": "group",
+        "lock_when": {
+          "group_settlement_state": "in_progress"
+        },
+        "unlock_when": "owning settlement projection no longer reports in_progress"
       },
       "sources": [
         "J05",
         "J05_STATE",
+        "J05_RECOVERED",
         "J06_STATE",
         "J08",
-        "J08_DECISION",
-        "J11"
+        "J08_DECISION"
       ]
     },
     {
@@ -1746,13 +1823,19 @@
         "expense.expense",
         "expense.review"
       ],
-      "rule": "When an Expense edit makes prior review stale, the product must not continue presenting that prior review as current. Frozen authority does not fully specify which edit classes invalidate review or the exact resulting review status.",
+      "rule": "After any successful persisted Expense edit that changes the Expense, all current prior review agreements for that Expense become stale and move to `needs review again` / changed state. Prior review history is preserved. An open issue remains unresolved until Journey 07 records reviewer resolution; the edit itself cannot fabricate agreement.",
       "constraint": {
-        "kind": "stale_review_must_not_appear_current",
-        "policy_ref": "POLICY-EXPENSE-REVIEW-INVALIDATION"
+        "kind": "successful_edit_resets_current_reviews",
+        "trigger": "successful persisted expense edit with a material state change",
+        "affected_reviews": "all current reviews for the expense",
+        "current_result": "needs_review_again",
+        "preserve_prior_review_history": true,
+        "open_issue_resolution": "remains unresolved until Journey 07 reviewer action",
+        "owner_edit_cannot_resolve_issue": true
       },
       "sources": [
         "J06",
+        "J06_STATE",
         "J06_DECISION",
         "J07",
         "J07_STATE"
@@ -2040,21 +2123,18 @@
       "name": "Expense mutation guard",
       "objects": [
         "expense.mutation_guard",
-        "payment.intent",
-        "payment.settlement_scope",
         "group.group",
         "expense.expense"
       ],
       "preserves": [
-        "current authoritative lock/unlock result",
-        "guard evidence/scope if known"
+        "current authoritative group settlement-in-progress lock state"
       ],
       "laws": [
         "LAW-EXP-GUARD-01",
         "LAW-OP-04"
       ],
       "availability": "resolve_at_effect_time",
-      "note": "This context is an effect-time precondition, not a navigation payload. Its exact settlement dependency scope is a recorded product decision gap."
+      "note": "Effect-time Group guard. Gate B consumes the observable settlement-in-progress state; Gate C later owns how settlement lifecycle produces that state."
     }
   ],
   "handoffs": {
@@ -2368,47 +2448,98 @@
     "provenance_caveat": "J05 stylesheet is preview-owned reconstruction; approved Golden HTML is unchanged.",
     "rule": "Gate A acceptance never implies full J05, J08, J10, or J18 integration."
   },
-  "authority_blockers": [
+  "authority_recoveries": [
     {
-      "id": "AUTH-J05-GOLDEN-INCOMPLETE",
+      "id": "RECOVERY-J05-GOLDEN-01",
       "journey": "05",
-      "classification": "frozen_authority_artifact_incomplete",
-      "blocks": [
-        "Gate B Golden-fidelity implementation acceptance"
-      ],
-      "statement": "J05's frozen structured-source README declares six slices, but five are absent from the frozen authority tree.",
-      "missing_artifacts": [
-        "prototypes/experience-workbench/journeys/05-add-expense/source/split-methods.html",
-        "prototypes/experience-workbench/journeys/05-add-expense/source/details-receipt.html",
-        "prototypes/experience-workbench/journeys/05-add-expense/source/payer-variant.html",
-        "prototypes/experience-workbench/journeys/05-add-expense/source/recovery.html",
-        "prototypes/experience-workbench/journeys/05-add-expense/source/styles.css"
-      ],
-      "resolution_rule": "Do not reconstruct or re-scope the approved J05 Golden inside the schema. Recover the approved slices from authoritative evidence/history or make an explicit product-authority decision."
+      "status": "resolved",
+      "original_finding": "AUTH-J05-GOLDEN-INCOMPLETE",
+      "rule": "Use the pinned recovered full candidate for Gate B Golden-fidelity review while preserving the frozen branch and its incomplete structured-source record unchanged.",
+      "evidence": {
+        "path": "product-schema/recovered-evidence/j05-v1-approved-candidate.html",
+        "git_blob": "e98573abc03a9edc224722f32458a1e4c2612e6e",
+        "sha256": "4b0acc8be4ee72dd7fe75933cf533df49d1dc30add3b7552c4199113f3438643",
+        "size_bytes": 52238,
+        "classification": "recovered review-session artifact evidence; schema-side copy, not a mutation of frozen product authority",
+        "origin": {
+          "provider": "ChatGPT Library",
+          "file_id": "file_00000000c45481f48708ff87fb8e8312",
+          "library_file_id": "libfile_b39fdd13e3d48191bd3cd6e5381bfd55",
+          "name": "chopdot-add-expense-v1-golden-candidate.html",
+          "created_at": "2026-09-03T17:48:03.683084+00:00"
+        },
+        "validation": {
+          "explicit_screen_states": 27,
+          "internal_hash_links": 98,
+          "matches_frozen_state_inventory": true,
+          "matches_frozen_visual_qa_counts": true,
+          "required_split_paths": [
+            "equal",
+            "exact",
+            "shares"
+          ],
+          "required_recovery_states": [
+            "missing",
+            "duplicate",
+            "offline",
+            "offline-saved",
+            "error",
+            "locked"
+          ]
+        }
+      }
     }
   ],
-  "product_decisions_required": [
+  "authority_blockers": [],
+  "product_decisions_required": [],
+  "resolved_authority_interpretations": [
     {
-      "id": "POLICY-EXPENSE-LOCK-SCOPE",
-      "classification": "requires_product_decision",
+      "id": "RESOLVED-J05-ARTIFACT-01",
+      "status": "resolved_from_recovered_approval_evidence",
+      "journeys": [
+        "05"
+      ],
+      "rule": "The recovered standalone J05 V1 candidate is the Gate B fidelity artifact because its exact 27-state / 98-link fingerprint and required paths match the frozen approved state inventory and visual-QA record.",
+      "sources": [
+        "J05",
+        "J05_STATE",
+        "J05_RECOVERED"
+      ]
+    },
+    {
+      "id": "RESOLVED-EXPENSE-LOCK-01",
+      "status": "resolved_from_frozen_golden_behavior",
       "journeys": [
         "05",
         "06",
-        "08",
-        "11"
+        "08"
       ],
-      "statement": "Historical J08/J05/J06 behavior includes settlement-related expense mutation locking, while later settlement contracts narrow dependency blocking to affected items. The final mutation-lock scope is not settled by the frozen sources.",
-      "handling": "Represent the guard and enforce fail-closed locked behavior, but do not choose group-wide vs item-scoped lock semantics before an explicit product decision."
+      "rule": "Settlement-in-progress is a Group-level expense-mutation lock for create/edit/delete. The later dependent-item dispute rule governs settlement eligibility and does not override this mutation lock.",
+      "sources": [
+        "J05",
+        "J05_STATE",
+        "J05_RECOVERED",
+        "J06_STATE",
+        "J08",
+        "J08_DECISION",
+        "J11"
+      ]
     },
     {
-      "id": "POLICY-EXPENSE-REVIEW-INVALIDATION",
-      "classification": "requires_product_decision",
+      "id": "RESOLVED-EXPENSE-REVIEW-01",
+      "status": "resolved_from_approved_journey_behavior",
       "journeys": [
         "06",
         "07"
       ],
-      "statement": "Frozen authority establishes that Expense edits may reset/update review and that changed expenses are reviewed again, but it does not fully specify which edit fields invalidate prior review or the exact resulting review-state transition.",
-      "handling": "Do not leave stale review presented as current. Before Gate B implementation acceptance, decide the invalidating edit classes and resulting review-state semantics."
+      "rule": "A successful persisted Expense change resets current prior reviews to needs-review-again while preserving review history; owner correction does not resolve an issue without reviewer action in J07.",
+      "sources": [
+        "J06",
+        "J06_STATE",
+        "J06_DECISION",
+        "J07",
+        "J07_STATE"
+      ]
     }
   ],
   "schema_blockers": []
