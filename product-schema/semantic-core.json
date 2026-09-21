@@ -248,6 +248,34 @@
     "APPROVAL_28_v1": {
       "path": "prototypes/experience-workbench/registry/approvals/28-v1.json",
       "git_blob": "0f3c220bf596b8708e52b61b867a601b1bbf775c"
+    },
+    "J05_STATE": {
+      "path": "prototypes/experience-workbench/journeys/05-add-expense/STATE_INVENTORY.md",
+      "git_blob": "e07272c1c79e55e61a7ffac2cae0e2e58396363f"
+    },
+    "J05_DECISION": {
+      "path": "prototypes/experience-workbench/journeys/05-add-expense/source/decision-history.md",
+      "git_blob": "487c15e18bb017e11a0abe62d7c734c937f78ea6"
+    },
+    "J06_STATE": {
+      "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/STATE_INVENTORY.md",
+      "git_blob": "580390c116b7c745b7db51ca4948b7e9113d73f5"
+    },
+    "J06_DECISION": {
+      "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/source/decision-history.md",
+      "git_blob": "88e5b2d30caca289b7c745809249041f18056612"
+    },
+    "J07_STATE": {
+      "path": "prototypes/experience-workbench/journeys/07-review-agree/STATE_INVENTORY.md",
+      "git_blob": "a24f4f4061a037af5862604f867c4b1f8f7fff6e"
+    },
+    "J07_DECISION": {
+      "path": "prototypes/experience-workbench/journeys/07-review-agree/source/decision-history.md",
+      "git_blob": "25de06c69c060b6c9710549cd63d161d21b69d3a"
+    },
+    "J08_DECISION": {
+      "path": "prototypes/experience-workbench/journeys/08-group-home/source/decision-history.md",
+      "git_blob": "a9eff37f0ac514ef214cac2533684da5a4067cdf"
     }
   },
   "domains": [
@@ -591,7 +619,7 @@
       "kind": "value_object",
       "domain": "groups_expenses",
       "identity": [],
-      "meaning": "Beneficiary allocation of an Expense across selected Participants using Equal, Exact or Shares semantics; custom totals must conserve the Expense amount.",
+      "meaning": "Beneficiary allocation of an Expense across selected Participants using Equal, Exact or Shares semantics; it contains participant-bound ExpenseAllocation entries whose MoneyV1 amounts conserve the Expense total.",
       "source_journeys": [
         "05",
         "06",
@@ -600,7 +628,11 @@
       "sources": [
         "J05",
         "J06",
-        "C1_IDENTITY"
+        "C1_IDENTITY",
+        "J07"
+      ],
+      "contains": [
+        "expense.allocation"
       ]
     },
     {
@@ -671,6 +703,14 @@
         "J10",
         "J11",
         "J13"
+      ],
+      "derived_from": [
+        "expense.expense",
+        "expense.split",
+        "expense.allocation",
+        "expense.issue",
+        "payment.intent",
+        "payment.record"
       ]
     },
     {
@@ -1008,11 +1048,16 @@
       ],
       "meaning": "Read-only ChopDot milestone projection over accepted domain truth; technical refresh noise is not user activity.",
       "source_journeys": [
-        "18"
+        "18",
+        "08"
       ],
       "sources": [
         "J18",
-        "APPROVAL_18_v1_1"
+        "APPROVAL_18_v1_1",
+        "J08"
+      ],
+      "derived_from": [
+        "event.accepted"
       ]
     },
     {
@@ -1028,13 +1073,23 @@
       "source_journeys": [
         "02",
         "07",
-        "18"
+        "18",
+        "08"
       ],
       "sources": [
         "J02",
         "J07",
         "J18",
-        "APPROVAL_18_v1_1"
+        "APPROVAL_18_v1_1",
+        "J08"
+      ],
+      "derived_from": [
+        "expense.review",
+        "expense.issue",
+        "payment.intent",
+        "payment.request",
+        "savings.operation",
+        "group.invitation"
       ]
     },
     {
@@ -1199,6 +1254,89 @@
       "sources": [
         "J28"
       ]
+    },
+    {
+      "id": "expense.allocation",
+      "name": "ExpenseAllocation",
+      "kind": "value_object",
+      "domain": "groups_expenses",
+      "identity": [
+        "expense_id",
+        "participant_id"
+      ],
+      "meaning": "One beneficiary allocation entry inside an Expense Split, bound to the exact Participant it charges and to MoneyV1.",
+      "source_journeys": [
+        "05",
+        "06",
+        "07"
+      ],
+      "sources": [
+        "J05",
+        "J05_STATE",
+        "J06",
+        "J07",
+        "C1_IDENTITY"
+      ]
+    },
+    {
+      "id": "expense.receipt",
+      "name": "ExpenseReceipt",
+      "kind": "value_object",
+      "domain": "groups_expenses",
+      "identity": [],
+      "meaning": "Optional receipt attachment/reference associated with one Expense; create/edit may add, replace or remove it without changing Expense identity.",
+      "source_journeys": [
+        "05",
+        "06"
+      ],
+      "sources": [
+        "J05",
+        "J05_STATE",
+        "J06",
+        "J06_STATE"
+      ]
+    },
+    {
+      "id": "expense.change_record",
+      "name": "ExpenseChangeRecord",
+      "kind": "read_model",
+      "domain": "groups_expenses",
+      "identity": [
+        "expense_id",
+        "event_id"
+      ],
+      "derived_from": [
+        "event.accepted"
+      ],
+      "meaning": "Read-only history projection showing important accepted changes to an Expense; history does not mutate the Expense.",
+      "source_journeys": [
+        "06"
+      ],
+      "sources": [
+        "J06",
+        "J06_STATE",
+        "STORAGE_REPLAY"
+      ]
+    },
+    {
+      "id": "expense.mutation_guard",
+      "name": "ExpenseMutationGuard",
+      "kind": "guard",
+      "domain": "groups_expenses",
+      "identity": [],
+      "meaning": "Effect-time guard that determines whether expense create/edit/delete is currently allowed while settlement-related locking may apply. The exact lock scope is intentionally unresolved.",
+      "source_journeys": [
+        "05",
+        "06",
+        "08"
+      ],
+      "sources": [
+        "J05",
+        "J05_STATE",
+        "J06_STATE",
+        "J08",
+        "J08_DECISION"
+      ]
     }
   ],
   "operations": [
@@ -1320,7 +1458,9 @@
       "owner": "expense.expense",
       "changes": [
         "expense.expense",
-        "expense.split"
+        "expense.split",
+        "expense.allocation",
+        "expense.receipt"
       ],
       "source_journeys": [
         "05"
@@ -1333,6 +1473,25 @@
         "No invented common-path review page.",
         "Failed save preserves entered details.",
         "Custom split must conserve the expense total."
+      ],
+      "emits": [
+        "event.accepted"
+      ],
+      "invalidates": [
+        "position.position",
+        "activity.item",
+        "activity.attention",
+        "expense.change_record"
+      ],
+      "law_refs": [
+        "LAW-MONEY-01",
+        "LAW-EXP-01",
+        "LAW-EXP-03",
+        "LAW-EXP-GUARD-01",
+        "LAW-HIST-01"
+      ],
+      "guards": [
+        "expense.mutation_guard"
       ]
     },
     {
@@ -1342,6 +1501,8 @@
       "changes": [
         "expense.expense",
         "expense.split",
+        "expense.allocation",
+        "expense.receipt",
         "expense.review"
       ],
       "source_journeys": [
@@ -1354,6 +1515,26 @@
         "Reuse Journey 05 controls with existing values.",
         "Only owner/authorized role may edit.",
         "Review status updates/resets transparently."
+      ],
+      "emits": [
+        "event.accepted"
+      ],
+      "invalidates": [
+        "position.position",
+        "activity.item",
+        "activity.attention",
+        "expense.change_record"
+      ],
+      "law_refs": [
+        "LAW-MONEY-01",
+        "LAW-EXP-01",
+        "LAW-EXP-03",
+        "LAW-EXP-02",
+        "LAW-EXP-GUARD-01",
+        "LAW-HIST-01"
+      ],
+      "guards": [
+        "expense.mutation_guard"
       ]
     },
     {
@@ -1362,7 +1543,8 @@
       "owner": "expense.expense",
       "changes": [
         "expense.expense",
-        "position.position"
+        "expense.review",
+        "expense.issue"
       ],
       "source_journeys": [
         "06"
@@ -1373,6 +1555,23 @@
       "rules": [
         "Explicit confirmation separate from edit.",
         "Deletion explains/recomputes balance impact."
+      ],
+      "emits": [
+        "event.accepted"
+      ],
+      "invalidates": [
+        "position.position",
+        "activity.item",
+        "activity.attention",
+        "expense.change_record"
+      ],
+      "law_refs": [
+        "LAW-EXP-02",
+        "LAW-EXP-GUARD-01",
+        "LAW-HIST-01"
+      ],
+      "guards": [
+        "expense.mutation_guard"
       ]
     },
     {
@@ -1391,6 +1590,20 @@
       "rules": [
         "Review is distinct from editing.",
         "Looks right resolves the reviewer's review state, not unrelated domain state."
+      ],
+      "emits": [
+        "event.accepted"
+      ],
+      "invalidates": [
+        "position.position",
+        "activity.item",
+        "activity.attention",
+        "expense.change_record"
+      ],
+      "law_refs": [
+        "LAW-EXP-02",
+        "LAW-ISSUE-01",
+        "LAW-HIST-01"
       ]
     },
     {
@@ -1409,6 +1622,20 @@
       "rules": [
         "Issue includes reason and optional note.",
         "Only dependent payment items are blocked."
+      ],
+      "emits": [
+        "event.accepted"
+      ],
+      "invalidates": [
+        "position.position",
+        "activity.item",
+        "activity.attention",
+        "expense.change_record"
+      ],
+      "law_refs": [
+        "LAW-EXP-02",
+        "LAW-ISSUE-01",
+        "LAW-HIST-01"
       ]
     },
     {
@@ -1420,15 +1647,29 @@
         "expense.review"
       ],
       "source_journeys": [
-        "06",
         "07"
       ],
       "sources": [
-        "J06",
-        "J07"
+        "J07",
+        "J07_STATE",
+        "J07_DECISION"
       ],
       "rules": [
-        "Owner correction stays in Journey 06; reviewer agreement/reassessment stays in Journey 07."
+        "Journey 07 owns issue resolution status. Owner correction remains Journey 06; a correction does not fabricate reviewer agreement."
+      ],
+      "emits": [
+        "event.accepted"
+      ],
+      "invalidates": [
+        "position.position",
+        "activity.item",
+        "activity.attention",
+        "expense.change_record"
+      ],
+      "law_refs": [
+        "LAW-EXP-02",
+        "LAW-ISSUE-01",
+        "LAW-HIST-01"
       ]
     },
     {
@@ -2078,6 +2319,71 @@
         "Read/unread is personal delivery metadata only.",
         "Marking one or all notifications read never resolves the underlying domain item or AttentionItem."
       ]
+    },
+    {
+      "id": "expense.withdraw_issue",
+      "name": "Withdraw Expense Issue",
+      "owner": "expense.issue",
+      "changes": [
+        "expense.issue"
+      ],
+      "emits": [
+        "event.accepted"
+      ],
+      "invalidates": [
+        "position.position",
+        "activity.item",
+        "activity.attention",
+        "expense.change_record"
+      ],
+      "law_refs": [
+        "LAW-EXP-02",
+        "LAW-ISSUE-01",
+        "LAW-HIST-01"
+      ],
+      "source_journeys": [
+        "07"
+      ],
+      "sources": [
+        "J07",
+        "J07_STATE"
+      ],
+      "rules": [
+        "Reviewer may withdraw their raised issue through Journey 07.",
+        "Withdrawal changes issue status; it does not edit the Expense or fabricate payment/settlement state."
+      ]
+    },
+    {
+      "id": "expense.reply_to_issue",
+      "name": "Reply to Expense Issue",
+      "owner": "expense.issue",
+      "changes": [
+        "expense.issue"
+      ],
+      "emits": [
+        "event.accepted"
+      ],
+      "invalidates": [
+        "activity.item",
+        "activity.attention",
+        "expense.change_record"
+      ],
+      "law_refs": [
+        "LAW-EXP-02",
+        "LAW-ISSUE-01",
+        "LAW-HIST-01"
+      ],
+      "source_journeys": [
+        "07"
+      ],
+      "sources": [
+        "J07",
+        "J07_STATE"
+      ],
+      "rules": [
+        "Owner may reply through Journey 07 without editing the Expense.",
+        "A reply does not equal reviewer agreement or issue resolution; the reviewer can reassess with Looks right or Still off."
+      ]
     }
   ],
   "derived_models": [
@@ -2109,7 +2415,9 @@
         "expense.expense",
         "expense.review",
         "position.position",
-        "group.membership"
+        "group.membership",
+        "activity.item",
+        "activity.attention"
       ],
       "source_journeys": [
         "08"
@@ -2118,7 +2426,8 @@
         "J08"
       ],
       "rules": [
-        "Overview-first current group state; navigation does not mutate underlying truth."
+        "Overview-first current group state; navigation does not mutate underlying truth.",
+        "The approved What needs you block derives from AttentionItem and Recent activity derives from ActivityItem; neither may use an independent fake fixture."
       ]
     },
     {
@@ -2362,7 +2671,12 @@
       "rule": "An explicit custom split must add to the Expense total within the exact money partition.",
       "sources": [
         "J05"
-      ]
+      ],
+      "constraint": {
+        "kind": "sum_allocations_equals_expense_total",
+        "allocation_object": "expense.allocation",
+        "money_partition": "money.money_v1"
+      }
     },
     {
       "id": "LAW-EXP-02",
@@ -2653,6 +2967,77 @@
         "C1_SPEND",
         "C1_EXECUTION"
       ]
+    },
+    {
+      "id": "LAW-EXP-03",
+      "name": "Expense allocation preserves participant attribution",
+      "applies_to": [
+        "expense.expense",
+        "expense.split",
+        "expense.allocation",
+        "group.membership",
+        "identity.participant",
+        "money.money_v1"
+      ],
+      "rule": "Every allocation entry is bound to a selected participant_id in the Expense's Group and carries MoneyV1 in the Expense partition. Correct total conservation never substitutes for correct per-participant attribution.",
+      "constraint": {
+        "kind": "allocation_participant_membership",
+        "allocation_identity": [
+          "expense_id",
+          "participant_id"
+        ],
+        "membership_scope": "expense.group_id",
+        "money_partition": "expense.amount"
+      },
+      "sources": [
+        "J05",
+        "J05_STATE",
+        "C1_IDENTITY"
+      ]
+    },
+    {
+      "id": "LAW-EXP-GUARD-01",
+      "name": "Expense mutation obeys current settlement-related guard",
+      "applies_to": [
+        "expense.mutation_guard",
+        "expense.expense",
+        "payment.intent",
+        "payment.settlement_scope"
+      ],
+      "rule": "Expense create/edit/delete must evaluate the current mutation guard before effect; a locked result prevents the mutation and preserves user-entered context. The exact settlement dependency scope of the guard is unresolved and must not be invented.",
+      "constraint": {
+        "kind": "effect_guard_required",
+        "operations": [
+          "expense.create",
+          "expense.edit",
+          "expense.delete"
+        ],
+        "guard": "expense.mutation_guard",
+        "scope_policy": "REQUIRES_PRODUCT_DECISION"
+      },
+      "sources": [
+        "J05",
+        "J05_STATE",
+        "J06_STATE",
+        "J08",
+        "J08_DECISION",
+        "J11"
+      ]
+    },
+    {
+      "id": "LAW-EXP-HISTORY-01",
+      "name": "Accepted Expense mutations feed read-only change history",
+      "applies_to": [
+        "expense.change_record",
+        "event.accepted",
+        "expense.expense"
+      ],
+      "rule": "Important accepted Expense changes are represented through replay-safe accepted history; Expense history is read-only and replay does not repeat the mutation.",
+      "sources": [
+        "J06",
+        "J06_STATE",
+        "STORAGE_REPLAY"
+      ]
     }
   ],
   "anti_collapse": [
@@ -2706,16 +3091,9 @@
     {
       "id": "DOC-DRIFT-01",
       "classification": "documentation_status_drift",
-      "journeys": [
-        "19",
-        "20",
-        "21",
-        "22",
-        "23",
-        "25"
-      ],
-      "statement": "Some canonical spec headers still describe definition/candidate status although the higher-authority registry and approval records mark these journeys Golden/design-approved.",
-      "handling": "Registry/approval controls status. Stage 2 uses approved policy records where the spec is stale and does not rewrite frozen journey files."
+      "detection": "derive from frozen spec headers versus higher-authority registry/approval state",
+      "statement": "Some frozen spec headers contain historical candidate/definition wording after higher-authority registry/approval records made the journey Golden.",
+      "handling": "Do not hand-maintain a journey list. Verification derives drift at runtime; registry/approval controls status and frozen specs remain byte-unchanged."
     },
     {
       "id": "POLICY-UNSELECTED-01",
@@ -2741,6 +3119,27 @@
       ],
       "statement": "Stage 3 composition exposed the missing semantic operation for notification read-state mutation.",
       "handling": "Added notification.set_read_state as a schema-only normalization of already-approved J18 behavior; no product source or runtime code changed."
+    },
+    {
+      "id": "POLICY-EXPENSE-LOCK-SCOPE",
+      "classification": "requires_product_decision",
+      "journeys": [
+        "05",
+        "06",
+        "08",
+        "11"
+      ],
+      "statement": "Historical J08/J05/J06 behavior includes settlement-related expense mutation locking, while later settlement contracts narrow dependency blocking to affected items. The final mutation-lock scope is not settled by the frozen sources.",
+      "handling": "Represent the guard and enforce fail-closed locked behavior, but do not choose group-wide vs item-scoped lock semantics before an explicit product decision."
+    },
+    {
+      "id": "AUTH-J05-GOLDEN-INCOMPLETE",
+      "classification": "frozen_authority_artifact_incomplete",
+      "journeys": [
+        "05"
+      ],
+      "statement": "J05's structured-source manifest declares five source slices that are absent from the frozen authority tree.",
+      "handling": "Block Gate B Golden-fidelity acceptance until approved bytes are recovered or an explicit authority decision re-scopes the Golden."
     }
   ]
 }

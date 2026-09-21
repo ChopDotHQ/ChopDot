@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { validateHardening, evaluateExpenseContract } from './hardening-lib.mjs';
+const root=join(dirname(fileURLToPath(import.meta.url)),'..');
+const read=n=>JSON.parse(readFileSync(join(root,'product-schema',n),'utf8'));
+const core=read('semantic-core.json'), graph=read('composition-graph.json'), frozen=read('frozen-baseline.json'), oracle=read('gate-b-authority-oracle.json');
+const errors=validateHardening(core,graph,frozen,oracle);
+assert.deepEqual(errors,[],JSON.stringify(errors,null,2));
+const valid={operation:'expense.create',locked:false,total_minor_units:1000,group_participants:['A','B','C'],selected_participants:['A','B'],allocations:[{participant_id:'A',minor_units:600},{participant_id:'B',minor_units:400}]};
+assert.deepEqual(evaluateExpenseContract(core,valid),[]);
+assert.deepEqual(evaluateExpenseContract(core,{...valid,allocations:[{participant_id:'A',minor_units:500},{participant_id:'B',minor_units:400}]}),['LAW-EXP-01']);
+assert.deepEqual(evaluateExpenseContract(core,{...valid,allocations:[{participant_id:'A',minor_units:600},{participant_id:'C',minor_units:400}]}),['LAW-EXP-03']);
+assert.deepEqual(evaluateExpenseContract(core,{...valid,operation:'expense.edit',locked:true}),['LAW-EXP-GUARD-01']);
+console.log(JSON.stringify({hardening:'PASS',oracle_assertions:oracle.assertions.length,expense_contract_cases:4,authority_blockers:(frozen.authority_blockers||[]).map(x=>x.id)},null,2));

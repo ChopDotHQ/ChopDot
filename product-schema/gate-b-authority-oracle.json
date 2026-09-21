@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "oracle_id": "gate-b-frozen-authority-oracle-v1",
+  "authority_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "purpose": "Independent small test oracle extracted from frozen Gate B authority. It is not product authority; each assertion pins the authority evidence it tests.",
+  "assertions": [
+    {
+      "id": "ORACLE-J07-RESOLUTION-OWNER",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/07-review-agree/spec.md",
+          "git_blob": "6b4cf633c58b36ff3f55924014d39febd147f3f6",
+          "size_bytes": 3668,
+          "kind": "spec"
+        }
+      ],
+      "required": {
+        "operation": "expense.resolve_issue",
+        "journey_owner": "07"
+      }
+    },
+    {
+      "id": "ORACLE-J07-WITHDRAW",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/07-review-agree/STATE_INVENTORY.md",
+          "git_blob": "a24f4f4061a037af5862604f867c4b1f8f7fff6e",
+          "size_bytes": 757,
+          "kind": "state_inventory"
+        }
+      ],
+      "required": {
+        "operation": "expense.withdraw_issue",
+        "journey_owner": "07"
+      }
+    },
+    {
+      "id": "ORACLE-J07-REPLY",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/07-review-agree/STATE_INVENTORY.md",
+          "git_blob": "a24f4f4061a037af5862604f867c4b1f8f7fff6e",
+          "size_bytes": 757,
+          "kind": "state_inventory"
+        }
+      ],
+      "required": {
+        "operation": "expense.reply_to_issue",
+        "journey_owner": "07"
+      }
+    },
+    {
+      "id": "ORACLE-SPLIT-ATTRIBUTION",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/05-add-expense/spec.md",
+          "git_blob": "e1f91491f7ec83f254a493b24c88f8ebc02813fc",
+          "size_bytes": 4173,
+          "kind": "spec"
+        }
+      ],
+      "required": {
+        "object": "expense.allocation",
+        "identity": [
+          "expense_id",
+          "participant_id"
+        ],
+        "law": "LAW-EXP-03"
+      }
+    },
+    {
+      "id": "ORACLE-SETTLEMENT-GUARD",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/08-group-home/spec.md",
+          "git_blob": "2d5acbbd8d97d885d258bfd92ddeb7ed61a8e49d",
+          "size_bytes": 6219,
+          "kind": "spec"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/05-add-expense/STATE_INVENTORY.md",
+          "git_blob": "e07272c1c79e55e61a7ffac2cae0e2e58396363f",
+          "size_bytes": 440,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/STATE_INVENTORY.md",
+          "git_blob": "580390c116b7c745b7db51ca4948b7e9113d73f5",
+          "size_bytes": 499,
+          "kind": "state_inventory"
+        }
+      ],
+      "required": {
+        "guard": "expense.mutation_guard",
+        "law": "LAW-EXP-GUARD-01",
+        "operations": [
+          "expense.create",
+          "expense.edit",
+          "expense.delete"
+        ]
+      }
+    },
+    {
+      "id": "ORACLE-GROUP-HOME-ACTIVITY",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/08-group-home/spec.md",
+          "git_blob": "2d5acbbd8d97d885d258bfd92ddeb7ed61a8e49d",
+          "size_bytes": 6219,
+          "kind": "spec"
+        }
+      ],
+      "required": {
+        "view": "view.group_home",
+        "derived_from": [
+          "activity.item",
+          "activity.attention",
+          "position.position"
+        ]
+      }
+    },
+    {
+      "id": "ORACLE-EXPENSE-EVENTS",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/docs/STORAGE_AND_REPLAY_CONTRACT.md",
+          "git_blob": "863239ccbb5f0503cd383c1d38b6352bad210b2d",
+          "size_bytes": 918,
+          "kind": "contract"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/spec.md",
+          "git_blob": "ad17dadbf0b5c98243a7279ec2ceca7e1610abb8",
+          "size_bytes": 4314,
+          "kind": "spec"
+        }
+      ],
+      "required": {
+        "operations": [
+          "expense.create",
+          "expense.edit",
+          "expense.delete",
+          "expense.review_agree",
+          "expense.raise_issue",
+          "expense.resolve_issue",
+          "expense.withdraw_issue",
+          "expense.reply_to_issue"
+        ],
+        "emits": "event.accepted"
+      }
+    },
+    {
+      "id": "ORACLE-DERIVED-POSITION",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/11-settle-up/spec.md",
+          "git_blob": "e26b003318f6e03d3b36401e39b1cacfdbe85fbe",
+          "size_bytes": 13039,
+          "kind": "spec"
+        }
+      ],
+      "required": {
+        "read_model": "position.position",
+        "must_not_be_changed_by": [
+          "expense.create",
+          "expense.edit",
+          "expense.delete"
+        ],
+        "must_be_invalidated_by": [
+          "expense.create",
+          "expense.edit",
+          "expense.delete"
+        ]
+      }
+    },
+    {
+      "id": "ORACLE-TIER4-PINNING",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/DESIGN_CONTRACT.md",
+          "git_blob": "69311f291cefc0dad7b4994a631193891cbd8ed0",
+          "size_bytes": 5833,
+          "kind": "contract"
+        }
+      ],
+      "required": {
+        "journeys": [
+          "05",
+          "06",
+          "07",
+          "08"
+        ],
+        "authority_kinds": [
+          "state_inventory_or_absent",
+          "decision_history"
+        ]
+      }
+    },
+    {
+      "id": "ORACLE-GATEB-VIEW-SCOPE",
+      "evidence": [
+        {
+          "path": "docs/integrated-preview-v2/PLAN.md",
+          "git_blob": "67e23318b0c96e9d4a1790fd09eac897875f9f92",
+          "kind": "integration_plan"
+        }
+      ],
+      "required": {
+        "composition": "composition.core_expense_loop",
+        "views_rendered": [
+          "view.group_home"
+        ],
+        "views_refreshed_downstream": [
+          "view.position",
+          "view.activity"
+        ]
+      }
+    },
+    {
+      "id": "ORACLE-GATEA-CAVEAT",
+      "evidence": [
+        {
+          "path": "docs/integrated-preview-v2/GATE_A_ACCEPTANCE.json",
+          "git_blob": "f50cfea11b6ade1b51423af556742a9574bc5de6",
+          "kind": "acceptance"
+        }
+      ],
+      "required": {
+        "provenance_caveat": true,
+        "qualified_context_reuse": true
+      }
+    },
+    {
+      "id": "ORACLE-J05-ARTIFACT",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/05-add-expense/source/README.md",
+          "git_blob": "4be3362789f1265b6fad99690694f35d325cbefd",
+          "size_bytes": 268,
+          "kind": "source_manifest"
+        }
+      ],
+      "required": {
+        "authority_blocker": "AUTH-J05-GOLDEN-INCOMPLETE"
+      }
+    }
+  ]
+}

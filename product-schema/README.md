@@ -1,34 +1,21 @@
 # ChopDot Product Schema V1
 
-Status: **Stage 4 — completeness audit PASS; Gate B construction view derived**
+Status: **adversarially hardened candidate — schema PASS, Gate B BLOCKED on explicit authority/product-decision items**
 
-This branch is a derived composable schema over the already-approved ChopDot product. It is not product authority and does not itself authorize Gate B implementation.
+Authored schema:
+- `frozen-baseline.json` — frozen authority/provenance, resolved artifact pointers and authority blockers.
+- `semantic-core.json` — semantic objects, operations, laws and explicit known gaps.
+- `composition-graph.json` — contexts, journey wiring, single-owner composition units and gate references.
+- `gate-b-authority-oracle.json` — independent frozen-authority expectations used only for hostile verification.
 
-## Program
-
-1. **Frozen inventory — complete.**
-2. **Semantic normalization — complete.**
-3. **Composition wiring — complete.**
-4. **Completeness / Gate B derivation — PASS.** Audit the graph and mechanically derive the Gate B construction packet.
-
-## Canonical authored schema
-
-- `frozen-baseline.json` — Stage 1 provenance/inventory.
-- `semantic-core.json` — Stage 2 product meaning.
-- `composition-graph.json` — Stage 3 wiring/gates.
-
-## Generated Stage 4 views
-
+Generated views:
 - `generated/completeness-report.json`
 - `generated/gate-b-construction.json`
 - `generated/GATE_B_CONSTRUCTION.md`
 
-Run `node product-schema/derive-stage-4.mjs` to reproduce the generated views. The workflow verifies Stages 1–4 and generated-output determinism.
+Verification:
+- Stages 1–4
+- `verify-schema-hardening.mjs`
+- `mutation-battery.mjs`
 
-## Non-negotiable
-
-- Frozen Goldens/journey semantics and accepted Gate A bytes remain unchanged.
-- Gate integration status is separate from design approval.
-- Schema-derived PASS is not implementation/deployment authorization.
-- Research branches are lessons, not product authority.
-- Unknown/unselected implementation policy remains explicit.
+The schema never authorizes Gate B, production, Product Integrator, protected merge or deployment. Current generated Gate B readiness is intentionally BLOCKED until its explicit authority/product-decision blockers are resolved.

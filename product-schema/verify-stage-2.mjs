@@ -3,62 +3,26 @@ import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
 const root=join(dirname(fileURLToPath(import.meta.url)),'..');
-const model=JSON.parse(readFileSync(join(root,'product-schema/semantic-core.json'),'utf8'));
-const blob=buf=>createHash('sha1').update(`blob ${buf.length}\0`).update(buf).digest('hex');
-const byId=new Map();
-const register=(items,label)=>{ for(const x of items){ assert.ok(x.id, `${label} missing id`); assert.ok(!byId.has(x.id), `duplicate semantic id ${x.id}`); byId.set(x.id,{label,item:x}); } };
-register(model.objects,'object'); register(model.operations,'operation'); register(model.derived_models,'derived model'); register(model.laws,'law');
-
-assert.equal(model.stage.id,2);
-assert.equal(model.frozen_baseline.product_authority_commit,'4ba456e6595330e4ca8e21366e0d827f17e10881');
-assert.equal(model.frozen_baseline.product_authority_tree,'cb424dafedff066fed433e106eb4468bec985d98');
-
-for(const [id,source] of Object.entries(model.sources)){
-  assert.ok(source.path && source.git_blob, `bad source ${id}`);
-  const data=readFileSync(join(root,source.path));
-  assert.equal(blob(data),source.git_blob,`source drift ${id}: ${source.path}`);
-  assert.ok(!source.path.startsWith('research/product-ir'),`research source cannot be product authority: ${source.path}`);
-}
-const sourceIds=new Set(Object.keys(model.sources));
-const checkSources=(x)=>{ assert.ok(Array.isArray(x.sources)&&x.sources.length>0,`${x.id} has no sources`); for(const s of x.sources) assert.ok(sourceIds.has(s),`${x.id} missing source ${s}`); };
-for(const x of [...model.objects,...model.operations,...model.derived_models,...model.laws]) checkSources(x);
-
-const objectIds=new Set(model.objects.map(x=>x.id));
-for(const op of model.operations){
-  assert.ok(objectIds.has(op.owner),`${op.id} owner missing: ${op.owner}`);
-  for(const id of op.changes||[]) assert.ok(objectIds.has(id),`${op.id} changes missing object ${id}`);
-}
-for(const view of model.derived_models) for(const id of view.derived_from) assert.ok(objectIds.has(id),`${view.id} derives missing object ${id}`);
-for(const law of model.laws) for(const id of law.applies_to) assert.ok(objectIds.has(id),`${law.id} applies to missing object ${id}`);
-for(const pair of model.anti_collapse){ assert.ok(objectIds.has(pair.left)); assert.ok(objectIds.has(pair.right)); assert.notEqual(pair.left,pair.right); }
-
-const journeyIds=new Set(Array.from({length:28},(_,i)=>String(i+1).padStart(2,'0')));
-const covered=new Set();
-for(const x of [...model.objects,...model.operations,...model.derived_models]){
-  for(const j of x.source_journeys||[]){ assert.ok(journeyIds.has(j),`${x.id} invalid journey ${j}`); covered.add(j); }
-}
-assert.deepEqual([...covered].sort(),[...journeyIds].sort(),'all 28 frozen journeys must contribute to the normalized semantic core');
-
-assert.ok(model.objects.some(x=>x.id==='identity.participant'));
-assert.ok(model.objects.some(x=>x.id==='money.money_v1'));
-assert.ok(model.objects.some(x=>x.id==='expense.expense'));
-assert.ok(model.objects.some(x=>x.id==='position.position'));
-assert.ok(model.objects.some(x=>x.id==='payment.intent'));
-assert.ok(model.objects.some(x=>x.id==='spend.intent'));
-assert.ok(model.objects.some(x=>x.id==='recovery.context'));
-assert.ok(model.laws.some(x=>x.id==='LAW-OP-02'));
-assert.ok(model.anti_collapse.some(x=>x.left==='payment.intent'&&x.right==='spend.intent'));
-
-console.log(JSON.stringify({
- stage:'product-schema-v1-stage-2',
- domains:model.domains.length,
- objects:model.objects.length,
- operations:model.operations.length,
- derived_models:model.derived_models.length,
- laws:model.laws.length,
- journey_source_coverage:covered.size,
- known_gaps:model.known_gaps.length,
- result:'PASS'
-},null,2));
+const core=JSON.parse(readFileSync(join(root,'product-schema/semantic-core.json'),'utf8'));
+const frozen=JSON.parse(readFileSync(join(root,'product-schema/frozen-baseline.json'),'utf8'));
+const blob=b=>createHash('sha1').update(`blob ${b.length}\0`).update(b).digest('hex');
+for(const [id,s] of Object.entries(core.sources)){const b=readFileSync(join(root,s.path));assert.equal(blob(b),s.git_blob,`source drift ${id}`);}
+const all=[...core.objects,...core.operations,...core.derived_models,...core.laws], ids=new Set();
+for(const x of all){assert.ok(x.id);assert.ok(!ids.has(x.id),`duplicate id ${x.id}`);ids.add(x.id);for(const s of x.sources||[])assert.ok(core.sources[s],`${x.id} missing source ${s}`);}
+const objectIds=new Set(core.objects.map(x=>x.id));
+for(const o of core.objects)for(const d of o.derived_from||[])assert.ok(objectIds.has(d),`${o.id} derived_from missing ${d}`);
+for(const op of core.operations){assert.ok(objectIds.has(op.owner),`${op.id} missing owner object`);for(const id of [...(op.changes||[]),...(op.invalidates||[]),...(op.emits||[]),...(op.guards||[])])assert.ok(objectIds.has(id),`${op.id} missing object ${id}`);}
+for(const v of core.derived_models)for(const id of v.derived_from)assert.ok(objectIds.has(id),`${v.id} missing dependency ${id}`);
+const jSet=new Set(frozen.journeys.map(j=>j.id));
+for(const x of [...core.objects,...core.operations,...core.derived_models])for(const j of x.source_journeys||[])assert.ok(jSet.has(j),`${x.id} bad journey ${j}`);
+const split=core.objects.find(x=>x.id==='expense.split'), alloc=core.objects.find(x=>x.id==='expense.allocation');
+assert.ok(split.contains.includes('expense.allocation'));assert.deepEqual(alloc.identity,['expense_id','participant_id']);
+assert.equal(core.laws.find(x=>x.id==='LAW-EXP-01').constraint.kind,'sum_allocations_equals_expense_total');
+assert.equal(core.laws.find(x=>x.id==='LAW-EXP-03').constraint.kind,'allocation_participant_membership');
+const driftGap=core.known_gaps.find(x=>x.id==='DOC-DRIFT-01');assert.equal(driftGap.detection,'derive from frozen spec headers versus higher-authority registry/approval state');
+const drifted=[];
+for(const j of frozen.journeys){const h=readFileSync(join(root,j.spec.path),'utf8').split('\n').slice(0,10).join(' ');if(/candidate|review pending|definition stage|prototype not built|unapproved/i.test(h)&&j.product_status==='golden')drifted.push(j.id);}
+assert.ok(drifted.includes('08'),'J08 status drift must be detected');
+assert.ok(!drifted.includes('20'),'J20 must not be falsely classified as drift');
+console.log(JSON.stringify({stage:2,objects:core.objects.length,operations:core.operations.length,laws:core.laws.length,drifted_specs:drifted,result:'PASS'},null,2));

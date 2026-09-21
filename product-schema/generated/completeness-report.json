@@ -1,191 +1,69 @@
 {
-  "schema_version": 1,
-  "generated_view": "stage-4-completeness",
-  "status": "PASS",
-  "authority": "DERIVED_ONLY",
-  "inputs": {
-    "product_authority_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
-    "stage_2_objects": 42,
-    "stage_2_operations": 46,
-    "stage_3_contexts": 20,
-    "journeys": 28
-  },
+  "schema_version": 2,
+  "generated_view": "schema-hardening-completeness",
+  "schema_status": "PASS",
+  "pre_gate_b_readiness": "BLOCKED",
   "audits": {
     "objects": {
-      "total": 42,
-      "orphans": [],
-      "lawless_informational": [
-        "identity.session",
-        "identity.guest_capability",
-        "group.invitation"
-      ]
+      "total": 46,
+      "orphans": []
     },
     "views": {
       "total": 7,
       "unrendered": []
     },
     "operations": {
-      "total": 46,
-      "duplicate_journey_owners": [],
-      "coordinated": [
-        "participant.link_account",
-        "expense.resolve_issue"
-      ],
+      "total": 48,
+      "unowned": [],
+      "duplicate_owners": [],
       "contract_only": [
         "spend.authorize_execute",
         "spend.materialize"
       ],
-      "unclassified_unowned": [],
-      "unwired": []
+      "coordinated": [
+        "participant.link_account"
+      ]
     },
     "routes": {
       "total": 93,
-      "covered": 93,
-      "gaps": [],
-      "ambient_identity_only": [
-        {
-          "from": "01",
-          "to": "02",
-          "matched_contexts": [
-            "ctx.identity"
-          ]
-        },
-        {
-          "from": "02",
-          "to": "03",
-          "matched_contexts": [
-            "ctx.identity"
-          ]
-        },
-        {
-          "from": "12",
-          "to": "02",
-          "matched_contexts": [
-            "ctx.identity"
-          ]
-        },
-        {
-          "from": "26",
-          "to": "02",
-          "matched_contexts": [
-            "ctx.identity"
-          ]
-        }
-      ]
+      "covered": 93
     },
     "composition": {
-      "units": 11,
-      "journeys_covered": 28,
-      "missing_journeys": [],
-      "unused_contexts": []
-    },
-    "gate_b": {
-      "journeys": [
-        "08",
-        "05",
-        "06",
-        "07"
-      ],
-      "internal_handoffs": 9,
-      "inbound_handoffs": 16,
-      "downstream_handoffs": 6,
-      "schema_blockers": []
+      "units": 13,
+      "gate_b": "composition.core_expense_loop"
     }
   },
-  "blockers": {
-    "orphan_objects": [],
-    "unrendered_views": [],
-    "duplicate_journey_operation_owners": [],
-    "unclassified_unowned_operations": [],
-    "unwired_operations": [],
-    "route_context_gaps": [],
-    "journeys_missing_composition": [],
-    "unused_contexts": []
-  },
-  "known_nonblocking_findings": [
+  "authority_blockers": [
     {
-      "id": "DOC-DRIFT-01",
-      "classification": "documentation_status_drift",
-      "journeys": [
-        "19",
-        "20",
-        "21",
-        "22",
-        "23",
-        "25"
+      "id": "AUTH-J05-GOLDEN-INCOMPLETE",
+      "journey": "05",
+      "classification": "frozen_authority_artifact_incomplete",
+      "blocks": [
+        "Gate B Golden-fidelity implementation acceptance"
       ],
-      "statement": "Some canonical spec headers still describe definition/candidate status although the higher-authority registry and approval records mark these journeys Golden/design-approved.",
-      "handling": "Registry/approval controls status. Stage 2 uses approved policy records where the spec is stale and does not rewrite frozen journey files."
-    },
-    {
-      "id": "POLICY-UNSELECTED-01",
-      "classification": "intentional_unselected_implementation",
-      "journeys": [],
-      "statement": "Concrete SpendIntent execution rail/provider remains unselected.",
-      "handling": "Keep SpendIntent rail-neutral; do not invent provider semantics."
-    },
-    {
-      "id": "POLICY-UNSELECTED-02",
-      "classification": "intentional_unselected_implementation",
-      "journeys": [
-        "25"
+      "statement": "J05's frozen structured-source README declares six slices, but five are absent from the frozen authority tree.",
+      "missing_artifacts": [
+        "prototypes/experience-workbench/journeys/05-add-expense/source/split-methods.html",
+        "prototypes/experience-workbench/journeys/05-add-expense/source/details-receipt.html",
+        "prototypes/experience-workbench/journeys/05-add-expense/source/payer-variant.html",
+        "prototypes/experience-workbench/journeys/05-add-expense/source/recovery.html",
+        "prototypes/experience-workbench/journeys/05-add-expense/source/styles.css"
       ],
-      "statement": "Storage provider, backup format, sync/encryption/custody and deletion implementation details are not selected as product law.",
-      "handling": "Preserve approved storage/recovery semantics without selecting infrastructure."
-    },
+      "resolution_rule": "Do not reconstruct or re-scope the approved J05 Golden inside the schema. Recover the approved slices from authoritative evidence/history or make an explicit product-authority decision."
+    }
+  ],
+  "product_decisions_required": [
     {
-      "id": "SCHEMA-NORM-01",
-      "classification": "stage_3_normalization_completion",
+      "id": "POLICY-EXPENSE-LOCK-SCOPE",
+      "classification": "requires_product_decision",
       "journeys": [
-        "18"
+        "05",
+        "06",
+        "08",
+        "11"
       ],
-      "statement": "Stage 3 composition exposed the missing semantic operation for notification read-state mutation.",
-      "handling": "Added notification.set_read_state as a schema-only normalization of already-approved J18 behavior; no product source or runtime code changed."
-    },
-    {
-      "id": "AUDIT-INFO-01",
-      "classification": "informational",
-      "statement": "Objects without a cross-domain law are still constrained by their owning operations/contracts and are not treated as orphans.",
-      "objects": [
-        "identity.session",
-        "identity.guest_capability",
-        "group.invitation"
-      ]
-    },
-    {
-      "id": "AUDIT-INFO-02",
-      "classification": "informational",
-      "statement": "Some route continuity relies only on ambient authenticated identity rather than a route-specific domain object; those routes are explicitly listed.",
-      "routes": [
-        {
-          "from": "01",
-          "to": "02",
-          "matched_contexts": [
-            "ctx.identity"
-          ]
-        },
-        {
-          "from": "02",
-          "to": "03",
-          "matched_contexts": [
-            "ctx.identity"
-          ]
-        },
-        {
-          "from": "12",
-          "to": "02",
-          "matched_contexts": [
-            "ctx.identity"
-          ]
-        },
-        {
-          "from": "26",
-          "to": "02",
-          "matched_contexts": [
-            "ctx.identity"
-          ]
-        }
-      ]
+      "statement": "Historical J08/J05/J06 behavior includes settlement-related expense mutation locking, while later settlement contracts narrow dependency blocking to affected items. The final mutation-lock scope is not settled by the frozen sources.",
+      "handling": "Represent the guard and enforce fail-closed locked behavior, but do not choose group-wide vs item-scoped lock semantics before an explicit product decision."
     }
   ]
 }

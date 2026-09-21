@@ -4,7 +4,7 @@
   "stage": {
     "id": 1,
     "name": "Frozen product inventory",
-    "status": "complete"
+    "status": "hardened"
   },
   "purpose": "Pin the exact approved ChopDot product and accepted Gate A integration baseline before semantic normalization or Gate B composition.",
   "freeze_rules": {
@@ -81,7 +81,8 @@
         "protected_merge_authorized": false,
         "deployment_authorized": false,
         "real_identity_or_payment_authorized": false
-      }
+      },
+      "provenance_caveat": "J05 stylesheet is preview-owned reconstruction; approved Golden HTML is unchanged."
     },
     "gate_b": {
       "status": "not_started_by_product_schema",
@@ -262,7 +263,21 @@
         "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/VISUAL_QA.md",
         "git_blob": "012bedb00eacfb3de73ff00a1bab5a3b448b5b66"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_INVENTORY.md",
+          "git_blob": "82c700a7d332c64ce83a99a07376e073bcc874f4",
+          "size_bytes": 560,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/decision-history.md",
+          "git_blob": "c727d7e450269d678cfa53ddb4cf9f6eef0f4387",
+          "size_bytes": 9355,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "02",
@@ -298,7 +313,27 @@
         "path": "prototypes/experience-workbench/journeys/02-home-orientation/VISUAL_QA.md",
         "git_blob": "459d7101b22e0c59dcbb4e8b22eb40dd7f9387db"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/02-home-orientation/source/decision-history.md",
+          "git_blob": "d506b60739f53bf14911e51179074782ba10aa48",
+          "size_bytes": 2588,
+          "kind": "decision_history"
+        }
+      ],
+      "artifact_resolution": {
+        "entrypoint_kind": "redirect_wrapper",
+        "status": "complete",
+        "resolved_artifacts": [
+          {
+            "path": "prototypes/experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons.html",
+            "git_blob": "fcdd4c28e2b82030fa043e1528b5d488c5e65baf",
+            "size_bytes": 15373,
+            "kind": "html"
+          }
+        ]
+      }
     },
     {
       "id": "03",
@@ -329,7 +364,27 @@
         "path": "prototypes/experience-workbench/journeys/03-create-group/VISUAL_QA.md",
         "git_blob": "56defcefe7df84d306e485e38a27ca00b6d85e12"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/03-create-group/source/decision-history.md",
+          "git_blob": "35b74811ba26e658f06b1ef06b5d1601a045e52f",
+          "size_bytes": 2352,
+          "kind": "decision_history"
+        }
+      ],
+      "artifact_resolution": {
+        "entrypoint_kind": "redirect_wrapper",
+        "status": "complete",
+        "resolved_artifacts": [
+          {
+            "path": "prototypes/experience-workbench/journeys/03-create-group/v2-golden-candidate.html",
+            "git_blob": "153611676a5d099e805cb6194588f77d55c56560",
+            "size_bytes": 19708,
+            "kind": "html"
+          }
+        ]
+      }
     },
     {
       "id": "04",
@@ -360,7 +415,27 @@
         "path": "prototypes/experience-workbench/journeys/04-invite-join/VISUAL_QA.md",
         "git_blob": "c6c0fc13130b5bf30e931daf03aedb6c13fc5e18"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/04-invite-join/source/decision-history.md",
+          "git_blob": "5cfa2bca9fdc04c70c60854fe36601e0d3db2cf7",
+          "size_bytes": 2360,
+          "kind": "decision_history"
+        }
+      ],
+      "artifact_resolution": {
+        "entrypoint_kind": "redirect_wrapper",
+        "status": "complete",
+        "resolved_artifacts": [
+          {
+            "path": "prototypes/experience-workbench/journeys/04-invite-join/v1-golden-candidate.html",
+            "git_blob": "4ea0512dbb83fff804842ba6398fb5ffa08ebc23",
+            "size_bytes": 22093,
+            "kind": "html"
+          }
+        ]
+      }
     },
     {
       "id": "05",
@@ -391,7 +466,55 @@
         "path": "prototypes/experience-workbench/journeys/05-add-expense/VISUAL_QA.md",
         "git_blob": "b3297963ae26de4c654c963b8236b7b83cb474f6"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/05-add-expense/STATE_INVENTORY.md",
+          "git_blob": "e07272c1c79e55e61a7ffac2cae0e2e58396363f",
+          "size_bytes": 440,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/05-add-expense/source/decision-history.md",
+          "git_blob": "487c15e18bb017e11a0abe62d7c734c937f78ea6",
+          "size_bytes": 2340,
+          "kind": "decision_history"
+        }
+      ],
+      "artifact_resolution": {
+        "entrypoint_kind": "redirect_wrapper_to_structured_source",
+        "status": "incomplete_authority_artifact",
+        "resolved_artifacts": [
+          {
+            "path": "prototypes/experience-workbench/journeys/05-add-expense/source/README.md",
+            "git_blob": "4be3362789f1265b6fad99690694f35d325cbefd",
+            "size_bytes": 268,
+            "kind": "source_manifest"
+          },
+          {
+            "path": "prototypes/experience-workbench/journeys/05-add-expense/source/core.html",
+            "git_blob": "524da4f898d7c8a22437c42833c06106852609aa",
+            "size_bytes": 9342,
+            "kind": "html"
+          }
+        ],
+        "required_artifacts": [
+          "prototypes/experience-workbench/journeys/05-add-expense/source/core.html",
+          "prototypes/experience-workbench/journeys/05-add-expense/source/split-methods.html",
+          "prototypes/experience-workbench/journeys/05-add-expense/source/details-receipt.html",
+          "prototypes/experience-workbench/journeys/05-add-expense/source/payer-variant.html",
+          "prototypes/experience-workbench/journeys/05-add-expense/source/recovery.html",
+          "prototypes/experience-workbench/journeys/05-add-expense/source/styles.css"
+        ],
+        "missing_artifacts": [
+          "prototypes/experience-workbench/journeys/05-add-expense/source/split-methods.html",
+          "prototypes/experience-workbench/journeys/05-add-expense/source/details-receipt.html",
+          "prototypes/experience-workbench/journeys/05-add-expense/source/payer-variant.html",
+          "prototypes/experience-workbench/journeys/05-add-expense/source/recovery.html",
+          "prototypes/experience-workbench/journeys/05-add-expense/source/styles.css"
+        ],
+        "note": "The frozen Golden entrypoint links into a structured source family whose README declares six slices; five are absent from the frozen authority tree. Do not reconstruct or silently re-scope them."
+      }
     },
     {
       "id": "06",
@@ -421,7 +544,40 @@
         "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/VISUAL_QA.md",
         "git_blob": "2ed3aa7287f09f9fc1a2350291ace956f635c296"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/STATE_INVENTORY.md",
+          "git_blob": "580390c116b7c745b7db51ca4948b7e9113d73f5",
+          "size_bytes": 499,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/source/decision-history.md",
+          "git_blob": "88e5b2d30caca289b7c745809249041f18056612",
+          "size_bytes": 2275,
+          "kind": "decision_history"
+        }
+      ],
+      "artifact_resolution": {
+        "entrypoint_kind": "package_pointer",
+        "status": "complete_package",
+        "resolved_artifacts": [
+          {
+            "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/SOURCE_PACKAGE.md",
+            "git_blob": "e7c0bede5acd8bf48bcc8a3ead8ee12192151ee9",
+            "size_bytes": 301,
+            "kind": "package_manifest"
+          },
+          {
+            "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/source-package-v1.1.zip",
+            "git_blob": "e073ea0717e7621c921056d56945c89bc6c0207e",
+            "size_bytes": 11483,
+            "kind": "zip"
+          }
+        ],
+        "inspection_hint": "Extract source-package-v1.1.zip; the wrapper itself is not the approved interactive artifact."
+      }
     },
     {
       "id": "07",
@@ -453,7 +609,40 @@
         "path": "prototypes/experience-workbench/journeys/07-review-agree/VISUAL_QA.md",
         "git_blob": "6e188ee98f14647fe8eb5680912645b3b4c71f01"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/07-review-agree/STATE_INVENTORY.md",
+          "git_blob": "a24f4f4061a037af5862604f867c4b1f8f7fff6e",
+          "size_bytes": 757,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/07-review-agree/source/decision-history.md",
+          "git_blob": "25de06c69c060b6c9710549cd63d161d21b69d3a",
+          "size_bytes": 2465,
+          "kind": "decision_history"
+        }
+      ],
+      "artifact_resolution": {
+        "entrypoint_kind": "compressed_artifact_pointer",
+        "status": "complete_package",
+        "resolved_artifacts": [
+          {
+            "path": "prototypes/experience-workbench/journeys/07-review-agree/README.md",
+            "git_blob": "9fb851062f9047efb57fa31ab9508a2993c59a14",
+            "size_bytes": 1168,
+            "kind": "package_manifest"
+          },
+          {
+            "path": "prototypes/experience-workbench/journeys/07-review-agree/v1.1-golden-candidate.html.xz",
+            "git_blob": "29c8f9246840ff6c9fc926f147e00547baec9bc7",
+            "size_bytes": 9752,
+            "kind": "xz"
+          }
+        ],
+        "inspection_hint": "Decompress v1.1-golden-candidate.html.xz before visual/interaction review."
+      }
     },
     {
       "id": "08",
@@ -487,7 +676,27 @@
         "path": "prototypes/experience-workbench/journeys/08-group-home/VISUAL_QA.md",
         "git_blob": "ab1ec1fe111379ee52b4ae9d558298ca6bc1b9d6"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/08-group-home/source/decision-history.md",
+          "git_blob": "a9eff37f0ac514ef214cac2533684da5a4067cdf",
+          "size_bytes": 2620,
+          "kind": "decision_history"
+        }
+      ],
+      "artifact_resolution": {
+        "entrypoint_kind": "redirect_wrapper",
+        "status": "complete",
+        "resolved_artifacts": [
+          {
+            "path": "prototypes/experience-workbench/journeys/08-group-home/v1-golden-candidate.html",
+            "git_blob": "a262d87412f3ff8a09e3ac36d67d7a4ced6b351c",
+            "size_bytes": 24694,
+            "kind": "html"
+          }
+        ]
+      }
     },
     {
       "id": "09",
@@ -523,6 +732,20 @@
           "path": "prototypes/experience-workbench/journeys/09-manage-people/phase-c1-consumer-contract.md",
           "git_blob": "47b8b9622d403213f073e10f651642f5425f5731"
         }
+      ],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/09-manage-people/STATE_INVENTORY.md",
+          "git_blob": "5a6b0d63868639c341799205e7745e61717c58cb",
+          "size_bytes": 570,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/09-manage-people/source/decision-history.md",
+          "git_blob": "3b0accc95a372eee200e0d674ece32c3aa9b1462",
+          "size_bytes": 2739,
+          "kind": "decision_history"
+        }
       ]
     },
     {
@@ -555,7 +778,21 @@
         "path": "prototypes/experience-workbench/journeys/10-overall-position/VISUAL_QA.md",
         "git_blob": "6b6033923c2ae7918ff53043b3c8375d3fc37437"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/10-overall-position/STATE_INVENTORY.md",
+          "git_blob": "afc973d5d0b62baf067dfeaedb51a229800cbf59",
+          "size_bytes": 523,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/10-overall-position/source/decision-history.md",
+          "git_blob": "701709585878d1b89067e0490aad446747eb64bd",
+          "size_bytes": 2757,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "11",
@@ -599,6 +836,20 @@
           "path": "prototypes/experience-workbench/journeys/11-settle-up/STORAGE_AND_REPLAY_CONTRACT.md",
           "git_blob": "e720806ed5657222d68c629b027d3f6823ff3a6a"
         }
+      ],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/11-settle-up/STATE_INVENTORY.md",
+          "git_blob": "f1b110969faa27f864c042804c6ee1d23622d1d5",
+          "size_bytes": 1402,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/11-settle-up/source/decision-history.md",
+          "git_blob": "27d967ed261ffb776843d74ebaf42f6063c5f13d",
+          "size_bytes": 3038,
+          "kind": "decision_history"
+        }
       ]
     },
     {
@@ -630,7 +881,21 @@
         "path": "prototypes/experience-workbench/journeys/12-complete-settlement/VISUAL_QA.md",
         "git_blob": "622dbb5fed6601e421d0598db92e4ece680bb3ec"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/12-complete-settlement/STATE_INVENTORY.md",
+          "git_blob": "6134699fd2ac04662d5defa082ed6ec0eb71a9b0",
+          "size_bytes": 1459,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/12-complete-settlement/source/decision-history.md",
+          "git_blob": "36a2db4e26ed21b563acb2cc0e3fbd2c4393e6a6",
+          "size_bytes": 2962,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "13",
@@ -660,7 +925,21 @@
         "path": "prototypes/experience-workbench/journeys/13-request-money/VISUAL_QA.md",
         "git_blob": "a62b8b9519f7a66251a104bdf9d56fe875d2666b"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/13-request-money/STATE_INVENTORY.md",
+          "git_blob": "29a7afd2603474abde32bffc310017f197058226",
+          "size_bytes": 687,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/13-request-money/source/decision-history.md",
+          "git_blob": "a9f0cce7113fe9977d0db702b516c6249033ff30",
+          "size_bytes": 2770,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "14",
@@ -691,7 +970,27 @@
         "path": "prototypes/experience-workbench/journeys/14-receive-money/VISUAL_QA.md",
         "git_blob": "24d1412148c4d4adf8bb116815c009103b031b23"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/14-receive-money/STATE_INVENTORY.md",
+          "git_blob": "3e44275e1136fc75cbf833940ca23bb9d314ea7a",
+          "size_bytes": 1795,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/14-receive-money/EDGE_CASES.md",
+          "git_blob": "14a315cb5d2582f73c3b11e9ec32554836f44e07",
+          "size_bytes": 1293,
+          "kind": "edge_cases"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/14-receive-money/source/decision-history.md",
+          "git_blob": "0080c67f6e857536b06506114b2d16c49b5d796c",
+          "size_bytes": 4874,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "15",
@@ -722,7 +1021,15 @@
         "path": "prototypes/experience-workbench/journeys/15-settlement-history/VISUAL_QA.md",
         "git_blob": "35b4bf2493d4170698a618cc7c18b78d20fa90c8"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/15-settlement-history/source/decision-history.md",
+          "git_blob": "3ffb4d4129a67fc7facee0b8e0ee33c1056c4b99",
+          "size_bytes": 2197,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "16",
@@ -752,7 +1059,15 @@
         "path": "prototypes/experience-workbench/journeys/16-savings-group/review-v1.2/results/VISUAL_QA.md",
         "git_blob": "20c0e090ebfd700fe413fe6e90d0926723ba7598"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/16-savings-group/source/decision-history.md",
+          "git_blob": "f1c1c76dff50e3170d234d6a4e318b641c54c413",
+          "size_bytes": 4081,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "17",
@@ -783,7 +1098,15 @@
         "path": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/review-v1.4/results/VISUAL_QA.md",
         "git_blob": "6080f92c85d81bd51b7bca26042b7de7a8195b4e"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/source/decision-history.md",
+          "git_blob": "eb161f2bebc303c01c1878c6c5cfd3e257b4d329",
+          "size_bytes": 7803,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "18",
@@ -819,7 +1142,27 @@
         "path": "prototypes/experience-workbench/journeys/18-activity-notifications/review-v1.1/VISUAL_QA.md",
         "git_blob": "a55708defc720810a2af2fc6976ffd408fe2d7c8"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/18-activity-notifications/STATE_INVENTORY.md",
+          "git_blob": "cc9da8741276aea61c8b63f8aa07cf902fe61d8b",
+          "size_bytes": 1236,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/18-activity-notifications/EDGE_CASES.md",
+          "git_blob": "483f6b151b0c81652192974e590e92f0a1387647",
+          "size_bytes": 677,
+          "kind": "edge_cases"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/18-activity-notifications/source/decision-history.md",
+          "git_blob": "46861c06315d10ef2756be5d91973b81b98b72fa",
+          "size_bytes": 4809,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "19",
@@ -849,7 +1192,15 @@
         "path": "prototypes/experience-workbench/journeys/19-insights/review-v1.1/VISUAL_QA.md",
         "git_blob": "03742cd9f8946716452b495a6ccba9af82d8927f"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/19-insights/source/decision-history.md",
+          "git_blob": "ef058cb9f4eb1480c1a1330ded240d83c60b35a8",
+          "size_bytes": 4645,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "20",
@@ -881,7 +1232,27 @@
         "path": "prototypes/experience-workbench/journeys/20-payment-methods/review-v1/VISUAL_QA.md",
         "git_blob": "9b6eb24ea320b80939a7c1286280f51326020d99"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/20-payment-methods/STATE_INVENTORY.md",
+          "git_blob": "ee5c654673cfa10863a7c6c43b69b2653761c403",
+          "size_bytes": 3121,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/20-payment-methods/EDGE_CASES.md",
+          "git_blob": "84887edc64bd4d10a6b09c7e4f565919fa5cd7d5",
+          "size_bytes": 2363,
+          "kind": "edge_cases"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/20-payment-methods/source/decision-history.md",
+          "git_blob": "c693f25f12e7fa1fb1954b2233c17b848bb31814",
+          "size_bytes": 7663,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "21",
@@ -914,7 +1285,27 @@
         "path": "prototypes/experience-workbench/journeys/21-wallet-crypto/review-v1/VISUAL_QA.md",
         "git_blob": "d2804e578d0f0c3f415c04b78fd35bb92254496f"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/21-wallet-crypto/STATE_INVENTORY.md",
+          "git_blob": "3ec9c7e807bdfa6c6fc7fda94786da7543e1c0e8",
+          "size_bytes": 3288,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/21-wallet-crypto/EDGE_CASES.md",
+          "git_blob": "79bbd77224660e1b9a190a1b08221ea3201b906c",
+          "size_bytes": 2365,
+          "kind": "edge_cases"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/21-wallet-crypto/source/decision-history.md",
+          "git_blob": "a68bfcc1fb100010a5ddd3be4859b1ca5b1b9c9b",
+          "size_bytes": 7195,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "22",
@@ -945,7 +1336,27 @@
         "path": "prototypes/experience-workbench/journeys/22-qr-flows/review-v1/VISUAL_QA.md",
         "git_blob": "6fe35768fa3137446a8e93e6063abb3128a7765a"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/22-qr-flows/STATE_INVENTORY.md",
+          "git_blob": "513374705ade894428d192cd13de6e5458c9c115",
+          "size_bytes": 287,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/22-qr-flows/EDGE_CASES.md",
+          "git_blob": "dcaa5ab8cd52af8b7f45ad4b30ca4b0ff0adf04a",
+          "size_bytes": 355,
+          "kind": "edge_cases"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/22-qr-flows/source/decision-history.md",
+          "git_blob": "4ce185e4832817359208c5e88a7514e766e021b8",
+          "size_bytes": 922,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "23",
@@ -976,7 +1387,27 @@
         "path": "prototypes/experience-workbench/journeys/23-import/review-v1/VISUAL_QA.md",
         "git_blob": "b71250aaa62a2b01b035e8b851f9a225937dba2a"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/23-import/STATE_INVENTORY.md",
+          "git_blob": "6f7b7b245e2076a3f7f5b5130e99a4a80392f4e8",
+          "size_bytes": 324,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/23-import/EDGE_CASES.md",
+          "git_blob": "826b6bbf35f644628a616cd78295b25df86412cf",
+          "size_bytes": 392,
+          "kind": "edge_cases"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/23-import/source/decision-history.md",
+          "git_blob": "90f3bc516c3e7339f6b9b290f48fcc32867839be",
+          "size_bytes": 922,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "24",
@@ -1007,6 +1438,26 @@
         {
           "path": "prototypes/experience-workbench/journeys/24-export-portability/phase-c1-consumer-contract.md",
           "git_blob": "edbdef9aa6fced45895c39ce4cad94cf17c87105"
+        }
+      ],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/24-export-portability/STATE_INVENTORY.md",
+          "git_blob": "f8029c3ca45f1e8af060bb74a313834969d34b62",
+          "size_bytes": 8971,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/24-export-portability/EDGE_CASES.md",
+          "git_blob": "6511859a9a684bd3e236f7c71f10e6909634cd81",
+          "size_bytes": 6708,
+          "kind": "edge_cases"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/24-export-portability/source/decision-history.md",
+          "git_blob": "a89d53ee6dd24a0576c097b7e25d3d3c7cf44844",
+          "size_bytes": 8089,
+          "kind": "decision_history"
         }
       ]
     },
@@ -1043,6 +1494,26 @@
           "path": "prototypes/experience-workbench/journeys/25-storage-recovery/phase-c1-consumer-contract.md",
           "git_blob": "049a6134a45d53665429549b703078bd9b530971"
         }
+      ],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/25-storage-recovery/STATE_INVENTORY.md",
+          "git_blob": "70ac7aec678938be573607237dce4409809e4150",
+          "size_bytes": 500,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/25-storage-recovery/EDGE_CASES.md",
+          "git_blob": "4a9abcc2d70e34e7d5568451ade7afac66e8f5d3",
+          "size_bytes": 383,
+          "kind": "edge_cases"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/25-storage-recovery/source/decision-history.md",
+          "git_blob": "2b1ea790e136968395ac847635fec96e27b0be20",
+          "size_bytes": 955,
+          "kind": "decision_history"
+        }
       ]
     },
     {
@@ -1074,7 +1545,27 @@
         "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/review-v1/VISUAL_QA.md",
         "git_blob": "d571b6591da443a4cda24088abe48ddcaa9c418e"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/STATE_INVENTORY.md",
+          "git_blob": "5dbd7e67082f001475a7269098828e8c6ec03c0e",
+          "size_bytes": 10107,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/EDGE_CASES.md",
+          "git_blob": "3b312d2d99c39311686de06deeb12a329132a903",
+          "size_bytes": 8650,
+          "kind": "edge_cases"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/source/decision-history.md",
+          "git_blob": "af76dc651d104f614d9d4ea205d48534cf6750c6",
+          "size_bytes": 10191,
+          "kind": "decision_history"
+        }
+      ]
     },
     {
       "id": "27",
@@ -1113,6 +1604,26 @@
           "path": "prototypes/experience-workbench/journeys/27-account-preferences/phase-c1-consumer-contract.md",
           "git_blob": "f3dca30497020416bce16c8036901dc3f1c8448b"
         }
+      ],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/27-account-preferences/STATE_INVENTORY.md",
+          "git_blob": "99a08920b4d732b27ab4d06d35656f5721ef1ffb",
+          "size_bytes": 3104,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/27-account-preferences/EDGE_CASES.md",
+          "git_blob": "d0286b9975792991a1047c16b4064dc0d32cb71d",
+          "size_bytes": 4112,
+          "kind": "edge_cases"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/27-account-preferences/source/decision-history.md",
+          "git_blob": "212b1f873e3a8d0176d4093baca5d1821f0bb665",
+          "size_bytes": 10927,
+          "kind": "decision_history"
+        }
       ]
     },
     {
@@ -1140,7 +1651,27 @@
         "path": "prototypes/experience-workbench/journeys/28-failure-recovery/review-v1/VISUAL_QA.md",
         "git_blob": "2f09e03745a05f0b05d65fcf234b503141eb6b4e"
       },
-      "contracts": []
+      "contracts": [],
+      "authority_files": [
+        {
+          "path": "prototypes/experience-workbench/journeys/28-failure-recovery/STATE_INVENTORY.md",
+          "git_blob": "2bd84444a24b7e1b457667885e8870ff5c7b2cd9",
+          "size_bytes": 4399,
+          "kind": "state_inventory"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/28-failure-recovery/EDGE_CASES.md",
+          "git_blob": "e5e29e950bc01cd759be1ec7799649f13bc9f5e4",
+          "size_bytes": 3481,
+          "kind": "edge_cases"
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/28-failure-recovery/source/decision-history.md",
+          "git_blob": "59923ec2cd8c89fa726bf4fe7de70b752c5b57f0",
+          "size_bytes": 7887,
+          "kind": "decision_history"
+        }
+      ]
     }
   ],
   "inventory_checks": {
@@ -1149,8 +1680,25 @@
     "golden_lock_count": 28,
     "feature_count": 35,
     "edge_case_count": 41,
-    "all_specs_pinned": true,
-    "all_prototypes_pinned": true,
     "all_next_refs_resolve": true
-  }
+  },
+  "authority_blockers": [
+    {
+      "id": "AUTH-J05-GOLDEN-INCOMPLETE",
+      "journey": "05",
+      "classification": "frozen_authority_artifact_incomplete",
+      "blocks": [
+        "Gate B Golden-fidelity implementation acceptance"
+      ],
+      "statement": "J05's frozen structured-source README declares six slices, but five are absent from the frozen authority tree.",
+      "missing_artifacts": [
+        "prototypes/experience-workbench/journeys/05-add-expense/source/split-methods.html",
+        "prototypes/experience-workbench/journeys/05-add-expense/source/details-receipt.html",
+        "prototypes/experience-workbench/journeys/05-add-expense/source/payer-variant.html",
+        "prototypes/experience-workbench/journeys/05-add-expense/source/recovery.html",
+        "prototypes/experience-workbench/journeys/05-add-expense/source/styles.css"
+      ],
+      "resolution_rule": "Do not reconstruct or re-scope the approved J05 Golden inside the schema. Recover the approved slices from authoritative evidence/history or make an explicit product-authority decision."
+    }
+  ]
 }

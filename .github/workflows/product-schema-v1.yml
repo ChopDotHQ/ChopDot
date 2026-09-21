@@ -14,23 +14,19 @@ permissions:
 
 jobs:
   schema:
-    name: Verify complete product schema and Gate B derivation
+    name: Verify hardened product schema
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify Stage 1 inventory
-        run: node product-schema/verify-stage-1.mjs
-      - name: Verify Stage 2 semantic normalization
-        run: node product-schema/verify-stage-2.mjs
-      - name: Verify Stage 3 composition wiring
-        run: node product-schema/verify-stage-3.mjs
-      - name: Regenerate Stage 4 views
-        run: node product-schema/derive-stage-4.mjs
-      - name: Verify Stage 4 completeness and Gate B packet
-        run: node product-schema/verify-stage-4.mjs
-      - name: Ensure generated views are committed exactly
-        run: git diff --exit-code -- product-schema/generated
+      - run: node product-schema/verify-stage-1.mjs
+      - run: node product-schema/verify-stage-2.mjs
+      - run: node product-schema/verify-stage-3.mjs
+      - run: node product-schema/verify-schema-hardening.mjs
+      - run: node product-schema/mutation-battery.mjs
+      - run: node product-schema/derive-stage-4.mjs
+      - run: node product-schema/verify-stage-4.mjs
+      - run: git diff --exit-code -- product-schema/generated

@@ -1,103 +1,103 @@
 # Generated Gate B Construction Packet
 
-**Derived view — not product authority and not implementation authorization.**
-
-Schema audit: **PASS**  
-Gate: **Core expense loop**  
-Goal: A user can add, inspect, edit/review, agree/question, and return to an updated group without a Golden contract regression.
+**Derived view — not product authority or implementation authorization. Pre-Gate-B readiness: BLOCKED.**
 
 ## Construction order
 
-1. **J08 — Group Home**
-2. **J05 — Add an Expense**
-3. **J06 — Review / Correct an Expense**
-4. **J07 — Review / Agree / Raise an Issue**
+1. J08 — Group Home
+2. J05 — Add an Expense
+3. J06 — Review / Correct an Expense
+4. J07 — Review / Agree / Raise an Issue
 
-## Gate A reuse
+## Gate A qualified reuse
 
-Reusable continuity contexts: `ctx.group`, `ctx.expense_draft`, `ctx.expense`, `ctx.position`, `ctx.activity`.
-New Gate B continuity contexts: `ctx.review`.
+- `ctx.group` — one local group fixture/state continuity
+- `ctx.expense_draft` — bounded draft Back/reopen/reload continuity
+- `ctx.expense` — common equal-split expense subset only
+- `ctx.position` — Home/common-expense position demonstration only; not J10 integration
+- `ctx.activity` — Home attention/task-continuity demonstration only; not J18 integration
 
-- `expense.create`: expand_bounded_gate_a_capability — Gate A covered common equal-split subset only
-- `expense.edit`: new_to_integrated_gate_b
-- `expense.delete`: new_to_integrated_gate_b
-- `expense.review_agree`: new_to_integrated_gate_b
-- `expense.raise_issue`: new_to_integrated_gate_b
-- `expense.resolve_issue`: new_to_integrated_gate_b
+Provenance caveat: J05 stylesheet is preview-owned reconstruction; approved Golden HTML is unchanged.
 
-Gate A remains frozen; its bounded expense demo is not full J05/J08 integration.
+## Gate B composition
 
-## Shared semantic circuit
+Contexts: `ctx.group`, `ctx.expense_draft`, `ctx.expense`, `ctx.review`, `ctx.position`, `ctx.activity`, `ctx.expense_guard`
 
-Contexts: `ctx.group`, `ctx.expense_draft`, `ctx.expense`, `ctx.review`, `ctx.position`, `ctx.activity`
+Operations: `expense.create`, `expense.edit`, `expense.delete`, `expense.review_agree`, `expense.raise_issue`, `expense.resolve_issue`, `expense.withdraw_issue`, `expense.reply_to_issue`
 
-Operations: `expense.create`, `expense.edit`, `expense.delete`, `expense.review_agree`, `expense.raise_issue`, `expense.resolve_issue`
+Rendered here: `view.group_home`
 
-Derived views: `view.group_home`, `view.position`, `view.activity`
+Refreshed downstream: `view.position` → Gate C, `view.activity` → Gate D
 
-## Internal handoffs
+## Authority blockers
 
-- J05 → J06: `ctx.expense`
-- J05 → J07: `ctx.review`, `ctx.expense`
-- J05 → J08: `ctx.group`
-- J06 → J07: `ctx.review`, `ctx.expense`
-- J06 → J08: `ctx.group`
-- J07 → J08: `ctx.group`
-- J08 → J05: `ctx.expense_draft`, `ctx.group`
-- J08 → J06: `ctx.expense`
-- J08 → J07: `ctx.review`, `ctx.expense`
+- **AUTH-J05-GOLDEN-INCOMPLETE** — J05's frozen structured-source README declares six slices, but five are absent from the frozen authority tree.
 
-## Continuity / acceptance
+## Product decisions required
 
-- J05 creates the same Expense lineage consumed by J08/J06/J07.
-- J06 mutates that same Expense; it does not fork a correction copy.
-- J07 review/issue state remains attached to the same Expense lineage.
-- Position/Activity/Group Home are refreshed projections, not manually edited substitutes.
-- Every Gate B mutation operates on the same stable Group/Participant/Expense lineage rather than screen-local substitutes.
-- Explicit Expense splits conserve the exact Expense amount under MoneyV1 semantics.
-- J06 owns expense edit/delete; J07 owns agreement/issue semantics; coordinated issue resolution preserves that boundary.
-- Unresolved ExpenseIssue state blocks only dependent payment items.
-- GroupHome/Position/Activity refresh from accepted underlying state rather than manual UI overwrites.
-- Gate A accepted bytes and the 28 frozen Goldens remain unchanged.
+- **POLICY-EXPENSE-LOCK-SCOPE** — Historical J08/J05/J06 behavior includes settlement-related expense mutation locking, while later settlement contracts narrow dependency blocking to affected items. The final mutation-lock scope is not settled by the frozen sources.
 
-## Frozen journey sources
+## Continuity contracts
 
-### J08 — Group Home
-- Spec: `prototypes/experience-workbench/journeys/08-group-home/spec.md`
-- Golden: `prototypes/experience-workbench/journeys/08-group-home/v1-golden.html` — SHA-256 `7bd47a9ea9987a2bc0e5912b99cddbfe0fea3f1b16d85aa76d76e919747cecf7`
-- QA: `prototypes/experience-workbench/journeys/08-group-home/VISUAL_QA.md`
-- Owns operations: none
-- Participates: none
+- **CONT-EXP-01** — J05 creates the same Expense lineage consumed by J08/J06/J07.
+- **CONT-EXP-02** — J06 mutates the existing Expense and appends accepted history; it never creates a correction-copy Expense.
+- **CONT-EXP-03** — J07 review/issue/reply/withdraw state remains attached to the same Expense and reviewer/issue lineage.
+- **CONT-EXP-04** — Group Home refreshes Attention/Recent/Position from accepted underlying state; standalone J10/J18 screens are not part of Gate B.
 
-### J05 — Add an Expense
-- Spec: `prototypes/experience-workbench/journeys/05-add-expense/spec.md`
-- Golden: `prototypes/experience-workbench/journeys/05-add-expense/v1-golden.html` — SHA-256 `1aa7c723f60ada46d739c33749690ea493c8a2121cf85b3f1678a3798d638b23`
-- QA: `prototypes/experience-workbench/journeys/05-add-expense/VISUAL_QA.md`
-- Owns operations: `expense.create`
-- Participates: none
+## Composition laws
 
-### J06 — Review / Correct an Expense
-- Spec: `prototypes/experience-workbench/journeys/06-review-correct-expense/spec.md`
-- Golden: `prototypes/experience-workbench/journeys/06-review-correct-expense/v1.1-golden.html` — SHA-256 `aece70448ae1979f6a0bf3abfc46affc75da2c1540cb91dbeda32efc8722b55c`
-- QA: `prototypes/experience-workbench/journeys/06-review-correct-expense/VISUAL_QA.md`
-- Owns operations: `expense.edit`, `expense.delete`
-- Participates: `expense.resolve_issue`
-
-### J07 — Review / Agree / Raise an Issue
-- Spec: `prototypes/experience-workbench/journeys/07-review-agree/spec.md`
-- Golden: `prototypes/experience-workbench/journeys/07-review-agree/v1.1-golden.html` — SHA-256 `90c11c09125dc8ba8a7d97530b33b7fff685b3a4fd0979992acf3910736db3ce`
-- QA: `prototypes/experience-workbench/journeys/07-review-agree/VISUAL_QA.md`
-- Owns operations: `expense.review_agree`, `expense.raise_issue`
-- Participates: `expense.resolve_issue`
+- **COMP-01** — The same underlying object identity survives adjacent journey handoffs; routes do not create replacement domain objects.
+- **COMP-02** — Only an operation owner may mutate its semantic object; projections/read models cannot mutate source truth.
+- **COMP-03** — Derived views refresh from accepted underlying state; no journey manually overwrites Position, Activity, Insights or history to simulate an outcome.
+- **COMP-04** — Possible-effect recovery preserves the original operation identity and returns to the owning journey after verified outcome/safe retry/explicit stop.
+- **COMP-05** — Gate A partial capability coverage is not promoted to full journey integration.
+- **COMP-06** — Approved Goldens define experience projection; the schema references them and does not duplicate or redesign their visual hierarchy/copy.
 
 ## Build constraints
 
-- Do not infer full J05/J08 coverage from the bounded Gate A expense demonstration.
-- Do not redesign Golden hierarchy, copy, actions, permission boundaries, or recovery meaning.
-- Do not introduce production storage, real authentication, financial execution, provider selection, or Product Integrator work as part of Gate B.
-- Do not use Product IR/funding/conformance research branches as product authority.
+- **BUILD-01** — Do not infer full J05/J08 coverage from the bounded Gate A expense demonstration.
+- **BUILD-02** — Do not redesign Golden hierarchy, copy, actions, permission boundaries, or recovery meaning.
+- **BUILD-03** — Do not introduce production storage, real authentication, financial execution, provider selection, Product Integrator, protected merge, or deployment as Gate B work.
+- **BUILD-04** — Do not use Product IR/funding/conformance research branches as product authority.
+
+## Journey authority
+
+### J08 — Group Home
+- Spec: `prototypes/experience-workbench/journeys/08-group-home/spec.md`
+- Golden entrypoint: `prototypes/experience-workbench/journeys/08-group-home/v1-golden.html`
+- Resolved artifact: `prototypes/experience-workbench/journeys/08-group-home/v1-golden-candidate.html` (html, Git blob `a262d87412f3ff8a09e3ac36d67d7a4ced6b351c`)
+- Authority: `prototypes/experience-workbench/journeys/08-group-home/source/decision-history.md` (decision_history)
+
+### J05 — Add an Expense
+- Spec: `prototypes/experience-workbench/journeys/05-add-expense/spec.md`
+- Golden entrypoint: `prototypes/experience-workbench/journeys/05-add-expense/v1-golden.html`
+- Resolved artifact: `prototypes/experience-workbench/journeys/05-add-expense/source/README.md` (source_manifest, Git blob `4be3362789f1265b6fad99690694f35d325cbefd`)
+- Resolved artifact: `prototypes/experience-workbench/journeys/05-add-expense/source/core.html` (html, Git blob `524da4f898d7c8a22437c42833c06106852609aa`)
+- **MISSING frozen artifact:** `prototypes/experience-workbench/journeys/05-add-expense/source/split-methods.html`
+- **MISSING frozen artifact:** `prototypes/experience-workbench/journeys/05-add-expense/source/details-receipt.html`
+- **MISSING frozen artifact:** `prototypes/experience-workbench/journeys/05-add-expense/source/payer-variant.html`
+- **MISSING frozen artifact:** `prototypes/experience-workbench/journeys/05-add-expense/source/recovery.html`
+- **MISSING frozen artifact:** `prototypes/experience-workbench/journeys/05-add-expense/source/styles.css`
+- Authority: `prototypes/experience-workbench/journeys/05-add-expense/STATE_INVENTORY.md` (state_inventory)
+- Authority: `prototypes/experience-workbench/journeys/05-add-expense/source/decision-history.md` (decision_history)
+
+### J06 — Review / Correct an Expense
+- Spec: `prototypes/experience-workbench/journeys/06-review-correct-expense/spec.md`
+- Golden entrypoint: `prototypes/experience-workbench/journeys/06-review-correct-expense/v1.1-golden.html`
+- Resolved artifact: `prototypes/experience-workbench/journeys/06-review-correct-expense/SOURCE_PACKAGE.md` (package_manifest, Git blob `e7c0bede5acd8bf48bcc8a3ead8ee12192151ee9`)
+- Resolved artifact: `prototypes/experience-workbench/journeys/06-review-correct-expense/source-package-v1.1.zip` (zip, Git blob `e073ea0717e7621c921056d56945c89bc6c0207e`)
+- Authority: `prototypes/experience-workbench/journeys/06-review-correct-expense/STATE_INVENTORY.md` (state_inventory)
+- Authority: `prototypes/experience-workbench/journeys/06-review-correct-expense/source/decision-history.md` (decision_history)
+
+### J07 — Review / Agree / Raise an Issue
+- Spec: `prototypes/experience-workbench/journeys/07-review-agree/spec.md`
+- Golden entrypoint: `prototypes/experience-workbench/journeys/07-review-agree/v1.1-golden.html`
+- Resolved artifact: `prototypes/experience-workbench/journeys/07-review-agree/README.md` (package_manifest, Git blob `9fb851062f9047efb57fa31ab9508a2993c59a14`)
+- Resolved artifact: `prototypes/experience-workbench/journeys/07-review-agree/v1.1-golden-candidate.html.xz` (xz, Git blob `29c8f9246840ff6c9fc926f147e00547baec9bc7`)
+- Authority: `prototypes/experience-workbench/journeys/07-review-agree/STATE_INVENTORY.md` (state_inventory)
+- Authority: `prototypes/experience-workbench/journeys/07-review-agree/source/decision-history.md` (decision_history)
 
 ## Schema blockers
 
-- None detected by Stage 4.
+- None detected.
 
