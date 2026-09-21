@@ -11,7 +11,9 @@
           "path": "prototypes/experience-workbench/journeys/05-add-expense/STATE_INVENTORY.md",
           "git_blob": "e07272c1c79e55e61a7ffac2cae0e2e58396363f",
           "contains": [
-            "27 explicit prototype states"
+            "`duplicate`",
+            "`locked`",
+            "`exact-invalid`"
           ]
         },
         {
