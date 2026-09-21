@@ -1,0 +1,1656 @@
+{
+  "schema_version": 1,
+  "schema_id": "chopdot-product-schema-v1-composition-graph",
+  "stage": {
+    "id": 3,
+    "name": "Composition wiring",
+    "status": "complete_candidate"
+  },
+  "frozen_baseline": {
+    "product_authority_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+    "stage_1_commit": "e53edfd51d8ac4f31c618896518ddd66cb2dece3",
+    "stage_2_parent_commit": "2e2b6a211af62af687586a7aa2d783b606323693",
+    "accepted_gate_a_source": {
+      "branch": "review/golden-faithful-v2-gate-a",
+      "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+      "tree": "01691d4fe04dcce9499e11ae26d481eb2a7890c6"
+    }
+  },
+  "derivation_rules": [
+    "Journey route adjacency is derived from frozen-baseline.json; this file does not duplicate the 93 registry route edges.",
+    "Semantic definitions remain owned by semantic-core.json; Stage 3 only references their stable IDs.",
+    "Contexts carry identity/meaning across handoffs; navigation itself never manufactures a domain mutation.",
+    "A journey may render or route through a semantic object without owning its mutation operation.",
+    "Cross-cutting Journey 28 coordinates recovery but never becomes the owner of the recovered domain result.",
+    "Gate integration status is independent of Golden/design approval status."
+  ],
+  "external_integration_sources": [
+    {
+      "id": "INTEGRATION_PLAN",
+      "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+      "path": "docs/integrated-preview-v2/PLAN.md",
+      "git_blob": "67e23318b0c96e9d4a1790fd09eac897875f9f92"
+    },
+    {
+      "id": "GOLDEN_FIDELITY_MATRIX",
+      "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+      "path": "docs/integrated-preview-v2/GOLDEN_FIDELITY_MATRIX.md",
+      "git_blob": "819f175e605701413a740f08fb2897ade2dc69ab"
+    }
+  ],
+  "contexts": [
+    {
+      "id": "ctx.entry",
+      "name": "Entry intent",
+      "objects": [
+        "identity.session",
+        "group.invitation"
+      ],
+      "preserves": [
+        "intended destination",
+        "invite identity when present"
+      ],
+      "laws": [
+        "LAW-OP-03"
+      ]
+    },
+    {
+      "id": "ctx.identity",
+      "name": "Identity/session",
+      "objects": [
+        "identity.participant",
+        "identity.account",
+        "identity.session",
+        "identity.guest_capability"
+      ],
+      "preserves": [
+        "participant identity",
+        "session/account distinction",
+        "capability scope"
+      ],
+      "laws": [
+        "LAW-ID-01",
+        "LAW-ID-02",
+        "LAW-ID-03",
+        "LAW-AUTH-01"
+      ]
+    },
+    {
+      "id": "ctx.group",
+      "name": "Group",
+      "objects": [
+        "group.group",
+        "group.membership",
+        "identity.participant"
+      ],
+      "preserves": [
+        "group_id",
+        "participant_id",
+        "current access/role"
+      ],
+      "laws": [
+        "LAW-GROUP-02"
+      ]
+    },
+    {
+      "id": "ctx.expense_draft",
+      "name": "Expense draft",
+      "objects": [
+        "group.group",
+        "group.membership",
+        "identity.participant",
+        "money.money_v1"
+      ],
+      "preserves": [
+        "group identity",
+        "draft field values",
+        "current participant context"
+      ],
+      "laws": [
+        "LAW-MONEY-01",
+        "LAW-OP-03"
+      ]
+    },
+    {
+      "id": "ctx.expense",
+      "name": "Expense",
+      "objects": [
+        "group.group",
+        "expense.expense",
+        "expense.split",
+        "identity.participant"
+      ],
+      "preserves": [
+        "expense_id",
+        "group_id",
+        "exact money",
+        "split meaning"
+      ],
+      "laws": [
+        "LAW-MONEY-01",
+        "LAW-EXP-01"
+      ]
+    },
+    {
+      "id": "ctx.review",
+      "name": "Expense review/issue",
+      "objects": [
+        "expense.expense",
+        "expense.review",
+        "expense.issue",
+        "identity.participant"
+      ],
+      "preserves": [
+        "expense lineage",
+        "reviewer identity",
+        "issue identity/status"
+      ],
+      "laws": [
+        "LAW-EXP-02",
+        "LAW-ISSUE-01"
+      ]
+    },
+    {
+      "id": "ctx.position",
+      "name": "Position",
+      "objects": [
+        "position.position",
+        "identity.participant",
+        "group.group",
+        "money.money_v1"
+      ],
+      "preserves": [
+        "person/group source lineage",
+        "currency partition"
+      ],
+      "laws": [
+        "LAW-POS-01",
+        "LAW-MONEY-01"
+      ]
+    },
+    {
+      "id": "ctx.settlement",
+      "name": "Settlement/payment",
+      "objects": [
+        "payment.settlement_scope",
+        "payment.intent",
+        "payment.record",
+        "position.position",
+        "identity.participant",
+        "money.money_v1"
+      ],
+      "preserves": [
+        "payment_id/idempotency",
+        "payer",
+        "recipient",
+        "one currency",
+        "exact amount",
+        "source groups/items",
+        "accepted result"
+      ],
+      "laws": [
+        "LAW-PAY-01",
+        "LAW-PAY-02",
+        "LAW-PAY-03",
+        "LAW-OP-01",
+        "LAW-OP-02"
+      ]
+    },
+    {
+      "id": "ctx.request",
+      "name": "Payment request",
+      "objects": [
+        "payment.request",
+        "position.position",
+        "identity.participant",
+        "money.money_v1"
+      ],
+      "preserves": [
+        "request identity",
+        "requester/payer/recipient",
+        "exact source scope",
+        "one currency"
+      ],
+      "laws": [
+        "LAW-REQ-01",
+        "LAW-MONEY-01"
+      ]
+    },
+    {
+      "id": "ctx.payment_destination",
+      "name": "Payment destination",
+      "objects": [
+        "payment.destination",
+        "identity.participant"
+      ],
+      "preserves": [
+        "destination_id/version",
+        "method/network compatibility scope"
+      ],
+      "laws": [
+        "LAW-AUTH-01",
+        "LAW-DEST-01"
+      ]
+    },
+    {
+      "id": "ctx.receiving",
+      "name": "Receiving share",
+      "objects": [
+        "payment.destination",
+        "payment.receiving_share",
+        "identity.participant"
+      ],
+      "preserves": [
+        "share identity",
+        "recipient scope",
+        "destination version"
+      ],
+      "laws": [
+        "LAW-DEST-01",
+        "LAW-AUTH-01"
+      ]
+    },
+    {
+      "id": "ctx.wallet",
+      "name": "Wallet execution",
+      "objects": [
+        "wallet.session",
+        "wallet.action",
+        "operation.identity",
+        "operation.outcome"
+      ],
+      "preserves": [
+        "wallet action operation identity",
+        "account/network context",
+        "owning journey action scope"
+      ],
+      "laws": [
+        "LAW-WALLET-01",
+        "LAW-OP-01",
+        "LAW-OP-02"
+      ]
+    },
+    {
+      "id": "ctx.qr",
+      "name": "QR transport",
+      "objects": [
+        "qr.payload"
+      ],
+      "preserves": [
+        "owner-journey source context"
+      ],
+      "laws": [
+        "LAW-QR-01"
+      ]
+    },
+    {
+      "id": "ctx.savings",
+      "name": "Savings",
+      "objects": [
+        "savings.group",
+        "savings.position",
+        "savings.operation",
+        "identity.participant",
+        "money.money_v1"
+      ],
+      "preserves": [
+        "savings group",
+        "member position",
+        "operation identity",
+        "exact money partition"
+      ],
+      "laws": [
+        "LAW-SAV-01",
+        "LAW-SAV-02",
+        "LAW-OP-01"
+      ]
+    },
+    {
+      "id": "ctx.activity",
+      "name": "Activity/attention",
+      "objects": [
+        "activity.item",
+        "activity.attention",
+        "notification.delivery",
+        "event.accepted"
+      ],
+      "preserves": [
+        "canonical source identity",
+        "current access",
+        "unread vs unresolved distinction"
+      ],
+      "laws": [
+        "LAW-ACT-01",
+        "LAW-HIST-01"
+      ]
+    },
+    {
+      "id": "ctx.insight",
+      "name": "Insight",
+      "objects": [
+        "insight.view",
+        "identity.participant"
+      ],
+      "preserves": [
+        "viewer authorization scope",
+        "period",
+        "money partition"
+      ],
+      "laws": [
+        "LAW-INSIGHT-01"
+      ]
+    },
+    {
+      "id": "ctx.portability",
+      "name": "Import/export/storage",
+      "objects": [
+        "portability.import_operation",
+        "portability.export_operation",
+        "portability.export_artifact",
+        "storage.backup",
+        "storage.restore_operation",
+        "identity.participant",
+        "group.group"
+      ],
+      "preserves": [
+        "operation identity",
+        "source snapshot/version",
+        "stable IDs",
+        "explicit ambiguity"
+      ],
+      "laws": [
+        "LAW-IMPORT-01",
+        "LAW-EXPORT-01",
+        "LAW-STORAGE-01",
+        "LAW-OP-02"
+      ]
+    },
+    {
+      "id": "ctx.account",
+      "name": "Account/preferences",
+      "objects": [
+        "account.preferences",
+        "identity.account",
+        "identity.session",
+        "identity.participant"
+      ],
+      "preserves": [
+        "account/session distinction",
+        "participant history identity",
+        "current preference version"
+      ],
+      "laws": [
+        "LAW-PREF-01",
+        "LAW-ACCOUNT-01",
+        "LAW-AUTH-01"
+      ]
+    },
+    {
+      "id": "ctx.recovery",
+      "name": "Recovery",
+      "objects": [
+        "recovery.context",
+        "operation.identity",
+        "operation.outcome"
+      ],
+      "preserves": [
+        "owning journey",
+        "original operation/state identity",
+        "last authoritative evidence"
+      ],
+      "laws": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
+    },
+    {
+      "id": "ctx.spend",
+      "name": "SpendIntent overlay",
+      "objects": [
+        "spend.intent",
+        "spend.effect",
+        "money.money_v1"
+      ],
+      "preserves": [
+        "spend_intent_id",
+        "operation_id",
+        "effect lineage",
+        "money partition"
+      ],
+      "laws": [
+        "LAW-SPEND-01",
+        "LAW-SPEND-02",
+        "LAW-MONEY-01"
+      ]
+    }
+  ],
+  "journey_projections": [
+    {
+      "id": "01",
+      "name": "Enter ChopDot",
+      "kind": "entry_effect",
+      "requires_contexts": [
+        "ctx.entry"
+      ],
+      "owns_operations": [
+        "session.enter"
+      ],
+      "participates_operations": [
+        "participant.link_account"
+      ],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.identity",
+        "ctx.entry"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": [
+        "Phase C1 participant/account linking is an approved overlay; the base entry journey still keeps sign-in distinct from joining/payment."
+      ]
+    },
+    {
+      "id": "02",
+      "name": "Home / Orientation",
+      "kind": "read_projection",
+      "requires_contexts": [
+        "ctx.identity"
+      ],
+      "owns_operations": [],
+      "participates_operations": [],
+      "renders_views": [
+        "view.home"
+      ],
+      "emits_contexts": [
+        "ctx.group",
+        "ctx.expense_draft",
+        "ctx.position",
+        "ctx.settlement",
+        "ctx.savings",
+        "ctx.account"
+      ],
+      "recovery": null,
+      "notes": []
+    },
+    {
+      "id": "03",
+      "name": "Create a Group",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.identity"
+      ],
+      "owns_operations": [
+        "group.create"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.group",
+        "ctx.entry",
+        "ctx.expense_draft"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "04",
+      "name": "Invite / Join a Group",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.entry",
+        "ctx.identity"
+      ],
+      "owns_operations": [
+        "group.invite",
+        "group.join"
+      ],
+      "participates_operations": [
+        "participant.link_account"
+      ],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.group",
+        "ctx.expense_draft",
+        "ctx.qr"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "05",
+      "name": "Add an Expense",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.group",
+        "ctx.identity",
+        "ctx.expense_draft"
+      ],
+      "owns_operations": [
+        "expense.create"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.expense",
+        "ctx.review",
+        "ctx.group",
+        "ctx.position",
+        "ctx.activity"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "06",
+      "name": "Review / Correct an Expense",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.expense",
+        "ctx.identity"
+      ],
+      "owns_operations": [
+        "expense.edit",
+        "expense.delete"
+      ],
+      "participates_operations": [
+        "expense.resolve_issue"
+      ],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.expense",
+        "ctx.review",
+        "ctx.group",
+        "ctx.position",
+        "ctx.activity"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "07",
+      "name": "Review / Agree / Raise an Issue",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.review",
+        "ctx.identity"
+      ],
+      "owns_operations": [
+        "expense.review_agree",
+        "expense.raise_issue"
+      ],
+      "participates_operations": [
+        "expense.resolve_issue"
+      ],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.review",
+        "ctx.group",
+        "ctx.position",
+        "ctx.settlement",
+        "ctx.activity"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "08",
+      "name": "Group Home",
+      "kind": "read_projection",
+      "requires_contexts": [
+        "ctx.group",
+        "ctx.identity"
+      ],
+      "owns_operations": [],
+      "participates_operations": [],
+      "renders_views": [
+        "view.group_home"
+      ],
+      "emits_contexts": [
+        "ctx.expense_draft",
+        "ctx.expense",
+        "ctx.review",
+        "ctx.position",
+        "ctx.settlement",
+        "ctx.group"
+      ],
+      "recovery": null,
+      "notes": []
+    },
+    {
+      "id": "09",
+      "name": "Manage People",
+      "kind": "mixed",
+      "requires_contexts": [
+        "ctx.group",
+        "ctx.identity"
+      ],
+      "owns_operations": [
+        "membership.remove"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.group",
+        "ctx.position",
+        "ctx.request",
+        "ctx.settlement",
+        "ctx.payment_destination"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "10",
+      "name": "Overall Position",
+      "kind": "read_projection",
+      "requires_contexts": [
+        "ctx.position",
+        "ctx.identity"
+      ],
+      "owns_operations": [],
+      "participates_operations": [],
+      "renders_views": [
+        "view.position"
+      ],
+      "emits_contexts": [
+        "ctx.group",
+        "ctx.identity",
+        "ctx.settlement",
+        "ctx.request"
+      ],
+      "recovery": null,
+      "notes": []
+    },
+    {
+      "id": "11",
+      "name": "Settle Up",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.position",
+        "ctx.identity"
+      ],
+      "owns_operations": [
+        "settlement.prepare",
+        "settlement.authorize"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.settlement",
+        "ctx.payment_destination",
+        "ctx.wallet",
+        "ctx.recovery"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "12",
+      "name": "Complete Settlement",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.settlement",
+        "ctx.identity"
+      ],
+      "owns_operations": [
+        "settlement.confirm_receipt",
+        "settlement.close",
+        "settlement.reconcile"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.settlement",
+        "ctx.position",
+        "ctx.group",
+        "ctx.activity"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "13",
+      "name": "Request Money",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.position",
+        "ctx.identity"
+      ],
+      "owns_operations": [
+        "request.create",
+        "request.deliver",
+        "request.withdraw"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.request",
+        "ctx.activity",
+        "ctx.receiving"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "14",
+      "name": "Receive / Share Payment Details",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.identity",
+        "ctx.payment_destination"
+      ],
+      "owns_operations": [
+        "receiving_share.create",
+        "receiving_share.stop"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.receiving",
+        "ctx.payment_destination",
+        "ctx.wallet",
+        "ctx.qr"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "15",
+      "name": "Settlement History",
+      "kind": "read_projection",
+      "requires_contexts": [
+        "ctx.settlement",
+        "ctx.identity"
+      ],
+      "owns_operations": [],
+      "participates_operations": [],
+      "renders_views": [
+        "view.payment_history"
+      ],
+      "emits_contexts": [
+        "ctx.group",
+        "ctx.identity",
+        "ctx.settlement"
+      ],
+      "recovery": null,
+      "notes": []
+    },
+    {
+      "id": "16",
+      "name": "Savings Group",
+      "kind": "read_projection",
+      "requires_contexts": [
+        "ctx.savings",
+        "ctx.identity"
+      ],
+      "owns_operations": [],
+      "participates_operations": [],
+      "renders_views": [
+        "view.savings_group"
+      ],
+      "emits_contexts": [
+        "ctx.savings",
+        "ctx.activity"
+      ],
+      "recovery": null,
+      "notes": []
+    },
+    {
+      "id": "17",
+      "name": "Contribute / Withdraw Savings",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.savings",
+        "ctx.identity"
+      ],
+      "owns_operations": [
+        "savings.contribute",
+        "savings.withdraw"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.savings",
+        "ctx.activity",
+        "ctx.wallet",
+        "ctx.recovery"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "18",
+      "name": "Activity & Notifications",
+      "kind": "mixed_projection",
+      "requires_contexts": [
+        "ctx.activity",
+        "ctx.identity"
+      ],
+      "owns_operations": [
+        "notification.set_read_state"
+      ],
+      "participates_operations": [],
+      "renders_views": [
+        "view.activity"
+      ],
+      "emits_contexts": [
+        "ctx.group",
+        "ctx.expense_draft",
+        "ctx.expense",
+        "ctx.review",
+        "ctx.settlement",
+        "ctx.request"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "19",
+      "name": "Insights",
+      "kind": "read_projection",
+      "requires_contexts": [
+        "ctx.identity"
+      ],
+      "owns_operations": [],
+      "participates_operations": [],
+      "renders_views": [
+        "view.insights"
+      ],
+      "emits_contexts": [
+        "ctx.group",
+        "ctx.account"
+      ],
+      "recovery": null,
+      "notes": []
+    },
+    {
+      "id": "20",
+      "name": "Payment Methods",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.identity"
+      ],
+      "owns_operations": [
+        "payment_destination.create_update",
+        "payment_destination.remove"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.payment_destination",
+        "ctx.settlement",
+        "ctx.receiving",
+        "ctx.wallet",
+        "ctx.account"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "21",
+      "name": "Wallet & Crypto",
+      "kind": "execution_boundary",
+      "requires_contexts": [
+        "ctx.identity",
+        "ctx.wallet"
+      ],
+      "owns_operations": [
+        "wallet.connect_switch",
+        "wallet.execute_action"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.wallet",
+        "ctx.settlement",
+        "ctx.receiving",
+        "ctx.savings",
+        "ctx.account",
+        "ctx.recovery"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "22",
+      "name": "QR Flows",
+      "kind": "transport_boundary",
+      "requires_contexts": [
+        "ctx.qr",
+        "ctx.identity"
+      ],
+      "owns_operations": [
+        "qr.resolve"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.group",
+        "ctx.identity",
+        "ctx.receiving"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "23",
+      "name": "Import Data / Group",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.identity",
+        "ctx.portability"
+      ],
+      "owns_operations": [
+        "import.apply"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.group",
+        "ctx.portability",
+        "ctx.recovery"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "24",
+      "name": "Export / Portability",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.identity",
+        "ctx.portability"
+      ],
+      "owns_operations": [
+        "export.create",
+        "export.deliver"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.portability",
+        "ctx.recovery"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "25",
+      "name": "Storage / Backup / Recovery",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.identity",
+        "ctx.portability"
+      ],
+      "owns_operations": [
+        "storage.create_backup",
+        "storage.restore"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.account",
+        "ctx.portability",
+        "ctx.recovery"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "26",
+      "name": "Group Lifecycle",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.group",
+        "ctx.identity"
+      ],
+      "owns_operations": [
+        "group.rename_archive",
+        "group.transfer_ownership",
+        "group.leave",
+        "group.delete"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.group",
+        "ctx.identity",
+        "ctx.portability",
+        "ctx.recovery"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "27",
+      "name": "Account & Preferences",
+      "kind": "domain_effect",
+      "requires_contexts": [
+        "ctx.account",
+        "ctx.identity"
+      ],
+      "owns_operations": [
+        "preferences.update",
+        "session.sign_out",
+        "account.delete"
+      ],
+      "participates_operations": [
+        "participant.link_account"
+      ],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.entry",
+        "ctx.insight",
+        "ctx.payment_destination",
+        "ctx.wallet",
+        "ctx.portability",
+        "ctx.recovery"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": []
+    },
+    {
+      "id": "28",
+      "name": "Things Go Wrong / Recovery",
+      "kind": "cross_cutting_recovery",
+      "requires_contexts": [
+        "ctx.recovery"
+      ],
+      "owns_operations": [
+        "recovery.reconcile",
+        "recovery.safe_retry"
+      ],
+      "participates_operations": [],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.recovery"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": [
+        "Returns verified outcome/safe-retry/explicit-stop to the owning journey; it does not own the underlying domain result."
+      ]
+    }
+  ],
+  "composition_units": [
+    {
+      "id": "composition.entry_orientation",
+      "name": "Entry & orientation",
+      "journeys": [
+        "01",
+        "02"
+      ],
+      "contexts": [
+        "ctx.entry",
+        "ctx.identity",
+        "ctx.group",
+        "ctx.position",
+        "ctx.activity"
+      ],
+      "operations": [
+        "session.enter",
+        "participant.link_account"
+      ],
+      "views": [
+        "view.home"
+      ]
+    },
+    {
+      "id": "composition.group_onboarding",
+      "name": "Group creation / invite / open",
+      "journeys": [
+        "03",
+        "04",
+        "08"
+      ],
+      "contexts": [
+        "ctx.identity",
+        "ctx.entry",
+        "ctx.group",
+        "ctx.expense_draft"
+      ],
+      "operations": [
+        "group.create",
+        "group.invite",
+        "group.join"
+      ],
+      "views": [
+        "view.group_home"
+      ]
+    },
+    {
+      "id": "composition.core_expense_loop",
+      "name": "Core expense loop",
+      "journeys": [
+        "08",
+        "05",
+        "06",
+        "07"
+      ],
+      "contexts": [
+        "ctx.group",
+        "ctx.expense_draft",
+        "ctx.expense",
+        "ctx.review",
+        "ctx.position",
+        "ctx.activity"
+      ],
+      "operations": [
+        "expense.create",
+        "expense.edit",
+        "expense.delete",
+        "expense.review_agree",
+        "expense.raise_issue",
+        "expense.resolve_issue"
+      ],
+      "views": [
+        "view.group_home",
+        "view.position",
+        "view.activity"
+      ],
+      "continuity": [
+        "J05 creates the same Expense lineage consumed by J08/J06/J07.",
+        "J06 mutates that same Expense; it does not fork a correction copy.",
+        "J07 review/issue state remains attached to the same Expense lineage.",
+        "Position/Activity/Group Home are refreshed projections, not manually edited substitutes."
+      ]
+    },
+    {
+      "id": "composition.position_settlement",
+      "name": "Position → settlement → history",
+      "journeys": [
+        "10",
+        "11",
+        "12",
+        "15"
+      ],
+      "contexts": [
+        "ctx.position",
+        "ctx.settlement",
+        "ctx.wallet",
+        "ctx.activity"
+      ],
+      "operations": [
+        "settlement.prepare",
+        "settlement.authorize",
+        "settlement.confirm_receipt",
+        "settlement.close",
+        "settlement.reconcile"
+      ],
+      "views": [
+        "view.position",
+        "view.payment_history"
+      ],
+      "continuity": [
+        "One exact settlement scope crosses J11→J12.",
+        "Payment identity/method/source items/result survive Back/recovery/history.",
+        "Closing recomputes Position from underlying truth."
+      ]
+    },
+    {
+      "id": "composition.request_receiving",
+      "name": "People / request / receiving",
+      "journeys": [
+        "09",
+        "10",
+        "13",
+        "14",
+        "20"
+      ],
+      "contexts": [
+        "ctx.identity",
+        "ctx.group",
+        "ctx.position",
+        "ctx.request",
+        "ctx.payment_destination",
+        "ctx.receiving"
+      ],
+      "operations": [
+        "membership.remove",
+        "request.create",
+        "request.deliver",
+        "request.withdraw",
+        "receiving_share.create",
+        "receiving_share.stop",
+        "payment_destination.create_update",
+        "payment_destination.remove"
+      ],
+      "views": [
+        "view.position"
+      ]
+    },
+    {
+      "id": "composition.savings",
+      "name": "Savings coordination",
+      "journeys": [
+        "16",
+        "17"
+      ],
+      "boundary_journeys": [
+        "21",
+        "28"
+      ],
+      "contexts": [
+        "ctx.savings",
+        "ctx.wallet",
+        "ctx.recovery",
+        "ctx.activity"
+      ],
+      "operations": [
+        "savings.contribute",
+        "savings.withdraw"
+      ],
+      "views": [
+        "view.savings_group"
+      ]
+    },
+    {
+      "id": "composition.wallet_destination_qr",
+      "name": "Payment destinations / wallet / QR",
+      "journeys": [
+        "20",
+        "21",
+        "22"
+      ],
+      "boundary_journeys": [
+        "11",
+        "12",
+        "14",
+        "17"
+      ],
+      "contexts": [
+        "ctx.payment_destination",
+        "ctx.wallet",
+        "ctx.qr"
+      ],
+      "operations": [
+        "payment_destination.create_update",
+        "payment_destination.remove",
+        "wallet.connect_switch",
+        "wallet.execute_action",
+        "qr.resolve"
+      ],
+      "views": []
+    },
+    {
+      "id": "composition.activity_insights",
+      "name": "Activity & insights",
+      "journeys": [
+        "18",
+        "19"
+      ],
+      "contexts": [
+        "ctx.activity",
+        "ctx.insight",
+        "ctx.identity"
+      ],
+      "operations": [
+        "notification.set_read_state"
+      ],
+      "views": [
+        "view.activity",
+        "view.insights"
+      ]
+    },
+    {
+      "id": "composition.portability_storage",
+      "name": "Import / export / backup / restore",
+      "journeys": [
+        "23",
+        "24",
+        "25"
+      ],
+      "boundary_journeys": [
+        "28"
+      ],
+      "contexts": [
+        "ctx.portability",
+        "ctx.recovery",
+        "ctx.identity"
+      ],
+      "operations": [
+        "import.apply",
+        "export.create",
+        "export.deliver",
+        "storage.create_backup",
+        "storage.restore"
+      ],
+      "views": []
+    },
+    {
+      "id": "composition.lifecycle_account_recovery",
+      "name": "Group lifecycle / account / recovery",
+      "journeys": [
+        "26",
+        "27",
+        "28"
+      ],
+      "contexts": [
+        "ctx.group",
+        "ctx.account",
+        "ctx.identity",
+        "ctx.portability",
+        "ctx.recovery"
+      ],
+      "operations": [
+        "group.rename_archive",
+        "group.transfer_ownership",
+        "group.leave",
+        "group.delete",
+        "preferences.update",
+        "session.sign_out",
+        "account.delete",
+        "recovery.reconcile",
+        "recovery.safe_retry"
+      ],
+      "views": []
+    },
+    {
+      "id": "composition.spend_overlay",
+      "name": "Phase C1 SpendIntent overlay",
+      "journeys": [],
+      "contexts": [
+        "ctx.spend"
+      ],
+      "operations": [
+        "spend.authorize_execute",
+        "spend.materialize"
+      ],
+      "views": [],
+      "classification": "approved_contract_overlay_not_user_journey",
+      "continuity": [
+        "SpendIntent remains separate from PaymentIntent.",
+        "Accepted SpendEffect may materialize canonical Expense/obligation state exactly once."
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "A",
+      "name": "Entry and orientation / accepted bounded preview",
+      "status": "accepted-materialized-verified",
+      "closed": true,
+      "primary_journeys": [
+        "01",
+        "02"
+      ],
+      "partial_journey_capabilities": [
+        {
+          "journey": "05",
+          "capability": "common equal-split expense create only"
+        }
+      ],
+      "contexts": [
+        "ctx.entry",
+        "ctx.identity",
+        "ctx.group",
+        "ctx.expense_draft",
+        "ctx.expense",
+        "ctx.position",
+        "ctx.activity"
+      ],
+      "operations": [
+        {
+          "id": "session.enter",
+          "coverage": "bounded prototype"
+        },
+        {
+          "id": "participant.link_account",
+          "coverage": "demonstration account conversion/continuity"
+        },
+        {
+          "id": "expense.create",
+          "coverage": "common equal-split subset only"
+        }
+      ],
+      "accepted_source": {
+        "branch": "review/golden-faithful-v2-gate-a",
+        "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+        "tree": "01691d4fe04dcce9499e11ae26d481eb2a7890c6"
+      },
+      "scope_exclusions": [
+        "J08 group reopening and full Gate B core expense loop",
+        "Full J05 alternate split/date/receipt surfaces",
+        "Outbound shared invitations",
+        "Production storage, real authentication and financial execution"
+      ],
+      "rule": "Gate A acceptance never implies full J05 or J08 integration."
+    },
+    {
+      "id": "B",
+      "name": "Core expense loop",
+      "status": "planned_not_implemented_by_schema",
+      "closed": false,
+      "journeys": [
+        "08",
+        "05",
+        "06",
+        "07"
+      ],
+      "composition": "composition.core_expense_loop",
+      "contexts": [
+        "ctx.group",
+        "ctx.expense_draft",
+        "ctx.expense",
+        "ctx.review",
+        "ctx.position",
+        "ctx.activity"
+      ],
+      "operations": [
+        "expense.create",
+        "expense.edit",
+        "expense.delete",
+        "expense.review_agree",
+        "expense.raise_issue",
+        "expense.resolve_issue"
+      ],
+      "goal": "A user can add, inspect, edit/review, agree/question, and return to an updated group without a Golden contract regression.",
+      "rule": "Schema wiring only; this record does not authorize Gate B runtime work."
+    },
+    {
+      "id": "C",
+      "name": "Position and settlement loop",
+      "status": "future",
+      "closed": false,
+      "journeys": [
+        "10",
+        "11",
+        "12"
+      ],
+      "composition": "composition.position_settlement",
+      "contexts": [
+        "ctx.position",
+        "ctx.settlement",
+        "ctx.wallet",
+        "ctx.activity"
+      ],
+      "operations": [
+        "settlement.prepare",
+        "settlement.authorize",
+        "settlement.confirm_receipt",
+        "settlement.close",
+        "settlement.reconcile"
+      ]
+    },
+    {
+      "id": "D",
+      "name": "Shell, account, activity and recovery",
+      "status": "future",
+      "closed": false,
+      "journeys": [
+        "18",
+        "27",
+        "28"
+      ],
+      "contexts": [
+        "ctx.activity",
+        "ctx.account",
+        "ctx.identity",
+        "ctx.recovery"
+      ],
+      "operations": [
+        "notification.set_read_state",
+        "preferences.update",
+        "session.sign_out",
+        "account.delete",
+        "recovery.reconcile",
+        "recovery.safe_retry"
+      ]
+    },
+    {
+      "id": "POST_D",
+      "name": "Remaining Golden families",
+      "status": "future",
+      "closed": false,
+      "families": [
+        {
+          "id": "creation_invite",
+          "journeys": [
+            "03",
+            "04"
+          ]
+        },
+        {
+          "id": "people_request_receive_history",
+          "journeys": [
+            "09",
+            "13",
+            "14",
+            "15"
+          ]
+        },
+        {
+          "id": "savings",
+          "journeys": [
+            "16",
+            "17"
+          ]
+        },
+        {
+          "id": "insights",
+          "journeys": [
+            "19"
+          ]
+        },
+        {
+          "id": "payment_wallet_qr",
+          "journeys": [
+            "20",
+            "21",
+            "22"
+          ]
+        },
+        {
+          "id": "portability_storage",
+          "journeys": [
+            "23",
+            "24",
+            "25"
+          ]
+        },
+        {
+          "id": "group_lifecycle",
+          "journeys": [
+            "26"
+          ]
+        }
+      ]
+    }
+  ],
+  "contract_only_operations": [
+    "spend.authorize_execute",
+    "spend.materialize"
+  ],
+  "shared_composition_laws": [
+    {
+      "id": "COMP-01",
+      "rule": "The same underlying object identity survives adjacent journey handoffs; routes do not create replacement domain objects."
+    },
+    {
+      "id": "COMP-02",
+      "rule": "Only an operation owner may mutate its semantic object; projections/read models cannot mutate source truth."
+    },
+    {
+      "id": "COMP-03",
+      "rule": "Derived views refresh from accepted underlying state; no journey manually overwrites Position, Activity, Insights or history to simulate an outcome."
+    },
+    {
+      "id": "COMP-04",
+      "rule": "Possible-effect recovery preserves the original operation identity and returns to the owning journey after verified outcome/safe retry/explicit stop."
+    },
+    {
+      "id": "COMP-05",
+      "rule": "Gate A partial capability coverage is not promoted to full journey integration."
+    },
+    {
+      "id": "COMP-06",
+      "rule": "Approved Goldens define experience projection; the schema references them and does not duplicate or redesign their visual hierarchy/copy."
+    }
+  ]
+}

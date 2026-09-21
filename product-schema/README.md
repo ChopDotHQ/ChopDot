@@ -1,28 +1,28 @@
 # ChopDot Product Schema V1
 
-Status: **Stage 2 — semantic normalization complete candidate**
+Status: **Stage 3 — composition wiring complete candidate**
 
 This branch builds a derived, composable product schema over the product that is already approved. It is not a new product authority and it does not authorize Gate B implementation.
 
 ## Program
 
-1. **Frozen inventory — complete.** Pin the current authority and accepted Gate A boundary.
-2. **Semantic normalization — complete candidate.** Name reusable product objects, operation owners and cross-domain laws without changing product meaning.
-3. **Composition wiring — next.** Connect semantic objects/operations → journey projections → gates.
-4. **Completeness / Gate B view.** Validate coverage/duplicates/orphans and derive the Gate B construction packet.
+1. **Frozen inventory — complete.** Pin current authority and accepted Gate A boundary.
+2. **Semantic normalization — complete.** Name reusable product objects, operation owners and cross-domain laws.
+3. **Composition wiring — complete candidate.** Connect semantic objects/operations → continuity contexts → journey projections → composition units → gates.
+4. **Completeness / Gate B view — next.** Audit coverage/ownership/context and derive the Gate B construction packet.
 
 ## Canonical schema files
 
 - `frozen-baseline.json` — Stage 1 source/provenance inventory.
 - `semantic-core.json` — Stage 2 canonical normalized product meaning.
-- `STAGE_1_INVENTORY.md` — human checkpoint.
-- `STAGE_2_SEMANTIC_CORE.md` — human checkpoint.
+- `composition-graph.json` — Stage 3 canonical wiring/composition.
+- `STAGE_1_INVENTORY.md`, `STAGE_2_SEMANTIC_CORE.md`, `STAGE_3_COMPOSITION.md` — human checkpoints.
 
 ## Non-negotiable
 
 - No approved Golden or journey semantics change during schema construction.
 - Gate A accepted bytes and acceptance meaning remain frozen.
-- Phase C1 contracts are composed as overlays, not rewritten into parallel truth.
+- Gate integration status is separate from design approval.
 - Research branches are lessons, not product authority.
 - Unknown policy stays unknown.
-- Generated/derived schema views never outrank their cited source.
+- Derived views/routes never outrank their cited source.

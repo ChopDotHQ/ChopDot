@@ -4,7 +4,7 @@
   "stage": {
     "id": 2,
     "name": "Semantic normalization",
-    "status": "complete_candidate"
+    "status": "complete_candidate_stage3_validated"
   },
   "frozen_baseline": {
     "product_authority_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
@@ -2059,6 +2059,25 @@
         "Replacement retry only after proven no-effect truth.",
         "Explicit stop preserves truth and enough context to resume safely."
       ]
+    },
+    {
+      "id": "notification.set_read_state",
+      "name": "Set notification read state",
+      "owner": "notification.delivery",
+      "changes": [
+        "notification.delivery"
+      ],
+      "source_journeys": [
+        "18"
+      ],
+      "sources": [
+        "J18",
+        "APPROVAL_18_v1_1"
+      ],
+      "rules": [
+        "Read/unread is personal delivery metadata only.",
+        "Marking one or all notifications read never resolves the underlying domain item or AttentionItem."
+      ]
     }
   ],
   "derived_models": [
@@ -2713,6 +2732,15 @@
       ],
       "statement": "Storage provider, backup format, sync/encryption/custody and deletion implementation details are not selected as product law.",
       "handling": "Preserve approved storage/recovery semantics without selecting infrastructure."
+    },
+    {
+      "id": "SCHEMA-NORM-01",
+      "classification": "stage_3_normalization_completion",
+      "journeys": [
+        "18"
+      ],
+      "statement": "Stage 3 composition exposed the missing semantic operation for notification read-state mutation.",
+      "handling": "Added notification.set_read_state as a schema-only normalization of already-approved J18 behavior; no product source or runtime code changed."
     }
   ]
 }
