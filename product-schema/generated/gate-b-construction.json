@@ -1,0 +1,1347 @@
+{
+  "schema_version": 1,
+  "generated_view": "gate-b-construction",
+  "authority": "DERIVED_ONLY",
+  "gate": {
+    "id": "B",
+    "name": "Core expense loop",
+    "status": "planned_not_implemented_by_schema",
+    "goal": "A user can add, inspect, edit/review, agree/question, and return to an updated group without a Golden contract regression.",
+    "implementation_authorized": false
+  },
+  "generated_from": {
+    "product_authority_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+    "stage_1_schema": "frozen-baseline.json",
+    "stage_2_schema": "semantic-core.json",
+    "stage_3_schema": "composition-graph.json"
+  },
+  "construction_order": [
+    "08",
+    "05",
+    "06",
+    "07"
+  ],
+  "journeys": [
+    {
+      "id": "08",
+      "name": "Group Home",
+      "version": "v1",
+      "golden": {
+        "spec": {
+          "path": "prototypes/experience-workbench/journeys/08-group-home/spec.md",
+          "git_blob": "2d5acbbd8d97d885d258bfd92ddeb7ed61a8e49d"
+        },
+        "prototype": {
+          "path": "prototypes/experience-workbench/journeys/08-group-home/v1-golden.html",
+          "git_blob": "a9dcd097865707052c819bcb631d3964ab879e6e",
+          "sha256": "7bd47a9ea9987a2bc0e5912b99cddbfe0fea3f1b16d85aa76d76e919747cecf7"
+        },
+        "qa": {
+          "path": "prototypes/experience-workbench/journeys/08-group-home/VISUAL_QA.md",
+          "git_blob": "ab1ec1fe111379ee52b4ae9d558298ca6bc1b9d6"
+        },
+        "contracts": []
+      },
+      "registry": {
+        "entry": "Home group card, create success, or invite acceptance",
+        "exit": "Expense, member, position, settle, or settings",
+        "next": [
+          "05",
+          "06",
+          "07",
+          "09",
+          "11",
+          "26"
+        ]
+      },
+      "wiring": {
+        "entry_contexts_any": [
+          "ctx.group"
+        ],
+        "requires_contexts": [
+          "ctx.group",
+          "ctx.identity"
+        ],
+        "owns_operations": [],
+        "participates_operations": [],
+        "renders_views": [
+          "view.group_home"
+        ],
+        "emits_contexts": [
+          "ctx.expense_draft",
+          "ctx.expense",
+          "ctx.review",
+          "ctx.position",
+          "ctx.settlement",
+          "ctx.group"
+        ]
+      }
+    },
+    {
+      "id": "05",
+      "name": "Add an Expense",
+      "version": "v1",
+      "golden": {
+        "spec": {
+          "path": "prototypes/experience-workbench/journeys/05-add-expense/spec.md",
+          "git_blob": "e1f91491f7ec83f254a493b24c88f8ebc02813fc"
+        },
+        "prototype": {
+          "path": "prototypes/experience-workbench/journeys/05-add-expense/v1-golden.html",
+          "git_blob": "2bdabc57e8656155f96b9844fb3dd5f9a5ecb259",
+          "sha256": "1aa7c723f60ada46d739c33749690ea493c8a2121cf85b3f1678a3798d638b23"
+        },
+        "qa": {
+          "path": "prototypes/experience-workbench/journeys/05-add-expense/VISUAL_QA.md",
+          "git_blob": "b3297963ae26de4c654c963b8236b7b83cb474f6"
+        },
+        "contracts": []
+      },
+      "registry": {
+        "entry": "Home, Group Home, or Create success",
+        "exit": "Updated group or expense detail",
+        "next": [
+          "06",
+          "07",
+          "08"
+        ]
+      },
+      "wiring": {
+        "entry_contexts_any": [
+          "ctx.expense_draft",
+          "ctx.group"
+        ],
+        "requires_contexts": [
+          "ctx.group",
+          "ctx.identity",
+          "ctx.expense_draft"
+        ],
+        "owns_operations": [
+          "expense.create"
+        ],
+        "participates_operations": [],
+        "renders_views": [],
+        "emits_contexts": [
+          "ctx.expense",
+          "ctx.review",
+          "ctx.group",
+          "ctx.position",
+          "ctx.activity"
+        ]
+      }
+    },
+    {
+      "id": "06",
+      "name": "Review / Correct an Expense",
+      "version": "v1.1",
+      "golden": {
+        "spec": {
+          "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/spec.md",
+          "git_blob": "ad17dadbf0b5c98243a7279ec2ceca7e1610abb8"
+        },
+        "prototype": {
+          "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/v1.1-golden.html",
+          "git_blob": "0b00abcaafa14a6b44ac8bc7eacdf232ce3bab3c",
+          "sha256": "aece70448ae1979f6a0bf3abfc46affc75da2c1540cb91dbeda32efc8722b55c"
+        },
+        "qa": {
+          "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/VISUAL_QA.md",
+          "git_blob": "2ed3aa7287f09f9fc1a2350291ace956f635c296"
+        },
+        "contracts": []
+      },
+      "registry": {
+        "entry": "Expense row, activity, or review task",
+        "exit": "Group, updated expense, or Journey 07",
+        "next": [
+          "07",
+          "08"
+        ]
+      },
+      "wiring": {
+        "entry_contexts_any": [
+          "ctx.expense"
+        ],
+        "requires_contexts": [
+          "ctx.expense",
+          "ctx.identity"
+        ],
+        "owns_operations": [
+          "expense.edit",
+          "expense.delete"
+        ],
+        "participates_operations": [
+          "expense.resolve_issue"
+        ],
+        "renders_views": [],
+        "emits_contexts": [
+          "ctx.expense",
+          "ctx.review",
+          "ctx.group",
+          "ctx.position",
+          "ctx.activity"
+        ]
+      }
+    },
+    {
+      "id": "07",
+      "name": "Review / Agree / Raise an Issue",
+      "version": "v1.1",
+      "golden": {
+        "spec": {
+          "path": "prototypes/experience-workbench/journeys/07-review-agree/spec.md",
+          "git_blob": "6b4cf633c58b36ff3f55924014d39febd147f3f6"
+        },
+        "prototype": {
+          "path": "prototypes/experience-workbench/journeys/07-review-agree/v1.1-golden.html",
+          "git_blob": "c92a063e9dfdd8b732d15a25e4ee1e76994ada90",
+          "sha256": "90c11c09125dc8ba8a7d97530b33b7fff685b3a4fd0979992acf3910736db3ce"
+        },
+        "qa": {
+          "path": "prototypes/experience-workbench/journeys/07-review-agree/VISUAL_QA.md",
+          "git_blob": "6e188ee98f14647fe8eb5680912645b3b4c71f01"
+        },
+        "contracts": []
+      },
+      "registry": {
+        "entry": "Home attention, Group Home, or expense detail",
+        "exit": "Resolved expense, waiting state, or group",
+        "next": [
+          "08",
+          "10",
+          "11",
+          "18"
+        ]
+      },
+      "wiring": {
+        "entry_contexts_any": [
+          "ctx.review",
+          "ctx.expense"
+        ],
+        "requires_contexts": [
+          "ctx.review",
+          "ctx.identity"
+        ],
+        "owns_operations": [
+          "expense.review_agree",
+          "expense.raise_issue"
+        ],
+        "participates_operations": [
+          "expense.resolve_issue"
+        ],
+        "renders_views": [],
+        "emits_contexts": [
+          "ctx.review",
+          "ctx.group",
+          "ctx.position",
+          "ctx.settlement",
+          "ctx.activity"
+        ]
+      }
+    }
+  ],
+  "composition": {
+    "id": "composition.core_expense_loop",
+    "contexts": [
+      "ctx.group",
+      "ctx.expense_draft",
+      "ctx.expense",
+      "ctx.review",
+      "ctx.position",
+      "ctx.activity"
+    ],
+    "operations": [
+      "expense.create",
+      "expense.edit",
+      "expense.delete",
+      "expense.review_agree",
+      "expense.raise_issue",
+      "expense.resolve_issue"
+    ],
+    "views": [
+      "view.group_home",
+      "view.position",
+      "view.activity"
+    ],
+    "continuity": [
+      "J05 creates the same Expense lineage consumed by J08/J06/J07.",
+      "J06 mutates that same Expense; it does not fork a correction copy.",
+      "J07 review/issue state remains attached to the same Expense lineage.",
+      "Position/Activity/Group Home are refreshed projections, not manually edited substitutes."
+    ]
+  },
+  "semantic_objects": [
+    {
+      "id": "activity.attention",
+      "name": "AttentionItem",
+      "kind": "read_model",
+      "domain": "activity_history",
+      "identity": [
+        "owner_object_identity",
+        "required_action"
+      ],
+      "meaning": "Derived unresolved user task kept separate from chronology and notification unread state.",
+      "source_journeys": [
+        "02",
+        "07",
+        "18"
+      ],
+      "sources": [
+        "J02",
+        "J07",
+        "J18",
+        "APPROVAL_18_v1_1"
+      ]
+    },
+    {
+      "id": "activity.item",
+      "name": "ActivityItem",
+      "kind": "read_model",
+      "domain": "activity_history",
+      "identity": [
+        "canonical_source_identity",
+        "meaningful_milestone"
+      ],
+      "meaning": "Read-only ChopDot milestone projection over accepted domain truth; technical refresh noise is not user activity.",
+      "source_journeys": [
+        "18"
+      ],
+      "sources": [
+        "J18",
+        "APPROVAL_18_v1_1"
+      ]
+    },
+    {
+      "id": "event.accepted",
+      "name": "AcceptedEvent",
+      "kind": "contract_primitive",
+      "domain": "activity_history",
+      "identity": [
+        "event_id",
+        "stream_version"
+      ],
+      "meaning": "Accepted durable domain event/history fact used to rebuild projections; replay is side-effect free.",
+      "source_journeys": [
+        "11",
+        "12",
+        "15",
+        "18",
+        "28"
+      ],
+      "sources": [
+        "STORAGE_REPLAY",
+        "J11",
+        "J18"
+      ]
+    },
+    {
+      "id": "expense.expense",
+      "name": "Expense",
+      "kind": "entity",
+      "domain": "groups_expenses",
+      "identity": [
+        "expense_id"
+      ],
+      "meaning": "Recorded shared cost in a Group with exact amount/currency, description, payer, participants/split, date and optional receipt/history.",
+      "source_journeys": [
+        "05",
+        "06",
+        "07",
+        "08",
+        "10",
+        "18",
+        "24"
+      ],
+      "sources": [
+        "J05",
+        "J06",
+        "J07",
+        "J08",
+        "J10",
+        "J18",
+        "J24"
+      ]
+    },
+    {
+      "id": "expense.issue",
+      "name": "ExpenseIssue",
+      "kind": "entity",
+      "domain": "groups_expenses",
+      "identity": [
+        "issue_id"
+      ],
+      "meaning": "Narrowly scoped question/dispute attached to an Expense with reason, optional note and resolution state. Only dependent payment items are blocked.",
+      "source_journeys": [
+        "07",
+        "10",
+        "11",
+        "18",
+        "28"
+      ],
+      "sources": [
+        "J07",
+        "J11",
+        "J18"
+      ]
+    },
+    {
+      "id": "expense.review",
+      "name": "ExpenseReview",
+      "kind": "entity",
+      "domain": "groups_expenses",
+      "identity": [
+        "expense_id",
+        "reviewer_participant_id"
+      ],
+      "meaning": "A Participant's review state for an Expense, distinct from editing the Expense itself.",
+      "source_journeys": [
+        "06",
+        "07",
+        "08",
+        "18"
+      ],
+      "sources": [
+        "J06",
+        "J07",
+        "J08",
+        "J18"
+      ]
+    },
+    {
+      "id": "expense.split",
+      "name": "Split",
+      "kind": "value_object",
+      "domain": "groups_expenses",
+      "identity": [],
+      "meaning": "Beneficiary allocation of an Expense across selected Participants using Equal, Exact or Shares semantics; custom totals must conserve the Expense amount.",
+      "source_journeys": [
+        "05",
+        "06",
+        "07"
+      ],
+      "sources": [
+        "J05",
+        "J06",
+        "C1_IDENTITY"
+      ]
+    },
+    {
+      "id": "group.group",
+      "name": "Group",
+      "kind": "entity",
+      "domain": "groups_expenses",
+      "identity": [
+        "group_id"
+      ],
+      "meaning": "Stable shared workspace identity with display/configuration state, membership and lifecycle. Rename/archive/leave/delete do not silently rewrite ledger truth.",
+      "source_journeys": [
+        "02",
+        "03",
+        "04",
+        "08",
+        "09",
+        "26"
+      ],
+      "sources": [
+        "J02",
+        "J03",
+        "J04",
+        "J08",
+        "J09",
+        "J26"
+      ]
+    },
+    {
+      "id": "group.membership",
+      "name": "GroupMembership",
+      "kind": "entity",
+      "domain": "identity_access",
+      "identity": [
+        "group_id",
+        "participant_id"
+      ],
+      "meaning": "Current access/role relationship between a Participant and Group. Changing access never rewrites historical ledger attribution or other memberships.",
+      "source_journeys": [
+        "04",
+        "08",
+        "09",
+        "26"
+      ],
+      "sources": [
+        "J04",
+        "J08",
+        "J09",
+        "J26",
+        "C1_IDENTITY"
+      ]
+    },
+    {
+      "id": "identity.participant",
+      "name": "Participant",
+      "kind": "entity",
+      "domain": "identity_access",
+      "identity": [
+        "group_id",
+        "participant_id"
+      ],
+      "meaning": "Durable group-scoped ledger identity for a person participating in a ChopDot group; may exist without a full account and survives later account linking.",
+      "owns": [
+        "stable group-scoped ledger reference",
+        "historical expense/split/history attribution"
+      ],
+      "does_not_own": [
+        "cross-group account identity",
+        "payment authority",
+        "wallet authority"
+      ],
+      "source_journeys": [
+        "01",
+        "04",
+        "09",
+        "24",
+        "25",
+        "27"
+      ],
+      "sources": [
+        "C1_IDENTITY",
+        "POST_J28"
+      ]
+    },
+    {
+      "id": "money.money_v1",
+      "name": "MoneyV1",
+      "kind": "value_object",
+      "domain": "money",
+      "identity": [
+        "minorUnits",
+        "currency",
+        "exponent"
+      ],
+      "meaning": "Canonical exact-money partition used for financial conservation: integer minor units plus currency and exponent. Display decimals are not authoritative.",
+      "source_journeys": [
+        "05",
+        "10",
+        "11",
+        "12",
+        "13",
+        "16",
+        "17",
+        "18",
+        "19",
+        "23",
+        "24"
+      ],
+      "sources": [
+        "C1_SPEND",
+        "C1_README",
+        "J11",
+        "J12"
+      ]
+    },
+    {
+      "id": "notification.delivery",
+      "name": "NotificationDelivery",
+      "kind": "entity",
+      "domain": "activity_history",
+      "identity": [
+        "notification_id",
+        "recipient_participant_or_account"
+      ],
+      "meaning": "Recipient-scoped snapshot/copy with read/unread metadata. Delivery/read state is never underlying domain authority.",
+      "source_journeys": [
+        "18",
+        "27"
+      ],
+      "sources": [
+        "J18",
+        "APPROVAL_18_v1_1",
+        "J27"
+      ]
+    },
+    {
+      "id": "position.position",
+      "name": "Position",
+      "kind": "read_model",
+      "domain": "groups_expenses",
+      "identity": [
+        "participant_pair_or_group",
+        "currency"
+      ],
+      "meaning": "Derived financial position showing what is owed/owing with currency separation and source lineage. It is read-only product truth derived from underlying records.",
+      "source_journeys": [
+        "02",
+        "08",
+        "10",
+        "11",
+        "13"
+      ],
+      "sources": [
+        "J02",
+        "J08",
+        "J10",
+        "J11",
+        "J13"
+      ]
+    }
+  ],
+  "operation_contracts": [
+    {
+      "id": "expense.create",
+      "name": "Create Expense",
+      "owner": "expense.expense",
+      "changes": [
+        "expense.expense",
+        "expense.split"
+      ],
+      "source_journeys": [
+        "05"
+      ],
+      "sources": [
+        "J05"
+      ],
+      "rules": [
+        "Common path is amount + description with editable defaults.",
+        "No invented common-path review page.",
+        "Failed save preserves entered details.",
+        "Custom split must conserve the expense total."
+      ]
+    },
+    {
+      "id": "expense.edit",
+      "name": "Edit Expense",
+      "owner": "expense.expense",
+      "changes": [
+        "expense.expense",
+        "expense.split",
+        "expense.review"
+      ],
+      "source_journeys": [
+        "06"
+      ],
+      "sources": [
+        "J06"
+      ],
+      "rules": [
+        "Reuse Journey 05 controls with existing values.",
+        "Only owner/authorized role may edit.",
+        "Review status updates/resets transparently."
+      ]
+    },
+    {
+      "id": "expense.delete",
+      "name": "Delete Expense",
+      "owner": "expense.expense",
+      "changes": [
+        "expense.expense",
+        "position.position"
+      ],
+      "source_journeys": [
+        "06"
+      ],
+      "sources": [
+        "J06"
+      ],
+      "rules": [
+        "Explicit confirmation separate from edit.",
+        "Deletion explains/recomputes balance impact."
+      ]
+    },
+    {
+      "id": "expense.review_agree",
+      "name": "Agree with Expense",
+      "owner": "expense.review",
+      "changes": [
+        "expense.review"
+      ],
+      "source_journeys": [
+        "07"
+      ],
+      "sources": [
+        "J07"
+      ],
+      "rules": [
+        "Review is distinct from editing.",
+        "Looks right resolves the reviewer's review state, not unrelated domain state."
+      ]
+    },
+    {
+      "id": "expense.raise_issue",
+      "name": "Raise Expense Issue",
+      "owner": "expense.issue",
+      "changes": [
+        "expense.issue"
+      ],
+      "source_journeys": [
+        "07"
+      ],
+      "sources": [
+        "J07"
+      ],
+      "rules": [
+        "Issue includes reason and optional note.",
+        "Only dependent payment items are blocked."
+      ]
+    },
+    {
+      "id": "expense.resolve_issue",
+      "name": "Resolve / reassess Expense Issue",
+      "owner": "expense.issue",
+      "changes": [
+        "expense.issue",
+        "expense.review"
+      ],
+      "source_journeys": [
+        "06",
+        "07"
+      ],
+      "sources": [
+        "J06",
+        "J07"
+      ],
+      "rules": [
+        "Owner correction stays in Journey 06; reviewer agreement/reassessment stays in Journey 07."
+      ]
+    }
+  ],
+  "laws": [
+    {
+      "id": "LAW-ID-01",
+      "name": "Participant identity survives account linking",
+      "applies_to": [
+        "identity.participant",
+        "identity.account"
+      ],
+      "rule": "Link/upgrade preserves the same group-scoped participant_id and every historical expense/split/history/export/recovery reference.",
+      "sources": [
+        "C1_IDENTITY",
+        "POST_J28"
+      ]
+    },
+    {
+      "id": "LAW-ID-02",
+      "name": "No name/email identity merge",
+      "applies_to": [
+        "identity.participant"
+      ],
+      "rule": "Display name and email are never identity merge keys; collisions/mismatch remain unresolved.",
+      "sources": [
+        "C1_IDENTITY",
+        "POST_J28"
+      ]
+    },
+    {
+      "id": "LAW-ID-03",
+      "name": "Group-scoped unlinkability",
+      "applies_to": [
+        "identity.participant",
+        "identity.account"
+      ],
+      "rule": "Group-visible identity must not expose a stable identifier that correlates an account-backed person across groups.",
+      "sources": [
+        "POST_J28",
+        "C1_IDENTITY"
+      ]
+    },
+    {
+      "id": "LAW-AUTH-01",
+      "name": "Presentation/preferences are not authority",
+      "applies_to": [
+        "account.preferences",
+        "payment.destination",
+        "wallet.session",
+        "notification.delivery"
+      ],
+      "rule": "A saved preference, destination, notification or wallet connection does not itself create payment/signing/group/identity-provider authority.",
+      "sources": [
+        "DESIGN",
+        "J20",
+        "J21",
+        "J27"
+      ]
+    },
+    {
+      "id": "LAW-MONEY-01",
+      "name": "Exact partitioned money",
+      "applies_to": [
+        "money.money_v1"
+      ],
+      "rule": "Canonical financial conservation uses integer minor units with currency and exponent; cross-partition values never combine silently and display decimals are non-authoritative.",
+      "sources": [
+        "C1_SPEND",
+        "C1_README",
+        "J11"
+      ]
+    },
+    {
+      "id": "LAW-HIST-01",
+      "name": "Replay is side-effect free",
+      "applies_to": [
+        "event.accepted",
+        "event.outbox",
+        "payment.record"
+      ],
+      "rule": "Accepted history is append-only/replay-safe; replay rebuilds projections and never repeats external/payment/signing/receipt/closure effects.",
+      "sources": [
+        "STORAGE_REPLAY",
+        "J11",
+        "J15"
+      ]
+    },
+    {
+      "id": "LAW-EXP-01",
+      "name": "Expense split conserves amount",
+      "applies_to": [
+        "expense.expense",
+        "expense.split",
+        "money.money_v1"
+      ],
+      "rule": "An explicit custom split must add to the Expense total within the exact money partition.",
+      "sources": [
+        "J05"
+      ]
+    },
+    {
+      "id": "LAW-EXP-02",
+      "name": "Review and edit ownership stay separate",
+      "applies_to": [
+        "expense.expense",
+        "expense.review",
+        "expense.issue"
+      ],
+      "rule": "Journey 06 owns expense mutation; Journey 07 owns agreement/question/issue semantics. Owner correction does not fabricate reviewer agreement.",
+      "sources": [
+        "J06",
+        "J07"
+      ]
+    },
+    {
+      "id": "LAW-ISSUE-01",
+      "name": "Issues block only dependencies",
+      "applies_to": [
+        "expense.issue",
+        "payment.intent"
+      ],
+      "rule": "An unresolved expense issue blocks only dependent payment items, not unrelated actionable balances.",
+      "sources": [
+        "J07",
+        "J11"
+      ]
+    },
+    {
+      "id": "LAW-POS-01",
+      "name": "Position is derived and currency-separated",
+      "applies_to": [
+        "position.position"
+      ],
+      "rule": "Position is a read model; mixed currencies remain separate and source group/item lineage stays explainable.",
+      "sources": [
+        "J10",
+        "J11"
+      ]
+    },
+    {
+      "id": "LAW-PAY-03",
+      "name": "Partial closes exact confirmed amount",
+      "applies_to": [
+        "payment.intent",
+        "payment.record",
+        "position.position"
+      ],
+      "rule": "A partial payment closes only the confirmed portion; the remainder preserves source lineage and stays open.",
+      "sources": [
+        "J11",
+        "J12",
+        "J15"
+      ]
+    },
+    {
+      "id": "LAW-ACT-01",
+      "name": "Activity and notification are projections",
+      "applies_to": [
+        "activity.item",
+        "activity.attention",
+        "notification.delivery"
+      ],
+      "rule": "Activity is read-only; unread is not unresolved; notification delivery/read cannot mutate the underlying domain result.",
+      "sources": [
+        "J18"
+      ]
+    },
+    {
+      "id": "LAW-GROUP-01",
+      "name": "Archive is not settlement or deletion",
+      "applies_to": [
+        "group.group"
+      ],
+      "rule": "Archive is reversible organization state; it does not forgive/net/settle/delete balances or history.",
+      "sources": [
+        "J26"
+      ]
+    },
+    {
+      "id": "LAW-GROUP-02",
+      "name": "Access/lifecycle does not rewrite ledger truth",
+      "applies_to": [
+        "group.group",
+        "group.membership"
+      ],
+      "rule": "Removal, leave, transfer, rename, archive and delete prerequisites cannot silently rewrite expense attribution, balances, historical ledger facts or other memberships.",
+      "sources": [
+        "J09",
+        "J26"
+      ]
+    },
+    {
+      "id": "LAW-ACCOUNT-01",
+      "name": "Account deletion respects adjacent authority",
+      "applies_to": [
+        "identity.account",
+        "group.group",
+        "payment.intent"
+      ],
+      "rule": "Deletion is blocked by group ownership or unresolved money obligations, routes to their owning journeys, and makes no global erasure claim.",
+      "sources": [
+        "J27"
+      ]
+    }
+  ],
+  "contexts": [
+    {
+      "id": "ctx.group",
+      "name": "Group",
+      "objects": [
+        "group.group",
+        "group.membership",
+        "identity.participant"
+      ],
+      "preserves": [
+        "group_id",
+        "participant_id",
+        "current access/role"
+      ],
+      "laws": [
+        "LAW-GROUP-02"
+      ]
+    },
+    {
+      "id": "ctx.expense_draft",
+      "name": "Expense draft",
+      "objects": [
+        "group.group",
+        "group.membership",
+        "identity.participant",
+        "money.money_v1"
+      ],
+      "preserves": [
+        "group identity",
+        "draft field values",
+        "current participant context"
+      ],
+      "laws": [
+        "LAW-MONEY-01",
+        "LAW-OP-03"
+      ]
+    },
+    {
+      "id": "ctx.expense",
+      "name": "Expense",
+      "objects": [
+        "group.group",
+        "expense.expense",
+        "expense.split",
+        "identity.participant"
+      ],
+      "preserves": [
+        "expense_id",
+        "group_id",
+        "exact money",
+        "split meaning"
+      ],
+      "laws": [
+        "LAW-MONEY-01",
+        "LAW-EXP-01"
+      ]
+    },
+    {
+      "id": "ctx.review",
+      "name": "Expense review/issue",
+      "objects": [
+        "expense.expense",
+        "expense.review",
+        "expense.issue",
+        "identity.participant"
+      ],
+      "preserves": [
+        "expense lineage",
+        "reviewer identity",
+        "issue identity/status"
+      ],
+      "laws": [
+        "LAW-EXP-02",
+        "LAW-ISSUE-01"
+      ]
+    },
+    {
+      "id": "ctx.position",
+      "name": "Position",
+      "objects": [
+        "position.position",
+        "identity.participant",
+        "group.group",
+        "money.money_v1"
+      ],
+      "preserves": [
+        "person/group source lineage",
+        "currency partition"
+      ],
+      "laws": [
+        "LAW-POS-01",
+        "LAW-MONEY-01"
+      ]
+    },
+    {
+      "id": "ctx.activity",
+      "name": "Activity/attention",
+      "objects": [
+        "activity.item",
+        "activity.attention",
+        "notification.delivery",
+        "event.accepted"
+      ],
+      "preserves": [
+        "canonical source identity",
+        "current access",
+        "unread vs unresolved distinction"
+      ],
+      "laws": [
+        "LAW-ACT-01",
+        "LAW-HIST-01"
+      ]
+    }
+  ],
+  "handoffs": {
+    "internal": [
+      {
+        "from": "05",
+        "to": "06",
+        "contexts": [
+          "ctx.expense"
+        ]
+      },
+      {
+        "from": "05",
+        "to": "07",
+        "contexts": [
+          "ctx.review",
+          "ctx.expense"
+        ]
+      },
+      {
+        "from": "05",
+        "to": "08",
+        "contexts": [
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "06",
+        "to": "07",
+        "contexts": [
+          "ctx.review",
+          "ctx.expense"
+        ]
+      },
+      {
+        "from": "06",
+        "to": "08",
+        "contexts": [
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "07",
+        "to": "08",
+        "contexts": [
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "08",
+        "to": "05",
+        "contexts": [
+          "ctx.expense_draft",
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "08",
+        "to": "06",
+        "contexts": [
+          "ctx.expense"
+        ]
+      },
+      {
+        "from": "08",
+        "to": "07",
+        "contexts": [
+          "ctx.review",
+          "ctx.expense"
+        ]
+      }
+    ],
+    "inbound": [
+      {
+        "from": "02",
+        "to": "05",
+        "contexts": [
+          "ctx.expense_draft",
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "02",
+        "to": "08",
+        "contexts": [
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "03",
+        "to": "05",
+        "contexts": [
+          "ctx.expense_draft",
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "03",
+        "to": "08",
+        "contexts": [
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "04",
+        "to": "08",
+        "contexts": [
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "04",
+        "to": "05",
+        "contexts": [
+          "ctx.expense_draft",
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "10",
+        "to": "08",
+        "contexts": [
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "12",
+        "to": "08",
+        "contexts": [
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "15",
+        "to": "08",
+        "contexts": [
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "18",
+        "to": "05",
+        "contexts": [
+          "ctx.expense_draft",
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "18",
+        "to": "06",
+        "contexts": [
+          "ctx.expense"
+        ]
+      },
+      {
+        "from": "18",
+        "to": "07",
+        "contexts": [
+          "ctx.review",
+          "ctx.expense"
+        ]
+      },
+      {
+        "from": "18",
+        "to": "08",
+        "contexts": [
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "19",
+        "to": "08",
+        "contexts": [
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "23",
+        "to": "08",
+        "contexts": [
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "26",
+        "to": "08",
+        "contexts": [
+          "ctx.group"
+        ]
+      }
+    ],
+    "downstream": [
+      {
+        "from": "07",
+        "to": "10",
+        "contexts": [
+          "ctx.position",
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "07",
+        "to": "11",
+        "contexts": [
+          "ctx.position",
+          "ctx.settlement",
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "07",
+        "to": "18",
+        "contexts": [
+          "ctx.activity",
+          "ctx.identity"
+        ]
+      },
+      {
+        "from": "08",
+        "to": "09",
+        "contexts": [
+          "ctx.group",
+          "ctx.identity"
+        ]
+      },
+      {
+        "from": "08",
+        "to": "11",
+        "contexts": [
+          "ctx.position",
+          "ctx.settlement",
+          "ctx.group"
+        ]
+      },
+      {
+        "from": "08",
+        "to": "26",
+        "contexts": [
+          "ctx.group"
+        ]
+      }
+    ]
+  },
+  "gate_a_reuse": {
+    "accepted_source": {
+      "branch": "review/golden-faithful-v2-gate-a",
+      "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+      "tree": "01691d4fe04dcce9499e11ae26d481eb2a7890c6"
+    },
+    "reusable_contexts": [
+      "ctx.group",
+      "ctx.expense_draft",
+      "ctx.expense",
+      "ctx.position",
+      "ctx.activity"
+    ],
+    "new_gate_b_contexts": [
+      "ctx.review"
+    ],
+    "operation_delta": [
+      {
+        "id": "expense.create",
+        "status": "expand_bounded_gate_a_capability",
+        "gate_a_coverage": "common equal-split subset only"
+      },
+      {
+        "id": "expense.edit",
+        "status": "new_to_integrated_gate_b"
+      },
+      {
+        "id": "expense.delete",
+        "status": "new_to_integrated_gate_b"
+      },
+      {
+        "id": "expense.review_agree",
+        "status": "new_to_integrated_gate_b"
+      },
+      {
+        "id": "expense.raise_issue",
+        "status": "new_to_integrated_gate_b"
+      },
+      {
+        "id": "expense.resolve_issue",
+        "status": "new_to_integrated_gate_b"
+      }
+    ],
+    "frozen_scope_exclusions": [
+      "J08 group reopening and full Gate B core expense loop",
+      "Full J05 alternate split/date/receipt surfaces",
+      "Outbound shared invitations",
+      "Production storage, real authentication and financial execution"
+    ],
+    "rule": "Gate A acceptance never implies full J05 or J08 integration."
+  },
+  "integration_contract_sources": [
+    {
+      "id": "INTEGRATION_PLAN",
+      "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+      "path": "docs/integrated-preview-v2/PLAN.md",
+      "git_blob": "67e23318b0c96e9d4a1790fd09eac897875f9f92"
+    },
+    {
+      "id": "GOLDEN_FIDELITY_MATRIX",
+      "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+      "path": "docs/integrated-preview-v2/GOLDEN_FIDELITY_MATRIX.md",
+      "git_blob": "819f175e605701413a740f08fb2897ade2dc69ab"
+    }
+  ],
+  "semantic_acceptance": [
+    "J05 creates the same Expense lineage consumed by J08/J06/J07.",
+    "J06 mutates that same Expense; it does not fork a correction copy.",
+    "J07 review/issue state remains attached to the same Expense lineage.",
+    "Position/Activity/Group Home are refreshed projections, not manually edited substitutes.",
+    "Every Gate B mutation operates on the same stable Group/Participant/Expense lineage rather than screen-local substitutes.",
+    "Explicit Expense splits conserve the exact Expense amount under MoneyV1 semantics.",
+    "J06 owns expense edit/delete; J07 owns agreement/issue semantics; coordinated issue resolution preserves that boundary.",
+    "Unresolved ExpenseIssue state blocks only dependent payment items.",
+    "GroupHome/Position/Activity refresh from accepted underlying state rather than manual UI overwrites.",
+    "Gate A accepted bytes and the 28 frozen Goldens remain unchanged."
+  ],
+  "build_constraints": [
+    "Do not infer full J05/J08 coverage from the bounded Gate A expense demonstration.",
+    "Do not redesign Golden hierarchy, copy, actions, permission boundaries, or recovery meaning.",
+    "Do not introduce production storage, real authentication, financial execution, provider selection, or Product Integrator work as part of Gate B.",
+    "Do not use Product IR/funding/conformance research branches as product authority."
+  ],
+  "schema_blockers": []
+}

@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   schema:
-    name: Verify product schema stages 1–3
+    name: Verify complete product schema and Gate B derivation
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -28,3 +28,9 @@ jobs:
         run: node product-schema/verify-stage-2.mjs
       - name: Verify Stage 3 composition wiring
         run: node product-schema/verify-stage-3.mjs
+      - name: Regenerate Stage 4 views
+        run: node product-schema/derive-stage-4.mjs
+      - name: Verify Stage 4 completeness and Gate B packet
+        run: node product-schema/verify-stage-4.mjs
+      - name: Ensure generated views are committed exactly
+        run: git diff --exit-code -- product-schema/generated
