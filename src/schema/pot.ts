@@ -35,6 +35,15 @@ export const MemberSchema = z.object({
 
 export type Member = z.infer<typeof MemberSchema>;
 
+// Expense funding contribution. Research-compatible extension: paidBy remains
+// accepted while funding is introduced as an optional canonical funding shape.
+export const ExpenseFundingContributionSchema = z.object({
+  memberId: z.string().min(1, 'Funding member ID is required'),
+  amount: z.number().positive('Funding amount must be greater than 0'),
+});
+
+export type ExpenseFundingContribution = z.infer<typeof ExpenseFundingContributionSchema>;
+
 // Expense schema - matches runtime Expense interface with backward compatibility
 export const ExpenseSchema = z.object({
   id: z.string().min(1, 'Expense ID is required'),
@@ -42,6 +51,7 @@ export const ExpenseSchema = z.object({
   amount: z.number().positive('Amount must be greater than 0'),
   currency: z.string().optional(), // Will be set by migration if missing
   paidBy: z.string().min(1, 'Paid by member ID is required'),
+  funding: z.array(ExpenseFundingContributionSchema).min(1).optional(),
   memo: z.string().optional(), // Primary field name
   description: z.string().optional(), // Legacy field - migration will map to memo
   date: z.string().optional(), // ISO date string
@@ -71,6 +81,37 @@ export const ExpenseSchema = z.object({
 });
 
 export type Expense = z.infer<typeof ExpenseSchema>;
+
+/**
+ * Read-compatible funding view.
+ *
+ * Native funding wins when present. Legacy expenses are interpreted as one
+ * contribution for the full amount. This does not migrate persistence.
+ */
+export function getExpenseFunding(expense: Pick<Expense, 'amount' | 'paidBy' | 'funding'>): ExpenseFundingContribution[] {
+  if (expense.funding && expense.funding.length > 0) {
+    return expense.funding;
+  }
+  return [{ memberId: expense.paidBy, amount: expense.amount }];
+}
+
+/**
+ * Product-IR funding laws that can be checked without UI or persistence policy.
+ */
+export function validateExpenseFunding(
+  expense: Pick<Expense, 'amount' | 'paidBy' | 'funding'>,
+  memberIds: string[],
+): { success: boolean; error?: string } {
+  const funding = getExpenseFunding(expense);
+  if (funding.some((entry) => !memberIds.includes(entry.memberId))) {
+    return { success: false, error: 'All funding contributors must be valid member IDs' };
+  }
+  const total = funding.reduce((sum, entry) => sum + entry.amount, 0);
+  if (Math.abs(total - expense.amount) > 1e-9) {
+    return { success: false, error: 'Funding contributions must equal the expense amount' };
+  }
+  return { success: true };
+}
 
 // PotHistory schema - discriminated union for on-chain history
 const PotHistoryBaseSchema = z.object({
@@ -234,9 +275,9 @@ export const PotSchema = z.object({
   message: 'Pot cannot have duplicate member IDs',
   path: ['members'],
 }).refine((data) => {
-  // Validate that all expenses' paidBy are valid member IDs
-  const memberIds = new Set(data.members.map(m => m.id));
-  return data.expenses.every(exp => memberIds.has(exp.paidBy));
+  // Validate legacy payer and any native funding contributors against members.
+  const memberIds = data.members.map(m => m.id);
+  return data.expenses.every(exp => memberIds.includes(exp.paidBy) && validateExpenseFunding(exp, memberIds).success);
 }, {
   message: 'All expenses must be paid by a valid member',
   path: ['expenses'],
