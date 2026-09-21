@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "resume-snapshot",
+  "authority": "none",
+  "generated_on": "2026-09-21",
+  "stale_if_sources_change": true,
+  "current": {
+    "journeys": {
+      "registered": 28,
+      "golden": 28,
+      "remaining": 0,
+      "canonical_ref": "ux/experience-workbench@4ba456e6595330e4ca8e21366e0d827f17e10881"
+    },
+    "integrated_preview": {
+      "current_gate": "A",
+      "gate_a_status": "accepted-materialized-verified",
+      "gate_a_closed": true,
+      "accepted_commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+      "accepted_tree": "01691d4fe04dcce9499e11ae26d481eb2a7890c6",
+      "next_planned_gate": "B",
+      "gate_b_authorized": false
+    },
+    "production": {
+      "start_authorized": false,
+      "product_integrator_enabled": false,
+      "pr39": {
+        "state": "open",
+        "draft": true,
+        "merged": false
+      }
+    }
+  },
+  "source_precedence": [
+    "materialized acceptance/resulting-state records",
+    "canonical journey/product authority",
+    "exact reviewed refs",
+    "latest coordination records",
+    "draft implementation/preflight state"
+  ],
+  "sources": [
+    "ops/chatgpt-work-factory-v1:docs/integrated-preview-v2/GATE_A_ACCEPTANCE.json",
+    "ux/experience-workbench:prototypes/experience-workbench/registry/progress.json",
+    "issue:47",
+    "pr:39"
+  ]
+}
