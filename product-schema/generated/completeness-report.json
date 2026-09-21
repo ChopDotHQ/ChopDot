@@ -1,11 +1,11 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "generated_view": "schema-hardening-completeness",
   "schema_status": "PASS",
   "pre_gate_b_readiness": "BLOCKED",
   "audits": {
     "objects": {
-      "total": 46,
+      "total": 47,
       "orphans": []
     },
     "views": {
@@ -31,6 +31,12 @@
     "composition": {
       "units": 13,
       "gate_b": "composition.core_expense_loop"
+    },
+    "construction_requirements": {
+      "total": 10
+    },
+    "integration_constraints": {
+      "total": 1
     }
   },
   "authority_blockers": [
@@ -64,6 +70,16 @@
       ],
       "statement": "Historical J08/J05/J06 behavior includes settlement-related expense mutation locking, while later settlement contracts narrow dependency blocking to affected items. The final mutation-lock scope is not settled by the frozen sources.",
       "handling": "Represent the guard and enforce fail-closed locked behavior, but do not choose group-wide vs item-scoped lock semantics before an explicit product decision."
+    },
+    {
+      "id": "POLICY-EXPENSE-REVIEW-INVALIDATION",
+      "classification": "requires_product_decision",
+      "journeys": [
+        "06",
+        "07"
+      ],
+      "statement": "Frozen authority establishes that Expense edits may reset/update review and that changed expenses are reviewed again, but it does not fully specify which edit fields invalidate prior review or the exact resulting review-state transition.",
+      "handling": "Do not leave stale review presented as current. Before Gate B implementation acceptance, decide the invalidating edit classes and resulting review-state semantics."
     }
   ]
 }

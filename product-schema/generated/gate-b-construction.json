@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "generated_view": "gate-b-construction",
   "authority": "DERIVED_ONLY",
   "gate": {
@@ -9,12 +9,6 @@
     "goal": "A user can add, inspect, edit/review, agree/question, and return to an updated group without a Golden contract regression.",
     "implementation_authorized": false,
     "pre_gate_b_readiness": "BLOCKED"
-  },
-  "generated_from": {
-    "product_authority_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
-    "stage_1_schema": "frozen-baseline.json",
-    "stage_2_schema": "semantic-core.json",
-    "stage_3_schema": "composition-graph.json"
   },
   "construction_order": [
     "08",
@@ -53,7 +47,6 @@
           "path": "prototypes/experience-workbench/journeys/08-group-home/VISUAL_QA.md",
           "git_blob": "ab1ec1fe111379ee52b4ae9d558298ca6bc1b9d6"
         },
-        "contracts": [],
         "authority_files": [
           {
             "path": "prototypes/experience-workbench/journeys/08-group-home/source/decision-history.md",
@@ -63,18 +56,40 @@
           }
         ]
       },
-      "registry": {
-        "entry": "Home group card, create success, or invite acceptance",
-        "exit": "Expense, member, position, settle, or settings",
-        "next": [
-          "05",
-          "06",
-          "07",
-          "09",
-          "11",
-          "26"
-        ]
-      },
+      "requirements": [
+        {
+          "id": "REQ-J08-HIERARCHY",
+          "journey": "08",
+          "kind": "ordered_hierarchy",
+          "value": [
+            "group_identity",
+            "what_needs_you",
+            "your_position",
+            "recent",
+            "people_settle_handoffs",
+            "global_bottom_navigation"
+          ],
+          "sources": [
+            "J08"
+          ]
+        },
+        {
+          "id": "REQ-J08-STATES",
+          "journey": "08",
+          "kind": "required_states",
+          "value": [
+            "active_needs_review",
+            "nothing_needs_you",
+            "new_empty_group",
+            "settlement_in_progress",
+            "everyone_square",
+            "offline"
+          ],
+          "sources": [
+            "J08"
+          ]
+        }
+      ],
       "wiring": {
         "entry_contexts_any": [
           "ctx.group"
@@ -84,7 +99,6 @@
         ],
         "effect_contexts_required": [],
         "owns_operations": [],
-        "participates_operations": [],
         "renders_views": [
           "view.group_home"
         ],
@@ -150,7 +164,6 @@
           "path": "prototypes/experience-workbench/journeys/05-add-expense/VISUAL_QA.md",
           "git_blob": "b3297963ae26de4c654c963b8236b7b83cb474f6"
         },
-        "contracts": [],
         "authority_files": [
           {
             "path": "prototypes/experience-workbench/journeys/05-add-expense/STATE_INVENTORY.md",
@@ -166,15 +179,63 @@
           }
         ]
       },
-      "registry": {
-        "entry": "Home, Group Home, or Create success",
-        "exit": "Updated group or expense detail",
-        "next": [
-          "06",
-          "07",
-          "08"
-        ]
-      },
+      "requirements": [
+        {
+          "id": "REQ-J05-DEFAULTS",
+          "journey": "05",
+          "kind": "defaults",
+          "value": {
+            "required_user_input": [
+              "amount",
+              "description"
+            ],
+            "payer": "you",
+            "participants": "everyone",
+            "split_method": "equal",
+            "date": "today",
+            "receipt": "none"
+          },
+          "sources": [
+            "J05"
+          ]
+        },
+        {
+          "id": "REQ-J05-DETAIL-PATHS",
+          "journey": "05",
+          "kind": "editable_paths",
+          "value": {
+            "payer": true,
+            "participants": true,
+            "split_methods": [
+              "equal",
+              "exact",
+              "shares"
+            ],
+            "date": true,
+            "receipt": true,
+            "no_common_path_review_page": true
+          },
+          "sources": [
+            "J05"
+          ]
+        },
+        {
+          "id": "REQ-J05-RECOVERY",
+          "journey": "05",
+          "kind": "required_states",
+          "value": [
+            "missing",
+            "duplicate",
+            "offline",
+            "offline_saved",
+            "error",
+            "locked"
+          ],
+          "sources": [
+            "J05_STATE"
+          ]
+        }
+      ],
       "wiring": {
         "entry_contexts_any": [
           "ctx.expense_draft",
@@ -189,7 +250,6 @@
         "owns_operations": [
           "expense.create"
         ],
-        "participates_operations": [],
         "renders_views": [],
         "emits_contexts": [
           "ctx.expense",
@@ -237,7 +297,6 @@
           "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/VISUAL_QA.md",
           "git_blob": "2ed3aa7287f09f9fc1a2350291ace956f635c296"
         },
-        "contracts": [],
         "authority_files": [
           {
             "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/STATE_INVENTORY.md",
@@ -253,14 +312,61 @@
           }
         ]
       },
-      "registry": {
-        "entry": "Expense row, activity, or review task",
-        "exit": "Group, updated expense, or Journey 07",
-        "next": [
-          "07",
-          "08"
-        ]
-      },
+      "requirements": [
+        {
+          "id": "REQ-J06-DETAIL",
+          "journey": "06",
+          "kind": "ordered_detail",
+          "value": [
+            "amount",
+            "name",
+            "review_change_status",
+            "payer_personal_share_date",
+            "split",
+            "receipt_history",
+            "contextual_actions"
+          ],
+          "sources": [
+            "J06"
+          ]
+        },
+        {
+          "id": "REQ-J06-PERMISSIONS",
+          "journey": "06",
+          "kind": "permission_boundary",
+          "value": {
+            "edit_delete": [
+              "expense_owner",
+              "authorized_role"
+            ],
+            "other_member_handoff": "07",
+            "fake_edit_controls": false
+          },
+          "sources": [
+            "J06"
+          ]
+        },
+        {
+          "id": "REQ-J06-RECOVERY",
+          "journey": "06",
+          "kind": "required_states",
+          "value": [
+            "saving",
+            "save_error",
+            "locked",
+            "no_permission",
+            "offline_detail",
+            "offline_edit",
+            "offline_saved",
+            "conflict",
+            "loading",
+            "not_found"
+          ],
+          "sources": [
+            "J06_STATE"
+          ]
+        }
+      ],
       "wiring": {
         "entry_contexts_any": [
           "ctx.expense"
@@ -275,7 +381,6 @@
           "expense.edit",
           "expense.delete"
         ],
-        "participates_operations": [],
         "renders_views": [],
         "emits_contexts": [
           "ctx.expense",
@@ -323,7 +428,6 @@
           "path": "prototypes/experience-workbench/journeys/07-review-agree/VISUAL_QA.md",
           "git_blob": "6e188ee98f14647fe8eb5680912645b3b4c71f01"
         },
-        "contracts": [],
         "authority_files": [
           {
             "path": "prototypes/experience-workbench/journeys/07-review-agree/STATE_INVENTORY.md",
@@ -339,16 +443,48 @@
           }
         ]
       },
-      "registry": {
-        "entry": "Home attention, Group Home, or expense detail",
-        "exit": "Resolved expense, waiting state, or group",
-        "next": [
-          "08",
-          "10",
-          "11",
-          "18"
-        ]
-      },
+      "requirements": [
+        {
+          "id": "REQ-J07-LANGUAGE",
+          "journey": "07",
+          "kind": "literal_language",
+          "value": {
+            "prompt": "Does this look right?",
+            "agree": "Looks right",
+            "issue": "Something's off",
+            "defer": "Not now",
+            "reassess_negative": "Still off"
+          },
+          "sources": [
+            "J07"
+          ]
+        },
+        {
+          "id": "REQ-J07-ISSUE-LOOP",
+          "journey": "07",
+          "kind": "resolution_loop",
+          "value": {
+            "issue_input": [
+              "reason",
+              "optional_note"
+            ],
+            "owner_actions": [
+              "edit_via_J06",
+              "reply"
+            ],
+            "reviewer_actions": [
+              "looks_right",
+              "still_off",
+              "withdraw_issue"
+            ],
+            "resolution_owner": "07"
+          },
+          "sources": [
+            "J07",
+            "J07_STATE"
+          ]
+        }
+      ],
       "wiring": {
         "entry_contexts_any": [
           "ctx.review",
@@ -365,7 +501,6 @@
           "expense.withdraw_issue",
           "expense.reply_to_issue"
         ],
-        "participates_operations": [],
         "renders_views": [],
         "emits_contexts": [
           "ctx.review",
@@ -428,16 +563,17 @@
       "LAW-ISSUE-01",
       "LAW-POS-01",
       "LAW-ACT-01",
-      "LAW-HIST-01",
       "COMP-01",
       "COMP-02",
       "COMP-03",
       "COMP-04",
       "COMP-05",
       "COMP-06",
+      "LAW-EXP-REVIEW-01",
       "LAW-GROUP-02",
       "LAW-MONEY-01",
       "LAW-OP-03",
+      "LAW-HIST-01",
       "LAW-OP-04"
     ],
     "build_constraint_refs": [
@@ -445,8 +581,241 @@
       "BUILD-02",
       "BUILD-03",
       "BUILD-04"
+    ],
+    "construction_requirement_refs": [
+      "REQ-J08-HIERARCHY",
+      "REQ-J08-STATES",
+      "REQ-J05-DEFAULTS",
+      "REQ-J05-DETAIL-PATHS",
+      "REQ-J05-RECOVERY",
+      "REQ-J06-DETAIL",
+      "REQ-J06-PERMISSIONS",
+      "REQ-J06-RECOVERY",
+      "REQ-J07-LANGUAGE",
+      "REQ-J07-ISSUE-LOOP"
+    ],
+    "integration_constraint_refs": [
+      "GATEA-MONEY-EQUAL-01"
     ]
   },
+  "construction_requirements": [
+    {
+      "id": "REQ-J08-HIERARCHY",
+      "journey": "08",
+      "kind": "ordered_hierarchy",
+      "value": [
+        "group_identity",
+        "what_needs_you",
+        "your_position",
+        "recent",
+        "people_settle_handoffs",
+        "global_bottom_navigation"
+      ],
+      "sources": [
+        "J08"
+      ]
+    },
+    {
+      "id": "REQ-J08-STATES",
+      "journey": "08",
+      "kind": "required_states",
+      "value": [
+        "active_needs_review",
+        "nothing_needs_you",
+        "new_empty_group",
+        "settlement_in_progress",
+        "everyone_square",
+        "offline"
+      ],
+      "sources": [
+        "J08"
+      ]
+    },
+    {
+      "id": "REQ-J05-DEFAULTS",
+      "journey": "05",
+      "kind": "defaults",
+      "value": {
+        "required_user_input": [
+          "amount",
+          "description"
+        ],
+        "payer": "you",
+        "participants": "everyone",
+        "split_method": "equal",
+        "date": "today",
+        "receipt": "none"
+      },
+      "sources": [
+        "J05"
+      ]
+    },
+    {
+      "id": "REQ-J05-DETAIL-PATHS",
+      "journey": "05",
+      "kind": "editable_paths",
+      "value": {
+        "payer": true,
+        "participants": true,
+        "split_methods": [
+          "equal",
+          "exact",
+          "shares"
+        ],
+        "date": true,
+        "receipt": true,
+        "no_common_path_review_page": true
+      },
+      "sources": [
+        "J05"
+      ]
+    },
+    {
+      "id": "REQ-J05-RECOVERY",
+      "journey": "05",
+      "kind": "required_states",
+      "value": [
+        "missing",
+        "duplicate",
+        "offline",
+        "offline_saved",
+        "error",
+        "locked"
+      ],
+      "sources": [
+        "J05_STATE"
+      ]
+    },
+    {
+      "id": "REQ-J06-DETAIL",
+      "journey": "06",
+      "kind": "ordered_detail",
+      "value": [
+        "amount",
+        "name",
+        "review_change_status",
+        "payer_personal_share_date",
+        "split",
+        "receipt_history",
+        "contextual_actions"
+      ],
+      "sources": [
+        "J06"
+      ]
+    },
+    {
+      "id": "REQ-J06-PERMISSIONS",
+      "journey": "06",
+      "kind": "permission_boundary",
+      "value": {
+        "edit_delete": [
+          "expense_owner",
+          "authorized_role"
+        ],
+        "other_member_handoff": "07",
+        "fake_edit_controls": false
+      },
+      "sources": [
+        "J06"
+      ]
+    },
+    {
+      "id": "REQ-J06-RECOVERY",
+      "journey": "06",
+      "kind": "required_states",
+      "value": [
+        "saving",
+        "save_error",
+        "locked",
+        "no_permission",
+        "offline_detail",
+        "offline_edit",
+        "offline_saved",
+        "conflict",
+        "loading",
+        "not_found"
+      ],
+      "sources": [
+        "J06_STATE"
+      ]
+    },
+    {
+      "id": "REQ-J07-LANGUAGE",
+      "journey": "07",
+      "kind": "literal_language",
+      "value": {
+        "prompt": "Does this look right?",
+        "agree": "Looks right",
+        "issue": "Something's off",
+        "defer": "Not now",
+        "reassess_negative": "Still off"
+      },
+      "sources": [
+        "J07"
+      ]
+    },
+    {
+      "id": "REQ-J07-ISSUE-LOOP",
+      "journey": "07",
+      "kind": "resolution_loop",
+      "value": {
+        "issue_input": [
+          "reason",
+          "optional_note"
+        ],
+        "owner_actions": [
+          "edit_via_J06",
+          "reply"
+        ],
+        "reviewer_actions": [
+          "looks_right",
+          "still_off",
+          "withdraw_issue"
+        ],
+        "resolution_owner": "07"
+      },
+      "sources": [
+        "J07",
+        "J07_STATE"
+      ]
+    }
+  ],
+  "inherited_integration_constraints": [
+    {
+      "id": "GATEA-MONEY-EQUAL-01",
+      "classification": "accepted_gate_a_integration_behavior",
+      "scope": "Gate A common equal-split expense subset inherited by Gate B when expanding expense.create",
+      "rule": "Equal allocation uses canonical integer MoneyV1, unique trimmed participant IDs in stable sorted order, floor division for the base share, deterministic +1 minor-unit remainder assignment to the first stable-sorted IDs, the same currency/exponent partition, and exact conservation.",
+      "constraint": {
+        "kind": "deterministic_equal_allocation",
+        "participant_normalization": [
+          "stringify",
+          "trim",
+          "drop-empty",
+          "deduplicate",
+          "stable-sort"
+        ],
+        "base_rule": "floor(total_minor_units / participant_count)",
+        "remainder_rule": "first-stable-sorted-participant-ids-get-plus-one-minor-unit",
+        "exact_partition": true,
+        "exact_conservation": true
+      },
+      "evidence": [
+        {
+          "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+          "path": "prototypes/integrated-product-preview-v2/money-v1.js",
+          "git_blob": "620e8519adfcbc5869a7c60d59e098f906d9d798",
+          "kind": "accepted_preview_money_contract"
+        },
+        {
+          "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+          "path": "prototypes/integrated-product-preview-v2/exact-money-browser-qa.mjs",
+          "git_blob": "d88acacd6cfbd87834712e15850cde2aca979168",
+          "kind": "accepted_preview_browser_evidence"
+        }
+      ]
+    }
+  ],
   "semantic_objects": [
     {
       "id": "activity.attention",
@@ -489,18 +858,22 @@
         "canonical_source_identity",
         "meaningful_milestone"
       ],
-      "meaning": "Read-only ChopDot milestone projection over accepted domain truth; technical refresh noise is not user activity.",
+      "meaning": "Read-only ChopDot milestone projection derived from accepted canonical domain truth; technical refresh noise is not user activity. The product schema does not mandate a particular event/outbox implementation.",
       "source_journeys": [
-        "18",
-        "08"
+        "18"
       ],
       "sources": [
         "J18",
-        "APPROVAL_18_v1_1",
-        "J08"
+        "APPROVAL_18_v1_1"
       ],
       "derived_from": [
-        "event.accepted"
+        "expense.expense",
+        "expense.review",
+        "expense.issue",
+        "payment.record",
+        "payment.request",
+        "savings.operation",
+        "group.membership"
       ]
     },
     {
@@ -556,12 +929,12 @@
       "domain": "groups_expenses",
       "identity": [
         "expense_id",
-        "event_id"
+        "change_ref"
       ],
       "derived_from": [
-        "event.accepted"
+        "expense.expense"
       ],
-      "meaning": "Read-only history projection showing important accepted changes to an Expense; history does not mutate the Expense.",
+      "meaning": "Read-only implementation-neutral history projection showing important accepted changes to an Expense; the product contract does not require a particular event/outbox storage architecture.",
       "source_journeys": [
         "06"
       ],
@@ -755,6 +1128,29 @@
       ]
     },
     {
+      "id": "group.recent_item",
+      "name": "GroupRecentItem",
+      "kind": "read_model",
+      "domain": "groups_expenses",
+      "identity": [
+        "group_id",
+        "source_identity",
+        "meaningful_state"
+      ],
+      "derived_from": [
+        "expense.expense",
+        "expense.change_record",
+        "payment.record"
+      ],
+      "meaning": "Group-scoped recent-history projection used by Group Home to answer what happened without depending on the later global Activity journey.",
+      "source_journeys": [
+        "08"
+      ],
+      "sources": [
+        "J08"
+      ]
+    },
+    {
       "id": "identity.participant",
       "name": "Participant",
       "kind": "entity",
@@ -941,21 +1337,17 @@
         "Failed save preserves entered details.",
         "Custom split must conserve the expense total."
       ],
-      "emits": [
-        "event.accepted"
-      ],
       "invalidates": [
         "position.position",
+        "group.recent_item",
         "activity.item",
-        "activity.attention",
-        "expense.change_record"
+        "activity.attention"
       ],
       "law_refs": [
         "LAW-MONEY-01",
         "LAW-EXP-01",
         "LAW-EXP-03",
-        "LAW-EXP-GUARD-01",
-        "LAW-HIST-01"
+        "LAW-EXP-GUARD-01"
       ],
       "guards": [
         "expense.mutation_guard"
@@ -969,8 +1361,7 @@
         "expense.expense",
         "expense.split",
         "expense.allocation",
-        "expense.receipt",
-        "expense.review"
+        "expense.receipt"
       ],
       "source_journeys": [
         "06"
@@ -979,15 +1370,13 @@
         "J06"
       ],
       "rules": [
-        "Reuse Journey 05 controls with existing values.",
-        "Only owner/authorized role may edit.",
-        "Review status updates/resets transparently."
-      ],
-      "emits": [
-        "event.accepted"
+        "Reuse Journey 05 fields and controls with values prefilled.",
+        "Only the expense owner or an authorized role may edit.",
+        "An edit that invalidates prior review must make that staleness transparent; the exact triggering edits and resulting review-state transition are an explicit product-decision gap."
       ],
       "invalidates": [
         "position.position",
+        "group.recent_item",
         "activity.item",
         "activity.attention",
         "expense.change_record"
@@ -998,10 +1387,18 @@
         "LAW-EXP-03",
         "LAW-EXP-02",
         "LAW-EXP-GUARD-01",
-        "LAW-HIST-01"
+        "LAW-EXP-REVIEW-01",
+        "LAW-EXP-HISTORY-01"
       ],
       "guards": [
         "expense.mutation_guard"
+      ],
+      "dependent_state_effects": [
+        {
+          "object": "expense.review",
+          "effect": "prior review must not silently remain presented as current when the edit invalidates that review",
+          "policy_ref": "POLICY-EXPENSE-REVIEW-INVALIDATION"
+        }
       ]
     },
     {
@@ -1023,11 +1420,9 @@
         "Explicit confirmation separate from edit.",
         "Deletion explains/recomputes balance impact."
       ],
-      "emits": [
-        "event.accepted"
-      ],
       "invalidates": [
         "position.position",
+        "group.recent_item",
         "activity.item",
         "activity.attention",
         "expense.change_record"
@@ -1035,7 +1430,7 @@
       "law_refs": [
         "LAW-EXP-02",
         "LAW-EXP-GUARD-01",
-        "LAW-HIST-01"
+        "LAW-EXP-HISTORY-01"
       ],
       "guards": [
         "expense.mutation_guard"
@@ -1058,19 +1453,15 @@
         "Review is distinct from editing.",
         "Looks right resolves the reviewer's review state, not unrelated domain state."
       ],
-      "emits": [
-        "event.accepted"
-      ],
       "invalidates": [
         "position.position",
+        "group.recent_item",
         "activity.item",
-        "activity.attention",
-        "expense.change_record"
+        "activity.attention"
       ],
       "law_refs": [
         "LAW-EXP-02",
-        "LAW-ISSUE-01",
-        "LAW-HIST-01"
+        "LAW-ISSUE-01"
       ]
     },
     {
@@ -1090,19 +1481,15 @@
         "Issue includes reason and optional note.",
         "Only dependent payment items are blocked."
       ],
-      "emits": [
-        "event.accepted"
-      ],
       "invalidates": [
         "position.position",
+        "group.recent_item",
         "activity.item",
-        "activity.attention",
-        "expense.change_record"
+        "activity.attention"
       ],
       "law_refs": [
         "LAW-EXP-02",
-        "LAW-ISSUE-01",
-        "LAW-HIST-01"
+        "LAW-ISSUE-01"
       ]
     },
     {
@@ -1124,19 +1511,15 @@
       "rules": [
         "Journey 07 owns issue resolution status. Owner correction remains Journey 06; a correction does not fabricate reviewer agreement."
       ],
-      "emits": [
-        "event.accepted"
-      ],
       "invalidates": [
         "position.position",
+        "group.recent_item",
         "activity.item",
-        "activity.attention",
-        "expense.change_record"
+        "activity.attention"
       ],
       "law_refs": [
         "LAW-EXP-02",
-        "LAW-ISSUE-01",
-        "LAW-HIST-01"
+        "LAW-ISSUE-01"
       ]
     },
     {
@@ -1146,19 +1529,15 @@
       "changes": [
         "expense.issue"
       ],
-      "emits": [
-        "event.accepted"
-      ],
       "invalidates": [
         "position.position",
+        "group.recent_item",
         "activity.item",
-        "activity.attention",
-        "expense.change_record"
+        "activity.attention"
       ],
       "law_refs": [
         "LAW-EXP-02",
-        "LAW-ISSUE-01",
-        "LAW-HIST-01"
+        "LAW-ISSUE-01"
       ],
       "source_journeys": [
         "07"
@@ -1179,18 +1558,14 @@
       "changes": [
         "expense.issue"
       ],
-      "emits": [
-        "event.accepted"
-      ],
       "invalidates": [
+        "group.recent_item",
         "activity.item",
-        "activity.attention",
-        "expense.change_record"
+        "activity.attention"
       ],
       "law_refs": [
         "LAW-EXP-02",
-        "LAW-ISSUE-01",
-        "LAW-HIST-01"
+        "LAW-ISSUE-01"
       ],
       "source_journeys": [
         "07"
@@ -1236,7 +1611,13 @@
       "sources": [
         "J06",
         "J07"
-      ]
+      ],
+      "constraint": {
+        "kind": "journey_ownership_separation",
+        "expense_mutation_owner": "06",
+        "review_issue_resolution_owner": "07",
+        "owner_correction_cannot_fabricate_reviewer_agreement": true
+      }
     },
     {
       "id": "LAW-EXP-03",
@@ -1299,14 +1680,12 @@
       "name": "Accepted Expense mutations feed read-only change history",
       "applies_to": [
         "expense.change_record",
-        "event.accepted",
         "expense.expense"
       ],
-      "rule": "Important accepted Expense changes are represented through replay-safe accepted history; Expense history is read-only and replay does not repeat the mutation.",
+      "rule": "Important accepted Expense changes must remain readable as change history without turning history into a mutation surface. The storage mechanism is intentionally unspecified.",
       "sources": [
         "J06",
-        "J06_STATE",
-        "STORAGE_REPLAY"
+        "J06_STATE"
       ]
     },
     {
@@ -1320,7 +1699,11 @@
       "sources": [
         "J07",
         "J11"
-      ]
+      ],
+      "constraint": {
+        "kind": "block_dependent_payment_items_only",
+        "dependency_key": "disputed_expense_source_lineage"
+      }
     },
     {
       "id": "LAW-POS-01",
@@ -1332,7 +1715,12 @@
       "sources": [
         "J10",
         "J11"
-      ]
+      ],
+      "constraint": {
+        "kind": "derived_read_model",
+        "direct_mutation": false,
+        "currency_partitioned": true
+      }
     },
     {
       "id": "LAW-ACT-01",
@@ -1345,21 +1733,29 @@
       "rule": "Activity is read-only; unread is not unresolved; notification delivery/read cannot mutate the underlying domain result.",
       "sources": [
         "J18"
-      ]
+      ],
+      "constraint": {
+        "kind": "read_only_projection",
+        "unread_is_not_unresolved": true
+      }
     },
     {
-      "id": "LAW-HIST-01",
-      "name": "Replay is side-effect free",
+      "id": "LAW-EXP-REVIEW-01",
+      "name": "Stale Expense review must not remain current",
       "applies_to": [
-        "event.accepted",
-        "event.outbox",
-        "payment.record"
+        "expense.expense",
+        "expense.review"
       ],
-      "rule": "Accepted history is append-only/replay-safe; replay rebuilds projections and never repeats external/payment/signing/receipt/closure effects.",
+      "rule": "When an Expense edit makes prior review stale, the product must not continue presenting that prior review as current. Frozen authority does not fully specify which edit classes invalidate review or the exact resulting review status.",
+      "constraint": {
+        "kind": "stale_review_must_not_appear_current",
+        "policy_ref": "POLICY-EXPENSE-REVIEW-INVALIDATION"
+      },
       "sources": [
-        "STORAGE_REPLAY",
-        "J11",
-        "J15"
+        "J06",
+        "J06_DECISION",
+        "J07",
+        "J07_STATE"
       ]
     },
     {
@@ -1400,6 +1796,21 @@
         "J28",
         "J12",
         "J14"
+      ]
+    },
+    {
+      "id": "LAW-HIST-01",
+      "name": "Replay is side-effect free",
+      "applies_to": [
+        "event.accepted",
+        "event.outbox",
+        "payment.record"
+      ],
+      "rule": "Accepted history is append-only/replay-safe; replay rebuilds projections and never repeats external/payment/signing/receipt/closure effects.",
+      "sources": [
+        "STORAGE_REPLAY",
+        "J11",
+        "J15"
       ]
     },
     {
@@ -1471,7 +1882,7 @@
     },
     {
       "id": "CONT-EXP-04",
-      "rule": "Group Home refreshes Attention/Recent/Position from accepted underlying state; standalone J10/J18 screens are not part of Gate B.",
+      "rule": "Group Home refreshes Attention/Group Recent/Position from canonical underlying state; the standalone J10 Position and J18 Activity screens remain outside Gate B.",
       "sources": [
         "J08",
         "J10",
@@ -1954,12 +2365,6 @@
         "status": "new_to_integrated_gate_b"
       }
     ],
-    "frozen_scope_exclusions": [
-      "J08 group reopening and full Gate B core expense loop",
-      "Full J05 alternate split/date/receipt surfaces",
-      "Outbound shared invitations",
-      "Production storage, real authentication and financial execution"
-    ],
     "provenance_caveat": "J05 stylesheet is preview-owned reconstruction; approved Golden HTML is unchanged.",
     "rule": "Gate A acceptance never implies full J05, J08, J10, or J18 integration."
   },
@@ -1994,6 +2399,16 @@
       ],
       "statement": "Historical J08/J05/J06 behavior includes settlement-related expense mutation locking, while later settlement contracts narrow dependency blocking to affected items. The final mutation-lock scope is not settled by the frozen sources.",
       "handling": "Represent the guard and enforce fail-closed locked behavior, but do not choose group-wide vs item-scoped lock semantics before an explicit product decision."
+    },
+    {
+      "id": "POLICY-EXPENSE-REVIEW-INVALIDATION",
+      "classification": "requires_product_decision",
+      "journeys": [
+        "06",
+        "07"
+      ],
+      "statement": "Frozen authority establishes that Expense edits may reset/update review and that changed expenses are reviewed again, but it does not fully specify which edit fields invalidate prior review or the exact resulting review-state transition.",
+      "handling": "Do not leave stale review presented as current. Before Gate B implementation acceptance, decide the invalidating edit classes and resulting review-state semantics."
     }
   ],
   "schema_blockers": []

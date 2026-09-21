@@ -1375,19 +1375,34 @@
         "LAW-ISSUE-01",
         "LAW-POS-01",
         "LAW-ACT-01",
-        "LAW-HIST-01",
         "COMP-01",
         "COMP-02",
         "COMP-03",
         "COMP-04",
         "COMP-05",
-        "COMP-06"
+        "COMP-06",
+        "LAW-EXP-REVIEW-01"
       ],
       "build_constraint_refs": [
         "BUILD-01",
         "BUILD-02",
         "BUILD-03",
         "BUILD-04"
+      ],
+      "integration_constraint_refs": [
+        "GATEA-MONEY-EQUAL-01"
+      ],
+      "construction_requirement_refs": [
+        "REQ-J08-HIERARCHY",
+        "REQ-J08-STATES",
+        "REQ-J05-DEFAULTS",
+        "REQ-J05-DETAIL-PATHS",
+        "REQ-J05-RECOVERY",
+        "REQ-J06-DETAIL",
+        "REQ-J06-PERMISSIONS",
+        "REQ-J06-RECOVERY",
+        "REQ-J07-LANGUAGE",
+        "REQ-J07-ISSUE-LOOP"
       ]
     },
     {
@@ -1876,7 +1891,7 @@
     },
     {
       "id": "CONT-EXP-04",
-      "rule": "Group Home refreshes Attention/Recent/Position from accepted underlying state; standalone J10/J18 screens are not part of Gate B.",
+      "rule": "Group Home refreshes Attention/Group Recent/Position from canonical underlying state; the standalone J10 Position and J18 Activity screens remain outside Gate B.",
       "sources": [
         "J08",
         "J10",
@@ -1913,6 +1928,188 @@
       "rule": "Do not use Product IR/funding/conformance research branches as product authority.",
       "sources": [
         "SCHEMA_FREEZE_RULES"
+      ]
+    }
+  ],
+  "construction_requirements": [
+    {
+      "id": "REQ-J08-HIERARCHY",
+      "journey": "08",
+      "kind": "ordered_hierarchy",
+      "value": [
+        "group_identity",
+        "what_needs_you",
+        "your_position",
+        "recent",
+        "people_settle_handoffs",
+        "global_bottom_navigation"
+      ],
+      "sources": [
+        "J08"
+      ]
+    },
+    {
+      "id": "REQ-J08-STATES",
+      "journey": "08",
+      "kind": "required_states",
+      "value": [
+        "active_needs_review",
+        "nothing_needs_you",
+        "new_empty_group",
+        "settlement_in_progress",
+        "everyone_square",
+        "offline"
+      ],
+      "sources": [
+        "J08"
+      ]
+    },
+    {
+      "id": "REQ-J05-DEFAULTS",
+      "journey": "05",
+      "kind": "defaults",
+      "value": {
+        "required_user_input": [
+          "amount",
+          "description"
+        ],
+        "payer": "you",
+        "participants": "everyone",
+        "split_method": "equal",
+        "date": "today",
+        "receipt": "none"
+      },
+      "sources": [
+        "J05"
+      ]
+    },
+    {
+      "id": "REQ-J05-DETAIL-PATHS",
+      "journey": "05",
+      "kind": "editable_paths",
+      "value": {
+        "payer": true,
+        "participants": true,
+        "split_methods": [
+          "equal",
+          "exact",
+          "shares"
+        ],
+        "date": true,
+        "receipt": true,
+        "no_common_path_review_page": true
+      },
+      "sources": [
+        "J05"
+      ]
+    },
+    {
+      "id": "REQ-J05-RECOVERY",
+      "journey": "05",
+      "kind": "required_states",
+      "value": [
+        "missing",
+        "duplicate",
+        "offline",
+        "offline_saved",
+        "error",
+        "locked"
+      ],
+      "sources": [
+        "J05_STATE"
+      ]
+    },
+    {
+      "id": "REQ-J06-DETAIL",
+      "journey": "06",
+      "kind": "ordered_detail",
+      "value": [
+        "amount",
+        "name",
+        "review_change_status",
+        "payer_personal_share_date",
+        "split",
+        "receipt_history",
+        "contextual_actions"
+      ],
+      "sources": [
+        "J06"
+      ]
+    },
+    {
+      "id": "REQ-J06-PERMISSIONS",
+      "journey": "06",
+      "kind": "permission_boundary",
+      "value": {
+        "edit_delete": [
+          "expense_owner",
+          "authorized_role"
+        ],
+        "other_member_handoff": "07",
+        "fake_edit_controls": false
+      },
+      "sources": [
+        "J06"
+      ]
+    },
+    {
+      "id": "REQ-J06-RECOVERY",
+      "journey": "06",
+      "kind": "required_states",
+      "value": [
+        "saving",
+        "save_error",
+        "locked",
+        "no_permission",
+        "offline_detail",
+        "offline_edit",
+        "offline_saved",
+        "conflict",
+        "loading",
+        "not_found"
+      ],
+      "sources": [
+        "J06_STATE"
+      ]
+    },
+    {
+      "id": "REQ-J07-LANGUAGE",
+      "journey": "07",
+      "kind": "literal_language",
+      "value": {
+        "prompt": "Does this look right?",
+        "agree": "Looks right",
+        "issue": "Something's off",
+        "defer": "Not now",
+        "reassess_negative": "Still off"
+      },
+      "sources": [
+        "J07"
+      ]
+    },
+    {
+      "id": "REQ-J07-ISSUE-LOOP",
+      "journey": "07",
+      "kind": "resolution_loop",
+      "value": {
+        "issue_input": [
+          "reason",
+          "optional_note"
+        ],
+        "owner_actions": [
+          "edit_via_J06",
+          "reply"
+        ],
+        "reviewer_actions": [
+          "looks_right",
+          "still_off",
+          "withdraw_issue"
+        ],
+        "resolution_owner": "07"
+      },
+      "sources": [
+        "J07",
+        "J07_STATE"
       ]
     }
   ]

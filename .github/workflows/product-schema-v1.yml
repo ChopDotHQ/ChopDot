@@ -19,9 +19,13 @@ jobs:
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Fetch accepted Gate A evidence branch
+        run: git fetch origin review/golden-faithful-v2-gate-a --depth=1
       - run: node product-schema/verify-stage-1.mjs
       - run: node product-schema/verify-stage-2.mjs
       - run: node product-schema/verify-stage-3.mjs

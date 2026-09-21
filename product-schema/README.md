@@ -1,21 +1,23 @@
 # ChopDot Product Schema V1
 
-Status: **adversarially hardened candidate — schema PASS, Gate B BLOCKED on explicit authority/product-decision items**
+Status: **self-reviewed hardened candidate — schema PASS, Gate B BLOCKED on explicit authority/product-decision items**
 
-Authored schema:
-- `frozen-baseline.json` — frozen authority/provenance, resolved artifact pointers and authority blockers.
-- `semantic-core.json` — semantic objects, operations, laws and explicit known gaps.
-- `composition-graph.json` — contexts, journey wiring, single-owner composition units and gate references.
-- `gate-b-authority-oracle.json` — independent frozen-authority expectations used only for hostile verification.
+Current truth lives in the three authored schema files plus the authority-derived adversarial oracle:
+- `frozen-baseline.json`
+- `semantic-core.json`
+- `composition-graph.json`
+- `gate-b-authority-oracle.json`
 
-Generated views:
+Generated construction views:
 - `generated/completeness-report.json`
 - `generated/gate-b-construction.json`
 - `generated/GATE_B_CONSTRUCTION.md`
 
-Verification:
-- Stages 1–4
-- `verify-schema-hardening.mjs`
-- `mutation-battery.mjs`
+Current Gate B blockers/decisions are generated, not hidden:
+- `AUTH-J05-GOLDEN-INCOMPLETE`
+- `POLICY-EXPENSE-LOCK-SCOPE`
+- `POLICY-EXPENSE-REVIEW-INVALIDATION`
 
-The schema never authorizes Gate B, production, Product Integrator, protected merge or deployment. Current generated Gate B readiness is intentionally BLOCKED until its explicit authority/product-decision blockers are resolved.
+The accepted Gate A deterministic equal-split behavior is carried as **integration evidence**, not promoted to Golden product law. Gate B renders only Group Home while keeping Position and Activity projections fresh for their later gates.
+
+Older `STAGE_1...STAGE_4` files are historical checkpoints only and are explicitly marked superseded.

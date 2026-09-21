@@ -1046,18 +1046,22 @@
         "canonical_source_identity",
         "meaningful_milestone"
       ],
-      "meaning": "Read-only ChopDot milestone projection over accepted domain truth; technical refresh noise is not user activity.",
+      "meaning": "Read-only ChopDot milestone projection derived from accepted canonical domain truth; technical refresh noise is not user activity. The product schema does not mandate a particular event/outbox implementation.",
       "source_journeys": [
-        "18",
-        "08"
+        "18"
       ],
       "sources": [
         "J18",
-        "APPROVAL_18_v1_1",
-        "J08"
+        "APPROVAL_18_v1_1"
       ],
       "derived_from": [
-        "event.accepted"
+        "expense.expense",
+        "expense.review",
+        "expense.issue",
+        "payment.record",
+        "payment.request",
+        "savings.operation",
+        "group.membership"
       ]
     },
     {
@@ -1303,12 +1307,12 @@
       "domain": "groups_expenses",
       "identity": [
         "expense_id",
-        "event_id"
+        "change_ref"
       ],
       "derived_from": [
-        "event.accepted"
+        "expense.expense"
       ],
-      "meaning": "Read-only history projection showing important accepted changes to an Expense; history does not mutate the Expense.",
+      "meaning": "Read-only implementation-neutral history projection showing important accepted changes to an Expense; the product contract does not require a particular event/outbox storage architecture.",
       "source_journeys": [
         "06"
       ],
@@ -1336,6 +1340,29 @@
         "J06_STATE",
         "J08",
         "J08_DECISION"
+      ]
+    },
+    {
+      "id": "group.recent_item",
+      "name": "GroupRecentItem",
+      "kind": "read_model",
+      "domain": "groups_expenses",
+      "identity": [
+        "group_id",
+        "source_identity",
+        "meaningful_state"
+      ],
+      "derived_from": [
+        "expense.expense",
+        "expense.change_record",
+        "payment.record"
+      ],
+      "meaning": "Group-scoped recent-history projection used by Group Home to answer what happened without depending on the later global Activity journey.",
+      "source_journeys": [
+        "08"
+      ],
+      "sources": [
+        "J08"
       ]
     }
   ],
@@ -1474,21 +1501,17 @@
         "Failed save preserves entered details.",
         "Custom split must conserve the expense total."
       ],
-      "emits": [
-        "event.accepted"
-      ],
       "invalidates": [
         "position.position",
+        "group.recent_item",
         "activity.item",
-        "activity.attention",
-        "expense.change_record"
+        "activity.attention"
       ],
       "law_refs": [
         "LAW-MONEY-01",
         "LAW-EXP-01",
         "LAW-EXP-03",
-        "LAW-EXP-GUARD-01",
-        "LAW-HIST-01"
+        "LAW-EXP-GUARD-01"
       ],
       "guards": [
         "expense.mutation_guard"
@@ -1502,8 +1525,7 @@
         "expense.expense",
         "expense.split",
         "expense.allocation",
-        "expense.receipt",
-        "expense.review"
+        "expense.receipt"
       ],
       "source_journeys": [
         "06"
@@ -1512,15 +1534,13 @@
         "J06"
       ],
       "rules": [
-        "Reuse Journey 05 controls with existing values.",
-        "Only owner/authorized role may edit.",
-        "Review status updates/resets transparently."
-      ],
-      "emits": [
-        "event.accepted"
+        "Reuse Journey 05 fields and controls with values prefilled.",
+        "Only the expense owner or an authorized role may edit.",
+        "An edit that invalidates prior review must make that staleness transparent; the exact triggering edits and resulting review-state transition are an explicit product-decision gap."
       ],
       "invalidates": [
         "position.position",
+        "group.recent_item",
         "activity.item",
         "activity.attention",
         "expense.change_record"
@@ -1531,10 +1551,18 @@
         "LAW-EXP-03",
         "LAW-EXP-02",
         "LAW-EXP-GUARD-01",
-        "LAW-HIST-01"
+        "LAW-EXP-REVIEW-01",
+        "LAW-EXP-HISTORY-01"
       ],
       "guards": [
         "expense.mutation_guard"
+      ],
+      "dependent_state_effects": [
+        {
+          "object": "expense.review",
+          "effect": "prior review must not silently remain presented as current when the edit invalidates that review",
+          "policy_ref": "POLICY-EXPENSE-REVIEW-INVALIDATION"
+        }
       ]
     },
     {
@@ -1556,11 +1584,9 @@
         "Explicit confirmation separate from edit.",
         "Deletion explains/recomputes balance impact."
       ],
-      "emits": [
-        "event.accepted"
-      ],
       "invalidates": [
         "position.position",
+        "group.recent_item",
         "activity.item",
         "activity.attention",
         "expense.change_record"
@@ -1568,7 +1594,7 @@
       "law_refs": [
         "LAW-EXP-02",
         "LAW-EXP-GUARD-01",
-        "LAW-HIST-01"
+        "LAW-EXP-HISTORY-01"
       ],
       "guards": [
         "expense.mutation_guard"
@@ -1591,19 +1617,15 @@
         "Review is distinct from editing.",
         "Looks right resolves the reviewer's review state, not unrelated domain state."
       ],
-      "emits": [
-        "event.accepted"
-      ],
       "invalidates": [
         "position.position",
+        "group.recent_item",
         "activity.item",
-        "activity.attention",
-        "expense.change_record"
+        "activity.attention"
       ],
       "law_refs": [
         "LAW-EXP-02",
-        "LAW-ISSUE-01",
-        "LAW-HIST-01"
+        "LAW-ISSUE-01"
       ]
     },
     {
@@ -1623,19 +1645,15 @@
         "Issue includes reason and optional note.",
         "Only dependent payment items are blocked."
       ],
-      "emits": [
-        "event.accepted"
-      ],
       "invalidates": [
         "position.position",
+        "group.recent_item",
         "activity.item",
-        "activity.attention",
-        "expense.change_record"
+        "activity.attention"
       ],
       "law_refs": [
         "LAW-EXP-02",
-        "LAW-ISSUE-01",
-        "LAW-HIST-01"
+        "LAW-ISSUE-01"
       ]
     },
     {
@@ -1657,19 +1675,15 @@
       "rules": [
         "Journey 07 owns issue resolution status. Owner correction remains Journey 06; a correction does not fabricate reviewer agreement."
       ],
-      "emits": [
-        "event.accepted"
-      ],
       "invalidates": [
         "position.position",
+        "group.recent_item",
         "activity.item",
-        "activity.attention",
-        "expense.change_record"
+        "activity.attention"
       ],
       "law_refs": [
         "LAW-EXP-02",
-        "LAW-ISSUE-01",
-        "LAW-HIST-01"
+        "LAW-ISSUE-01"
       ]
     },
     {
@@ -2327,19 +2341,15 @@
       "changes": [
         "expense.issue"
       ],
-      "emits": [
-        "event.accepted"
-      ],
       "invalidates": [
         "position.position",
+        "group.recent_item",
         "activity.item",
-        "activity.attention",
-        "expense.change_record"
+        "activity.attention"
       ],
       "law_refs": [
         "LAW-EXP-02",
-        "LAW-ISSUE-01",
-        "LAW-HIST-01"
+        "LAW-ISSUE-01"
       ],
       "source_journeys": [
         "07"
@@ -2360,18 +2370,14 @@
       "changes": [
         "expense.issue"
       ],
-      "emits": [
-        "event.accepted"
-      ],
       "invalidates": [
+        "group.recent_item",
         "activity.item",
-        "activity.attention",
-        "expense.change_record"
+        "activity.attention"
       ],
       "law_refs": [
         "LAW-EXP-02",
-        "LAW-ISSUE-01",
-        "LAW-HIST-01"
+        "LAW-ISSUE-01"
       ],
       "source_journeys": [
         "07"
@@ -2416,8 +2422,8 @@
         "expense.review",
         "position.position",
         "group.membership",
-        "activity.item",
-        "activity.attention"
+        "activity.attention",
+        "group.recent_item"
       ],
       "source_journeys": [
         "08"
@@ -2427,7 +2433,8 @@
       ],
       "rules": [
         "Overview-first current group state; navigation does not mutate underlying truth.",
-        "The approved What needs you block derives from AttentionItem and Recent activity derives from ActivityItem; neither may use an independent fake fixture."
+        "What needs you derives from AttentionItem.",
+        "Recent derives from GroupRecentItem rather than an independent fixture or the later J18 Activity screen."
       ]
     },
     {
@@ -2690,7 +2697,13 @@
       "sources": [
         "J06",
         "J07"
-      ]
+      ],
+      "constraint": {
+        "kind": "journey_ownership_separation",
+        "expense_mutation_owner": "06",
+        "review_issue_resolution_owner": "07",
+        "owner_correction_cannot_fabricate_reviewer_agreement": true
+      }
     },
     {
       "id": "LAW-ISSUE-01",
@@ -2703,7 +2716,11 @@
       "sources": [
         "J07",
         "J11"
-      ]
+      ],
+      "constraint": {
+        "kind": "block_dependent_payment_items_only",
+        "dependency_key": "disputed_expense_source_lineage"
+      }
     },
     {
       "id": "LAW-POS-01",
@@ -2715,7 +2732,12 @@
       "sources": [
         "J10",
         "J11"
-      ]
+      ],
+      "constraint": {
+        "kind": "derived_read_model",
+        "direct_mutation": false,
+        "currency_partitioned": true
+      }
     },
     {
       "id": "LAW-PAY-01",
@@ -2844,7 +2866,11 @@
       "rule": "Activity is read-only; unread is not unresolved; notification delivery/read cannot mutate the underlying domain result.",
       "sources": [
         "J18"
-      ]
+      ],
+      "constraint": {
+        "kind": "read_only_projection",
+        "unread_is_not_unresolved": true
+      }
     },
     {
       "id": "LAW-INSIGHT-01",
@@ -3029,14 +3055,31 @@
       "name": "Accepted Expense mutations feed read-only change history",
       "applies_to": [
         "expense.change_record",
-        "event.accepted",
         "expense.expense"
       ],
-      "rule": "Important accepted Expense changes are represented through replay-safe accepted history; Expense history is read-only and replay does not repeat the mutation.",
+      "rule": "Important accepted Expense changes must remain readable as change history without turning history into a mutation surface. The storage mechanism is intentionally unspecified.",
       "sources": [
         "J06",
-        "J06_STATE",
-        "STORAGE_REPLAY"
+        "J06_STATE"
+      ]
+    },
+    {
+      "id": "LAW-EXP-REVIEW-01",
+      "name": "Stale Expense review must not remain current",
+      "applies_to": [
+        "expense.expense",
+        "expense.review"
+      ],
+      "rule": "When an Expense edit makes prior review stale, the product must not continue presenting that prior review as current. Frozen authority does not fully specify which edit classes invalidate review or the exact resulting review status.",
+      "constraint": {
+        "kind": "stale_review_must_not_appear_current",
+        "policy_ref": "POLICY-EXPENSE-REVIEW-INVALIDATION"
+      },
+      "sources": [
+        "J06",
+        "J06_DECISION",
+        "J07",
+        "J07_STATE"
       ]
     }
   ],
@@ -3140,6 +3183,16 @@
       ],
       "statement": "J05's structured-source manifest declares five source slices that are absent from the frozen authority tree.",
       "handling": "Block Gate B Golden-fidelity acceptance until approved bytes are recovered or an explicit authority decision re-scopes the Golden."
+    },
+    {
+      "id": "POLICY-EXPENSE-REVIEW-INVALIDATION",
+      "classification": "requires_product_decision",
+      "journeys": [
+        "06",
+        "07"
+      ],
+      "statement": "Frozen authority establishes that Expense edits may reset/update review and that changed expenses are reviewed again, but it does not fully specify which edit fields invalidate prior review or the exact resulting review-state transition.",
+      "handling": "Do not leave stale review presented as current. Before Gate B implementation acceptance, decide the invalidating edit classes and resulting review-state semantics."
     }
   ]
 }

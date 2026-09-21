@@ -82,7 +82,43 @@
         "deployment_authorized": false,
         "real_identity_or_payment_authorized": false
       },
-      "provenance_caveat": "J05 stylesheet is preview-owned reconstruction; approved Golden HTML is unchanged."
+      "provenance_caveat": "J05 stylesheet is preview-owned reconstruction; approved Golden HTML is unchanged.",
+      "inherited_integration_constraints": [
+        {
+          "id": "GATEA-MONEY-EQUAL-01",
+          "classification": "accepted_gate_a_integration_behavior",
+          "scope": "Gate A common equal-split expense subset inherited by Gate B when expanding expense.create",
+          "rule": "Equal allocation uses canonical integer MoneyV1, unique trimmed participant IDs in stable sorted order, floor division for the base share, deterministic +1 minor-unit remainder assignment to the first stable-sorted IDs, the same currency/exponent partition, and exact conservation.",
+          "constraint": {
+            "kind": "deterministic_equal_allocation",
+            "participant_normalization": [
+              "stringify",
+              "trim",
+              "drop-empty",
+              "deduplicate",
+              "stable-sort"
+            ],
+            "base_rule": "floor(total_minor_units / participant_count)",
+            "remainder_rule": "first-stable-sorted-participant-ids-get-plus-one-minor-unit",
+            "exact_partition": true,
+            "exact_conservation": true
+          },
+          "evidence": [
+            {
+              "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+              "path": "prototypes/integrated-product-preview-v2/money-v1.js",
+              "git_blob": "620e8519adfcbc5869a7c60d59e098f906d9d798",
+              "kind": "accepted_preview_money_contract"
+            },
+            {
+              "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+              "path": "prototypes/integrated-product-preview-v2/exact-money-browser-qa.mjs",
+              "git_blob": "d88acacd6cfbd87834712e15850cde2aca979168",
+              "kind": "accepted_preview_browser_evidence"
+            }
+          ]
+        }
+      ]
     },
     "gate_b": {
       "status": "not_started_by_product_schema",
