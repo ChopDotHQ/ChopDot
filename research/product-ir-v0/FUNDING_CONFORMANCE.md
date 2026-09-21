@@ -86,3 +86,47 @@ No model expansion, persistence support, UI or settlement-execution coverage,
 transaction/concurrency guarantee, autonomous-agent improvement, formal proof,
 or authority to merge or deploy. Any model gaps are findings to bring back for
 review; this experiment does not fix them by redefining product semantics.
+
+## Observed checkpoint — 2026-09-21
+
+**Strict result: NONCONFORMING (exit 1), not an all-green model contract.**
+
+Tested source: `0dc7c656834856a148c3095b030d34981a745753`.
+[GitHub Actions run 35589661201](https://github.com/ChopDotHQ/ChopDot/actions/runs/35589661201),
+job `106300923648`, completed the experiment and preserved its report.
+The workflow failed at the comparison step, with no setup/import failure.
+
+- 16 of 19 cases conformed; the 16 predeclared shared-domain cases all matched.
+- Three coverage diagnostics diverged: D01 negative contribution, D02 outsider
+  beneficiary, and D03 zero contribution. The executable model accepted all
+  three; the implementation rejected them with `FUNDING_AMOUNT`, `SPLIT-001`,
+  and `FUNDING_AMOUNT`, respectively.
+- All six targeted throwaway implementation mutations were detected by
+  previously conforming cases. The unchanged-behavior comment control produced
+  exactly the baseline observations, including the same three divergences.
+
+For C01, funding A 70/B 30 and allocation A 20/B 40/C 40 gives balances
+A +50/B -10/C -40. M01 collapsed attribution and returned A +80/B -40/C -40.
+Both sum to zero; the per-participant comparison caught the incorrect amounts.
+M06 returned A -50/B +10/C +40, also zero-sum, and was detected as well.
+
+D01 exposes missing executable enforcement of the model's already-declared
+nonnegative-Money law. D02 exposes missing executable beneficiary-membership
+constraints. D03 is a contract discrepancy: nonnegative model Money permits a
+zero contribution, while the implementation requires positive funding entries.
+Resolving that discrepancy requires an explicit decision, not weakening code or
+silently treating an empty/zero contributor as a different representation.
+No model policy or implementation rule was changed to remove these findings.
+
+The CI artifact `10634027201` has SHA-256
+`8589a29b1b5b7c7e0ec9fd87d3752fffa91a3fb1b8a6137d9845c66474daa267`.
+The downloaded ZIP digest and every included input file's Git blob/SHA-256 were
+verified. The exact snapshot was rerun on Node `v22.16.0` after CI's
+`v22.23.2`; all baseline observations, mutation observations, summary fields and
+input source hashes matched. Both runs used the real `decimal.js` `10.6.0`.
+Both executions exited 1. This is a same-harness reproduction, not an independent
+implementation or a second independent oracle.
+
+The executable experiment remains at the tested commit above; this section is
+an observation record. The runner, corpus, model and application modules were
+not changed after observing the results. The original repair branch was not moved.
