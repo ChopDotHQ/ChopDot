@@ -430,21 +430,18 @@
       "name": "Expense mutation guard",
       "objects": [
         "expense.mutation_guard",
-        "payment.intent",
-        "payment.settlement_scope",
         "group.group",
         "expense.expense"
       ],
       "preserves": [
-        "current authoritative lock/unlock result",
-        "guard evidence/scope if known"
+        "current authoritative group settlement-in-progress lock state"
       ],
       "laws": [
         "LAW-EXP-GUARD-01",
         "LAW-OP-04"
       ],
       "availability": "resolve_at_effect_time",
-      "note": "This context is an effect-time precondition, not a navigation payload. Its exact settlement dependency scope is a recorded product decision gap."
+      "note": "Effect-time Group guard. Gate B consumes the observable settlement-in-progress state; Gate C later owns how settlement lifecycle produces that state."
     }
   ],
   "journey_projections": [
@@ -1402,7 +1399,9 @@
         "REQ-J06-PERMISSIONS",
         "REQ-J06-RECOVERY",
         "REQ-J07-LANGUAGE",
-        "REQ-J07-ISSUE-LOOP"
+        "REQ-J07-ISSUE-LOOP",
+        "REQ-J05-LOCK",
+        "REQ-J06-REVIEW-RESET"
       ]
     },
     {
@@ -2108,6 +2107,44 @@
         "resolution_owner": "07"
       },
       "sources": [
+        "J07",
+        "J07_STATE"
+      ]
+    },
+    {
+      "id": "REQ-J05-LOCK",
+      "journey": "05",
+      "kind": "effect_guard",
+      "value": {
+        "scope": "group",
+        "locked_when": "settlement_in_progress",
+        "blocked_operations": [
+          "expense.create",
+          "expense.edit",
+          "expense.delete"
+        ],
+        "entered_details_preserved": true
+      },
+      "sources": [
+        "J05",
+        "J05_STATE",
+        "J05_RECOVERED",
+        "J08"
+      ]
+    },
+    {
+      "id": "REQ-J06-REVIEW-RESET",
+      "journey": "06",
+      "kind": "dependent_state_transition",
+      "value": {
+        "on_successful_persisted_edit": "reset_current_reviews_to_needs_review_again",
+        "preserve_review_history": true,
+        "open_issue_requires_j07_resolution": true,
+        "owner_edit_cannot_mark_agreed": true
+      },
+      "sources": [
+        "J06",
+        "J06_STATE",
         "J07",
         "J07_STATE"
       ]
