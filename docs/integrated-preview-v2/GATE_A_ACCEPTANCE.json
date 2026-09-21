@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "gate": "A",
-  "status": "approved-materialized-verification-pending",
-  "gate_a_closed": false,
+  "status": "accepted-materialized-verified",
+  "gate_a_closed": true,
   "repository": "ChopDotHQ/ChopDot",
   "accepted_source": {
     "branch": "review/golden-faithful-v2-gate-a",
@@ -109,7 +109,26 @@
     "real_identity_or_payment_authorized": false
   },
   "resulting_state_verification": {
-    "status": "pending-readback",
-    "method": "Read back this acceptance record; verify exact source/tree and evidence binding; verify unchanged canonical and review references; check for later substantive contradictions. Reuse existing exact-byte browser evidence, not a claimed new run."
+    "status": "pass",
+    "verified_at": "2026-09-21T09:00:38Z",
+    "materialized_record_source_commit": "6d228e10b23781654f5cbee797c8a017a67e8af2",
+    "materialized_record_source_blob": "97d59c04a10ce5bba2e4d7b85bb0b8b17fc2c83f",
+    "method": "Live GitHub readback and exact reference/tree checks, original artifact hash and packaged-source/report validation. Authority-only adoption of the existing reviewed product tree; no new browser execution or runtime candidate.",
+    "checks": {
+      "verbatim_human_approval_matches_supervisor_request": true,
+      "committed_record_matches_prepared_git_blob": true,
+      "accepted_commit_and_tree_match_reviewed_package": true,
+      "review_branch_unchanged_after_materialization": true,
+      "canonical_ux_branch_and_c1_gate_unchanged": true,
+      "original_artifact_hash_and_packaged_source_match": true,
+      "all_three_browser_reports_pass": true,
+      "all_five_exact_source_workflows_success": true,
+      "newer_platform_findings_do_not_reopen_gate_a": true,
+      "no_later_substantive_contradiction_or_competing_transition_found": true,
+      "materialization_diff_is_acceptance_metadata_only": true
+    },
+    "existing_preview_deployment": "dpl_BKy5EnNBs3zhXQjoTunfED5EYZzz",
+    "existing_preview_source_commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+    "next_stage": "Gate B remains separately unauthorized by this approval."
   }
 }
