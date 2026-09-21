@@ -1376,7 +1376,7 @@
       ]
     },
     {
-      "id": "expense.review",
+      "id": "expense.review_agree",
       "name": "Agree with Expense",
       "owner": "expense.review",
       "changes": [
@@ -1818,7 +1818,7 @@
       ]
     },
     {
-      "id": "storage.backup",
+      "id": "storage.create_backup",
       "name": "Create BackupArtifact",
       "owner": "storage.backup",
       "changes": [
