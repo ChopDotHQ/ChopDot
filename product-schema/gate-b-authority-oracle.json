@@ -1,9 +1,108 @@
 {
-  "schema_version": 2,
-  "oracle_id": "gate-b-authority-derived-adversarial-oracle-v2",
+  "schema_version": 3,
+  "oracle_id": "gate-b-authority-derived-adversarial-oracle-v3",
   "authority_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
-  "purpose": "Authority-derived adversarial test oracle. It is not an independent human review and does not outrank the frozen sources. Evidence phrases are verified before schema expectations are asserted.",
+  "purpose": "Authority-derived adversarial test oracle. Evidence phrases/archives and recovered-fingerprint facts are verified before schema expectations are asserted. It does not outrank frozen authority.",
   "assertions": [
+    {
+      "id": "ORACLE-J05-RECOVERED-ARTIFACT",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/05-add-expense/STATE_INVENTORY.md",
+          "git_blob": "e07272c1c79e55e61a7ffac2cae0e2e58396363f",
+          "contains": [
+            "27 explicit prototype states"
+          ]
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/05-add-expense/VISUAL_QA.md",
+          "git_blob": "b3297963ae26de4c654c963b8236b7b83cb474f6",
+          "contains": [
+            "27-state",
+            "98-link"
+          ]
+        },
+        {
+          "path": "product-schema/recovered-evidence/j05-v1-approved-candidate.html",
+          "git_blob": "e98573abc03a9edc224722f32458a1e4c2612e6e",
+          "contains": [
+            "id=\"exact\"",
+            "id=\"shares\"",
+            "id=\"duplicate\"",
+            "id=\"locked\""
+          ]
+        }
+      ],
+      "required": {
+        "authority_recovery": "RECOVERY-J05-GOLDEN-01"
+      }
+    },
+    {
+      "id": "ORACLE-GROUP-SETTLEMENT-LOCK",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/08-group-home/spec.md",
+          "git_blob": "2d5acbbd8d97d885d258bfd92ddeb7ed61a8e49d",
+          "contains": [
+            "The center expense action remains visible except when settlement has locked expense changes.",
+            "Settlement in progress."
+          ]
+        },
+        {
+          "path": "product-schema/recovered-evidence/j05-v1-approved-candidate.html",
+          "git_blob": "e98573abc03a9edc224722f32458a1e4c2612e6e",
+          "contains": [
+            "Expenses are locked.",
+            "Settlement is in progress."
+          ]
+        }
+      ],
+      "required": {
+        "law_constraint": {
+          "law": "LAW-EXP-GUARD-01",
+          "kind": "effect_guard_required",
+          "matches": {
+            "scope": "group"
+          }
+        },
+        "resolved_interpretation": "RESOLVED-EXPENSE-LOCK-01"
+      }
+    },
+    {
+      "id": "ORACLE-REVIEW-RESET",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/source-package-v1.1.zip",
+          "git_blob": "e073ea0717e7621c921056d56945c89bc6c0207e",
+          "archive": "zip_html",
+          "contains": [
+            "Reviews reset",
+            "Everyone can review the update",
+            "Save changes"
+          ]
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/07-review-agree/STATE_INVENTORY.md",
+          "git_blob": "a24f4f4061a037af5862604f867c4b1f8f7fff6e",
+          "contains": [
+            "`changed`",
+            "`reviewed-again`"
+          ]
+        }
+      ],
+      "required": {
+        "law_constraint": {
+          "law": "LAW-EXP-REVIEW-01",
+          "kind": "successful_edit_resets_current_reviews",
+          "matches": {
+            "current_result": "needs_review_again",
+            "preserve_prior_review_history": true,
+            "owner_edit_cannot_resolve_issue": true
+          }
+        },
+        "resolved_interpretation": "RESOLVED-EXPENSE-REVIEW-01"
+      }
+    },
     {
       "id": "ORACLE-J07-RESOLUTION-OWNER",
       "evidence": [
@@ -99,34 +198,6 @@
       }
     },
     {
-      "id": "ORACLE-SETTLEMENT-GUARD",
-      "evidence": [
-        {
-          "path": "prototypes/experience-workbench/journeys/08-group-home/spec.md",
-          "git_blob": "2d5acbbd8d97d885d258bfd92ddeb7ed61a8e49d",
-          "contains": [
-            "except when settlement has locked expense changes"
-          ]
-        },
-        {
-          "path": "prototypes/experience-workbench/journeys/05-add-expense/STATE_INVENTORY.md",
-          "git_blob": "e07272c1c79e55e61a7ffac2cae0e2e58396363f",
-          "contains": [
-            "`locked`"
-          ]
-        }
-      ],
-      "required": {
-        "guard": "expense.mutation_guard",
-        "law": "LAW-EXP-GUARD-01",
-        "operations": [
-          "expense.create",
-          "expense.edit",
-          "expense.delete"
-        ]
-      }
-    },
-    {
       "id": "ORACLE-GROUP-HOME-RECENT",
       "evidence": [
         {
@@ -147,33 +218,6 @@
         "must_not_derive_from": [
           "activity.item"
         ]
-      }
-    },
-    {
-      "id": "ORACLE-REVIEW-INVALIDATION-GAP",
-      "evidence": [
-        {
-          "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/spec.md",
-          "git_blob": "ad17dadbf0b5c98243a7279ec2ceca7e1610abb8",
-          "contains": [
-            "Editing resets or updates review status transparently."
-          ]
-        },
-        {
-          "path": "prototypes/experience-workbench/journeys/07-review-agree/STATE_INVENTORY.md",
-          "git_blob": "a24f4f4061a037af5862604f867c4b1f8f7fff6e",
-          "contains": [
-            "`changed`",
-            "`reviewed-again`"
-          ]
-        }
-      ],
-      "required": {
-        "law_constraint": {
-          "law": "LAW-EXP-REVIEW-01",
-          "kind": "stale_review_must_not_appear_current"
-        },
-        "known_gap": "POLICY-EXPENSE-REVIEW-INVALIDATION"
       }
     },
     {
@@ -268,25 +312,6 @@
           "view.position",
           "view.activity"
         ]
-      }
-    },
-    {
-      "id": "ORACLE-J05-ARTIFACT",
-      "evidence": [
-        {
-          "path": "prototypes/experience-workbench/journeys/05-add-expense/source/README.md",
-          "git_blob": "4be3362789f1265b6fad99690694f35d325cbefd",
-          "contains": [
-            "split-methods.html",
-            "details-receipt.html",
-            "payer-variant.html",
-            "recovery.html",
-            "styles.css"
-          ]
-        }
-      ],
-      "required": {
-        "authority_blocker": "AUTH-J05-GOLDEN-INCOMPLETE"
       }
     }
   ]
