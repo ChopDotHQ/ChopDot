@@ -276,6 +276,11 @@
     "J08_DECISION": {
       "path": "prototypes/experience-workbench/journeys/08-group-home/source/decision-history.md",
       "git_blob": "a9eff37f0ac514ef214cac2533684da5a4067cdf"
+    },
+    "J05_RECOVERED": {
+      "path": "product-schema/recovered-evidence/j05-v1-approved-candidate.html",
+      "git_blob": "e98573abc03a9edc224722f32458a1e4c2612e6e",
+      "classification": "recovered review-session evidence; not frozen product-authority replacement"
     }
   },
   "domains": [
@@ -1328,7 +1333,7 @@
       "kind": "guard",
       "domain": "groups_expenses",
       "identity": [],
-      "meaning": "Effect-time guard that determines whether expense create/edit/delete is currently allowed while settlement-related locking may apply. The exact lock scope is intentionally unresolved.",
+      "meaning": "Group-scoped effect-time guard for Expense create/edit/delete. When the Group is in the approved `settlement in progress` state, expense mutations are locked for that Group.",
       "source_journeys": [
         "05",
         "06",
@@ -1337,6 +1342,7 @@
       "sources": [
         "J05",
         "J05_STATE",
+        "J05_RECOVERED",
         "J06_STATE",
         "J08",
         "J08_DECISION"
@@ -1525,7 +1531,8 @@
         "expense.expense",
         "expense.split",
         "expense.allocation",
-        "expense.receipt"
+        "expense.receipt",
+        "expense.review"
       ],
       "source_journeys": [
         "06"
@@ -1534,9 +1541,10 @@
         "J06"
       ],
       "rules": [
-        "Reuse Journey 05 fields and controls with values prefilled.",
+        "Reuse Journey 05 fields and controls with existing values.",
         "Only the expense owner or an authorized role may edit.",
-        "An edit that invalidates prior review must make that staleness transparent; the exact triggering edits and resulting review-state transition are an explicit product-decision gap."
+        "A successful persisted Expense change resets current prior reviews to needs-review-again while preserving review history.",
+        "An owner edit may answer/correct an issue but cannot itself resolve the reviewer's issue or fabricate agreement."
       ],
       "invalidates": [
         "position.position",
@@ -1560,8 +1568,13 @@
       "dependent_state_effects": [
         {
           "object": "expense.review",
-          "effect": "prior review must not silently remain presented as current when the edit invalidates that review",
-          "policy_ref": "POLICY-EXPENSE-REVIEW-INVALIDATION"
+          "effect": "reset all current prior reviews to needs_review_again after a successful persisted Expense change; preserve prior review history",
+          "law_ref": "LAW-EXP-REVIEW-01"
+        },
+        {
+          "object": "expense.issue",
+          "effect": "open issue remains unresolved until Journey 07 reviewer resolution",
+          "law_ref": "LAW-EXP-02"
         }
       ]
     },
@@ -3030,7 +3043,7 @@
         "payment.intent",
         "payment.settlement_scope"
       ],
-      "rule": "Expense create/edit/delete must evaluate the current mutation guard before effect; a locked result prevents the mutation and preserves user-entered context. The exact settlement dependency scope of the guard is unresolved and must not be invented.",
+      "rule": "While a Group is in the approved `settlement in progress` state, Expense create/edit/delete are locked group-wide. The lock preserves entered context and ends only when the owning settlement flow no longer reports settlement in progress.",
       "constraint": {
         "kind": "effect_guard_required",
         "operations": [
@@ -3039,15 +3052,19 @@
           "expense.delete"
         ],
         "guard": "expense.mutation_guard",
-        "scope_policy": "REQUIRES_PRODUCT_DECISION"
+        "scope": "group",
+        "lock_when": {
+          "group_settlement_state": "in_progress"
+        },
+        "unlock_when": "owning settlement projection no longer reports in_progress"
       },
       "sources": [
         "J05",
         "J05_STATE",
+        "J05_RECOVERED",
         "J06_STATE",
         "J08",
-        "J08_DECISION",
-        "J11"
+        "J08_DECISION"
       ]
     },
     {
@@ -3070,13 +3087,19 @@
         "expense.expense",
         "expense.review"
       ],
-      "rule": "When an Expense edit makes prior review stale, the product must not continue presenting that prior review as current. Frozen authority does not fully specify which edit classes invalidate review or the exact resulting review status.",
+      "rule": "After any successful persisted Expense edit that changes the Expense, all current prior review agreements for that Expense become stale and move to `needs review again` / changed state. Prior review history is preserved. An open issue remains unresolved until Journey 07 records reviewer resolution; the edit itself cannot fabricate agreement.",
       "constraint": {
-        "kind": "stale_review_must_not_appear_current",
-        "policy_ref": "POLICY-EXPENSE-REVIEW-INVALIDATION"
+        "kind": "successful_edit_resets_current_reviews",
+        "trigger": "successful persisted expense edit with a material state change",
+        "affected_reviews": "all current reviews for the expense",
+        "current_result": "needs_review_again",
+        "preserve_prior_review_history": true,
+        "open_issue_resolution": "remains unresolved until Journey 07 reviewer action",
+        "owner_edit_cannot_resolve_issue": true
       },
       "sources": [
         "J06",
+        "J06_STATE",
         "J06_DECISION",
         "J07",
         "J07_STATE"
@@ -3162,37 +3185,56 @@
       ],
       "statement": "Stage 3 composition exposed the missing semantic operation for notification read-state mutation.",
       "handling": "Added notification.set_read_state as a schema-only normalization of already-approved J18 behavior; no product source or runtime code changed."
-    },
+    }
+  ],
+  "resolved_authority_interpretations": [
     {
-      "id": "POLICY-EXPENSE-LOCK-SCOPE",
-      "classification": "requires_product_decision",
-      "journeys": [
-        "05",
-        "06",
-        "08",
-        "11"
-      ],
-      "statement": "Historical J08/J05/J06 behavior includes settlement-related expense mutation locking, while later settlement contracts narrow dependency blocking to affected items. The final mutation-lock scope is not settled by the frozen sources.",
-      "handling": "Represent the guard and enforce fail-closed locked behavior, but do not choose group-wide vs item-scoped lock semantics before an explicit product decision."
-    },
-    {
-      "id": "AUTH-J05-GOLDEN-INCOMPLETE",
-      "classification": "frozen_authority_artifact_incomplete",
+      "id": "RESOLVED-J05-ARTIFACT-01",
+      "status": "resolved_from_recovered_approval_evidence",
       "journeys": [
         "05"
       ],
-      "statement": "J05's structured-source manifest declares five source slices that are absent from the frozen authority tree.",
-      "handling": "Block Gate B Golden-fidelity acceptance until approved bytes are recovered or an explicit authority decision re-scopes the Golden."
+      "rule": "The recovered standalone J05 V1 candidate is the Gate B fidelity artifact because its exact 27-state / 98-link fingerprint and required paths match the frozen approved state inventory and visual-QA record.",
+      "sources": [
+        "J05",
+        "J05_STATE",
+        "J05_RECOVERED"
+      ]
     },
     {
-      "id": "POLICY-EXPENSE-REVIEW-INVALIDATION",
-      "classification": "requires_product_decision",
+      "id": "RESOLVED-EXPENSE-LOCK-01",
+      "status": "resolved_from_frozen_golden_behavior",
+      "journeys": [
+        "05",
+        "06",
+        "08"
+      ],
+      "rule": "Settlement-in-progress is a Group-level expense-mutation lock for create/edit/delete. The later dependent-item dispute rule governs settlement eligibility and does not override this mutation lock.",
+      "sources": [
+        "J05",
+        "J05_STATE",
+        "J05_RECOVERED",
+        "J06_STATE",
+        "J08",
+        "J08_DECISION",
+        "J11"
+      ]
+    },
+    {
+      "id": "RESOLVED-EXPENSE-REVIEW-01",
+      "status": "resolved_from_approved_journey_behavior",
       "journeys": [
         "06",
         "07"
       ],
-      "statement": "Frozen authority establishes that Expense edits may reset/update review and that changed expenses are reviewed again, but it does not fully specify which edit fields invalidate prior review or the exact resulting review-state transition.",
-      "handling": "Do not leave stale review presented as current. Before Gate B implementation acceptance, decide the invalidating edit classes and resulting review-state semantics."
+      "rule": "A successful persisted Expense change resets current prior reviews to needs-review-again while preserving review history; owner correction does not resolve an issue without reviewer action in J07.",
+      "sources": [
+        "J06",
+        "J06_STATE",
+        "J06_DECISION",
+        "J07",
+        "J07_STATE"
+      ]
     }
   ]
 }
