@@ -7,7 +7,7 @@
 
 import { ExpenseRepository, type ExpenseListOptions } from '../repositories/ExpenseRepository';
 import type { Expense } from '../types';
-import { validateLegacyExpenseWrite } from '../../../domain/expenseFunding';
+import { validateLegacyExpenseWrite, hasNativeExpenseFunding } from '../../../domain/expenseFunding';
 import type { CreateExpenseDTO, UpdateExpenseDTO } from '../types/dto';
 import { ValidationError } from '../errors';
 import type { PotRepository } from '../repositories/PotRepository';
@@ -51,10 +51,10 @@ export class ExpenseService {
       if (!dto.amount || dto.amount <= 0) {
         throw new ValidationError('Expense amount must be greater than 0');
       }
-      if (!dto.paidBy || dto.paidBy.trim().length === 0) {
+      if (typeof dto.paidBy !== 'string' || dto.paidBy.trim().length === 0) {
         throw new ValidationError('Paid by is required');
       }
-      if (!dto.memo || dto.memo.trim().length === 0) {
+      if (typeof dto.memo !== 'string' || dto.memo.trim().length === 0) {
         throw new ValidationError('Expense memo is required');
       }
 
@@ -89,10 +89,10 @@ export class ExpenseService {
       if (dto.amount !== undefined && dto.amount <= 0) {
         throw new ValidationError('Expense amount must be greater than 0');
       }
-      if (dto.paidBy !== undefined && dto.paidBy.trim().length === 0) {
+      if (dto.paidBy !== undefined && (typeof dto.paidBy !== 'string' || dto.paidBy.trim().length === 0)) {
         throw new ValidationError('Paid by is required');
       }
-      if (dto.memo !== undefined && dto.memo.trim().length === 0) {
+      if (dto.memo !== undefined && (typeof dto.memo !== 'string' || dto.memo.trim().length === 0)) {
         throw new ValidationError('Expense memo is required');
       }
 
@@ -100,8 +100,11 @@ export class ExpenseService {
       const existing = await this.repository.get(potId, expenseId);
       // Check the original too: an update must not erase native funding in order
       // to sneak a legacy-shaped record through the unsupported storage path.
-      this.assertWritableExpense(existing, pot.members);
-      this.assertWritableExpense({ ...existing, ...dto }, pot.members);
+      if (hasNativeExpenseFunding(existing)) this.assertWritableExpense(existing, pot.members);
+      this.assertWritableExpense({
+        ...existing, ...dto,
+        amount: dto.amount === undefined ? existing.amount : dto.amount,
+      }, pot.members);
 
       const updates: { lastEditAt: string; lastCheckpoint?: undefined } = {
         lastEditAt: new Date().toISOString(),

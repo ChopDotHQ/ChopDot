@@ -7,7 +7,7 @@
 import type { Expense, ExpenseSummary } from '../types';
 import type { CreateExpenseDTO, UpdateExpenseDTO } from '../types/dto';
 import { NotFoundError, ValidationError } from '../errors';
-import { validateLegacyExpenseWrite } from '../../../domain/expenseFunding';
+import { validateLegacyExpenseWrite, hasNativeExpenseFunding } from '../../../domain/expenseFunding';
 
 export interface ExpenseListOptions {
   limit?: number;
@@ -115,7 +115,7 @@ export class ExpenseRepository {
     if (!existing) {
       throw new NotFoundError('Expense', expenseId);
     }
-    assertLegacyWrite(existing);
+    if (hasNativeExpenseFunding(existing)) assertLegacyWrite(existing);
     const updated: Expense = {
       ...existing,
       ...updates,
@@ -124,7 +124,10 @@ export class ExpenseRepository {
     };
     // Do not hide explicitly malformed amount values behind the legacy nullish
     // fallback. Validation sees the full proposed input first.
-    assertLegacyWrite({ ...existing, ...updates });
+    assertLegacyWrite({
+      ...existing, ...updates,
+      amount: updates.amount === undefined ? existing.amount : updates.amount,
+    });
     await this.source.saveExpense(potId, updated);
     this.invalidate(potId);
     return { ...updated };

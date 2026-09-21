@@ -51,13 +51,13 @@ function harness(initial?: Expense) {
 // These tests import the application functions and actual repository/service.
 // Only the external data source is replaced with an explicit in-memory store.
 describe('Funding core: input and attribution regressions', () => {
-  it.each([NaN, Infinity, -Infinity, 0, -20, '70', null])('rejects invalid contribution %s', bad => {
+  it.each([NaN, Infinity, -Infinity, 0, -20, '70', null].map(bad => ({ bad })))('rejects invalid contribution $bad', ({ bad }: { bad: unknown }) => {
     const value = expense({ funding: [{ memberId: 'A', amount: bad }, { memberId: 'B', amount: 30 }] });
     expect(validateExpenseFunding(value, members).success).toBe(false);
     expect(() => computeBalances(pot([value]))).toThrow();
   });
 
-  it.each([[], null, {}, 'legacy'])('never interprets malformed explicit funding as absent: %j', funding => {
+  it.each([[], null, {}, 'legacy'].map(funding => ({ funding })))('never interprets malformed explicit funding as absent: $funding', ({ funding }: { funding: unknown }) => {
     expect(validateExpenseFunding(expense({ funding }), members).success).toBe(false);
   });
 
@@ -135,7 +135,7 @@ describe('Funding core: input and attribution regressions', () => {
 });
 
 describe('Funding core: storage boundaries', () => {
-  it.each([native().funding, []])('rejects native creation before metadata or storage effects', async funding => {
+  it.each([native().funding, []].map(funding => ({ funding })))('rejects native creation before metadata or storage effects', async ({ funding }: { funding: unknown }) => {
     const h = harness();
     const input = expense({ funding }) as CreateExpenseDTO;
     await expect(h.service.addExpense('p1', input)).rejects.toThrow(/FUNDING_WRITE_UNSUPPORTED/);
@@ -188,6 +188,20 @@ describe('Funding core: storage boundaries', () => {
     });
     expect(getExpenseFunding(changed, members)).toEqual([{ memberId: 'A', amount: 120 }]);
     expect(h.saveExpense).toHaveBeenCalledTimes(2);
+  });
+
+  it('allows correction of an invalid legacy allocation instead of trapping the record', async () => {
+    const h = harness(expense({ split: [{ memberId: 'A', amount: 99 }] }));
+    const corrected = await h.service.updateExpense('p1', 'e1', { split: expense().split });
+    expect(corrected.split).toEqual(expense().split);
+    expect(h.saveExpense).toHaveBeenCalledTimes(1);
+  });
+
+  it('treats an undefined optional amount as unchanged', async () => {
+    const h = harness(expense());
+    const changed = await h.service.updateExpense('p1', 'e1', { amount: undefined, memo: 'Updated note' });
+    expect(changed.amount).toBe(100);
+    expect(changed.memo).toBe('Updated note');
   });
 
   it('does not promote a valid native read to permission to persist it', () => {

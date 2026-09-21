@@ -86,7 +86,7 @@ export function getExpenseFunding(value: unknown, memberIds?: readonly string[])
   if (!Array.isArray(expense.funding) || expense.funding.length === 0) {
     throw new ExpenseFundingError('FUNDING_SHAPE', 'Explicit funding must be a non-empty array');
   }
-  const funding = expense.funding.map(value => {
+  const funding = Array.from(expense.funding, value => {
     const entry = object(value);
     if (entry.currency !== undefined && entry.currency !== expense.currency) {
       throw new ExpenseFundingError('FUND-002', 'Contribution currency must match the expense currency');
@@ -121,7 +121,7 @@ export function validateLegacyExpenseWrite(value: unknown, memberIds?: readonly 
     return {
       success: false,
       code: 'FUNDING_WRITE_UNSUPPORTED',
-      error: 'Native funding writes are not supported; no expense was saved',
+      error: 'Native funding writes are not supported by this storage path',
     };
   }
   return validation(() => {
@@ -145,7 +145,7 @@ export function assertExplicitFundingSplit(value: unknown, memberIds?: readonly 
   if (!Array.isArray(expense.split) || expense.split.length === 0) {
     throw new ExpenseFundingError('SPLIT_REQUIRED', 'Native funding requires explicit beneficiary allocations');
   }
-  const allocations = expense.split.map(value => {
+  const allocations = Array.from(expense.split, value => {
     const entry = object(value);
     member(entry.memberId, memberIds, 'SPLIT-001');
     if (entry.currency !== undefined && entry.currency !== expense.currency) {
