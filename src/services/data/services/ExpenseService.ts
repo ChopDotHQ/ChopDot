@@ -1,13 +1,13 @@
 /**
  * Expense Service
- * 
+ *
  * Business logic layer for expenses.
  * Wraps ExpenseRepository with business rules.
  */
 
 import { ExpenseRepository, type ExpenseListOptions } from '../repositories/ExpenseRepository';
 import type { Expense } from '../types';
-import { validateExpenseFunding } from '../../../schema/pot';
+import { validateLegacyExpenseWrite } from '../../../domain/expenseFunding';
 import type { CreateExpenseDTO, UpdateExpenseDTO } from '../types/dto';
 import { ValidationError } from '../errors';
 import type { PotRepository } from '../repositories/PotRepository';
@@ -16,7 +16,7 @@ import type { ExpenseSummary } from '../types';
 
 /**
  * Expense Service
- * 
+ *
  * Provides business logic for expense operations:
  * - Validation
  * - Checkpoint invalidation (when expense added/modified after confirmation)
@@ -30,54 +30,45 @@ export class ExpenseService {
     this.potRepository = potRepository;
   }
 
+  private assertWritableExpense(expense: unknown, members?: readonly { id: string }[]): void {
+    if (!Array.isArray(members)) {
+      throw new ValidationError('Group membership is required before saving an expense');
+    }
+    const validation = validateLegacyExpenseWrite(expense, members.map(member => member.id));
+    if (!validation.success) {
+      throw new ValidationError(`${validation.code}: ${validation.error}`);
+    }
+  }
+
   /**
-   * Add an expense to a pot
-   * 
-   * Invalidates checkpoint if user has confirmed (new expense added after confirmation).
-   * 
-   * @param potId - Pot ID
-   * @param dto - Expense creation data
-   * @returns Created expense
-   * @throws {ValidationError} If input is invalid
-   * @throws {NotFoundError} If pot not found
+   * Add an expense to a pot.
+   * Invalidates checkpoint if user has confirmed.
+   * Native funding is rejected before any metadata or expense write.
    */
   async addExpense(potId: string, dto: CreateExpenseDTO): Promise<Expense> {
     const start = performance.now();
     try {
-      // Validate input
       if (!dto.amount || dto.amount <= 0) {
         throw new ValidationError('Expense amount must be greater than 0');
       }
-
       if (!dto.paidBy || dto.paidBy.trim().length === 0) {
         throw new ValidationError('Paid by is required');
       }
-
       if (!dto.memo || dto.memo.trim().length === 0) {
         throw new ValidationError('Expense memo is required');
       }
 
-      // Get pot to check checkpoint status
       const pot = await this.potRepository.get(potId);
+      this.assertWritableExpense(dto, pot.members);
 
-      const fundingValidation = validateExpenseFunding(dto, pot.members.map((member) => member.id));
-      if (!fundingValidation.success) {
-        throw new ValidationError(fundingValidation.error || 'Invalid expense funding');
-      }
-
-      // Always update lastEditAt
-      // Clear lastCheckpoint if it exists (edit invalidates checkpoint)
       const updates: { lastEditAt: string; lastCheckpoint?: undefined } = {
         lastEditAt: new Date().toISOString(),
       };
-      
       if (pot.lastCheckpoint) {
         updates.lastCheckpoint = undefined;
       }
-
       await this.potRepository.update(potId, updates);
 
-      // Create expense
       const result = await this.repository.create(potId, {
         ...dto,
         currency: dto.currency || pot.baseCurrency,
@@ -91,50 +82,35 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * Update an expense
-   * 
-   * Invalidates checkpoint if user has confirmed (expense modified after confirmation).
-   * 
-   * @param potId - Pot ID
-   * @param expenseId - Expense ID
-   * @param dto - Expense update data
-   * @returns Updated expense
-   * @throws {ValidationError} If input is invalid
-   * @throws {NotFoundError} If pot or expense not found
-   */
+  /** Validate funding and recorded allocations on the complete proposed expense before effects. */
   async updateExpense(potId: string, expenseId: string, dto: UpdateExpenseDTO): Promise<Expense> {
     const start = performance.now();
     try {
-      // Validate input
       if (dto.amount !== undefined && dto.amount <= 0) {
         throw new ValidationError('Expense amount must be greater than 0');
       }
-
       if (dto.paidBy !== undefined && dto.paidBy.trim().length === 0) {
         throw new ValidationError('Paid by is required');
       }
-
       if (dto.memo !== undefined && dto.memo.trim().length === 0) {
         throw new ValidationError('Expense memo is required');
       }
 
-      // Get pot to check checkpoint status
       const pot = await this.potRepository.get(potId);
+      const existing = await this.repository.get(potId, expenseId);
+      // Check the original too: an update must not erase native funding in order
+      // to sneak a legacy-shaped record through the unsupported storage path.
+      this.assertWritableExpense(existing, pot.members);
+      this.assertWritableExpense({ ...existing, ...dto }, pot.members);
 
-      // Always update lastEditAt
-      // Clear lastCheckpoint if it exists (edit invalidates checkpoint)
       const updates: { lastEditAt: string; lastCheckpoint?: undefined } = {
         lastEditAt: new Date().toISOString(),
       };
-      
       if (pot.lastCheckpoint) {
         updates.lastCheckpoint = undefined;
       }
-
       await this.potRepository.update(potId, updates);
 
-      // Update expense
       const result = await this.repository.update(potId, expenseId, dto);
       this.potRepository.invalidate(potId);
       logTiming('updateExpense', performance.now() - start, { potId, expenseId });
@@ -145,13 +121,6 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * List all expenses for a pot
-   * 
-   * @param potId - Pot ID
-   * @returns Array of expenses
-   * @throws {NotFoundError} If pot not found
-   */
   async listExpenses(potId: string, options?: ExpenseListOptions): Promise<Expense[]> {
     return this.repository.list(potId, options);
   }
@@ -163,13 +132,6 @@ export class ExpenseService {
     return this.repository.summaries(potIds, userId);
   }
 
-  /**
-   * Remove an expense
-   * 
-   * @param potId - Pot ID
-   * @param expenseId - Expense ID
-   * @throws {NotFoundError} If pot or expense not found
-   */
   async removeExpense(potId: string, expenseId: string): Promise<void> {
     const start = performance.now();
     try {

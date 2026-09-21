@@ -1,13 +1,13 @@
 /**
  * Expense Repository
- * 
  * Data access layer for expenses (pot-scoped).
  * Handles caching and CRUD operations within a pot.
  */
 
 import type { Expense, ExpenseSummary } from '../types';
 import type { CreateExpenseDTO, UpdateExpenseDTO } from '../types/dto';
-import { NotFoundError } from '../errors';
+import { NotFoundError, ValidationError } from '../errors';
+import { validateLegacyExpenseWrite } from '../../../domain/expenseFunding';
 
 export interface ExpenseListOptions {
   limit?: number;
@@ -30,17 +30,17 @@ interface CacheEntry<T> {
   timestamp: number;
 }
 
-/**
- * Expense Repository
- * 
- * Provides cached access to expense data with TTL.
- * Default TTL: 5 seconds (expenses change frequently).
- * 
- * Note: Expenses are stored within pots, so operations require potId.
- */
+function assertLegacyWrite(value: unknown): void {
+  const validation = validateLegacyExpenseWrite(value);
+  if (!validation.success) {
+    throw new ValidationError(`${validation.code}: ${validation.error}`);
+  }
+}
+
+/** Cached access to expense data. Default TTL: 5 seconds. */
 export class ExpenseRepository {
   private source: ExpenseDataSource;
-  private cache = new Map<string, CacheEntry<Expense[]>>(); // potId -> expenses[]
+  private cache = new Map<string, CacheEntry<Expense[]>>();
   private readonly ttl: number;
   private readonly maxCacheSize: number;
 
@@ -50,10 +50,6 @@ export class ExpenseRepository {
     this.maxCacheSize = maxCacheSize;
   }
 
-  /**
-   * Invalidate cache for a pot's expenses
-   * @param potId - Pot ID to invalidate (undefined = invalidate all)
-   */
   invalidate(potId?: string): void {
     if (potId) {
       this.cache.delete(potId);
@@ -62,13 +58,8 @@ export class ExpenseRepository {
     }
   }
 
-  /**
-   * Get all expenses for a pot
-   * Uses cache if available and not expired
-   */
   async list(potId: string, options?: ExpenseListOptions): Promise<Expense[]> {
     const now = Date.now();
-
     const isFullListRequest = !options || (options.limit === undefined && options.offset === undefined);
     if (isFullListRequest) {
       const cached = this.cache.get(potId);
@@ -78,14 +69,8 @@ export class ExpenseRepository {
     }
 
     const expenses = await this.source.listExpenses(potId, options);
-
-    // Update cache
     if (isFullListRequest) {
-      this.cache.set(potId, {
-        data: expenses,
-        timestamp: now,
-      });
-
+      this.cache.set(potId, { data: expenses, timestamp: now });
       if (this.cache.size > this.maxCacheSize) {
         const entries = Array.from(this.cache.entries());
         entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
@@ -93,26 +78,21 @@ export class ExpenseRepository {
         toRemove.forEach(([id]) => this.cache.delete(id));
       }
     }
-
-    return expenses.map(e => ({ ...e })); // Return copies
+    return expenses.map(e => ({ ...e }));
   }
 
-  /**
-   * Get a single expense by ID
-   */
   async get(potId: string, expenseId: string): Promise<Expense> {
     const expense = await this.source.getExpense(potId, expenseId);
     if (!expense) {
       throw new NotFoundError('Expense', expenseId);
     }
-
     return { ...expense };
   }
 
-  /**
-   * Create a new expense in a pot
-   */
   async create(potId: string, input: CreateExpenseDTO): Promise<Expense> {
+    // Validate before constructing a scalar-payer record. Otherwise funding[]
+    // would be silently omitted from the explicit property mapping below.
+    assertLegacyWrite(input);
     const expense: Expense = {
       id: this.generateExpenseId(),
       potId,
@@ -125,51 +105,40 @@ export class ExpenseRepository {
       attestations: [],
       hasReceipt: input.hasReceipt || false,
     };
-
     await this.source.saveExpense(potId, expense);
-    this.invalidate(potId); // Invalidate cache
-
-    return { ...expense }; // Return copy
+    this.invalidate(potId);
+    return { ...expense };
   }
 
-  /**
-   * Update an existing expense
-   */
   async update(potId: string, expenseId: string, updates: UpdateExpenseDTO): Promise<Expense> {
     const existing = await this.source.getExpense(potId, expenseId);
     if (!existing) {
       throw new NotFoundError('Expense', expenseId);
     }
-
+    assertLegacyWrite(existing);
     const updated: Expense = {
       ...existing,
       ...updates,
-      id: expenseId, // Ensure ID doesn't change
-      amount: updates.amount ?? existing.amount, // Ensure amount is always defined
+      id: expenseId,
+      amount: updates.amount ?? existing.amount,
     };
-
+    // Do not hide explicitly malformed amount values behind the legacy nullish
+    // fallback. Validation sees the full proposed input first.
+    assertLegacyWrite({ ...existing, ...updates });
     await this.source.saveExpense(potId, updated);
-    this.invalidate(potId); // Invalidate cache
-
-    return { ...updated }; // Return copy
+    this.invalidate(potId);
+    return { ...updated };
   }
 
-  /**
-   * Remove an expense
-   */
   async remove(potId: string, expenseId: string): Promise<void> {
     await this.source.deleteExpense(potId, expenseId);
-    this.invalidate(potId); // Invalidate cache
+    this.invalidate(potId);
   }
 
-  async summaries(
-    potIds: string[],
-    userId: string,
-  ): Promise<Record<string, ExpenseSummary>> {
+  async summaries(potIds: string[], userId: string): Promise<Record<string, ExpenseSummary>> {
     if (this.source.getExpenseSummaries) {
       return this.source.getExpenseSummaries(potIds, userId);
     }
-
     const result: Record<string, ExpenseSummary> = {};
     for (const potId of potIds) {
       const expenses = await this.list(potId);
@@ -181,14 +150,8 @@ export class ExpenseRepository {
         const share = (expense.split ?? []).find((split) => split.memberId === userId);
         return sum + (share?.amount || 0);
       }, 0);
-      result[potId] = {
-        potId,
-        totalExpenses,
-        myExpenses,
-        myShare,
-      };
+      result[potId] = { potId, totalExpenses, myExpenses, myShare };
     }
-
     return result;
   }
 
@@ -197,7 +160,6 @@ export class ExpenseRepository {
     if (cryptoObj?.randomUUID) {
       return cryptoObj.randomUUID();
     }
-
     if (cryptoObj && typeof cryptoObj.getRandomValues === 'function') {
       const buf = new Uint8Array(16);
       cryptoObj.getRandomValues(buf);
@@ -210,7 +172,6 @@ export class ExpenseRepository {
       const hex = Array.from(buf, (b) => b.toString(16).padStart(2, '0')).join('');
       return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
     }
-
     return `expense-${Math.random().toString(36).slice(2, 10)}`;
   }
 }

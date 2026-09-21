@@ -5,6 +5,7 @@ import { ValidationError } from '../errors';
 describe('ExpenseService', () => {
   const repository = {
     create: vi.fn(),
+    get: vi.fn(),
     update: vi.fn(),
     list: vi.fn(),
     remove: vi.fn(),
@@ -20,6 +21,7 @@ describe('ExpenseService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    repository.get.mockResolvedValue({ id: 'e1', amount: 10, paidBy: 'owner', memo: 'Lunch' });
   });
 
   it('addExpense validates required fields', async () => {
@@ -30,7 +32,7 @@ describe('ExpenseService', () => {
 
   it('addExpense updates pot metadata and creates expense', async () => {
     const expense = { id: 'e1', amount: 10 };
-    potRepository.get.mockResolvedValue({ id: 'pot-1', lastCheckpoint: { hash: 'h1' } });
+    potRepository.get.mockResolvedValue({ id: 'pot-1', members: [{ id: 'owner' }], lastCheckpoint: { hash: 'h1' } });
     repository.create.mockResolvedValue(expense);
 
     const result = await service.addExpense('pot-1', { amount: 10, paidBy: 'owner', memo: 'Lunch', potId: 'pot-1' } as any);
@@ -45,7 +47,7 @@ describe('ExpenseService', () => {
 
   it('addExpense does not force lastCheckpoint field when no checkpoint exists', async () => {
     const expense = { id: 'e2', amount: 20 };
-    potRepository.get.mockResolvedValue({ id: 'pot-2' });
+    potRepository.get.mockResolvedValue({ id: 'pot-2', members: [{ id: 'owner' }] });
     repository.create.mockResolvedValue(expense);
 
     await service.addExpense('pot-2', { amount: 20, paidBy: 'owner', memo: 'Coffee', potId: 'pot-2' } as any);
@@ -56,7 +58,7 @@ describe('ExpenseService', () => {
   });
 
   it('updateExpense validates, updates metadata, and delegates update', async () => {
-    potRepository.get.mockResolvedValue({ id: 'pot-1', lastCheckpoint: { hash: 'h1' } });
+    potRepository.get.mockResolvedValue({ id: 'pot-1', members: [{ id: 'owner' }], lastCheckpoint: { hash: 'h1' } });
     repository.update.mockResolvedValue({ id: 'e1', amount: 12 });
 
     await expect(service.updateExpense('pot-1', 'e1', { amount: 0 })).rejects.toBeInstanceOf(ValidationError);
@@ -74,5 +76,13 @@ describe('ExpenseService', () => {
     await expect(service.removeExpense('pot-1', 'e1')).resolves.toBeUndefined();
 
     expect(repository.remove).toHaveBeenCalledWith('pot-1', 'e1');
+  });
+
+  it('fails safely without group membership instead of crashing or skipping validation', async () => {
+    potRepository.get.mockResolvedValue({ id: 'pot-1' });
+    await expect(service.addExpense('pot-1', { amount: 10, paidBy: 'owner', memo: 'Lunch', potId: 'pot-1' } as any))
+      .rejects.toThrow('Group membership is required');
+    expect(potRepository.update).not.toHaveBeenCalled();
+    expect(repository.create).not.toHaveBeenCalled();
   });
 });
