@@ -13,8 +13,8 @@ permissions:
   contents: read
 
 jobs:
-  stage-1:
-    name: Verify frozen product inventory
+  schema:
+    name: Verify frozen inventory and semantic core
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -24,3 +24,5 @@ jobs:
           node-version: '22'
       - name: Verify Stage 1 inventory
         run: node product-schema/verify-stage-1.mjs
+      - name: Verify Stage 2 semantic normalization
+        run: node product-schema/verify-stage-2.mjs

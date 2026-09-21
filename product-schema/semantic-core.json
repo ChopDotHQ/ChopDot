@@ -1,0 +1,2718 @@
+{
+  "schema_version": 1,
+  "schema_id": "chopdot-product-schema-v1-semantic-core",
+  "stage": {
+    "id": 2,
+    "name": "Semantic normalization",
+    "status": "complete_candidate"
+  },
+  "frozen_baseline": {
+    "product_authority_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+    "product_authority_tree": "cb424dafedff066fed433e106eb4468bec985d98",
+    "schema_stage_1_commit": "e53edfd51d8ac4f31c618896518ddd66cb2dece3",
+    "rule": "This file normalizes existing approved meaning. It does not create product authority or modify frozen Goldens."
+  },
+  "normalization_rules": [
+    "Use canonical semantic terms for reusable product meaning; keep journey presentation in the Goldens.",
+    "One semantic concept has one canonical owner here; journeys may project it but do not redefine it.",
+    "Registry/approval status outranks stale status prose inside older spec headers.",
+    "Approved contract overlays remain referenced contracts; do not duplicate their full schema into this file.",
+    "Implementation/research behavior cannot upgrade itself into product truth.",
+    "Unknown or deliberately unselected policy remains explicit."
+  ],
+  "sources": {
+    "DESIGN": {
+      "path": "prototypes/experience-workbench/DESIGN_CONTRACT.md",
+      "git_blob": "69311f291cefc0dad7b4994a631193891cbd8ed0"
+    },
+    "PAYMENT_COMPAT": {
+      "path": "prototypes/experience-workbench/docs/PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md",
+      "git_blob": "2a65afd993b797fa6416a025c61ddde46364bec2"
+    },
+    "STORAGE_REPLAY": {
+      "path": "prototypes/experience-workbench/docs/STORAGE_AND_REPLAY_CONTRACT.md",
+      "git_blob": "863239ccbb5f0503cd383c1d38b6352bad210b2d"
+    },
+    "C1_IDENTITY": {
+      "path": "prototypes/experience-workbench/contracts/phase-c1/member-identity.contract.json",
+      "git_blob": "176fdaeb0845e842ff747b597119fb7f7756d918"
+    },
+    "C1_SPEND": {
+      "path": "prototypes/experience-workbench/contracts/phase-c1/spend-intent.contract.json",
+      "git_blob": "d3f66413c0e05ce700ff8305a66bf6a81a51ed18"
+    },
+    "C1_EXECUTION": {
+      "path": "prototypes/experience-workbench/contracts/phase-c1/execution-ownership.acceptance.json",
+      "git_blob": "4b0a382ace4a3a335e0828ec696c69bd807255c0"
+    },
+    "C1_README": {
+      "path": "prototypes/experience-workbench/contracts/phase-c1/README.md",
+      "git_blob": "ea60cded73c5b8fb909d567c9739b13dd290cd42"
+    },
+    "POST_J28": {
+      "path": "prototypes/experience-workbench/shared/POST_J28_PRODUCT_DECISIONS.md",
+      "git_blob": "3663e320c2cbb9354340acfeb622e6da85c4952f"
+    },
+    "J01": {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/spec.md",
+      "git_blob": "30597b1bff8b1d21dc5c4117a28a8de7d05b9bbb"
+    },
+    "J02": {
+      "path": "prototypes/experience-workbench/journeys/02-home-orientation/spec.md",
+      "git_blob": "40f7ff742bd457d6b6f08cf60cb7e386d9bb666c"
+    },
+    "J03": {
+      "path": "prototypes/experience-workbench/journeys/03-create-group/spec.md",
+      "git_blob": "fe2510af9d6fc37cb9e758b2a71f93fb4f95c0d2"
+    },
+    "J04": {
+      "path": "prototypes/experience-workbench/journeys/04-invite-join/spec.md",
+      "git_blob": "a684d616ef14ebf6d38bd7674a9e4b2a75fcad84"
+    },
+    "J05": {
+      "path": "prototypes/experience-workbench/journeys/05-add-expense/spec.md",
+      "git_blob": "e1f91491f7ec83f254a493b24c88f8ebc02813fc"
+    },
+    "J06": {
+      "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/spec.md",
+      "git_blob": "ad17dadbf0b5c98243a7279ec2ceca7e1610abb8"
+    },
+    "J07": {
+      "path": "prototypes/experience-workbench/journeys/07-review-agree/spec.md",
+      "git_blob": "6b4cf633c58b36ff3f55924014d39febd147f3f6"
+    },
+    "J08": {
+      "path": "prototypes/experience-workbench/journeys/08-group-home/spec.md",
+      "git_blob": "2d5acbbd8d97d885d258bfd92ddeb7ed61a8e49d"
+    },
+    "J09": {
+      "path": "prototypes/experience-workbench/journeys/09-manage-people/spec.md",
+      "git_blob": "1438e122385ff5308da39cf49e3473e06f6aa076"
+    },
+    "J10": {
+      "path": "prototypes/experience-workbench/journeys/10-overall-position/spec.md",
+      "git_blob": "ec85055916cf1d337b5b81d871888762b79b2c3f"
+    },
+    "J11": {
+      "path": "prototypes/experience-workbench/journeys/11-settle-up/spec.md",
+      "git_blob": "e26b003318f6e03d3b36401e39b1cacfdbe85fbe"
+    },
+    "J12": {
+      "path": "prototypes/experience-workbench/journeys/12-complete-settlement/spec.md",
+      "git_blob": "342697adfcaf93322f25491c951e7a195d63a801"
+    },
+    "J13": {
+      "path": "prototypes/experience-workbench/journeys/13-request-money/spec.md",
+      "git_blob": "895d065c574a11f8a78bdeb33a1bef42f087efbb"
+    },
+    "J14": {
+      "path": "prototypes/experience-workbench/journeys/14-receive-money/spec.md",
+      "git_blob": "5f3685777754ac37f8dda854be82978afe17cd02"
+    },
+    "J15": {
+      "path": "prototypes/experience-workbench/journeys/15-settlement-history/spec.md",
+      "git_blob": "324147159df2eaaf3e6b3a4595987d9560d3db00"
+    },
+    "J16": {
+      "path": "prototypes/experience-workbench/journeys/16-savings-group/spec.md",
+      "git_blob": "486f35fa5e6f7c183be89c50214751f5993222a4"
+    },
+    "J17": {
+      "path": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/spec.md",
+      "git_blob": "019e30d61cd6c3bb71544925e930b1d3f6575252"
+    },
+    "J18": {
+      "path": "prototypes/experience-workbench/journeys/18-activity-notifications/spec.md",
+      "git_blob": "72f54eed0313b781160532677ef6aa59eca219f6"
+    },
+    "J19": {
+      "path": "prototypes/experience-workbench/journeys/19-insights/spec.md",
+      "git_blob": "0c2024c93a90011c351a6a12a83cfb458b19ee62"
+    },
+    "J20": {
+      "path": "prototypes/experience-workbench/journeys/20-payment-methods/spec.md",
+      "git_blob": "1c6d4987a79b913d453acba4d857d3528176332a"
+    },
+    "J21": {
+      "path": "prototypes/experience-workbench/journeys/21-wallet-crypto/spec.md",
+      "git_blob": "bb7946f0ede140e9a65e15688184a69c388984be"
+    },
+    "J22": {
+      "path": "prototypes/experience-workbench/journeys/22-qr-flows/spec.md",
+      "git_blob": "c3dc891ea13eb5425da216b12d28e399180f6372"
+    },
+    "J23": {
+      "path": "prototypes/experience-workbench/journeys/23-import/spec.md",
+      "git_blob": "f37970f982faf4407a993aa31a2ddd83a24b1c43"
+    },
+    "J24": {
+      "path": "prototypes/experience-workbench/journeys/24-export-portability/spec.md",
+      "git_blob": "337d7596a7873707cf5036a258b8a0d38485760c"
+    },
+    "J25": {
+      "path": "prototypes/experience-workbench/journeys/25-storage-recovery/spec.md",
+      "git_blob": "c803141387125c1e60171de6941b7a5dbcfd2f6c"
+    },
+    "J26": {
+      "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/spec.md",
+      "git_blob": "e72699302eb1c08f20e0edc599b416ee4ceb22dc"
+    },
+    "J27": {
+      "path": "prototypes/experience-workbench/journeys/27-account-preferences/spec.md",
+      "git_blob": "f517c1e2eba8425bdd1f7ff075608b0bb75ad5fc"
+    },
+    "J28": {
+      "path": "prototypes/experience-workbench/journeys/28-failure-recovery/spec.md",
+      "git_blob": "2b64ad78ba66070928561a08d7eb4fbd9f126846"
+    },
+    "APPROVAL_01_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/01-v1.json",
+      "git_blob": "58fbb4b82dae6dd35e6859d2dcbd2204d341c5bf"
+    },
+    "APPROVAL_09_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/09-v1.json",
+      "git_blob": "5e3fe3e378bc1a8035ec8f3215c36cc2bf0853e3"
+    },
+    "APPROVAL_12_v1_1": {
+      "path": "prototypes/experience-workbench/registry/approvals/12-v1.1.json",
+      "git_blob": "845106ef60515c5e1ec59257d3e4fa3e98775d8a"
+    },
+    "APPROVAL_13_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/13-v1.json",
+      "git_blob": "828b56e6d720981dece70043a0c419586db14aa3"
+    },
+    "APPROVAL_14_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/14-v1.json",
+      "git_blob": "19e446e3e2cb0628331bcba86445f3d6e6edf322"
+    },
+    "APPROVAL_15_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/15-v1.json",
+      "git_blob": "748997e0a66130130ac3e77645f9ab03c89f8916"
+    },
+    "APPROVAL_16_v1_2": {
+      "path": "prototypes/experience-workbench/registry/approvals/16-v1.2.json",
+      "git_blob": "7a688d414bfe48f8817019c58f38f632a0d58d66"
+    },
+    "APPROVAL_16_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/16-v1.json",
+      "git_blob": "7ba97f1a25fd1ee74e21a17d30ca5ba2ad2db31b"
+    },
+    "APPROVAL_17_v1_1": {
+      "path": "prototypes/experience-workbench/registry/approvals/17-v1.1.json",
+      "git_blob": "88ceff9b7a0c9acff124ff42a31710e9a0ac93fc"
+    },
+    "APPROVAL_17_v1_4": {
+      "path": "prototypes/experience-workbench/registry/approvals/17-v1.4.json",
+      "git_blob": "715230d3f538b2cf213203688e905bfc086ea64b"
+    },
+    "APPROVAL_18_v1_1": {
+      "path": "prototypes/experience-workbench/registry/approvals/18-v1.1.json",
+      "git_blob": "e80b3a10a93c5d916b734bbb8247662b2875990a"
+    },
+    "APPROVAL_19_v1_1": {
+      "path": "prototypes/experience-workbench/registry/approvals/19-v1.1.json",
+      "git_blob": "c60feff25f9e14de4060f3124277c91b4092f2c0"
+    },
+    "APPROVAL_20_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/20-v1.json",
+      "git_blob": "ae8131bd76e005aea7589e9dfa2c3f92bc36e061"
+    },
+    "APPROVAL_21_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/21-v1.json",
+      "git_blob": "00d5889a56ee90ed1c83aff52e53b06b9729a1c3"
+    },
+    "APPROVAL_22_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/22-v1.json",
+      "git_blob": "edb4d98153b95a61f404d241d2d31a56f864f787"
+    },
+    "APPROVAL_23_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/23-v1.json",
+      "git_blob": "84d56a6468ba9e96355f2f5dab3ed03468e66b18"
+    },
+    "APPROVAL_24_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/24-v1.json",
+      "git_blob": "0e5ad13390e0eac3cd40cb5daa80951f86dc4428"
+    },
+    "APPROVAL_25_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/25-v1.json",
+      "git_blob": "deaa2fb50ff1acd3cf52c24f1ff6a0032ea3c471"
+    },
+    "APPROVAL_26_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/26-v1.json",
+      "git_blob": "4cf5b158976dfab639200b1aa529f68694f88db5"
+    },
+    "APPROVAL_27_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/27-v1.json",
+      "git_blob": "f6c3dcf811859ca2a0ed943ea21c29e35c4942d7"
+    },
+    "APPROVAL_28_v1": {
+      "path": "prototypes/experience-workbench/registry/approvals/28-v1.json",
+      "git_blob": "0f3c220bf596b8708e52b61b867a601b1bbf775c"
+    }
+  },
+  "domains": [
+    {
+      "id": "identity_access",
+      "name": "Identity & access"
+    },
+    {
+      "id": "money",
+      "name": "Exact money"
+    },
+    {
+      "id": "cross_cutting",
+      "name": "Cross-cutting operation truth & recovery"
+    },
+    {
+      "id": "groups_expenses",
+      "name": "Groups, expenses, review & position"
+    },
+    {
+      "id": "payments",
+      "name": "Settlement, requests, destinations & wallet"
+    },
+    {
+      "id": "spend",
+      "name": "Pre/during-purchase spend"
+    },
+    {
+      "id": "savings",
+      "name": "Savings coordination"
+    },
+    {
+      "id": "activity_history",
+      "name": "Activity, history & insights"
+    },
+    {
+      "id": "portability_storage",
+      "name": "Import, export, backup & restore"
+    },
+    {
+      "id": "account_preferences",
+      "name": "Account presentation & preferences"
+    }
+  ],
+  "objects": [
+    {
+      "id": "identity.participant",
+      "name": "Participant",
+      "kind": "entity",
+      "domain": "identity_access",
+      "identity": [
+        "group_id",
+        "participant_id"
+      ],
+      "meaning": "Durable group-scoped ledger identity for a person participating in a ChopDot group; may exist without a full account and survives later account linking.",
+      "owns": [
+        "stable group-scoped ledger reference",
+        "historical expense/split/history attribution"
+      ],
+      "does_not_own": [
+        "cross-group account identity",
+        "payment authority",
+        "wallet authority"
+      ],
+      "source_journeys": [
+        "01",
+        "04",
+        "09",
+        "24",
+        "25",
+        "27"
+      ],
+      "sources": [
+        "C1_IDENTITY",
+        "POST_J28"
+      ]
+    },
+    {
+      "id": "identity.account",
+      "name": "AccountIdentity",
+      "kind": "entity",
+      "domain": "identity_access",
+      "identity": [
+        "account_identity_ref"
+      ],
+      "meaning": "Account-backed identity context that may enrich a Participant after verified binding without replacing the Participant.",
+      "owns": [
+        "account-backed capability context"
+      ],
+      "does_not_own": [
+        "group-visible durable participant identity"
+      ],
+      "source_journeys": [
+        "01",
+        "27"
+      ],
+      "sources": [
+        "C1_IDENTITY",
+        "POST_J28",
+        "J01",
+        "J27"
+      ]
+    },
+    {
+      "id": "identity.session",
+      "name": "Session",
+      "kind": "entity",
+      "domain": "identity_access",
+      "identity": [
+        "session_id"
+      ],
+      "meaning": "Current authenticated/account entry context. Signing in and joining a group remain separate acts; sign-out does not erase product history.",
+      "source_journeys": [
+        "01",
+        "27"
+      ],
+      "sources": [
+        "J01",
+        "J27"
+      ]
+    },
+    {
+      "id": "identity.guest_capability",
+      "name": "GuestCapability",
+      "kind": "contract_primitive",
+      "domain": "identity_access",
+      "identity": [
+        "group_id",
+        "participant_id",
+        "capability_id",
+        "capability_version",
+        "policy_version"
+      ],
+      "meaning": "Least-authority participant-controlled group-scoped mutation capability for a guest Participant.",
+      "source_journeys": [
+        "01",
+        "04",
+        "09",
+        "24",
+        "25",
+        "27"
+      ],
+      "sources": [
+        "C1_IDENTITY",
+        "C1_README"
+      ]
+    },
+    {
+      "id": "group.membership",
+      "name": "GroupMembership",
+      "kind": "entity",
+      "domain": "identity_access",
+      "identity": [
+        "group_id",
+        "participant_id"
+      ],
+      "meaning": "Current access/role relationship between a Participant and Group. Changing access never rewrites historical ledger attribution or other memberships.",
+      "source_journeys": [
+        "04",
+        "08",
+        "09",
+        "26"
+      ],
+      "sources": [
+        "J04",
+        "J08",
+        "J09",
+        "J26",
+        "C1_IDENTITY"
+      ]
+    },
+    {
+      "id": "group.invitation",
+      "name": "Invitation",
+      "kind": "entity",
+      "domain": "identity_access",
+      "identity": [
+        "invite_id"
+      ],
+      "meaning": "Invitation context that can survive entry interruptions and, after explicit consent and valid authority, lead to group membership.",
+      "source_journeys": [
+        "01",
+        "04"
+      ],
+      "sources": [
+        "J01",
+        "J04"
+      ]
+    },
+    {
+      "id": "money.money_v1",
+      "name": "MoneyV1",
+      "kind": "value_object",
+      "domain": "money",
+      "identity": [
+        "minorUnits",
+        "currency",
+        "exponent"
+      ],
+      "meaning": "Canonical exact-money partition used for financial conservation: integer minor units plus currency and exponent. Display decimals are not authoritative.",
+      "source_journeys": [
+        "05",
+        "10",
+        "11",
+        "12",
+        "13",
+        "16",
+        "17",
+        "18",
+        "19",
+        "23",
+        "24"
+      ],
+      "sources": [
+        "C1_SPEND",
+        "C1_README",
+        "J11",
+        "J12"
+      ]
+    },
+    {
+      "id": "operation.identity",
+      "name": "OperationIdentity",
+      "kind": "value_object",
+      "domain": "cross_cutting",
+      "identity": [
+        "operation_id"
+      ],
+      "meaning": "Stable logical identity for a potentially effectful operation; possible-effect uncertainty remains bound to the same identity until reconciled.",
+      "source_journeys": [
+        "11",
+        "12",
+        "13",
+        "14",
+        "17",
+        "20",
+        "21",
+        "24",
+        "26",
+        "27",
+        "28"
+      ],
+      "sources": [
+        "J11",
+        "J12",
+        "J13",
+        "J14",
+        "J17",
+        "J20",
+        "J21",
+        "J24",
+        "J26",
+        "J27",
+        "J28",
+        "STORAGE_REPLAY"
+      ]
+    },
+    {
+      "id": "operation.outcome",
+      "name": "OperationOutcome",
+      "kind": "value_object",
+      "domain": "cross_cutting",
+      "identity": [],
+      "meaning": "Truth classification for an operation such as pending, verified success, verified no-effect failure, unknown, partial, cancelled or reversed. Domain operations may refine the state vocabulary.",
+      "source_journeys": [
+        "11",
+        "12",
+        "13",
+        "14",
+        "17",
+        "20",
+        "21",
+        "24",
+        "25",
+        "26",
+        "27",
+        "28"
+      ],
+      "sources": [
+        "J28",
+        "STORAGE_REPLAY"
+      ]
+    },
+    {
+      "id": "group.group",
+      "name": "Group",
+      "kind": "entity",
+      "domain": "groups_expenses",
+      "identity": [
+        "group_id"
+      ],
+      "meaning": "Stable shared workspace identity with display/configuration state, membership and lifecycle. Rename/archive/leave/delete do not silently rewrite ledger truth.",
+      "source_journeys": [
+        "02",
+        "03",
+        "04",
+        "08",
+        "09",
+        "26"
+      ],
+      "sources": [
+        "J02",
+        "J03",
+        "J04",
+        "J08",
+        "J09",
+        "J26"
+      ]
+    },
+    {
+      "id": "expense.expense",
+      "name": "Expense",
+      "kind": "entity",
+      "domain": "groups_expenses",
+      "identity": [
+        "expense_id"
+      ],
+      "meaning": "Recorded shared cost in a Group with exact amount/currency, description, payer, participants/split, date and optional receipt/history.",
+      "source_journeys": [
+        "05",
+        "06",
+        "07",
+        "08",
+        "10",
+        "18",
+        "24"
+      ],
+      "sources": [
+        "J05",
+        "J06",
+        "J07",
+        "J08",
+        "J10",
+        "J18",
+        "J24"
+      ]
+    },
+    {
+      "id": "expense.split",
+      "name": "Split",
+      "kind": "value_object",
+      "domain": "groups_expenses",
+      "identity": [],
+      "meaning": "Beneficiary allocation of an Expense across selected Participants using Equal, Exact or Shares semantics; custom totals must conserve the Expense amount.",
+      "source_journeys": [
+        "05",
+        "06",
+        "07"
+      ],
+      "sources": [
+        "J05",
+        "J06",
+        "C1_IDENTITY"
+      ]
+    },
+    {
+      "id": "expense.review",
+      "name": "ExpenseReview",
+      "kind": "entity",
+      "domain": "groups_expenses",
+      "identity": [
+        "expense_id",
+        "reviewer_participant_id"
+      ],
+      "meaning": "A Participant's review state for an Expense, distinct from editing the Expense itself.",
+      "source_journeys": [
+        "06",
+        "07",
+        "08",
+        "18"
+      ],
+      "sources": [
+        "J06",
+        "J07",
+        "J08",
+        "J18"
+      ]
+    },
+    {
+      "id": "expense.issue",
+      "name": "ExpenseIssue",
+      "kind": "entity",
+      "domain": "groups_expenses",
+      "identity": [
+        "issue_id"
+      ],
+      "meaning": "Narrowly scoped question/dispute attached to an Expense with reason, optional note and resolution state. Only dependent payment items are blocked.",
+      "source_journeys": [
+        "07",
+        "10",
+        "11",
+        "18",
+        "28"
+      ],
+      "sources": [
+        "J07",
+        "J11",
+        "J18"
+      ]
+    },
+    {
+      "id": "position.position",
+      "name": "Position",
+      "kind": "read_model",
+      "domain": "groups_expenses",
+      "identity": [
+        "participant_pair_or_group",
+        "currency"
+      ],
+      "meaning": "Derived financial position showing what is owed/owing with currency separation and source lineage. It is read-only product truth derived from underlying records.",
+      "source_journeys": [
+        "02",
+        "08",
+        "10",
+        "11",
+        "13"
+      ],
+      "sources": [
+        "J02",
+        "J08",
+        "J10",
+        "J11",
+        "J13"
+      ]
+    },
+    {
+      "id": "payment.settlement_scope",
+      "name": "SettlementScope",
+      "kind": "value_object",
+      "domain": "payments",
+      "identity": [
+        "payer",
+        "recipient",
+        "currency",
+        "source_item_ids"
+      ],
+      "meaning": "Canonical exact settlement scope: payer, recipient, amount, one currency, source groups/items, selected method, expiry and idempotency identity.",
+      "source_journeys": [
+        "10",
+        "11",
+        "12",
+        "15"
+      ],
+      "sources": [
+        "J11",
+        "PAYMENT_COMPAT"
+      ]
+    },
+    {
+      "id": "payment.intent",
+      "name": "PaymentIntent",
+      "kind": "entity",
+      "domain": "payments",
+      "identity": [
+        "payment_id",
+        "idempotency_key"
+      ],
+      "meaning": "Typed settlement lifecycle for an already-existing obligation. Preparing/authorizing a payment is distinct from execution, receipt and closure.",
+      "source_journeys": [
+        "11",
+        "12",
+        "15",
+        "18",
+        "28"
+      ],
+      "sources": [
+        "J11",
+        "J12",
+        "PAYMENT_COMPAT",
+        "STORAGE_REPLAY"
+      ]
+    },
+    {
+      "id": "payment.record",
+      "name": "PaymentRecord",
+      "kind": "entity",
+      "domain": "payments",
+      "identity": [
+        "payment_id"
+      ],
+      "meaning": "Stable user-readable payment record and lifecycle timeline for one payment identity; history is read-only and does not re-execute payment effects.",
+      "source_journeys": [
+        "12",
+        "15",
+        "18",
+        "24"
+      ],
+      "sources": [
+        "J12",
+        "J15",
+        "STORAGE_REPLAY"
+      ]
+    },
+    {
+      "id": "payment.request",
+      "name": "PaymentRequest",
+      "kind": "entity",
+      "domain": "payments",
+      "identity": [
+        "request_id",
+        "command_id"
+      ],
+      "meaning": "Private request for an exact initiating balance/source scope. Request creation, delivery and payment are separate truths.",
+      "source_journeys": [
+        "09",
+        "10",
+        "13",
+        "18"
+      ],
+      "sources": [
+        "J13"
+      ]
+    },
+    {
+      "id": "payment.destination",
+      "name": "PaymentDestination",
+      "kind": "entity",
+      "domain": "payments",
+      "identity": [
+        "destination_id",
+        "destination_version"
+      ],
+      "meaning": "Saved receiving/payment destination and compatibility-scoped preference. It is not payment authority or a connected signing wallet.",
+      "source_journeys": [
+        "09",
+        "14",
+        "20",
+        "21",
+        "27"
+      ],
+      "sources": [
+        "J20",
+        "APPROVAL_20_v1",
+        "PAYMENT_COMPAT"
+      ]
+    },
+    {
+      "id": "payment.receiving_share",
+      "name": "ReceivingShare",
+      "kind": "entity",
+      "domain": "payments",
+      "identity": [
+        "share_id",
+        "command_id"
+      ],
+      "meaning": "Recipient-scoped, deliberate disclosure of receiving details. Prepared/shared/copy states never imply payment receipt or settlement.",
+      "source_journeys": [
+        "14",
+        "18",
+        "20",
+        "22"
+      ],
+      "sources": [
+        "J14"
+      ]
+    },
+    {
+      "id": "wallet.session",
+      "name": "WalletSession",
+      "kind": "entity",
+      "domain": "payments",
+      "identity": [
+        "wallet_session_id"
+      ],
+      "meaning": "Connected execution capability with current account/network context. Connection is not saved destination, public profile, or permission to move arbitrary funds.",
+      "source_journeys": [
+        "11",
+        "17",
+        "21",
+        "27"
+      ],
+      "sources": [
+        "J21",
+        "APPROVAL_21_v1",
+        "PAYMENT_COMPAT"
+      ]
+    },
+    {
+      "id": "wallet.action",
+      "name": "WalletAction",
+      "kind": "entity",
+      "domain": "payments",
+      "identity": [
+        "operation_id"
+      ],
+      "meaning": "Exact action contract received from an owning ChopDot journey through signature, submission, unknown/reconciliation and finality states.",
+      "source_journeys": [
+        "11",
+        "12",
+        "17",
+        "21",
+        "28"
+      ],
+      "sources": [
+        "J21",
+        "APPROVAL_21_v1"
+      ]
+    },
+    {
+      "id": "qr.payload",
+      "name": "QRPayload",
+      "kind": "contract_primitive",
+      "domain": "payments",
+      "identity": [],
+      "meaning": "Transport representation only. A QR payload cannot itself join a group, execute payment, disclose raw receiving secrets, create wallet authority or substitute settlement context; the owner journey revalidates it.",
+      "source_journeys": [
+        "04",
+        "14",
+        "22"
+      ],
+      "sources": [
+        "J22",
+        "APPROVAL_22_v1"
+      ]
+    },
+    {
+      "id": "spend.intent",
+      "name": "SpendIntent",
+      "kind": "entity",
+      "domain": "spend",
+      "identity": [
+        "spend_intent_id",
+        "operation_id"
+      ],
+      "meaning": "Rail-neutral coordination of value before/during a purchase. Separate economic domain from PaymentIntent; authorization is not spend.",
+      "source_journeys": [],
+      "sources": [
+        "C1_SPEND",
+        "POST_J28"
+      ]
+    },
+    {
+      "id": "spend.effect",
+      "name": "SpendEffect",
+      "kind": "entity",
+      "domain": "spend",
+      "identity": [
+        "effect_id",
+        "authoritative_effect_ref"
+      ],
+      "meaning": "Proof-backed capture/partial/refund/reversal effect on a SpendIntent lineage. Canonical expense/obligation materialization occurs exactly once from accepted effects.",
+      "source_journeys": [],
+      "sources": [
+        "C1_SPEND",
+        "C1_EXECUTION",
+        "C1_README"
+      ]
+    },
+    {
+      "id": "savings.group",
+      "name": "SavingsGroup",
+      "kind": "entity",
+      "domain": "savings",
+      "identity": [
+        "group_id"
+      ],
+      "meaning": "Shared savings coordination context with one exact currency/asset, explicit control/custody model, confirmed Available amount and goal progress.",
+      "source_journeys": [
+        "16",
+        "17"
+      ],
+      "sources": [
+        "J16",
+        "APPROVAL_16_v1_2",
+        "J17"
+      ]
+    },
+    {
+      "id": "savings.position",
+      "name": "SavingsPosition",
+      "kind": "entity",
+      "domain": "savings",
+      "identity": [
+        "group_id",
+        "participant_id",
+        "money_partition"
+      ],
+      "meaning": "Participant-owned confirmed savings position. Planned/self-reported/pending money does not increase confirmed Available.",
+      "source_journeys": [
+        "16",
+        "17"
+      ],
+      "sources": [
+        "J16",
+        "J17",
+        "APPROVAL_16_v1_2"
+      ]
+    },
+    {
+      "id": "savings.operation",
+      "name": "SavingsOperation",
+      "kind": "entity",
+      "domain": "savings",
+      "identity": [
+        "operation_id"
+      ],
+      "meaning": "Exact scoped contribution or withdrawal with actor, group, amount/asset, control model, source version and recoverable outcome.",
+      "source_journeys": [
+        "17",
+        "28"
+      ],
+      "sources": [
+        "J17",
+        "APPROVAL_17_v1_4"
+      ]
+    },
+    {
+      "id": "event.accepted",
+      "name": "AcceptedEvent",
+      "kind": "contract_primitive",
+      "domain": "activity_history",
+      "identity": [
+        "event_id",
+        "stream_version"
+      ],
+      "meaning": "Accepted durable domain event/history fact used to rebuild projections; replay is side-effect free.",
+      "source_journeys": [
+        "11",
+        "12",
+        "15",
+        "18",
+        "28"
+      ],
+      "sources": [
+        "STORAGE_REPLAY",
+        "J11",
+        "J18"
+      ]
+    },
+    {
+      "id": "event.outbox",
+      "name": "DurableOutboxEntry",
+      "kind": "contract_primitive",
+      "domain": "activity_history",
+      "identity": [
+        "event_id"
+      ],
+      "meaning": "Durable delivery companion accepted with the event in one durability boundary; delivery may retry while consumers deduplicate.",
+      "source_journeys": [
+        "11",
+        "12",
+        "18",
+        "28"
+      ],
+      "sources": [
+        "STORAGE_REPLAY",
+        "J11"
+      ]
+    },
+    {
+      "id": "activity.item",
+      "name": "ActivityItem",
+      "kind": "read_model",
+      "domain": "activity_history",
+      "identity": [
+        "canonical_source_identity",
+        "meaningful_milestone"
+      ],
+      "meaning": "Read-only ChopDot milestone projection over accepted domain truth; technical refresh noise is not user activity.",
+      "source_journeys": [
+        "18"
+      ],
+      "sources": [
+        "J18",
+        "APPROVAL_18_v1_1"
+      ]
+    },
+    {
+      "id": "activity.attention",
+      "name": "AttentionItem",
+      "kind": "read_model",
+      "domain": "activity_history",
+      "identity": [
+        "owner_object_identity",
+        "required_action"
+      ],
+      "meaning": "Derived unresolved user task kept separate from chronology and notification unread state.",
+      "source_journeys": [
+        "02",
+        "07",
+        "18"
+      ],
+      "sources": [
+        "J02",
+        "J07",
+        "J18",
+        "APPROVAL_18_v1_1"
+      ]
+    },
+    {
+      "id": "notification.delivery",
+      "name": "NotificationDelivery",
+      "kind": "entity",
+      "domain": "activity_history",
+      "identity": [
+        "notification_id",
+        "recipient_participant_or_account"
+      ],
+      "meaning": "Recipient-scoped snapshot/copy with read/unread metadata. Delivery/read state is never underlying domain authority.",
+      "source_journeys": [
+        "18",
+        "27"
+      ],
+      "sources": [
+        "J18",
+        "APPROVAL_18_v1_1",
+        "J27"
+      ]
+    },
+    {
+      "id": "insight.view",
+      "name": "Insight",
+      "kind": "read_model",
+      "domain": "activity_history",
+      "identity": [
+        "viewer_scope",
+        "period",
+        "money_partition"
+      ],
+      "meaning": "Read-only derived pattern over currently authorized accepted records; exact assets remain separate and incomplete windows suppress misleading comparisons.",
+      "source_journeys": [
+        "19"
+      ],
+      "sources": [
+        "J19",
+        "APPROVAL_19_v1_1"
+      ]
+    },
+    {
+      "id": "portability.import_operation",
+      "name": "ImportOperation",
+      "kind": "entity",
+      "domain": "portability_storage",
+      "identity": [
+        "operation_id"
+      ],
+      "meaning": "Preview-before-write import of external data into one new Group; no existing-group auto-merge, name-only identity linking or silent money guessing.",
+      "source_journeys": [
+        "23",
+        "28"
+      ],
+      "sources": [
+        "J23",
+        "APPROVAL_23_v1"
+      ]
+    },
+    {
+      "id": "portability.export_operation",
+      "name": "ExportOperation",
+      "kind": "entity",
+      "domain": "portability_storage",
+      "identity": [
+        "operation_id"
+      ],
+      "meaning": "Read/copy-only export bound to exact scope, source snapshot/version, package schema and destination intent; artifact creation is separate from delivery.",
+      "source_journeys": [
+        "24",
+        "28"
+      ],
+      "sources": [
+        "J24",
+        "APPROVAL_24_v1"
+      ]
+    },
+    {
+      "id": "portability.export_artifact",
+      "name": "ExportArtifact",
+      "kind": "entity",
+      "domain": "portability_storage",
+      "identity": [
+        "artifact_id",
+        "operation_id"
+      ],
+      "meaning": "Portable package preserving stable IDs, money/status semantics and explicit ambiguity while excluding secrets/executable authority.",
+      "source_journeys": [
+        "24"
+      ],
+      "sources": [
+        "J24",
+        "APPROVAL_24_v1",
+        "C1_IDENTITY"
+      ]
+    },
+    {
+      "id": "storage.backup",
+      "name": "BackupArtifact",
+      "kind": "entity",
+      "domain": "portability_storage",
+      "identity": [
+        "backup_id",
+        "snapshot_identity"
+      ],
+      "meaning": "Backup is distinct from the local working copy; it excludes secrets/executable authority and its checksum proves byte integrity only.",
+      "source_journeys": [
+        "25"
+      ],
+      "sources": [
+        "J25",
+        "APPROVAL_25_v1"
+      ]
+    },
+    {
+      "id": "storage.restore_operation",
+      "name": "RestoreOperation",
+      "kind": "entity",
+      "domain": "portability_storage",
+      "identity": [
+        "operation_id"
+      ],
+      "meaning": "Preview-before-mutation restore/recovery operation that preserves identity ambiguity and newer current facts and reconciles unknown outcomes before retry.",
+      "source_journeys": [
+        "25",
+        "28"
+      ],
+      "sources": [
+        "J25",
+        "APPROVAL_25_v1"
+      ]
+    },
+    {
+      "id": "account.preferences",
+      "name": "AccountPreferences",
+      "kind": "entity",
+      "domain": "account_preferences",
+      "identity": [
+        "account_identity_ref"
+      ],
+      "meaning": "ChopDot profile presentation, notification preference and appearance preference. Draft/preview state is reversible and UI preference is not external/system/payment authority.",
+      "source_journeys": [
+        "27"
+      ],
+      "sources": [
+        "J27"
+      ]
+    },
+    {
+      "id": "recovery.context",
+      "name": "RecoveryContext",
+      "kind": "contract_primitive",
+      "domain": "cross_cutting",
+      "identity": [
+        "owner_journey",
+        "operation_id_or_state_identity"
+      ],
+      "meaning": "Shared recovery interaction context preserving the original owner and operation/state identity; recovery coordinates truth but does not own the underlying domain result.",
+      "source_journeys": [
+        "28"
+      ],
+      "sources": [
+        "J28"
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "id": "session.enter",
+      "name": "Enter / authenticate",
+      "owner": "identity.session",
+      "changes": [
+        "identity.session"
+      ],
+      "source_journeys": [
+        "01"
+      ],
+      "sources": [
+        "J01"
+      ],
+      "rules": [
+        "Sign-in preserves original destination/invite context.",
+        "Sign-in does not join a group or authorize payment."
+      ]
+    },
+    {
+      "id": "participant.link_account",
+      "name": "Link Participant to account",
+      "owner": "identity.participant",
+      "changes": [
+        "identity.participant",
+        "identity.account"
+      ],
+      "source_journeys": [
+        "01",
+        "04",
+        "27"
+      ],
+      "sources": [
+        "C1_IDENTITY",
+        "POST_J28"
+      ],
+      "rules": [
+        "Preserve participant_id and historical references.",
+        "Binding is staged; mismatch/collision remains unresolved.",
+        "Account-only capabilities appear only after durable verified binding."
+      ]
+    },
+    {
+      "id": "group.create",
+      "name": "Create Group",
+      "owner": "group.group",
+      "changes": [
+        "group.group"
+      ],
+      "source_journeys": [
+        "03"
+      ],
+      "sources": [
+        "J03"
+      ],
+      "rules": [
+        "Create with minimum necessary decisions; savings remains a separate product path."
+      ]
+    },
+    {
+      "id": "group.invite",
+      "name": "Create/share invitation",
+      "owner": "group.invitation",
+      "changes": [
+        "group.invitation"
+      ],
+      "source_journeys": [
+        "04"
+      ],
+      "sources": [
+        "J04"
+      ],
+      "rules": [
+        "Invitation context and join authority remain distinct from sign-in."
+      ]
+    },
+    {
+      "id": "group.join",
+      "name": "Join Group",
+      "owner": "group.membership",
+      "changes": [
+        "group.membership"
+      ],
+      "source_journeys": [
+        "04"
+      ],
+      "sources": [
+        "J04",
+        "C1_IDENTITY"
+      ],
+      "rules": [
+        "Explicit consent precedes durable participant membership."
+      ]
+    },
+    {
+      "id": "membership.remove",
+      "name": "Remove member access",
+      "owner": "group.membership",
+      "changes": [
+        "group.membership"
+      ],
+      "source_journeys": [
+        "09"
+      ],
+      "sources": [
+        "J09"
+      ],
+      "rules": [
+        "Current group owner only under the approved prerequisites.",
+        "Removal preserves historical attribution/ledger facts and other memberships.",
+        "Unknown save recovers before retry."
+      ]
+    },
+    {
+      "id": "expense.create",
+      "name": "Create Expense",
+      "owner": "expense.expense",
+      "changes": [
+        "expense.expense",
+        "expense.split"
+      ],
+      "source_journeys": [
+        "05"
+      ],
+      "sources": [
+        "J05"
+      ],
+      "rules": [
+        "Common path is amount + description with editable defaults.",
+        "No invented common-path review page.",
+        "Failed save preserves entered details.",
+        "Custom split must conserve the expense total."
+      ]
+    },
+    {
+      "id": "expense.edit",
+      "name": "Edit Expense",
+      "owner": "expense.expense",
+      "changes": [
+        "expense.expense",
+        "expense.split",
+        "expense.review"
+      ],
+      "source_journeys": [
+        "06"
+      ],
+      "sources": [
+        "J06"
+      ],
+      "rules": [
+        "Reuse Journey 05 controls with existing values.",
+        "Only owner/authorized role may edit.",
+        "Review status updates/resets transparently."
+      ]
+    },
+    {
+      "id": "expense.delete",
+      "name": "Delete Expense",
+      "owner": "expense.expense",
+      "changes": [
+        "expense.expense",
+        "position.position"
+      ],
+      "source_journeys": [
+        "06"
+      ],
+      "sources": [
+        "J06"
+      ],
+      "rules": [
+        "Explicit confirmation separate from edit.",
+        "Deletion explains/recomputes balance impact."
+      ]
+    },
+    {
+      "id": "expense.review",
+      "name": "Agree with Expense",
+      "owner": "expense.review",
+      "changes": [
+        "expense.review"
+      ],
+      "source_journeys": [
+        "07"
+      ],
+      "sources": [
+        "J07"
+      ],
+      "rules": [
+        "Review is distinct from editing.",
+        "Looks right resolves the reviewer's review state, not unrelated domain state."
+      ]
+    },
+    {
+      "id": "expense.raise_issue",
+      "name": "Raise Expense Issue",
+      "owner": "expense.issue",
+      "changes": [
+        "expense.issue"
+      ],
+      "source_journeys": [
+        "07"
+      ],
+      "sources": [
+        "J07"
+      ],
+      "rules": [
+        "Issue includes reason and optional note.",
+        "Only dependent payment items are blocked."
+      ]
+    },
+    {
+      "id": "expense.resolve_issue",
+      "name": "Resolve / reassess Expense Issue",
+      "owner": "expense.issue",
+      "changes": [
+        "expense.issue",
+        "expense.review"
+      ],
+      "source_journeys": [
+        "06",
+        "07"
+      ],
+      "sources": [
+        "J06",
+        "J07"
+      ],
+      "rules": [
+        "Owner correction stays in Journey 06; reviewer agreement/reassessment stays in Journey 07."
+      ]
+    },
+    {
+      "id": "settlement.prepare",
+      "name": "Prepare Settlement",
+      "owner": "payment.intent",
+      "changes": [
+        "payment.intent"
+      ],
+      "source_journeys": [
+        "11"
+      ],
+      "sources": [
+        "J11",
+        "PAYMENT_COMPAT"
+      ],
+      "rules": [
+        "Resolve exact SettlementScope before authorization.",
+        "Journey 11 prepares/authorizes; it does not complete."
+      ]
+    },
+    {
+      "id": "settlement.authorize",
+      "name": "Authorize PaymentIntent",
+      "owner": "payment.intent",
+      "changes": [
+        "payment.intent"
+      ],
+      "source_journeys": [
+        "11",
+        "21"
+      ],
+      "sources": [
+        "J11",
+        "J21"
+      ],
+      "rules": [
+        "Approval request is not authorization; only verified result advances authority.",
+        "Delegation cannot widen exact scope."
+      ]
+    },
+    {
+      "id": "settlement.confirm_receipt",
+      "name": "Confirm external/manual receipt",
+      "owner": "payment.intent",
+      "changes": [
+        "payment.intent",
+        "payment.record"
+      ],
+      "source_journeys": [
+        "12"
+      ],
+      "sources": [
+        "J12",
+        "J11"
+      ],
+      "rules": [
+        "Receiver owns manual receipt confirmation where ChopDot cannot independently verify.",
+        "Payer sent claim is not proof of receipt."
+      ]
+    },
+    {
+      "id": "settlement.close",
+      "name": "Close PaymentIntent",
+      "owner": "payment.intent",
+      "changes": [
+        "payment.intent",
+        "payment.record",
+        "position.position"
+      ],
+      "source_journeys": [
+        "12"
+      ],
+      "sources": [
+        "J12",
+        "J11"
+      ],
+      "rules": [
+        "Close only from exact proven result.",
+        "Partial closes only confirmed partial amount; remainder stays open.",
+        "Resulting Position is recomputed, not manually overwritten."
+      ]
+    },
+    {
+      "id": "settlement.reconcile",
+      "name": "Reconcile PaymentIntent",
+      "owner": "payment.intent",
+      "changes": [
+        "payment.intent"
+      ],
+      "source_journeys": [
+        "12",
+        "28"
+      ],
+      "sources": [
+        "J12",
+        "J28"
+      ],
+      "rules": [
+        "Unknown uses the same payment/operation identity.",
+        "No replacement execution until trusted no-effect truth."
+      ]
+    },
+    {
+      "id": "request.create",
+      "name": "Create PaymentRequest",
+      "owner": "payment.request",
+      "changes": [
+        "payment.request"
+      ],
+      "source_journeys": [
+        "13"
+      ],
+      "sources": [
+        "J13"
+      ],
+      "rules": [
+        "Exact initiating balance/source scope.",
+        "Overlapping active-source request is reused; note changes do not create new debt."
+      ]
+    },
+    {
+      "id": "request.deliver",
+      "name": "Deliver PaymentRequest",
+      "owner": "payment.request",
+      "changes": [
+        "payment.request"
+      ],
+      "source_journeys": [
+        "13"
+      ],
+      "sources": [
+        "J13"
+      ],
+      "rules": [
+        "Created, delivered and paid are distinct.",
+        "Delivery retry reuses the same request."
+      ]
+    },
+    {
+      "id": "request.withdraw",
+      "name": "Withdraw PaymentRequest",
+      "owner": "payment.request",
+      "changes": [
+        "payment.request"
+      ],
+      "source_journeys": [
+        "13"
+      ],
+      "sources": [
+        "J13"
+      ],
+      "rules": [
+        "Withdrawal preserves history/balance/membership and is blocked during payment."
+      ]
+    },
+    {
+      "id": "receiving_share.create",
+      "name": "Create ReceivingShare",
+      "owner": "payment.receiving_share",
+      "changes": [
+        "payment.receiving_share"
+      ],
+      "source_journeys": [
+        "14"
+      ],
+      "sources": [
+        "J14"
+      ],
+      "rules": [
+        "Recipient-scoped and deliberate.",
+        "Share/copy/scan never confirms payment.",
+        "Unknown create reconciles before retry."
+      ]
+    },
+    {
+      "id": "receiving_share.stop",
+      "name": "Stop ReceivingShare",
+      "owner": "payment.receiving_share",
+      "changes": [
+        "payment.receiving_share"
+      ],
+      "source_journeys": [
+        "14"
+      ],
+      "sources": [
+        "J14"
+      ],
+      "rules": [
+        "Stopping a share is not payment/request cancellation and cannot recall already copied bytes."
+      ]
+    },
+    {
+      "id": "savings.contribute",
+      "name": "Contribute Savings",
+      "owner": "savings.operation",
+      "changes": [
+        "savings.operation",
+        "savings.position"
+      ],
+      "source_journeys": [
+        "17"
+      ],
+      "sources": [
+        "J17",
+        "APPROVAL_17_v1_4"
+      ],
+      "rules": [
+        "No optimistic Available/goal progress.",
+        "Tracking mode requires confirmation.",
+        "Unknown result reconciles before retry."
+      ]
+    },
+    {
+      "id": "savings.withdraw",
+      "name": "Withdraw Savings",
+      "owner": "savings.operation",
+      "changes": [
+        "savings.operation",
+        "savings.position"
+      ],
+      "source_journeys": [
+        "17"
+      ],
+      "sources": [
+        "J17",
+        "APPROVAL_17_v1_4"
+      ],
+      "rules": [
+        "Own confirmed position by default.",
+        "Group-controlled withdrawal obeys configured group rule.",
+        "Unknown result reconciles before retry."
+      ]
+    },
+    {
+      "id": "payment_destination.create_update",
+      "name": "Create / update PaymentDestination",
+      "owner": "payment.destination",
+      "changes": [
+        "payment.destination"
+      ],
+      "source_journeys": [
+        "20"
+      ],
+      "sources": [
+        "J20",
+        "APPROVAL_20_v1"
+      ],
+      "rules": [
+        "Method-specific validation and exact destination versioning.",
+        "No wallet/provider secrets.",
+        "Preference is compatibility-scoped, not authority."
+      ]
+    },
+    {
+      "id": "payment_destination.remove",
+      "name": "Remove PaymentDestination",
+      "owner": "payment.destination",
+      "changes": [
+        "payment.destination"
+      ],
+      "source_journeys": [
+        "20"
+      ],
+      "sources": [
+        "J20",
+        "APPROVAL_20_v1"
+      ],
+      "rules": [
+        "Removal is not payment cancellation.",
+        "Unknown result reconciles before retry."
+      ]
+    },
+    {
+      "id": "wallet.connect_switch",
+      "name": "Connect / switch wallet context",
+      "owner": "wallet.session",
+      "changes": [
+        "wallet.session"
+      ],
+      "source_journeys": [
+        "21"
+      ],
+      "sources": [
+        "J21",
+        "APPROVAL_21_v1"
+      ],
+      "rules": [
+        "Connected account/network is revalidated at signing.",
+        "Connection does not create a saved receiving destination."
+      ]
+    },
+    {
+      "id": "wallet.execute_action",
+      "name": "Sign / submit WalletAction",
+      "owner": "wallet.action",
+      "changes": [
+        "wallet.action"
+      ],
+      "source_journeys": [
+        "21"
+      ],
+      "sources": [
+        "J21",
+        "APPROVAL_21_v1"
+      ],
+      "rules": [
+        "Owning journey defines exact action scope.",
+        "Signature, submission and finality remain distinct.",
+        "Unknown submission reconciles before retry."
+      ]
+    },
+    {
+      "id": "qr.resolve",
+      "name": "Resolve QR transport",
+      "owner": "qr.payload",
+      "changes": [],
+      "source_journeys": [
+        "22"
+      ],
+      "sources": [
+        "J22",
+        "APPROVAL_22_v1"
+      ],
+      "rules": [
+        "Transport is inert until the owning journey revalidates.",
+        "No direct join/payment/destination/wallet authority."
+      ]
+    },
+    {
+      "id": "import.apply",
+      "name": "Apply Import",
+      "owner": "portability.import_operation",
+      "changes": [
+        "group.group",
+        "group.membership"
+      ],
+      "source_journeys": [
+        "23"
+      ],
+      "sources": [
+        "J23",
+        "APPROVAL_23_v1"
+      ],
+      "rules": [
+        "Preview before write.",
+        "One new group per import.",
+        "No existing-group auto-merge, name-only identity linking or silent money guessing.",
+        "Imported payment rows are history only."
+      ]
+    },
+    {
+      "id": "export.create",
+      "name": "Create ExportArtifact",
+      "owner": "portability.export_operation",
+      "changes": [
+        "portability.export_artifact"
+      ],
+      "source_journeys": [
+        "24"
+      ],
+      "sources": [
+        "J24",
+        "APPROVAL_24_v1"
+      ],
+      "rules": [
+        "Read-only preview until explicit Create export.",
+        "Bound to exact scope/snapshot/schema/destination intent.",
+        "Unknown generation reconciles before regeneration."
+      ]
+    },
+    {
+      "id": "export.deliver",
+      "name": "Deliver ExportArtifact",
+      "owner": "portability.export_operation",
+      "changes": [],
+      "source_journeys": [
+        "24"
+      ],
+      "sources": [
+        "J24",
+        "APPROVAL_24_v1"
+      ],
+      "rules": [
+        "Package creation and external delivery are separate.",
+        "Unknown delivery reconciles destination status and never regenerates package by assumption."
+      ]
+    },
+    {
+      "id": "storage.backup",
+      "name": "Create BackupArtifact",
+      "owner": "storage.backup",
+      "changes": [
+        "storage.backup"
+      ],
+      "source_journeys": [
+        "25"
+      ],
+      "sources": [
+        "J25",
+        "APPROVAL_25_v1"
+      ],
+      "rules": [
+        "Local working copy and backup are distinct.",
+        "Secrets/executable authority excluded.",
+        "Checksum claims byte integrity only."
+      ]
+    },
+    {
+      "id": "storage.restore",
+      "name": "Restore from BackupArtifact",
+      "owner": "storage.restore_operation",
+      "changes": [
+        "group.group",
+        "group.membership"
+      ],
+      "source_journeys": [
+        "25",
+        "28"
+      ],
+      "sources": [
+        "J25",
+        "APPROVAL_25_v1",
+        "J28"
+      ],
+      "rules": [
+        "Preview before restore mutation.",
+        "Preserve identity ambiguity and newer current facts.",
+        "Unknown outcomes reconcile before retry."
+      ]
+    },
+    {
+      "id": "group.rename_archive",
+      "name": "Rename / archive / unarchive Group",
+      "owner": "group.group",
+      "changes": [
+        "group.group"
+      ],
+      "source_journeys": [
+        "26"
+      ],
+      "sources": [
+        "J26"
+      ],
+      "rules": [
+        "Rename changes display identity, not history/stable ID.",
+        "Archive is reversible organization state, not settlement/deletion/forgiveness.",
+        "Stale review refreshes before write."
+      ]
+    },
+    {
+      "id": "group.transfer_ownership",
+      "name": "Transfer Group ownership",
+      "owner": "group.membership",
+      "changes": [
+        "group.membership"
+      ],
+      "source_journeys": [
+        "26"
+      ],
+      "sources": [
+        "J26"
+      ],
+      "rules": [
+        "Recipient is an eligible active member.",
+        "Roster management remains Journey 09.",
+        "Unknown result reconciles before retry."
+      ]
+    },
+    {
+      "id": "group.leave",
+      "name": "Leave Group",
+      "owner": "group.membership",
+      "changes": [
+        "group.membership"
+      ],
+      "source_journeys": [
+        "26"
+      ],
+      "sources": [
+        "J26"
+      ],
+      "rules": [
+        "Owner transfers ownership first.",
+        "Open/unresolved obligations block leave.",
+        "Historical attribution remains unchanged."
+      ]
+    },
+    {
+      "id": "group.delete",
+      "name": "Delete Group workspace",
+      "owner": "group.group",
+      "changes": [
+        "group.group"
+      ],
+      "source_journeys": [
+        "26"
+      ],
+      "sources": [
+        "J26"
+      ],
+      "rules": [
+        "Owner only, archived, sole active member, no open/unresolved items, typed confirmation and final review.",
+        "No claim of external/global erasure."
+      ]
+    },
+    {
+      "id": "preferences.update",
+      "name": "Update profile / notification / appearance preference",
+      "owner": "account.preferences",
+      "changes": [
+        "account.preferences"
+      ],
+      "source_journeys": [
+        "27"
+      ],
+      "sources": [
+        "J27"
+      ],
+      "rules": [
+        "Draft/preview is not persisted preference.",
+        "UI preference is not external/system/payment authority.",
+        "Unknown writes reconcile before replacement retry."
+      ]
+    },
+    {
+      "id": "session.sign_out",
+      "name": "Sign out",
+      "owner": "identity.session",
+      "changes": [
+        "identity.session"
+      ],
+      "source_journeys": [
+        "27"
+      ],
+      "sources": [
+        "J27"
+      ],
+      "rules": [
+        "Sign-out changes session only; it does not delete account/group/money history."
+      ]
+    },
+    {
+      "id": "account.delete",
+      "name": "Delete account working state",
+      "owner": "identity.account",
+      "changes": [
+        "identity.account",
+        "identity.session"
+      ],
+      "source_journeys": [
+        "27"
+      ],
+      "sources": [
+        "J27"
+      ],
+      "rules": [
+        "Blocked by active group ownership or unresolved money obligations.",
+        "Export is an adjacent owner boundary.",
+        "No global erasure claim for shared/provider/on-chain/backup copies."
+      ]
+    },
+    {
+      "id": "spend.authorize_execute",
+      "name": "Authorize / execute SpendIntent",
+      "owner": "spend.intent",
+      "changes": [
+        "spend.intent"
+      ],
+      "source_journeys": [],
+      "sources": [
+        "C1_SPEND",
+        "C1_EXECUTION"
+      ],
+      "rules": [
+        "Authorized does not mean spent.",
+        "Unknown cannot create/extend authority or dispatch fresh value.",
+        "Concrete rail remains replaceable/unselected."
+      ]
+    },
+    {
+      "id": "spend.materialize",
+      "name": "Materialize accepted SpendEffect",
+      "owner": "spend.effect",
+      "changes": [
+        "expense.expense"
+      ],
+      "source_journeys": [],
+      "sources": [
+        "C1_SPEND",
+        "C1_EXECUTION"
+      ],
+      "rules": [
+        "Proof-backed accepted effect only.",
+        "Exactly-once canonical expense/obligation materialization.",
+        "Later PaymentIntent may settle but cannot recreate spend."
+      ]
+    },
+    {
+      "id": "recovery.reconcile",
+      "name": "Reconcile original operation",
+      "owner": "recovery.context",
+      "changes": [],
+      "source_journeys": [
+        "28"
+      ],
+      "sources": [
+        "J28"
+      ],
+      "rules": [
+        "Journey 28 coordinates recovery grammar; owning domain decides result.",
+        "Possible-effect states preserve exact identity.",
+        "Unknown/pending/partial does not expose replacement retry."
+      ]
+    },
+    {
+      "id": "recovery.safe_retry",
+      "name": "Review safe retry",
+      "owner": "recovery.context",
+      "changes": [],
+      "source_journeys": [
+        "28"
+      ],
+      "sources": [
+        "J28"
+      ],
+      "rules": [
+        "Replacement retry only after proven no-effect truth.",
+        "Explicit stop preserves truth and enough context to resume safely."
+      ]
+    }
+  ],
+  "derived_models": [
+    {
+      "id": "view.home",
+      "name": "HomeView",
+      "derived_from": [
+        "activity.attention",
+        "group.group",
+        "position.position",
+        "identity.session"
+      ],
+      "source_journeys": [
+        "02"
+      ],
+      "sources": [
+        "J02"
+      ],
+      "rules": [
+        "Attention-first and group-first.",
+        "Offline/stale state labeled."
+      ]
+    },
+    {
+      "id": "view.group_home",
+      "name": "GroupHomeView",
+      "derived_from": [
+        "group.group",
+        "expense.expense",
+        "expense.review",
+        "position.position",
+        "group.membership"
+      ],
+      "source_journeys": [
+        "08"
+      ],
+      "sources": [
+        "J08"
+      ],
+      "rules": [
+        "Overview-first current group state; navigation does not mutate underlying truth."
+      ]
+    },
+    {
+      "id": "view.position",
+      "name": "PositionView",
+      "derived_from": [
+        "position.position"
+      ],
+      "source_journeys": [
+        "10"
+      ],
+      "sources": [
+        "J10"
+      ],
+      "rules": [
+        "People default; same-currency netting only; mixed currencies separate; source lineage visible."
+      ]
+    },
+    {
+      "id": "view.payment_history",
+      "name": "SettlementHistoryView",
+      "derived_from": [
+        "payment.record"
+      ],
+      "source_journeys": [
+        "15"
+      ],
+      "sources": [
+        "J15"
+      ],
+      "rules": [
+        "Read-only; one stable payment record per payment identity; states remain distinct."
+      ]
+    },
+    {
+      "id": "view.savings_group",
+      "name": "SavingsGroupView",
+      "derived_from": [
+        "savings.group",
+        "savings.position",
+        "savings.operation"
+      ],
+      "source_journeys": [
+        "16"
+      ],
+      "sources": [
+        "J16",
+        "APPROVAL_16_v1_2"
+      ],
+      "rules": [
+        "Goal progress from confirmed Available only; pending separate."
+      ]
+    },
+    {
+      "id": "view.activity",
+      "name": "ActivityView",
+      "derived_from": [
+        "activity.item",
+        "activity.attention",
+        "notification.delivery"
+      ],
+      "source_journeys": [
+        "18"
+      ],
+      "sources": [
+        "J18",
+        "APPROVAL_18_v1_1"
+      ],
+      "rules": [
+        "Read-only; attention and unread are independent; open rechecks current truth/access."
+      ]
+    },
+    {
+      "id": "view.insights",
+      "name": "InsightsView",
+      "derived_from": [
+        "insight.view"
+      ],
+      "source_journeys": [
+        "19"
+      ],
+      "sources": [
+        "J19",
+        "APPROVAL_19_v1_1"
+      ],
+      "rules": [
+        "Read-only; current authorized scope only; exact assets separate; insufficient/incomplete evidence is labeled."
+      ]
+    }
+  ],
+  "laws": [
+    {
+      "id": "LAW-ID-01",
+      "name": "Participant identity survives account linking",
+      "applies_to": [
+        "identity.participant",
+        "identity.account"
+      ],
+      "rule": "Link/upgrade preserves the same group-scoped participant_id and every historical expense/split/history/export/recovery reference.",
+      "sources": [
+        "C1_IDENTITY",
+        "POST_J28"
+      ]
+    },
+    {
+      "id": "LAW-ID-02",
+      "name": "No name/email identity merge",
+      "applies_to": [
+        "identity.participant"
+      ],
+      "rule": "Display name and email are never identity merge keys; collisions/mismatch remain unresolved.",
+      "sources": [
+        "C1_IDENTITY",
+        "POST_J28"
+      ]
+    },
+    {
+      "id": "LAW-ID-03",
+      "name": "Group-scoped unlinkability",
+      "applies_to": [
+        "identity.participant",
+        "identity.account"
+      ],
+      "rule": "Group-visible identity must not expose a stable identifier that correlates an account-backed person across groups.",
+      "sources": [
+        "POST_J28",
+        "C1_IDENTITY"
+      ]
+    },
+    {
+      "id": "LAW-AUTH-01",
+      "name": "Presentation/preferences are not authority",
+      "applies_to": [
+        "account.preferences",
+        "payment.destination",
+        "wallet.session",
+        "notification.delivery"
+      ],
+      "rule": "A saved preference, destination, notification or wallet connection does not itself create payment/signing/group/identity-provider authority.",
+      "sources": [
+        "DESIGN",
+        "J20",
+        "J21",
+        "J27"
+      ]
+    },
+    {
+      "id": "LAW-MONEY-01",
+      "name": "Exact partitioned money",
+      "applies_to": [
+        "money.money_v1"
+      ],
+      "rule": "Canonical financial conservation uses integer minor units with currency and exponent; cross-partition values never combine silently and display decimals are non-authoritative.",
+      "sources": [
+        "C1_SPEND",
+        "C1_README",
+        "J11"
+      ]
+    },
+    {
+      "id": "LAW-OP-01",
+      "name": "Possible-effect identity is stable",
+      "applies_to": [
+        "operation.identity",
+        "operation.outcome",
+        "recovery.context"
+      ],
+      "rule": "Pending/unknown/partial/too-late cancellation states remain bound to the same operation identity until authoritative reconciliation.",
+      "sources": [
+        "J28",
+        "STORAGE_REPLAY"
+      ]
+    },
+    {
+      "id": "LAW-OP-02",
+      "name": "Unknown reconciles before replacement retry",
+      "applies_to": [
+        "operation.outcome",
+        "recovery.context"
+      ],
+      "rule": "A possible-effect unknown result cannot expose a replacement effect attempt until the original operation is proven no-effect.",
+      "sources": [
+        "J28",
+        "J12",
+        "J17",
+        "J24",
+        "J26",
+        "J27"
+      ]
+    },
+    {
+      "id": "LAW-OP-03",
+      "name": "Navigation is not evidence",
+      "applies_to": [
+        "operation.outcome",
+        "recovery.context"
+      ],
+      "rule": "Back, reload, route changes or time alone never convert unknown/pending state into success, failure, cancellation or receipt.",
+      "sources": [
+        "J28",
+        "J12",
+        "J14"
+      ]
+    },
+    {
+      "id": "LAW-OP-04",
+      "name": "Stale truth refreshes before write",
+      "applies_to": [
+        "operation.outcome"
+      ],
+      "rule": "Stale/conflicting reviewed state refreshes current owner truth and requires re-review rather than overwriting it.",
+      "sources": [
+        "J28",
+        "J26",
+        "J27"
+      ]
+    },
+    {
+      "id": "LAW-HIST-01",
+      "name": "Replay is side-effect free",
+      "applies_to": [
+        "event.accepted",
+        "event.outbox",
+        "payment.record"
+      ],
+      "rule": "Accepted history is append-only/replay-safe; replay rebuilds projections and never repeats external/payment/signing/receipt/closure effects.",
+      "sources": [
+        "STORAGE_REPLAY",
+        "J11",
+        "J15"
+      ]
+    },
+    {
+      "id": "LAW-EXP-01",
+      "name": "Expense split conserves amount",
+      "applies_to": [
+        "expense.expense",
+        "expense.split",
+        "money.money_v1"
+      ],
+      "rule": "An explicit custom split must add to the Expense total within the exact money partition.",
+      "sources": [
+        "J05"
+      ]
+    },
+    {
+      "id": "LAW-EXP-02",
+      "name": "Review and edit ownership stay separate",
+      "applies_to": [
+        "expense.expense",
+        "expense.review",
+        "expense.issue"
+      ],
+      "rule": "Journey 06 owns expense mutation; Journey 07 owns agreement/question/issue semantics. Owner correction does not fabricate reviewer agreement.",
+      "sources": [
+        "J06",
+        "J07"
+      ]
+    },
+    {
+      "id": "LAW-ISSUE-01",
+      "name": "Issues block only dependencies",
+      "applies_to": [
+        "expense.issue",
+        "payment.intent"
+      ],
+      "rule": "An unresolved expense issue blocks only dependent payment items, not unrelated actionable balances.",
+      "sources": [
+        "J07",
+        "J11"
+      ]
+    },
+    {
+      "id": "LAW-POS-01",
+      "name": "Position is derived and currency-separated",
+      "applies_to": [
+        "position.position"
+      ],
+      "rule": "Position is a read model; mixed currencies remain separate and source group/item lineage stays explainable.",
+      "sources": [
+        "J10",
+        "J11"
+      ]
+    },
+    {
+      "id": "LAW-PAY-01",
+      "name": "Settlement scope is exact",
+      "applies_to": [
+        "payment.settlement_scope",
+        "payment.intent"
+      ],
+      "rule": "Settlement binds one payer/recipient pair, one currency, exact amount and eligible source lineage before authorization.",
+      "sources": [
+        "J11"
+      ]
+    },
+    {
+      "id": "LAW-PAY-02",
+      "name": "Payment lifecycle states are not collapsed",
+      "applies_to": [
+        "payment.intent",
+        "payment.record"
+      ],
+      "rule": "Sent/started/submitted/waiting/received/confirmed/closed and failure/unknown/partial/reversal states remain semantically distinct; provider/method may skip only in truthful ways.",
+      "sources": [
+        "J11",
+        "J12",
+        "J15"
+      ]
+    },
+    {
+      "id": "LAW-PAY-03",
+      "name": "Partial closes exact confirmed amount",
+      "applies_to": [
+        "payment.intent",
+        "payment.record",
+        "position.position"
+      ],
+      "rule": "A partial payment closes only the confirmed portion; the remainder preserves source lineage and stays open.",
+      "sources": [
+        "J11",
+        "J12",
+        "J15"
+      ]
+    },
+    {
+      "id": "LAW-REQ-01",
+      "name": "Request creation, delivery and payment are distinct",
+      "applies_to": [
+        "payment.request"
+      ],
+      "rule": "Accepted request creation does not imply delivery; delivery does not imply read/agreement/payment; only payment-domain proof may mark paid.",
+      "sources": [
+        "J13"
+      ]
+    },
+    {
+      "id": "LAW-DEST-01",
+      "name": "Receiving disclosure is not receipt",
+      "applies_to": [
+        "payment.destination",
+        "payment.receiving_share"
+      ],
+      "rule": "Sharing/copying/stopping/expiry of receiving details never confirms payment or settlement.",
+      "sources": [
+        "J14",
+        "J20"
+      ]
+    },
+    {
+      "id": "LAW-WALLET-01",
+      "name": "Wallet execution stays downstream of product authority",
+      "applies_to": [
+        "wallet.session",
+        "wallet.action"
+      ],
+      "rule": "Owning ChopDot journey defines exact amount/asset/recipient/source/permission; wallet connect/sign/submit cannot widen it.",
+      "sources": [
+        "J21",
+        "PAYMENT_COMPAT"
+      ]
+    },
+    {
+      "id": "LAW-QR-01",
+      "name": "QR is transport only",
+      "applies_to": [
+        "qr.payload"
+      ],
+      "rule": "A QR payload is inert until owner-journey validation and cannot itself create membership, payment, destination or wallet authority.",
+      "sources": [
+        "APPROVAL_22_v1"
+      ]
+    },
+    {
+      "id": "LAW-SAV-01",
+      "name": "Savings uses confirmed money only",
+      "applies_to": [
+        "savings.group",
+        "savings.position",
+        "savings.operation"
+      ],
+      "rule": "Planned/self-reported/submitted/waiting/unknown states do not increase confirmed Available or goal progress.",
+      "sources": [
+        "J16",
+        "J17"
+      ]
+    },
+    {
+      "id": "LAW-SAV-02",
+      "name": "Savings authority is explicit",
+      "applies_to": [
+        "savings.position",
+        "savings.operation"
+      ],
+      "rule": "Participant positions remain participant-owned by default; group-controlled withdrawal follows the configured rule and ChopDot never fabricates custody/confirmation.",
+      "sources": [
+        "J16",
+        "J17"
+      ]
+    },
+    {
+      "id": "LAW-ACT-01",
+      "name": "Activity and notification are projections",
+      "applies_to": [
+        "activity.item",
+        "activity.attention",
+        "notification.delivery"
+      ],
+      "rule": "Activity is read-only; unread is not unresolved; notification delivery/read cannot mutate the underlying domain result.",
+      "sources": [
+        "J18"
+      ]
+    },
+    {
+      "id": "LAW-INSIGHT-01",
+      "name": "Insights are authorized derived patterns",
+      "applies_to": [
+        "insight.view"
+      ],
+      "rule": "Insights are read-only, current-access-scoped, like-for-like by currency/asset and do not double-count superseded/duplicate records.",
+      "sources": [
+        "J19",
+        "APPROVAL_19_v1_1"
+      ]
+    },
+    {
+      "id": "LAW-IMPORT-01",
+      "name": "Import never guesses identity or money",
+      "applies_to": [
+        "portability.import_operation"
+      ],
+      "rule": "Import previews before write, creates one new group, does not auto-merge existing groups, does not link people by name alone, and does not silently guess money semantics.",
+      "sources": [
+        "APPROVAL_23_v1"
+      ]
+    },
+    {
+      "id": "LAW-EXPORT-01",
+      "name": "Portable data is not executable authority",
+      "applies_to": [
+        "portability.export_operation",
+        "portability.export_artifact"
+      ],
+      "rule": "Export is read/copy-only; payment/wallet/receiving/imported records remain history/metadata and cannot become payment/share/sign/retry authority.",
+      "sources": [
+        "J24",
+        "APPROVAL_24_v1"
+      ]
+    },
+    {
+      "id": "LAW-STORAGE-01",
+      "name": "Backup and working copy are distinct",
+      "applies_to": [
+        "storage.backup",
+        "storage.restore_operation"
+      ],
+      "rule": "Backup is distinct from local working copy; restore previews before mutation, preserves newer current facts/identity ambiguity, excludes secrets/executable authority, and reconciles unknown outcomes.",
+      "sources": [
+        "APPROVAL_25_v1"
+      ]
+    },
+    {
+      "id": "LAW-GROUP-01",
+      "name": "Archive is not settlement or deletion",
+      "applies_to": [
+        "group.group"
+      ],
+      "rule": "Archive is reversible organization state; it does not forgive/net/settle/delete balances or history.",
+      "sources": [
+        "J26"
+      ]
+    },
+    {
+      "id": "LAW-GROUP-02",
+      "name": "Access/lifecycle does not rewrite ledger truth",
+      "applies_to": [
+        "group.group",
+        "group.membership"
+      ],
+      "rule": "Removal, leave, transfer, rename, archive and delete prerequisites cannot silently rewrite expense attribution, balances, historical ledger facts or other memberships.",
+      "sources": [
+        "J09",
+        "J26"
+      ]
+    },
+    {
+      "id": "LAW-PREF-01",
+      "name": "Draft preference is not persisted preference",
+      "applies_to": [
+        "account.preferences"
+      ],
+      "rule": "Profile/notification/appearance preview remains reversible until a verified save result.",
+      "sources": [
+        "J27"
+      ]
+    },
+    {
+      "id": "LAW-ACCOUNT-01",
+      "name": "Account deletion respects adjacent authority",
+      "applies_to": [
+        "identity.account",
+        "group.group",
+        "payment.intent"
+      ],
+      "rule": "Deletion is blocked by group ownership or unresolved money obligations, routes to their owning journeys, and makes no global erasure claim.",
+      "sources": [
+        "J27"
+      ]
+    },
+    {
+      "id": "LAW-SPEND-01",
+      "name": "SpendIntent and PaymentIntent are separate economic domains",
+      "applies_to": [
+        "spend.intent",
+        "payment.intent"
+      ],
+      "rule": "SpendIntent coordinates value before/during purchase; PaymentIntent settles an already-existing obligation. Settlement cannot recreate merchant spend.",
+      "sources": [
+        "C1_SPEND",
+        "POST_J28"
+      ]
+    },
+    {
+      "id": "LAW-SPEND-02",
+      "name": "Authorized is not spent; effect materialization is exact once",
+      "applies_to": [
+        "spend.intent",
+        "spend.effect"
+      ],
+      "rule": "Only proof-backed accepted effects materialize canonical financial state exactly once; unknown cannot dispatch fresh value or extend authority.",
+      "sources": [
+        "C1_SPEND",
+        "C1_EXECUTION"
+      ]
+    }
+  ],
+  "anti_collapse": [
+    {
+      "left": "identity.participant",
+      "right": "identity.account",
+      "reason": "Group ledger identity survives account binding and remains group-scoped."
+    },
+    {
+      "left": "payment.intent",
+      "right": "spend.intent",
+      "reason": "Settlement of existing obligation is not merchant spend before/during purchase."
+    },
+    {
+      "left": "payment.destination",
+      "right": "wallet.session",
+      "reason": "Saved receiving destination is not signing/execution capability."
+    },
+    {
+      "left": "payment.request",
+      "right": "payment.intent",
+      "reason": "Request is a communication/collection object; it does not execute payment."
+    },
+    {
+      "left": "notification.delivery",
+      "right": "activity.attention",
+      "reason": "Unread delivery state is not unresolved domain work."
+    },
+    {
+      "left": "activity.item",
+      "right": "event.accepted",
+      "reason": "User-facing milestone projection is not raw accepted event/technical history."
+    },
+    {
+      "left": "group.group",
+      "right": "savings.group",
+      "reason": "Savings is intentionally a distinct economic/control model rather than an implicit expense-group mode."
+    },
+    {
+      "left": "group.group",
+      "right": "payment.intent",
+      "reason": "Archive/group lifecycle never means settled/paid."
+    },
+    {
+      "left": "portability.export_artifact",
+      "right": "identity.guest_capability",
+      "reason": "Portable records/labels do not become executable guest authority."
+    }
+  ],
+  "known_gaps": [
+    {
+      "id": "DOC-DRIFT-01",
+      "classification": "documentation_status_drift",
+      "journeys": [
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "25"
+      ],
+      "statement": "Some canonical spec headers still describe definition/candidate status although the higher-authority registry and approval records mark these journeys Golden/design-approved.",
+      "handling": "Registry/approval controls status. Stage 2 uses approved policy records where the spec is stale and does not rewrite frozen journey files."
+    },
+    {
+      "id": "POLICY-UNSELECTED-01",
+      "classification": "intentional_unselected_implementation",
+      "journeys": [],
+      "statement": "Concrete SpendIntent execution rail/provider remains unselected.",
+      "handling": "Keep SpendIntent rail-neutral; do not invent provider semantics."
+    },
+    {
+      "id": "POLICY-UNSELECTED-02",
+      "classification": "intentional_unselected_implementation",
+      "journeys": [
+        "25"
+      ],
+      "statement": "Storage provider, backup format, sync/encryption/custody and deletion implementation details are not selected as product law.",
+      "handling": "Preserve approved storage/recovery semantics without selecting infrastructure."
+    }
+  ]
+}
