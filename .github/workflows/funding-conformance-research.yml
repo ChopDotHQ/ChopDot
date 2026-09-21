@@ -1,0 +1,47 @@
+name: Funding Conformance (Research)
+
+# Isolated verification only. No secrets, databases, payments, deployment or PR gate.
+on:
+  push:
+    branches: [research/product-ir-v0-conformance]
+    paths:
+      - research/product-ir-v0/funding-conformance.mjs
+      - research/product-ir-v0/funding-conformance-cases.json
+      - research/product-ir-v0/MODEL.yaml
+      - research/product-ir-v0/model-driven-probe.mjs
+      - src/domain/expenseFunding.ts
+      - src/services/settlement/calc.ts
+      - .github/workflows/funding-conformance-research.yml
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    name: Strict model-implementation conformance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Compare the frozen corpus and test throwaway mutations
+        run: node research/product-ir-v0/funding-conformance.mjs --output artifacts/funding-conformance
+      - name: Publish observed result
+        if: always()
+        run: |
+          if test -f artifacts/funding-conformance/SUMMARY.md; then
+            cat artifacts/funding-conformance/SUMMARY.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Preserve evidence even when conformance fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: funding-conformance-${{ github.sha }}
+          path: artifacts/funding-conformance/
+          if-no-files-found: error
+          retention-days: 30
