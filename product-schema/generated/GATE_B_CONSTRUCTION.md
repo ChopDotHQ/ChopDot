@@ -100,3 +100,4 @@ Derived views: `view.group_home`, `view.position`, `view.activity`
 ## Schema blockers
 
 - None detected by Stage 4.
+
