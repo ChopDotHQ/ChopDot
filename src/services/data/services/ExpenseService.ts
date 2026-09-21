@@ -7,6 +7,7 @@
 
 import { ExpenseRepository, type ExpenseListOptions } from '../repositories/ExpenseRepository';
 import type { Expense } from '../types';
+import { validateExpenseFunding } from '../../../schema/pot';
 import type { CreateExpenseDTO, UpdateExpenseDTO } from '../types/dto';
 import { ValidationError } from '../errors';
 import type { PotRepository } from '../repositories/PotRepository';
@@ -58,6 +59,11 @@ export class ExpenseService {
 
       // Get pot to check checkpoint status
       const pot = await this.potRepository.get(potId);
+
+      const fundingValidation = validateExpenseFunding(dto, pot.members.map((member) => member.id));
+      if (!fundingValidation.success) {
+        throw new ValidationError(fundingValidation.error || 'Invalid expense funding');
+      }
 
       // Always update lastEditAt
       // Clear lastCheckpoint if it exists (edit invalidates checkpoint)
