@@ -1528,7 +1528,14 @@
         "Binding is staged; mismatch/collision remains unresolved.",
         "Account-only capabilities appear only after durable verified binding."
       ],
-      "safety_class": "identity"
+      "safety_class": "identity",
+      "reads": [
+        "identity.participant",
+        "identity.account",
+        "identity.guest_capability",
+        "operation.identity",
+        "operation.outcome"
+      ]
     },
     {
       "id": "group.create",
@@ -1638,6 +1645,13 @@
       ],
       "guards": [
         "expense.mutation_guard"
+      ],
+      "reads": [
+        "group.group",
+        "group.membership",
+        "identity.participant",
+        "money.money_v1",
+        "expense.mutation_guard"
       ]
     },
     {
@@ -1694,6 +1708,13 @@
           "effect": "open issue remains unresolved until Journey 07 reviewer resolution",
           "law_ref": "LAW-EXP-02"
         }
+      ],
+      "reads": [
+        "expense.expense",
+        "group.membership",
+        "identity.participant",
+        "money.money_v1",
+        "expense.mutation_guard"
       ]
     },
     {
@@ -1729,6 +1750,12 @@
         "LAW-EXP-HISTORY-01"
       ],
       "guards": [
+        "expense.mutation_guard"
+      ],
+      "reads": [
+        "expense.expense",
+        "group.membership",
+        "identity.participant",
         "expense.mutation_guard"
       ]
     },
@@ -1889,7 +1916,12 @@
         "Approval request is not authorization; only verified result advances authority.",
         "Delegation cannot widen exact scope."
       ],
-      "safety_class": "settlement"
+      "safety_class": "settlement",
+      "reads": [
+        "payment.intent",
+        "payment.settlement_scope",
+        "wallet.session"
+      ]
     },
     {
       "id": "settlement.mark_sent",
@@ -1914,7 +1946,11 @@
         "LAW-PAY-02",
         "LAW-OP-01"
       ],
-      "safety_class": "settlement"
+      "safety_class": "settlement",
+      "reads": [
+        "payment.intent",
+        "payment.settlement_scope"
+      ]
     },
     {
       "id": "settlement.confirm_receipt",
@@ -1935,7 +1971,12 @@
         "Receiver owns manual receipt confirmation where ChopDot cannot independently verify.",
         "Payer sent claim is not proof of receipt."
       ],
-      "safety_class": "settlement"
+      "safety_class": "settlement",
+      "reads": [
+        "payment.intent",
+        "payment.settlement_scope",
+        "payment.record"
+      ]
     },
     {
       "id": "settlement.close",
@@ -1960,7 +2001,14 @@
       "invalidates": [
         "position.position"
       ],
-      "safety_class": "settlement"
+      "safety_class": "settlement",
+      "reads": [
+        "payment.intent",
+        "payment.settlement_scope",
+        "payment.record",
+        "position.scope",
+        "position.position"
+      ]
     },
     {
       "id": "settlement.reconcile",
@@ -1981,7 +2029,13 @@
         "Unknown uses the same payment/operation identity.",
         "No replacement execution until trusted no-effect truth."
       ],
-      "safety_class": "settlement"
+      "safety_class": "settlement",
+      "reads": [
+        "payment.intent",
+        "payment.settlement_scope",
+        "operation.outcome",
+        "recovery.context"
+      ]
     },
     {
       "id": "request.create",
@@ -2091,6 +2145,12 @@
         "No optimistic Available/goal progress.",
         "Tracking mode requires confirmation.",
         "Unknown result reconciles before retry."
+      ],
+      "reads": [
+        "savings.group",
+        "savings.position",
+        "savings.operation",
+        "money.money_v1"
       ]
     },
     {
@@ -2112,6 +2172,12 @@
         "Own confirmed position by default.",
         "Group-controlled withdrawal obeys configured group rule.",
         "Unknown result reconciles before retry."
+      ],
+      "reads": [
+        "savings.group",
+        "savings.position",
+        "savings.operation",
+        "money.money_v1"
       ]
     },
     {
@@ -2133,7 +2199,12 @@
         "No wallet/provider secrets.",
         "Preference is compatibility-scoped, not authority."
       ],
-      "safety_class": "authority"
+      "safety_class": "authority",
+      "reads": [
+        "payment.destination",
+        "identity.account",
+        "account.preferences"
+      ]
     },
     {
       "id": "payment_destination.remove",
@@ -2153,7 +2224,12 @@
         "Removal is not payment cancellation.",
         "Unknown result reconciles before retry."
       ],
-      "safety_class": "authority"
+      "safety_class": "authority",
+      "reads": [
+        "payment.destination",
+        "identity.account",
+        "account.preferences"
+      ]
     },
     {
       "id": "wallet.connect_switch",
@@ -2173,7 +2249,11 @@
         "Connected account/network is revalidated at signing.",
         "Connection does not create a saved receiving destination."
       ],
-      "safety_class": "authority"
+      "safety_class": "authority",
+      "reads": [
+        "wallet.session",
+        "identity.account"
+      ]
     },
     {
       "id": "wallet.execute_action",
@@ -2194,7 +2274,12 @@
         "Signature, submission and finality remain distinct.",
         "Unknown submission reconciles before retry."
       ],
-      "safety_class": "authority"
+      "safety_class": "authority",
+      "reads": [
+        "wallet.session",
+        "wallet.action",
+        "payment.intent"
+      ]
     },
     {
       "id": "qr.resolve",
@@ -2291,7 +2376,15 @@
         "Secrets/executable authority excluded.",
         "Checksum claims byte integrity only."
       ],
-      "safety_class": "storage_restore"
+      "safety_class": "storage_restore",
+      "reads": [
+        "storage.backup",
+        "identity.participant",
+        "group.group",
+        "group.membership",
+        "payment.record",
+        "event.accepted"
+      ]
     },
     {
       "id": "storage.restore",
@@ -2315,7 +2408,16 @@
         "Preserve identity ambiguity and newer current facts.",
         "Unknown outcomes reconcile before retry."
       ],
-      "safety_class": "storage_restore"
+      "safety_class": "storage_restore",
+      "reads": [
+        "storage.backup",
+        "storage.restore_operation",
+        "identity.participant",
+        "group.group",
+        "group.membership",
+        "payment.record",
+        "event.accepted"
+      ]
     },
     {
       "id": "group.rename_archive",
@@ -2335,7 +2437,11 @@
         "Archive is reversible organization state, not settlement/deletion/forgiveness.",
         "Stale review refreshes before write."
       ],
-      "safety_class": "composition_continuity"
+      "safety_class": "composition_continuity",
+      "reads": [
+        "group.group",
+        "group.membership"
+      ]
     },
     {
       "id": "group.transfer_ownership",
@@ -2355,7 +2461,12 @@
         "Roster management remains Journey 09.",
         "Unknown result reconciles before retry."
       ],
-      "safety_class": "composition_continuity"
+      "safety_class": "composition_continuity",
+      "reads": [
+        "group.group",
+        "group.membership",
+        "identity.participant"
+      ]
     },
     {
       "id": "group.leave",
@@ -2375,7 +2486,13 @@
         "Open/unresolved obligations block leave.",
         "Historical attribution remains unchanged."
       ],
-      "safety_class": "composition_continuity"
+      "safety_class": "composition_continuity",
+      "reads": [
+        "group.group",
+        "group.membership",
+        "position.position",
+        "payment.intent"
+      ]
     },
     {
       "id": "group.delete",
@@ -2394,7 +2511,13 @@
         "Owner only, archived, sole active member, no open/unresolved items, typed confirmation and final review.",
         "No claim of external/global erasure."
       ],
-      "safety_class": "composition_continuity"
+      "safety_class": "composition_continuity",
+      "reads": [
+        "group.group",
+        "group.membership",
+        "position.position",
+        "payment.intent"
+      ]
     },
     {
       "id": "preferences.update",
@@ -2416,6 +2539,11 @@
         "UI preference is not external/system/payment authority.",
         "Unknown writes reconcile before replacement retry.",
         "Initial display-name save after verified entry and later profile/preference updates share presentation-only preference authority; neither changes Participant or external identity."
+      ],
+      "reads": [
+        "account.preferences",
+        "identity.account",
+        "identity.session"
       ]
     },
     {
@@ -2433,6 +2561,10 @@
       ],
       "rules": [
         "Sign-out changes session only; it does not delete account/group/money history."
+      ],
+      "reads": [
+        "identity.session",
+        "identity.account"
       ]
     },
     {
@@ -2453,6 +2585,14 @@
         "Blocked by active group ownership or unresolved money obligations.",
         "Export is an adjacent owner boundary.",
         "No global erasure claim for shared/provider/on-chain/backup copies."
+      ],
+      "reads": [
+        "identity.account",
+        "identity.session",
+        "group.group",
+        "group.membership",
+        "payment.intent",
+        "payment.record"
       ]
     },
     {
@@ -2507,7 +2647,12 @@
         "Possible-effect states preserve exact identity.",
         "Unknown/pending/partial does not expose replacement retry."
       ],
-      "safety_class": "recovery_replay"
+      "safety_class": "recovery_replay",
+      "reads": [
+        "recovery.context",
+        "operation.identity",
+        "operation.outcome"
+      ]
     },
     {
       "id": "recovery.safe_retry",
@@ -2524,7 +2669,12 @@
         "Replacement retry only after proven no-effect truth.",
         "Explicit stop preserves truth and enough context to resume safely."
       ],
-      "safety_class": "recovery_replay"
+      "safety_class": "recovery_replay",
+      "reads": [
+        "recovery.context",
+        "operation.identity",
+        "operation.outcome"
+      ]
     },
     {
       "id": "notification.set_read_state",
