@@ -325,7 +325,9 @@
             "unresolved_guard_input": "fail_closed",
             "locked_state": "retained_when_dependency_guard_blocks_save",
             "entered_details_preserved_if_blocked": true,
-            "group_closeout": "future_semantic_only_outside_gate_b"
+            "group_closeout": "future_semantic_only_outside_gate_b",
+            "locked_copy_policy": "historical_blanket_lock_copy_superseded_for_ordinary_settlement",
+            "blocked_explanation": "identify_blocking_settlement_or_dependency"
           },
           "sources": [
             "J05",
@@ -746,7 +748,8 @@
       "REQ-J06-REVIEW-RESET",
       "REQ-J08-REFRESH",
       "REQ-J06-LOCK",
-      "REQ-J08-SETTLEMENT-GOLDEN-IMPACT"
+      "REQ-J08-SETTLEMENT-GOLDEN-IMPACT",
+      "REQ-GATEB-SETTLEMENT-SEED"
     ],
     "integration_constraint_refs": [
       "GATEA-MONEY-EQUAL-01"
@@ -943,7 +946,9 @@
         "unresolved_guard_input": "fail_closed",
         "locked_state": "retained_when_dependency_guard_blocks_save",
         "entered_details_preserved_if_blocked": true,
-        "group_closeout": "future_semantic_only_outside_gate_b"
+        "group_closeout": "future_semantic_only_outside_gate_b",
+        "locked_copy_policy": "historical_blanket_lock_copy_superseded_for_ordinary_settlement",
+        "blocked_explanation": "identify_blocking_settlement_or_dependency"
       },
       "sources": [
         "J05",
@@ -1041,6 +1046,25 @@
       "sources": [
         "J08",
         "J08_DECISION",
+        "DEC_EXP_LOCK_V2"
+      ]
+    },
+    {
+      "id": "REQ-GATEB-SETTLEMENT-SEED",
+      "kind": "external_precondition_fixture",
+      "value": {
+        "purpose": "exercise unresolved-settlement guard states in Gate B without implementing Gate C settlement operations",
+        "source": "inject read-only PaymentIntent + SettlementScope + dependency snapshots into canonical shared prototype state",
+        "canonical_shared_state": true,
+        "second_store_exemption": "none; a parallel fixture store remains forbidden",
+        "may_prepare_authorize_execute_or_close_payment": false,
+        "evaluator_reference": "REF-EXPENSE-MUTATION-GUARD-V1"
+      },
+      "sources": [
+        "J05",
+        "J06",
+        "J08",
+        "J11",
         "DEC_EXP_LOCK_V2"
       ]
     }
@@ -1265,11 +1289,13 @@
       "kind": "guard",
       "domain": "groups_expenses",
       "identity": [],
-      "meaning": "Effect-time predicate over attempted Expense mutation current state, proposed post-state, and all unresolved PaymentIntent/SettlementScope dependencies. Gate B uses economic dependency rather than source-id membership alone.",
+      "meaning": "Effect-time predicate over attempted Expense mutation current state, proposed post-state, exact unresolved settlement descriptors, Position-derived dependency snapshots and dispute eligibility. Incomplete or stale safety evidence fails closed.",
       "source_journeys": [
         "05",
         "06",
-        "08"
+        "08",
+        "07",
+        "11"
       ],
       "sources": [
         "J05",
@@ -1286,6 +1312,8 @@
       "derived_from": [
         "payment.intent",
         "payment.settlement_scope",
+        "expense.issue",
+        "position.position",
         "group.group",
         "expense.expense"
       ]
@@ -1806,7 +1834,7 @@
       "dependent_state_effects": [
         {
           "object": "payment.intent",
-          "effect": "invalidate any prepared intent whose exact source lineage depends on the disputed Expense; require re-resolution before execution",
+          "effect": "invalidate any prepared intent whose eligibility depends on the changed dispute state; require fresh settlement resolution before execution",
           "law_ref": "LAW-PAY-04"
         }
       ]
@@ -1838,7 +1866,18 @@
       ],
       "law_refs": [
         "LAW-EXP-02",
-        "LAW-ISSUE-01"
+        "LAW-ISSUE-01",
+        "LAW-PAY-04"
+      ],
+      "invalidates_prepared": [
+        "payment.intent"
+      ],
+      "dependent_state_effects": [
+        {
+          "object": "payment.intent",
+          "effect": "invalidate any prepared intent whose eligibility depends on the changed dispute state; require fresh settlement resolution before execution",
+          "law_ref": "LAW-PAY-04"
+        }
       ]
     },
     {
@@ -1856,7 +1895,8 @@
       ],
       "law_refs": [
         "LAW-EXP-02",
-        "LAW-ISSUE-01"
+        "LAW-ISSUE-01",
+        "LAW-PAY-04"
       ],
       "source_journeys": [
         "07"
@@ -1868,6 +1908,16 @@
       "rules": [
         "Reviewer may withdraw their raised issue through Journey 07.",
         "Withdrawal changes issue status; it does not edit the Expense or fabricate payment/settlement state."
+      ],
+      "invalidates_prepared": [
+        "payment.intent"
+      ],
+      "dependent_state_effects": [
+        {
+          "object": "payment.intent",
+          "effect": "invalidate any prepared intent whose eligibility depends on the changed dispute state; require fresh settlement resolution before execution",
+          "law_ref": "LAW-PAY-04"
+        }
       ]
     },
     {
@@ -1974,7 +2024,7 @@
         "payment.intent",
         "payment.settlement_scope"
       ],
-      "rule": "For ordinary settlements, block Expense create/edit/delete only when the current state or proposed post-state would change financial truth used by an unresolved settlement. Dependency includes frozen source lineage, payer/recipient pair, currency partition, current eligible balance, dispute eligibility and any open partial remainder. Guard inputs fail closed when unresolved; unknown-effect takes precedence over an optimistic terminal label.",
+      "rule": "For ordinary settlements, block Expense create/edit/delete when current or proposed state changes financial truth used by any unresolved settlement. Safe allow requires complete current/proposed evidence, a complete settlement descriptor, before/after dependency snapshots, and fresh authoritative reconciliation for any released scope.",
       "constraint": {
         "kind": "effect_guard_required",
         "operations": [
@@ -1999,10 +2049,72 @@
           "delete": "block_if_current_state_changes_active_settlement_dependency"
         },
         "active_scope": {
-          "source": "payment.intent + payment.settlement_scope + authoritative reconciliation",
+          "source": "payment.intent + payment.settlement_scope + position.position + expense.issue + authoritative reconciliation",
           "fail_closed": true,
-          "condition": "scope is active unless authoritative reconciliation proves terminal/no-effect; unknown_effect overrides terminal labels; open remainder remains active",
-          "release": "authoritative terminal/no-effect truth and no open remainder referencing the dependency"
+          "required_guard_inputs": [
+            "operation",
+            "group_id",
+            "active_settlements",
+            "evaluated_state_as_of",
+            "current_or_proposed_state_per_operation",
+            "dependency_snapshot_before_by_payment_id",
+            "dependency_snapshot_after_by_payment_id"
+          ],
+          "incomplete_input": "fail_closed",
+          "required_settlement_fields": [
+            "payment_id",
+            "payer_participant_id",
+            "recipient_participant_id",
+            "currency",
+            "source_item_ids",
+            "prepared_amount_minor_units",
+            "resolution_status"
+          ],
+          "terminality": {
+            "field": "resolution_status",
+            "allowed": [
+              "active",
+              "unknown_effect",
+              "open_remainder",
+              "authoritative_terminal",
+              "reconciled_no_effect"
+            ],
+            "closed_enumeration": true,
+            "unrecognized_or_malformed_state": "fail_closed",
+            "unresolved": [
+              "active",
+              "unknown_effect",
+              "open_remainder"
+            ],
+            "release_candidates": [
+              "authoritative_terminal",
+              "reconciled_no_effect"
+            ]
+          },
+          "reconciliation_evidence": {
+            "authority_required": true,
+            "authority_field": "authority_verified",
+            "as_of_required": true,
+            "as_of_field": "as_of",
+            "must_not_predate_evaluated_state": true
+          },
+          "dependency_snapshot": {
+            "every_unresolved_payment_required": true,
+            "fields": [
+              "eligible_balance_minor_units",
+              "dispute_eligible",
+              "source_item_ids"
+            ],
+            "balance_must_be_finite": true,
+            "dispute_eligible_must_be_boolean": true,
+            "source_item_ids_must_be_array": true,
+            "any_balance_change_requires_block": true,
+            "any_dispute_eligibility_change_requires_block": true,
+            "any_source_lineage_change_requires_block": true,
+            "missing_or_malformed": "fail_closed"
+          },
+          "condition": "a settlement is unresolved unless it is in an allowed release state with authoritative reconciliation evidence at least as fresh as the evaluated state",
+          "release": "authoritative terminal/no-effect truth, fresh reconciliation evidence, and no open remainder referencing the dependency"
         },
         "explanation_required": true
       },
@@ -2488,15 +2600,19 @@
         "expense.mutation_guard",
         "payment.intent",
         "payment.settlement_scope",
+        "expense.issue",
+        "position.position",
         "group.group",
         "expense.expense"
       ],
       "preserves": [
         "attempted mutation kind/target",
-        "current Expense dependency state",
-        "proposed post-state dependency",
-        "all unresolved SettlementScope identities",
-        "authoritative reconciliation status"
+        "current Expense state",
+        "proposed post-state",
+        "before/after eligible-balance snapshot for each unresolved PaymentIntent",
+        "before/after dispute eligibility for each unresolved PaymentIntent",
+        "exact unresolved SettlementScope descriptors",
+        "authoritative reconciliation provenance and freshness"
       ],
       "laws": [
         "LAW-EXP-GUARD-01",
@@ -2507,7 +2623,7 @@
         "LAW-PAY-04"
       ],
       "availability": "resolve_at_effect_time",
-      "note": "Gate B effect-time predicate for ordinary settlements only. Whole-group closeout is semantic-only outside Gate B until a user path is approved."
+      "note": "Gate B effect-time predicate for ordinary settlements. Missing or malformed guard evidence fails closed. Whole-group closeout remains future semantic-only."
     }
   ],
   "handoffs": {
@@ -2919,12 +3035,14 @@
       "journey": "05",
       "state": "locked",
       "disposition": "retained_and_rescoped",
-      "rule": "J05 locked remains a Gate B recovery state and is triggered when a proposed Expense mutation would change an unresolved settlement dependency.",
+      "rule": "J05 locked remains a Gate B recovery state when a proposed Expense mutation would change an unresolved settlement dependency. Its historical blanket copy ('Expenses are locked. Settlement is in progress.') is superseded for ordinary settlements; the Gate B blocked state must identify the blocking settlement/dependency while preserving entered details.",
       "sources": [
         "J05_STATE",
         "J05_RECOVERED",
         "DEC_EXP_LOCK_V2"
-      ]
+      ],
+      "copy_disposition": "historical_blanket_copy_superseded_for_ordinary_settlement",
+      "explanation_required": true
     },
     {
       "id": "GOLDEN-IMPACT-J08-SETTLEMENT-02",
@@ -2938,6 +3056,16 @@
         "J08_DECISION",
         "DEC_EXP_LOCK_V2"
       ]
+    }
+  ],
+  "executable_reference_contracts": [
+    {
+      "id": "REF-EXPENSE-MUTATION-GUARD-V1",
+      "path": "product-schema/hardening-lib.mjs",
+      "export": "evaluateExpenseMutationGuard",
+      "git_blob": "b7e8a6deddc0979da3355ad30677c1c6d4b8d453",
+      "role": "executable reference for the machine-readable Expense mutation guard contract",
+      "authority": "SCHEMA_REFERENCE_ONLY"
     }
   ],
   "resolved_authority_interpretations": [

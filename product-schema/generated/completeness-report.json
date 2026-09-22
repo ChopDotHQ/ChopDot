@@ -33,7 +33,7 @@
       "gate_b": "composition.core_expense_loop"
     },
     "construction_requirements": {
-      "total": 15
+      "total": 16
     },
     "integration_constraints": {
       "total": 1
@@ -122,12 +122,14 @@
       "journey": "05",
       "state": "locked",
       "disposition": "retained_and_rescoped",
-      "rule": "J05 locked remains a Gate B recovery state and is triggered when a proposed Expense mutation would change an unresolved settlement dependency.",
+      "rule": "J05 locked remains a Gate B recovery state when a proposed Expense mutation would change an unresolved settlement dependency. Its historical blanket copy ('Expenses are locked. Settlement is in progress.') is superseded for ordinary settlements; the Gate B blocked state must identify the blocking settlement/dependency while preserving entered details.",
       "sources": [
         "J05_STATE",
         "J05_RECOVERED",
         "DEC_EXP_LOCK_V2"
-      ]
+      ],
+      "copy_disposition": "historical_blanket_copy_superseded_for_ordinary_settlement",
+      "explanation_required": true
     },
     {
       "id": "GOLDEN-IMPACT-J08-SETTLEMENT-02",

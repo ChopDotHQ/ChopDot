@@ -9,7 +9,7 @@
 
 ## Recorded Golden impacts
 
-- **GOLDEN-IMPACT-J05-LOCK-02** — J05 `locked`: J05 locked remains a Gate B recovery state and is triggered when a proposed Expense mutation would change an unresolved settlement dependency.
+- **GOLDEN-IMPACT-J05-LOCK-02** — J05 `locked`: J05 locked remains a Gate B recovery state when a proposed Expense mutation would change an unresolved settlement dependency. Its historical blanket copy ('Expenses are locked. Settlement is in progress.') is superseded for ordinary settlements; the Gate B blocked state must identify the blocking settlement/dependency while preserving entered details.
 - **GOLDEN-IMPACT-J08-SETTLEMENT-02** — J08 `settlement_in_progress`: The historical blanket-unavailable Add Expense state is superseded for ordinary settlements and is not a Gate B required state. Revisit it when a dedicated whole-group closeout surface is approved.
 
 ## Authority recoveries
@@ -52,7 +52,7 @@ Refreshed downstream only: `view.position` → Gate C, `view.activity` → Gate 
 - **REQ-J05-DEFAULTS** (defaults): {"required_user_input":["amount","description"],"payer":"you","participants":"everyone","split_method":"equal","date":"today","receipt":"none"}
 - **REQ-J05-DETAIL-PATHS** (editable_paths): {"payer":true,"participants":true,"split_methods":["equal","exact","shares"],"date":true,"receipt":true,"no_common_path_review_page":true}
 - **REQ-J05-RECOVERY** (required_states): ["missing","duplicate","offline","offline_saved","error","locked"]
-- **REQ-J05-LOCK** (effect_guard): {"policy":"dependency_scoped_economic_guard","ordinary_settlement_create":"block_if_proposed_state_changes_active_settlement_dependency","unresolved_guard_input":"fail_closed","locked_state":"retained_when_dependency_guard_blocks_save","entered_details_preserved_if_blocked":true,"group_closeout":"future_semantic_only_outside_gate_b"}
+- **REQ-J05-LOCK** (effect_guard): {"policy":"dependency_scoped_economic_guard","ordinary_settlement_create":"block_if_proposed_state_changes_active_settlement_dependency","unresolved_guard_input":"fail_closed","locked_state":"retained_when_dependency_guard_blocks_save","entered_details_preserved_if_blocked":true,"group_closeout":"future_semantic_only_outside_gate_b","locked_copy_policy":"historical_blanket_lock_copy_superseded_for_ordinary_settlement","blocked_explanation":"identify_blocking_settlement_or_dependency"}
 
 ### J06 — Review / Correct an Expense
 - **REQ-J06-DETAIL** (ordered_detail): ["amount","name","review_change_status","payer_personal_share_date","split","receipt_history","contextual_actions"]
@@ -96,7 +96,7 @@ Provenance caveat: J05 stylesheet is preview-owned reconstruction; approved Gold
 - **LAW-EXP-01** — An explicit custom split must add to the Expense total within the exact money partition.
 - **LAW-EXP-02** — Journey 06 owns expense mutation; Journey 07 owns agreement/question/issue semantics. Owner correction does not fabricate reviewer agreement.
 - **LAW-EXP-03** — Every allocation entry is bound to a selected participant_id in the Expense's Group and carries MoneyV1 in the Expense partition. Correct total conservation never substitutes for correct per-participant attribution.
-- **LAW-EXP-GUARD-01** — For ordinary settlements, block Expense create/edit/delete only when the current state or proposed post-state would change financial truth used by an unresolved settlement. Dependency includes frozen source lineage, payer/recipient pair, currency partition, current eligible balance, dispute eligibility and any open partial remainder. Guard inputs fail closed when unresolved; unknown-effect takes precedence over an optimistic terminal label.
+- **LAW-EXP-GUARD-01** — For ordinary settlements, block Expense create/edit/delete when current or proposed state changes financial truth used by any unresolved settlement. Safe allow requires complete current/proposed evidence, a complete settlement descriptor, before/after dependency snapshots, and fresh authoritative reconciliation for any released scope.
 - **LAW-EXP-HISTORY-01** — Important accepted Expense changes remain readable as old→new history derived from accepted prior/current revisions. History is read-only and storage-neutral.
 - **LAW-ISSUE-01** — An unresolved expense issue blocks only dependent payment items, not unrelated actionable balances.
 - **LAW-POS-01** — Position is a read model; mixed currencies remain separate and source group/item lineage stays explainable.
@@ -111,6 +111,10 @@ Provenance caveat: J05 stylesheet is preview-owned reconstruction; approved Gold
 - **LAW-OP-03** — Back, reload, route changes or time alone never convert unknown/pending state into success, failure, cancellation or receipt.
 - **LAW-HIST-01** — Accepted history is append-only/replay-safe; replay rebuilds projections and never repeats external/payment/signing/receipt/closure effects.
 - **LAW-OP-04** — Stale/conflicting reviewed state refreshes current owner truth and requires re-review rather than overwriting it.
+
+## Executable reference contracts
+
+- **REF-EXPENSE-MUTATION-GUARD-V1** — `product-schema/hardening-lib.mjs :: evaluateExpenseMutationGuard` blob `b7e8a6deddc0979da3355ad30677c1c6d4b8d453` (SCHEMA_REFERENCE_ONLY)
 
 ## Build constraints
 
