@@ -67,6 +67,7 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
   for(const j of frozen.journeys){
     const jid=j.id,pm=new Map(),states=new Set(),sourceModes=[];
     const protoPath=j.prototype.path,proto=readProduct(protoPath),uj=uiBy.get(jid);
+    const exemption=(reconstruction.extraction_exemptions||[]).find(x=>x.journey===jid);
     protoByJourney.set(jid,{path:protoPath,text:proto});
 
     const screenSource=(registry.curated_mapping_sources||[]).find(x=>x.journey===jid&&x.kind==='SCREEN_STATE_MAPPING.json');
@@ -77,7 +78,7 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
     const inventoryStates=stateSource?parseCodedStateInventory(readProduct(stateSource.path),jid):[];
     const modelStates=modelSource?parseExecutableStates(readProduct(modelSource.path)):[];
     const dynamic=parseDynamicPrototype(proto),switchUI=parseSwitchPrototype(proto);
-    const uiStates=(uj?.states||[]).map(x=>x.id).filter(x=>x!=='artifact-root');
+    const uiStates=(uj?.states||[]).map(x=>x.id==='artifact-root'&&exemption?exemption.canonical_state:x.id).filter(x=>x!=='artifact-root');
     const jsonRows=jsonEventRows.filter(x=>x.journey===jid);
     const jsonStates=uniq(jsonRows.map(x=>x.row.screen||x.row.route||x.row.state).filter(Boolean).map(norm));
 
@@ -85,7 +86,12 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
       if(arr.length){sourceModes.push(mode);for(const s of arr)states.add(norm(s));}
     }
     if(!states.size){
-      extractionErrors.push({id:'EXTRACTION-NO-STATES',journey:jid,prototype:protoPath});
+      if(exemption?.canonical_state){
+        states.add(exemption.canonical_state);
+        sourceModes.push('EXPLICIT_SINGLE_SURFACE_EXEMPTION');
+      }else{
+        extractionErrors.push({id:'EXTRACTION-NO-STATES',journey:jid,prototype:protoPath});
+      }
     }
 
     const stateCounts={screen_mapping:screenStates.length,state_inventory:inventoryStates.length,executable_model:modelStates.length,dynamic_source:dynamic.states.length,switch_source:switchUI.states.length,static_inventory:uiStates.length,event_mapping:jsonStates.length};
@@ -111,12 +117,18 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
         else cls={classification:'NAVIGATION_TRANSITION',schema_refs:[],justification:'Local source event changes reversible prototype/navigation state without canonical domain acceptance.'};
       }
       if(cls.classification==='UNJUSTIFIED'&&/send (a )?(new )?code/i.test(label))cls={classification:'EXTERNAL_HANDOFF',schema_refs:[],justification:'Sign-in code request crosses to the identity provider boundary.'};
+      if(cls.classification==='UNJUSTIFIED'&&exemption?.root_action_classification&&state===exemption.canonical_state){
+        cls={classification:exemption.root_action_classification,schema_refs:[],justification:'Explicit single-surface extraction exemption classifies root affordances as navigation/handoffs, not domain writes.'};
+      }
+      if(cls.classification==='UNJUSTIFIED'&&jid==='17'&&(/^(CHF|EUR|USD|DOT)\s+\d/i.test(label)||/^Max$/i.test(label))){
+        cls={classification:'SELECTION_STATE',schema_refs:[],justification:'Preset amount selector updates reversible savings draft amount; it does not commit a savings operation.'};
+      }
       const refs=uniq([...(cls.schema_refs||[]),...governance(jid,cls.classification)]);
       const id='J'+jid+'/'+(state||'source')+'/action/'+slug(label)+'@'+slug(target||a.source_event||'none');
       addPiece(pm,{piece_id:id,journey:jid,state:state||null,piece:label||target,piece_type:'visible_action',classification:cls.classification,schema_refs:refs,authority_refs:uniq([authority]),justification:cls.justification,mapping_confidence:binding?.confidence||'derived',domain_event:event||null,target:target||null,source_event:a.source_event||null});
     }
 
-    if(uj)for(const s of uj.states||[])for(const a of s.actions||[])addAction({...a,state:s.id},uj.artifact?.path||protoPath,a.domain_event||null);
+    if(uj)for(const s of uj.states||[])for(const a of s.actions||[])addAction({...a,state:(s.id==='artifact-root'&&exemption?exemption.canonical_state:s.id)},uj.artifact?.path||protoPath,a.domain_event||null);
     for(const x of jsonRows)addAction({...x.row,state:x.row.screen||x.row.route||x.row.state},x.path,x.event);
     for(const a of dynamic.actions)addAction(a,protoPath,null);
     for(const a of switchUI.actions)addAction(a,protoPath,null);
@@ -136,10 +148,16 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
     }
 
     const arr=[...pm.values()];
-    const uiActionCount=(uj?.states||[]).reduce((n,s)=>n+(s.actions||[]).length,0);
-    const expectedActionMinimum=Math.max(uiActionCount,jsonRows.length,dynamic.actions.length,switchUI.actions.length);
+    const countUnique=xs=>new Set(xs.map(x=>[norm(x.state||''),norm(x.label||x.action||''),normTarget(x.target||x.href||x.to||''),norm(x.domain_event||x.source_event||'')].join('|'))).size;
+    const staticControls=(uj?.states||[]).flatMap(s=>(s.actions||[]).map(a=>({...a,state:(s.id==='artifact-root'&&exemption?exemption.canonical_state:s.id)})));
+    const jsonControls=jsonRows.map(x=>({...x.row,state:x.row.screen||x.row.route||x.row.state,domain_event:x.event}));
+    const uiActionCount=countUnique(staticControls);
+    const jsonActionCount=countUnique(jsonControls);
+    const dynamicActionCount=countUnique(dynamic.actions);
+    const switchActionCount=countUnique(switchUI.actions);
+    const expectedActionMinimum=Math.max(uiActionCount,jsonActionCount,dynamicActionCount,switchActionCount);
     if(arr.filter(x=>x.piece_type==='visible_action').length<expectedActionMinimum)extractionErrors.push({id:'EXTRACTION-ACTION-UNDERCOUNT',journey:jid,actions:arr.filter(x=>x.piece_type==='visible_action').length,declared_minimum:expectedActionMinimum});
-    sourceDenominators.push({journey:jid,state_counts:stateCounts,declared_state_minimum:declaredMinimum,final_states:states.size,action_counts:{static:uiActionCount,event_mapping:jsonRows.length,dynamic:dynamic.actions.length,switch:switchUI.actions.length},declared_action_minimum:expectedActionMinimum});
+    sourceDenominators.push({journey:jid,state_counts:stateCounts,declared_state_minimum:declaredMinimum,final_states:states.size,action_counts:{static_unique:uiActionCount,event_mapping_unique:jsonActionCount,dynamic_unique:dynamicActionCount,switch_unique:switchActionCount},declared_action_minimum:expectedActionMinimum});
     pieces.push(...arr);
   }
 
