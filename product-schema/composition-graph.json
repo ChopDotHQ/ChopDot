@@ -1852,7 +1852,8 @@
       "constraint": {
         "kind": "handoff_identity_preservation",
         "replacement_domain_object_on_route": false
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "COMP-02",
@@ -1861,7 +1862,8 @@
       "constraint": {
         "kind": "single_operation_owner",
         "projection_may_mutate_source_truth": false
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "COMP-03",
@@ -1870,7 +1872,8 @@
       "constraint": {
         "kind": "derived_view_refresh",
         "manual_projection_overwrite": false
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "COMP-04",
@@ -1884,7 +1887,8 @@
           "safe_retry",
           "explicit_stop"
         ]
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "COMP-05",
@@ -1893,7 +1897,8 @@
       "constraint": {
         "kind": "partial_coverage_not_promoted",
         "partial_capability_implies_full_journey": false
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "COMP-06",
@@ -1902,7 +1907,8 @@
       "constraint": {
         "kind": "golden_projection_authority",
         "schema_may_redesign_golden_projection": false
-      }
+      },
+      "machine_checkable": true
     }
   ],
   "ambient_contexts": [

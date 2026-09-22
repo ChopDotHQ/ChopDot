@@ -746,5 +746,820 @@
       "witness_type": "COORDINATED_OPERATION",
       "reason": "Cross-journey identity binding is intentionally coordinated; forcing a single journey owner would misstate authority."
     }
+  ],
+  "safety_contracts": [
+    {
+      "schema_ref": "COMP-01",
+      "node_kind": "composition_law",
+      "safety_class": "composition_continuity",
+      "expected": {
+        "constraint": {
+          "kind": "handoff_identity_preservation",
+          "replacement_domain_object_on_route": false
+        }
+      }
+    },
+    {
+      "schema_ref": "COMP-02",
+      "node_kind": "composition_law",
+      "safety_class": "composition_continuity",
+      "expected": {
+        "constraint": {
+          "kind": "single_operation_owner",
+          "projection_may_mutate_source_truth": false
+        }
+      }
+    },
+    {
+      "schema_ref": "COMP-03",
+      "node_kind": "composition_law",
+      "safety_class": "composition_continuity",
+      "expected": {
+        "constraint": {
+          "kind": "derived_view_refresh",
+          "manual_projection_overwrite": false
+        }
+      }
+    },
+    {
+      "schema_ref": "COMP-04",
+      "node_kind": "composition_law",
+      "safety_class": "composition_continuity",
+      "expected": {
+        "constraint": {
+          "kind": "recovery_identity_preservation",
+          "same_operation_identity": true,
+          "return_after": [
+            "verified_outcome",
+            "safe_retry",
+            "explicit_stop"
+          ]
+        }
+      }
+    },
+    {
+      "schema_ref": "COMP-05",
+      "node_kind": "composition_law",
+      "safety_class": "composition_continuity",
+      "expected": {
+        "constraint": {
+          "kind": "partial_coverage_not_promoted",
+          "partial_capability_implies_full_journey": false
+        }
+      }
+    },
+    {
+      "schema_ref": "COMP-06",
+      "node_kind": "composition_law",
+      "safety_class": "composition_continuity",
+      "expected": {
+        "constraint": {
+          "kind": "golden_projection_authority",
+          "schema_may_redesign_golden_projection": false
+        }
+      }
+    },
+    {
+      "schema_ref": "group.delete",
+      "node_kind": "operation",
+      "safety_class": "composition_continuity",
+      "expected": {
+        "owner": "group.group",
+        "changes": [
+          "group.group"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "group.group",
+      "node_kind": "object",
+      "safety_class": "composition_continuity",
+      "expected": {
+        "kind": "entity",
+        "identity": [
+          "group_id"
+        ],
+        "derived_from": []
+      }
+    },
+    {
+      "schema_ref": "group.leave",
+      "node_kind": "operation",
+      "safety_class": "composition_continuity",
+      "expected": {
+        "owner": "group.membership",
+        "changes": [
+          "group.membership"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "group.membership",
+      "node_kind": "object",
+      "safety_class": "composition_continuity",
+      "expected": {
+        "kind": "entity",
+        "identity": [
+          "group_id",
+          "participant_id"
+        ],
+        "derived_from": []
+      }
+    },
+    {
+      "schema_ref": "group.rename_archive",
+      "node_kind": "operation",
+      "safety_class": "composition_continuity",
+      "expected": {
+        "owner": "group.group",
+        "changes": [
+          "group.group"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "group.transfer_ownership",
+      "node_kind": "operation",
+      "safety_class": "composition_continuity",
+      "expected": {
+        "owner": "group.membership",
+        "changes": [
+          "group.membership"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "identity.account",
+      "node_kind": "object",
+      "safety_class": "identity",
+      "expected": {
+        "kind": "entity",
+        "identity": [
+          "account_identity_ref"
+        ],
+        "derived_from": []
+      }
+    },
+    {
+      "schema_ref": "identity.participant",
+      "node_kind": "object",
+      "safety_class": "identity",
+      "expected": {
+        "kind": "entity",
+        "identity": [
+          "group_id",
+          "participant_id"
+        ],
+        "derived_from": []
+      }
+    },
+    {
+      "schema_ref": "LAW-AUTH-01",
+      "node_kind": "law",
+      "safety_class": "authority",
+      "expected": {
+        "applies_to": [
+          "account.preferences",
+          "payment.destination",
+          "wallet.session",
+          "notification.delivery"
+        ],
+        "constraint": {
+          "kind": "presentation_not_authority",
+          "presentation_preference_creates_authority": false,
+          "authority_domains": [
+            "payment",
+            "signing",
+            "group",
+            "identity_provider"
+          ]
+        }
+      }
+    },
+    {
+      "schema_ref": "LAW-DEST-01",
+      "node_kind": "law",
+      "safety_class": "authority",
+      "expected": {
+        "applies_to": [
+          "payment.destination",
+          "payment.receiving_share"
+        ],
+        "constraint": {
+          "kind": "receiving_disclosure_not_receipt",
+          "sharing_confirms_payment": false,
+          "copying_confirms_payment": false,
+          "expiry_confirms_payment": false,
+          "stopping_confirms_payment": false
+        }
+      }
+    },
+    {
+      "schema_ref": "LAW-GROUP-02",
+      "node_kind": "law",
+      "safety_class": "composition_continuity",
+      "expected": {
+        "applies_to": [
+          "group.group",
+          "group.membership"
+        ],
+        "constraint": {
+          "kind": "lifecycle_preserves_ledger_truth",
+          "ledger_rewrite_on_lifecycle": false,
+          "protected_facts": [
+            "expense_attribution",
+            "balances",
+            "historical_ledger",
+            "other_memberships"
+          ]
+        }
+      }
+    },
+    {
+      "schema_ref": "LAW-HIST-01",
+      "node_kind": "law",
+      "safety_class": "recovery_replay",
+      "expected": {
+        "applies_to": [
+          "event.accepted",
+          "event.outbox",
+          "payment.record"
+        ],
+        "constraint": {
+          "kind": "side_effect_free_replay",
+          "accepted_history_append_only": true,
+          "replay_external_effects": false,
+          "replay_role": "rebuild_projections"
+        }
+      }
+    },
+    {
+      "schema_ref": "LAW-ID-01",
+      "node_kind": "law",
+      "safety_class": "identity",
+      "expected": {
+        "applies_to": [
+          "identity.participant",
+          "identity.account"
+        ],
+        "constraint": {
+          "kind": "stable_participant_identity",
+          "participant_id_stable": true,
+          "account_link_replaces_participant": false,
+          "historical_reference_rewrite": false
+        }
+      }
+    },
+    {
+      "schema_ref": "LAW-ID-02",
+      "node_kind": "law",
+      "safety_class": "identity",
+      "expected": {
+        "applies_to": [
+          "identity.participant"
+        ],
+        "constraint": {
+          "kind": "identity_merge_prohibition",
+          "prohibited_merge_keys": [
+            "display_name",
+            "email"
+          ],
+          "collision_or_mismatch": "unresolved"
+        }
+      }
+    },
+    {
+      "schema_ref": "LAW-ID-03",
+      "node_kind": "law",
+      "safety_class": "identity",
+      "expected": {
+        "applies_to": [
+          "identity.participant",
+          "identity.account"
+        ],
+        "constraint": {
+          "kind": "group_scoped_unlinkability",
+          "group_visible_cross_group_stable_identifier": false,
+          "account_binding_may_be_private": true
+        }
+      }
+    },
+    {
+      "schema_ref": "LAW-MONEY-01",
+      "node_kind": "law",
+      "safety_class": "money",
+      "expected": {
+        "applies_to": [
+          "money.money_v1"
+        ],
+        "constraint": {
+          "kind": "exact_partitioned_money",
+          "minor_units_integer": true,
+          "partition_keys": [
+            "currency",
+            "exponent"
+          ],
+          "cross_partition_combine": false,
+          "display_decimal_authority": false
+        }
+      }
+    },
+    {
+      "schema_ref": "LAW-OP-01",
+      "node_kind": "law",
+      "safety_class": "recovery_replay",
+      "expected": {
+        "applies_to": [
+          "operation.identity",
+          "operation.outcome",
+          "recovery.context"
+        ],
+        "constraint": {
+          "kind": "stable_possible_effect_identity",
+          "states": [
+            "pending",
+            "unknown",
+            "partial",
+            "cancel_too_late"
+          ],
+          "same_operation_identity_until_reconciliation": true
+        }
+      }
+    },
+    {
+      "schema_ref": "LAW-OP-02",
+      "node_kind": "law",
+      "safety_class": "recovery_replay",
+      "expected": {
+        "applies_to": [
+          "operation.outcome",
+          "recovery.context"
+        ],
+        "constraint": {
+          "kind": "unknown_before_replacement_retry",
+          "replacement_retry_requires_proven_no_effect": true
+        }
+      }
+    },
+    {
+      "schema_ref": "LAW-OP-03",
+      "node_kind": "law",
+      "safety_class": "recovery_replay",
+      "expected": {
+        "applies_to": [
+          "operation.outcome",
+          "recovery.context"
+        ],
+        "constraint": {
+          "kind": "navigation_not_evidence",
+          "evidence_from_navigation": false,
+          "prohibited_inference_sources": [
+            "back",
+            "reload",
+            "route_change",
+            "time_alone"
+          ]
+        }
+      }
+    },
+    {
+      "schema_ref": "LAW-OP-04",
+      "node_kind": "law",
+      "safety_class": "recovery_replay",
+      "expected": {
+        "applies_to": [
+          "operation.outcome"
+        ],
+        "constraint": {
+          "kind": "stale_truth_before_write",
+          "stale_write_behavior": "refresh_and_rereview",
+          "silent_overwrite": false
+        }
+      }
+    },
+    {
+      "schema_ref": "LAW-POS-SCOPE-01",
+      "node_kind": "law",
+      "safety_class": "settlement",
+      "expected": {
+        "applies_to": [
+          "position.scope",
+          "position.position",
+          "payment.settlement_scope"
+        ],
+        "constraint": {
+          "kind": "typed_position_scope",
+          "allowed_scope_kinds": [
+            "participant_pair",
+            "group"
+          ],
+          "settlement_required_scope_kind": "participant_pair",
+          "currency_partition_on_position": true
+        }
+      }
+    },
+    {
+      "schema_ref": "LAW-STORAGE-01",
+      "node_kind": "law",
+      "safety_class": "storage_restore",
+      "expected": {
+        "applies_to": [
+          "storage.backup",
+          "storage.restore_operation"
+        ],
+        "constraint": {
+          "kind": "backup_restore_separation",
+          "backup_distinct_from_working_copy": true,
+          "restore_preview_before_mutation": true,
+          "preserve_newer_truth": true,
+          "preserve_identity_ambiguity": true,
+          "secrets_excluded": true,
+          "executable_authority_excluded": true,
+          "unknown_outcome_requires_reconciliation": true
+        }
+      }
+    },
+    {
+      "schema_ref": "LAW-WALLET-01",
+      "node_kind": "law",
+      "safety_class": "authority",
+      "expected": {
+        "applies_to": [
+          "wallet.session",
+          "wallet.action"
+        ],
+        "constraint": {
+          "kind": "wallet_cannot_widen_product_authority",
+          "wallet_can_widen_scope": false,
+          "required_upstream_scope": [
+            "amount",
+            "asset",
+            "recipient",
+            "source",
+            "permission"
+          ]
+        }
+      }
+    },
+    {
+      "schema_ref": "money.money_v1",
+      "node_kind": "object",
+      "safety_class": "money",
+      "expected": {
+        "kind": "value_object",
+        "identity": [
+          "minorUnits",
+          "currency",
+          "exponent"
+        ],
+        "derived_from": []
+      }
+    },
+    {
+      "schema_ref": "participant.link_account",
+      "node_kind": "operation",
+      "safety_class": "identity",
+      "expected": {
+        "owner": "identity.participant",
+        "changes": [
+          "identity.participant",
+          "identity.account"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "payment_destination.create_update",
+      "node_kind": "operation",
+      "safety_class": "authority",
+      "expected": {
+        "owner": "payment.destination",
+        "changes": [
+          "payment.destination"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "payment_destination.remove",
+      "node_kind": "operation",
+      "safety_class": "authority",
+      "expected": {
+        "owner": "payment.destination",
+        "changes": [
+          "payment.destination"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "payment.intent",
+      "node_kind": "object",
+      "safety_class": "settlement",
+      "expected": {
+        "kind": "entity",
+        "identity": [
+          "payment_id",
+          "idempotency_key"
+        ],
+        "derived_from": []
+      }
+    },
+    {
+      "schema_ref": "payment.settlement_scope",
+      "node_kind": "object",
+      "safety_class": "settlement",
+      "expected": {
+        "kind": "value_object",
+        "identity": [
+          "payer",
+          "recipient",
+          "currency",
+          "source_item_ids"
+        ],
+        "derived_from": []
+      }
+    },
+    {
+      "schema_ref": "position.position",
+      "node_kind": "object",
+      "safety_class": "settlement",
+      "expected": {
+        "kind": "read_model",
+        "identity": [
+          "position_scope",
+          "currency"
+        ],
+        "derived_from": [
+          "expense.expense",
+          "expense.split",
+          "expense.allocation",
+          "expense.issue",
+          "payment.intent",
+          "payment.record"
+        ]
+      }
+    },
+    {
+      "schema_ref": "position.scope",
+      "node_kind": "object",
+      "safety_class": "settlement",
+      "expected": {
+        "kind": "value_object",
+        "identity": [
+          "scope_kind",
+          "scope_ref"
+        ],
+        "derived_from": []
+      }
+    },
+    {
+      "schema_ref": "recovery.reconcile",
+      "node_kind": "operation",
+      "safety_class": "recovery_replay",
+      "expected": {
+        "owner": "recovery.context",
+        "changes": [],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "recovery.safe_retry",
+      "node_kind": "operation",
+      "safety_class": "recovery_replay",
+      "expected": {
+        "owner": "recovery.context",
+        "changes": [],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "session.enter",
+      "node_kind": "operation",
+      "safety_class": "identity",
+      "expected": {
+        "owner": "identity.session",
+        "changes": [
+          "identity.session"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "settlement.authorize",
+      "node_kind": "operation",
+      "safety_class": "settlement",
+      "expected": {
+        "owner": "payment.intent",
+        "changes": [
+          "payment.intent"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "settlement.close",
+      "node_kind": "operation",
+      "safety_class": "settlement",
+      "expected": {
+        "owner": "payment.intent",
+        "changes": [
+          "payment.intent",
+          "payment.record"
+        ],
+        "invalidates": [
+          "position.position"
+        ],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "settlement.confirm_receipt",
+      "node_kind": "operation",
+      "safety_class": "settlement",
+      "expected": {
+        "owner": "payment.intent",
+        "changes": [
+          "payment.intent",
+          "payment.record"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "settlement.mark_sent",
+      "node_kind": "operation",
+      "safety_class": "settlement",
+      "expected": {
+        "owner": "payment.intent",
+        "changes": [
+          "payment.intent"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "settlement.prepare",
+      "node_kind": "operation",
+      "safety_class": "settlement",
+      "expected": {
+        "owner": "payment.intent",
+        "changes": [
+          "payment.intent"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "settlement.reconcile",
+      "node_kind": "operation",
+      "safety_class": "settlement",
+      "expected": {
+        "owner": "payment.intent",
+        "changes": [
+          "payment.intent"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "storage.backup",
+      "node_kind": "object",
+      "safety_class": "storage_restore",
+      "expected": {
+        "kind": "entity",
+        "identity": [
+          "backup_id",
+          "snapshot_identity"
+        ],
+        "derived_from": []
+      }
+    },
+    {
+      "schema_ref": "storage.create_backup",
+      "node_kind": "operation",
+      "safety_class": "storage_restore",
+      "expected": {
+        "owner": "storage.backup",
+        "changes": [
+          "storage.backup"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "storage.restore",
+      "node_kind": "operation",
+      "safety_class": "storage_restore",
+      "expected": {
+        "owner": "storage.restore_operation",
+        "changes": [
+          "group.group",
+          "group.membership"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "storage.restore_operation",
+      "node_kind": "object",
+      "safety_class": "storage_restore",
+      "expected": {
+        "kind": "entity",
+        "identity": [
+          "operation_id"
+        ],
+        "derived_from": []
+      }
+    },
+    {
+      "schema_ref": "wallet.connect_switch",
+      "node_kind": "operation",
+      "safety_class": "authority",
+      "expected": {
+        "owner": "wallet.session",
+        "changes": [
+          "wallet.session"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    },
+    {
+      "schema_ref": "wallet.execute_action",
+      "node_kind": "operation",
+      "safety_class": "authority",
+      "expected": {
+        "owner": "wallet.action",
+        "changes": [
+          "wallet.action"
+        ],
+        "invalidates": [],
+        "invalidates_prepared": [],
+        "guards": []
+      }
+    }
+  ],
+  "supersessions": [
+    {
+      "id": "SUP-J08-SETTLING",
+      "journey": "08",
+      "piece_type": "state",
+      "piece_selector": "settling",
+      "golden_impact": "GOLDEN-IMPACT-J08-SETTLEMENT-02",
+      "decision": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
+      "disposition": "POST_GOLDEN_SUPERSEDED",
+      "reason": "Historical blanket Add-disabled settlement state is preserved as evidence but no longer required for ordinary settlement composition."
+    },
+    {
+      "id": "SUP-J05-LOCK-COPY",
+      "journey": "05",
+      "piece_type": "copy",
+      "piece_selector": "locked blanket copy",
+      "golden_impact": "GOLDEN-IMPACT-J05-LOCK-02",
+      "decision": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
+      "disposition": "POST_GOLDEN_SUPERSEDED",
+      "reason": "Historical blanket-lock copy is superseded for ordinary dependency-scoped locking; the locked state itself remains."
+    }
   ]
 }

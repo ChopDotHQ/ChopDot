@@ -2109,7 +2109,8 @@
         "Method-specific validation and exact destination versioning.",
         "No wallet/provider secrets.",
         "Preference is compatibility-scoped, not authority."
-      ]
+      ],
+      "safety_class": "authority"
     },
     {
       "id": "payment_destination.remove",
@@ -2128,7 +2129,8 @@
       "rules": [
         "Removal is not payment cancellation.",
         "Unknown result reconciles before retry."
-      ]
+      ],
+      "safety_class": "authority"
     },
     {
       "id": "wallet.connect_switch",
@@ -2147,7 +2149,8 @@
       "rules": [
         "Connected account/network is revalidated at signing.",
         "Connection does not create a saved receiving destination."
-      ]
+      ],
+      "safety_class": "authority"
     },
     {
       "id": "wallet.execute_action",
@@ -2167,7 +2170,8 @@
         "Owning journey defines exact action scope.",
         "Signature, submission and finality remain distinct.",
         "Unknown submission reconciles before retry."
-      ]
+      ],
+      "safety_class": "authority"
     },
     {
       "id": "qr.resolve",
@@ -2307,7 +2311,8 @@
         "Rename changes display identity, not history/stable ID.",
         "Archive is reversible organization state, not settlement/deletion/forgiveness.",
         "Stale review refreshes before write."
-      ]
+      ],
+      "safety_class": "composition_continuity"
     },
     {
       "id": "group.transfer_ownership",
@@ -2326,7 +2331,8 @@
         "Recipient is an eligible active member.",
         "Roster management remains Journey 09.",
         "Unknown result reconciles before retry."
-      ]
+      ],
+      "safety_class": "composition_continuity"
     },
     {
       "id": "group.leave",
@@ -2345,7 +2351,8 @@
         "Owner transfers ownership first.",
         "Open/unresolved obligations block leave.",
         "Historical attribution remains unchanged."
-      ]
+      ],
+      "safety_class": "composition_continuity"
     },
     {
       "id": "group.delete",
@@ -2363,7 +2370,8 @@
       "rules": [
         "Owner only, archived, sole active member, no open/unresolved items, typed confirmation and final review.",
         "No claim of external/global erasure."
-      ]
+      ],
+      "safety_class": "composition_continuity"
     },
     {
       "id": "preferences.update",
@@ -2732,7 +2740,8 @@
         "participant_id_stable": true,
         "account_link_replaces_participant": false,
         "historical_reference_rewrite": false
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-ID-02",
@@ -2753,7 +2762,8 @@
           "email"
         ],
         "collision_or_mismatch": "unresolved"
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-ID-03",
@@ -2772,7 +2782,8 @@
         "kind": "group_scoped_unlinkability",
         "group_visible_cross_group_stable_identifier": false,
         "account_binding_may_be_private": true
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-AUTH-01",
@@ -2800,7 +2811,8 @@
           "group",
           "identity_provider"
         ]
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-MONEY-01",
@@ -2824,7 +2836,8 @@
         ],
         "cross_partition_combine": false,
         "display_decimal_authority": false
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-OP-01",
@@ -2849,7 +2862,8 @@
           "cancel_too_late"
         ],
         "same_operation_identity_until_reconciliation": true
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-OP-02",
@@ -2871,7 +2885,8 @@
       "constraint": {
         "kind": "unknown_before_replacement_retry",
         "replacement_retry_requires_proven_no_effect": true
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-OP-03",
@@ -2896,7 +2911,8 @@
           "route_change",
           "time_alone"
         ]
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-OP-04",
@@ -2915,7 +2931,8 @@
         "kind": "stale_truth_before_write",
         "stale_write_behavior": "refresh_and_rereview",
         "silent_overwrite": false
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-HIST-01",
@@ -2937,7 +2954,8 @@
         "accepted_history_append_only": true,
         "replay_external_effects": false,
         "replay_role": "rebuild_projections"
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-EXP-01",
@@ -2955,7 +2973,8 @@
         "kind": "sum_allocations_equals_expense_total",
         "allocation_object": "expense.allocation",
         "money_partition": "money.money_v1"
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-EXP-02",
@@ -2975,7 +2994,8 @@
         "expense_mutation_owner": "06",
         "review_issue_resolution_owner": "07",
         "owner_correction_cannot_fabricate_reviewer_agreement": true
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-ISSUE-01",
@@ -2992,7 +3012,8 @@
       "constraint": {
         "kind": "block_dependent_payment_items_only",
         "dependency_key": "disputed_expense_source_lineage"
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-POS-01",
@@ -3010,7 +3031,8 @@
         "direct_mutation": false,
         "currency_partitioned": true,
         "lineage_explainable": true
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-PAY-01",
@@ -3031,7 +3053,8 @@
         "one_currency": true,
         "one_payer_recipient_pair": true,
         "retroactive_expansion": false
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-PAY-02",
@@ -3045,7 +3068,9 @@
         "J11",
         "J12",
         "J15"
-      ]
+      ],
+      "machine_checkable": false,
+      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
     },
     {
       "id": "LAW-PAY-03",
@@ -3066,7 +3091,8 @@
         "kind": "partial_remainder_preserves_dependency",
         "open_remainder_preserves_source_lineage": true,
         "release_lock_only_when_no_open_remainder": true
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-REQ-01",
@@ -3077,7 +3103,9 @@
       "rule": "Accepted request creation does not imply delivery; delivery does not imply read/agreement/payment; only payment-domain proof may mark paid.",
       "sources": [
         "J13"
-      ]
+      ],
+      "machine_checkable": false,
+      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
     },
     {
       "id": "LAW-DEST-01",
@@ -3098,7 +3126,8 @@
         "copying_confirms_payment": false,
         "expiry_confirms_payment": false,
         "stopping_confirms_payment": false
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-WALLET-01",
@@ -3123,7 +3152,8 @@
           "source",
           "permission"
         ]
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-QR-01",
@@ -3134,7 +3164,9 @@
       "rule": "A QR payload is inert until owner-journey validation and cannot itself create membership, payment, destination or wallet authority.",
       "sources": [
         "APPROVAL_22_v1"
-      ]
+      ],
+      "machine_checkable": false,
+      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
     },
     {
       "id": "LAW-SAV-01",
@@ -3148,7 +3180,9 @@
       "sources": [
         "J16",
         "J17"
-      ]
+      ],
+      "machine_checkable": false,
+      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
     },
     {
       "id": "LAW-SAV-02",
@@ -3161,7 +3195,9 @@
       "sources": [
         "J16",
         "J17"
-      ]
+      ],
+      "machine_checkable": false,
+      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
     },
     {
       "id": "LAW-ACT-01",
@@ -3178,7 +3214,8 @@
       "constraint": {
         "kind": "read_only_projection",
         "unread_is_not_unresolved": true
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-INSIGHT-01",
@@ -3190,7 +3227,9 @@
       "sources": [
         "J19",
         "APPROVAL_19_v1_1"
-      ]
+      ],
+      "machine_checkable": false,
+      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
     },
     {
       "id": "LAW-IMPORT-01",
@@ -3201,7 +3240,9 @@
       "rule": "Import previews before write, creates one new group, does not auto-merge existing groups, does not link people by name alone, and does not silently guess money semantics.",
       "sources": [
         "APPROVAL_23_v1"
-      ]
+      ],
+      "machine_checkable": false,
+      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
     },
     {
       "id": "LAW-EXPORT-01",
@@ -3214,7 +3255,9 @@
       "sources": [
         "J24",
         "APPROVAL_24_v1"
-      ]
+      ],
+      "machine_checkable": false,
+      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
     },
     {
       "id": "LAW-STORAGE-01",
@@ -3237,7 +3280,8 @@
         "secrets_excluded": true,
         "executable_authority_excluded": true,
         "unknown_outcome_requires_reconciliation": true
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-GROUP-01",
@@ -3248,7 +3292,9 @@
       "rule": "Archive is reversible organization state; it does not forgive/net/settle/delete balances or history.",
       "sources": [
         "J26"
-      ]
+      ],
+      "machine_checkable": false,
+      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
     },
     {
       "id": "LAW-GROUP-02",
@@ -3272,7 +3318,8 @@
           "historical_ledger",
           "other_memberships"
         ]
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-PREF-01",
@@ -3283,7 +3330,9 @@
       "rule": "Profile/notification/appearance preview remains reversible until a verified save result.",
       "sources": [
         "J27"
-      ]
+      ],
+      "machine_checkable": false,
+      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
     },
     {
       "id": "LAW-ACCOUNT-01",
@@ -3296,7 +3345,9 @@
       "rule": "Deletion is blocked by group ownership or unresolved money obligations, routes to their owning journeys, and makes no global erasure claim.",
       "sources": [
         "J27"
-      ]
+      ],
+      "machine_checkable": false,
+      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
     },
     {
       "id": "LAW-SPEND-01",
@@ -3309,7 +3360,9 @@
       "sources": [
         "C1_SPEND",
         "POST_J28"
-      ]
+      ],
+      "machine_checkable": false,
+      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
     },
     {
       "id": "LAW-SPEND-02",
@@ -3322,7 +3375,9 @@
       "sources": [
         "C1_SPEND",
         "C1_EXECUTION"
-      ]
+      ],
+      "machine_checkable": false,
+      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
     },
     {
       "id": "LAW-EXP-03",
@@ -3349,7 +3404,8 @@
         "J05",
         "J05_STATE",
         "C1_IDENTITY"
-      ]
+      ],
+      "machine_checkable": true
     },
     {
       "id": "LAW-EXP-GUARD-01",
@@ -3465,7 +3521,8 @@
         "J11",
         "DEC_EXP_LOCK",
         "DEC_EXP_LOCK_V2"
-      ]
+      ],
+      "machine_checkable": true
     },
     {
       "id": "LAW-EXP-HISTORY-01",
@@ -3485,7 +3542,8 @@
         "source_object": "expense.revision",
         "requires_prior_revision": true,
         "read_only": true
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-EXP-REVIEW-01",
@@ -3518,7 +3576,8 @@
         "J06_DECISION",
         "J07",
         "J07_STATE"
-      ]
+      ],
+      "machine_checkable": true
     },
     {
       "id": "LAW-EXP-CLOSEOUT-01",
@@ -3543,7 +3602,8 @@
       "sources": [
         "DEC_EXP_LOCK",
         "DEC_EXP_LOCK_V2"
-      ]
+      ],
+      "machine_checkable": true
     },
     {
       "id": "LAW-PAY-04",
@@ -3571,7 +3631,8 @@
       "sources": [
         "J11",
         "DEC_EXP_LOCK_V2"
-      ]
+      ],
+      "machine_checkable": true
     },
     {
       "id": "LAW-POS-SCOPE-01",
@@ -3596,7 +3657,8 @@
         "J10",
         "J11"
       ],
-      "safety_class": "settlement"
+      "safety_class": "settlement",
+      "machine_checkable": true
     }
   ],
   "anti_collapse": [
