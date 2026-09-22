@@ -2216,8 +2216,7 @@
     "money": [
       "money.money_v1",
       "LAW-MONEY-01",
-      "LAW-SAV-01",
-      "LAW-SAV-02"
+      "LAW-SAV-01"
     ],
     "recovery_replay": [
       "recovery.reconcile",
@@ -2243,7 +2242,8 @@
       "LAW-AUTH-01",
       "LAW-DEST-01",
       "LAW-WALLET-01",
-      "LAW-ACCOUNT-01"
+      "LAW-ACCOUNT-01",
+      "LAW-SAV-02"
     ],
     "settlement": [
       "payment.intent",
