@@ -39,7 +39,7 @@ function extractScreens(doc){
   for(let i=0;i<tokens.length;i++){
     const tag=tokens[i][0];if(/^<\//.test(tag))continue;
     const tagName=(tokens[i][1]||'').toLowerCase(),cls=attr(tag,'class')||'',id=attr(tag,'id');
-    if(!id||!cls.split(/\s+/).includes('screen'))continue;
+    const classTokens=cls.split(/\s+/).filter(Boolean);\n    if(!id||!classTokens.some(x=>x==='screen'||x.endsWith('-screen')))continue;
     let depth=1,end=null;
     for(let k=i+1;k<tokens.length;k++){
       const tk=tokens[k][0],openName=(tokens[k][1]||'').toLowerCase(),closeName=(tokens[k][2]||'').toLowerCase();
