@@ -35,7 +35,7 @@ export function validateEventBindings(core,bindings,eventSet){
       if(!rels.length)errors.push({id:"EVENT-DOMAIN-WITHOUT-OPERATION",event:b.domain_event});
       if(rels.some(r=>!["initiates","commits","reports_claim"].includes(r.relation)))errors.push({id:"EVENT-DOMAIN-BAD-RELATION",event:b.domain_event});
     }
-    if(["NAVIGATION_TRANSITION","DERIVED_PROJECTION","REVIEW_DEMO_CHROME","PRESENTATION_ONLY","EXTERNAL_HANDOFF","DRAFT_FIELD"].includes(b.classification)&&rels.length){
+    if(["NAVIGATION_TRANSITION","DERIVED_PROJECTION","REVIEW_DEMO_CHROME","PRESENTATION_ONLY","DRAFT_FIELD"].includes(b.classification)&&rels.length){
       errors.push({id:"EVENT-NONMUTATION-HAS-OPERATION",event:b.domain_event,classification:b.classification});
     }
     if(b.classification==="RECOVERY_BEHAVIOR"&&rels.some(r=>!["queries","retries","cancels","reports_result"].includes(r.relation))){
