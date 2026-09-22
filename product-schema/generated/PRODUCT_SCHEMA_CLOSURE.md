@@ -55,17 +55,17 @@
 
 | Change | Tier | Objects | Ops | Laws | Contexts | Journeys | Views | Tasks |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| Equal split semantics | CRITICAL | 1 | 2 | 7 | 7 | 13 | 0 | 32 |
-| Participant identity | CRITICAL | 1 | 1 | 4 | 14 | 27 | 0 | 32 |
-| Settlement eligibility | CRITICAL | 0 | 0 | 1 | 1 | 4 | 0 | 23 |
-| Expense edit rules | CRITICAL | 0 | 1 | 7 | 7 | 13 | 0 | 32 |
-| Review reset behavior | CRITICAL | 0 | 0 | 1 | 0 | 4 | 0 | 23 |
-| Restore semantics | LOW | 0 | 1 | 0 | 0 | 1 | 0 | 0 |
-| Payment destination | CRITICAL | 1 | 2 | 2 | 4 | 27 | 0 | 32 |
-| Group lifecycle | CRITICAL | 1 | 5 | 3 | 7 | 23 | 2 | 32 |
-| SpendIntent | LOW | 1 | 1 | 2 | 1 | 0 | 0 | 0 |
-| Settlement mutation guard | CRITICAL | 0 | 0 | 1 | 1 | 4 | 0 | 23 |
-| Typed PositionScope | CRITICAL | 1 | 0 | 1 | 1 | 10 | 0 | 32 |
+| Equal split semantics | CRITICAL | 40 | 40 | 35 | 20 | 28 | 5 | 32 |
+| Participant identity | CRITICAL | 40 | 40 | 35 | 20 | 28 | 5 | 32 |
+| Settlement eligibility | CRITICAL | 40 | 40 | 35 | 20 | 28 | 5 | 32 |
+| Expense edit rules | CRITICAL | 40 | 40 | 35 | 20 | 28 | 5 | 32 |
+| Review reset behavior | CRITICAL | 40 | 40 | 35 | 20 | 28 | 5 | 32 |
+| Restore semantics | CRITICAL | 40 | 40 | 35 | 20 | 28 | 5 | 32 |
+| Payment destination | CRITICAL | 40 | 40 | 35 | 20 | 28 | 5 | 32 |
+| Group lifecycle | CRITICAL | 40 | 40 | 35 | 20 | 28 | 5 | 32 |
+| SpendIntent | CRITICAL | 40 | 40 | 35 | 20 | 28 | 5 | 32 |
+| Settlement mutation guard | CRITICAL | 40 | 40 | 35 | 20 | 28 | 5 | 32 |
+| Typed PositionScope | CRITICAL | 40 | 40 | 35 | 20 | 28 | 5 | 32 |
 | Presentation-only control | LOW | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
 
 ## Closure errors
