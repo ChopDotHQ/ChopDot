@@ -235,7 +235,8 @@
             "expense.issue",
             "position.position",
             "group.group",
-            "expense.expense"
+            "expense.expense",
+            "position.scope"
           ],
           "availability": "resolve_at_effect_time",
           "laws": [
@@ -244,7 +245,8 @@
             "LAW-OP-02",
             "LAW-OP-04",
             "LAW-PAY-03",
-            "LAW-PAY-04"
+            "LAW-PAY-04",
+            "LAW-POS-SCOPE-01"
           ]
         },
         "construction_requirement_exact": [
