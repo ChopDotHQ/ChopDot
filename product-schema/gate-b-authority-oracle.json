@@ -64,6 +64,14 @@
           "contains": [
             "later item-scoped contracts must be considered at integration"
           ]
+        },
+        {
+          "path": "product-schema/product-decisions-v1.json",
+          "git_blob": "355fff22b8c8996379ebabb8d943f289aa7ea5ad",
+          "contains": [
+            "Dependency-scoped expense locking with explicit whole-group closeout",
+            "allow_unrelated_new_expense"
+          ]
         }
       ],
       "required": {
@@ -71,11 +79,27 @@
           "law": "LAW-EXP-GUARD-01",
           "kind": "effect_guard_required",
           "matches": {
-            "scope_policy": "REQUIRES_PRODUCT_DECISION"
+            "policy": "dependency_scoped_with_explicit_group_closeout",
+            "default_mode": "dependency_scoped",
+            "dependency_scoped": {
+              "create": "allow_unrelated_new_expense",
+              "edit": "block_if_target_expense_in_active_scope_source_item_ids",
+              "delete": "block_if_target_expense_in_active_scope_source_item_ids",
+              "prepared_scope_retroactive_expansion": false
+            },
+            "group_closeout": {
+              "requires_explicit_context": "payment.closeout_context",
+              "create": "block_for_closeout_group",
+              "edit": "block_for_closeout_group",
+              "delete": "block_for_closeout_group"
+            }
           }
         },
-        "known_gap": "POLICY-EXPENSE-LOCK-SCOPE",
-        "construction_requirement": "REQ-J05-LOCK"
+        "product_decision": "DEC-EXPENSE-SETTLEMENT-LOCK-01",
+        "construction_requirements": [
+          "REQ-J05-LOCK",
+          "REQ-J06-LOCK"
+        ]
       }
     },
     {

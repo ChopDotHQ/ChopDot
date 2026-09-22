@@ -432,21 +432,22 @@
         "expense.mutation_guard",
         "payment.intent",
         "payment.settlement_scope",
+        "payment.closeout_context",
         "group.group",
         "expense.expense"
       ],
       "preserves": [
-        "active settlement identity/state",
-        "settlement scope",
-        "target Group/Expense",
-        "selected lock-scope policy once authorized"
+        "attempted mutation kind/target",
+        "active PaymentIntent terminality/unknown-effect state",
+        "frozen SettlementScope source lineage",
+        "optional explicit GroupCloseoutContext"
       ],
       "laws": [
         "LAW-EXP-GUARD-01",
         "LAW-OP-04"
       ],
       "availability": "resolve_at_effect_time",
-      "note": "Effect-time guard inputs only. Gate B does not own settlement lifecycle UI; it consumes the guard predicate. Scope remains POLICY-EXPENSE-LOCK-SCOPE."
+      "note": "Effect-time predicate. Ordinary settlements use dependency-scoped locking; an explicit GroupCloseoutContext broadens the lock to the whole Group."
     }
   ],
   "journey_projections": [
@@ -1407,7 +1408,8 @@
         "REQ-J07-ISSUE-LOOP",
         "REQ-J05-LOCK",
         "REQ-J06-REVIEW-RESET",
-        "REQ-J08-REFRESH"
+        "REQ-J08-REFRESH",
+        "REQ-J06-LOCK"
       ]
     },
     {
@@ -2122,23 +2124,17 @@
       "journey": "05",
       "kind": "effect_guard",
       "value": {
-        "scope": "REQUIRES_PRODUCT_DECISION",
-        "locked_when": "active settlement intersects target under selected scope policy",
-        "blocked_operations": [
-          "expense.create",
-          "expense.edit",
-          "expense.delete"
-        ],
-        "entered_details_preserved": true
+        "policy": "dependency_scoped_with_explicit_group_closeout",
+        "ordinary_settlement_create": "allow_unrelated_new_expense",
+        "group_closeout_create": "block_for_closeout_group",
+        "entered_details_preserved_if_blocked": true
       },
       "sources": [
         "J05",
         "J05_STATE",
         "J05_RECOVERED",
-        "J06",
-        "J06_STATE",
         "J08",
-        "J08_DECISION"
+        "DEC_EXP_LOCK"
       ]
     },
     {
@@ -2192,6 +2188,25 @@
       "sources": [
         "J06",
         "J08"
+      ]
+    },
+    {
+      "id": "REQ-J06-LOCK",
+      "journey": "06",
+      "kind": "effect_guard",
+      "value": {
+        "policy": "dependency_scoped_with_explicit_group_closeout",
+        "ordinary_settlement_edit_delete": "block_if_target_expense_in_active_scope_source_item_ids",
+        "unrelated_expense_edit_delete": "allow",
+        "group_closeout_edit_delete": "block_for_closeout_group",
+        "unknown_effect": "keep_relevant_scope_locked_until_reconciled"
+      },
+      "sources": [
+        "J06",
+        "J06_STATE",
+        "J08",
+        "J11",
+        "DEC_EXP_LOCK"
       ]
     }
   ]
