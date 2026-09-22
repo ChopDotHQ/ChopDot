@@ -3080,7 +3080,8 @@
         "one_payer_recipient_pair": true,
         "retroactive_expansion": false
       },
-      "machine_checkable": true
+      "machine_checkable": true,
+      "safety_class": "settlement"
     },
     {
       "id": "LAW-PAY-02",
@@ -3096,7 +3097,8 @@
         "J15"
       ],
       "machine_checkable": false,
-      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
+      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract.",
+      "safety_class": "settlement"
     },
     {
       "id": "LAW-PAY-03",
@@ -3118,7 +3120,8 @@
         "open_remainder_preserves_source_lineage": true,
         "release_lock_only_when_no_open_remainder": true
       },
-      "machine_checkable": true
+      "machine_checkable": true,
+      "safety_class": "settlement"
     },
     {
       "id": "LAW-REQ-01",
@@ -3572,7 +3575,8 @@
         "DEC_EXP_LOCK",
         "DEC_EXP_LOCK_V2"
       ],
-      "machine_checkable": true
+      "machine_checkable": true,
+      "safety_class": "settlement"
     },
     {
       "id": "LAW-EXP-HISTORY-01",
@@ -3682,7 +3686,8 @@
         "J11",
         "DEC_EXP_LOCK_V2"
       ],
-      "machine_checkable": true
+      "machine_checkable": true,
+      "safety_class": "settlement"
     },
     {
       "id": "LAW-POS-SCOPE-01",
