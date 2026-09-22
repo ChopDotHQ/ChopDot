@@ -179,7 +179,8 @@
         "payment.record",
         "position.position",
         "identity.participant",
-        "money.money_v1"
+        "money.money_v1",
+        "position.scope"
       ],
       "preserves": [
         "payment_id/idempotency",
@@ -195,7 +196,8 @@
         "LAW-PAY-02",
         "LAW-PAY-03",
         "LAW-OP-01",
-        "LAW-OP-02"
+        "LAW-OP-02",
+        "LAW-POS-SCOPE-01"
       ]
     },
     {
@@ -437,7 +439,8 @@
         "expense.issue",
         "position.position",
         "group.group",
-        "expense.expense"
+        "expense.expense",
+        "position.scope"
       ],
       "preserves": [
         "attempted mutation kind/target",
@@ -454,7 +457,8 @@
         "LAW-OP-02",
         "LAW-OP-04",
         "LAW-PAY-03",
-        "LAW-PAY-04"
+        "LAW-PAY-04",
+        "LAW-POS-SCOPE-01"
       ],
       "availability": "resolve_at_effect_time",
       "note": "Gate B effect-time predicate for ordinary settlements. Missing or malformed guard evidence fails closed. Whole-group closeout remains future semantic-only."
