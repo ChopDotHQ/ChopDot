@@ -3096,9 +3096,27 @@
         "J12",
         "J15"
       ],
-      "machine_checkable": false,
-      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract.",
-      "safety_class": "settlement"
+      "machine_checkable": true,
+      "safety_class": "settlement",
+      "constraint": {
+        "kind": "payment_lifecycle_noncollapse",
+        "distinct_states": [
+          "sent",
+          "started",
+          "submitted",
+          "waiting",
+          "received",
+          "confirmed",
+          "closed",
+          "failed",
+          "unknown",
+          "partial",
+          "reversed"
+        ],
+        "payer_sent_confirms_receipt": false,
+        "partial_equals_closed": false,
+        "unknown_equals_failed": false
+      }
     },
     {
       "id": "LAW-PAY-03",
