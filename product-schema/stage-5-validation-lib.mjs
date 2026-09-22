@@ -196,7 +196,7 @@ export function semanticWitnessStats(core,graph,frozen){
   const objects=core.objects.filter(x=>sourceGrounded(x,core,journeyIds)).length;
   const laws=core.laws.filter(x=>sourceGrounded(x,core,journeyIds)).length;
   const views=core.derived_models.filter(v=>graph.journey_projections.some(j=>has(j.renders_views,v.id))&&v.derived_from.every(id=>core.objects.some(o=>o.id===id))).length;
-  const contexts=graph.contexts.filter(c=>c.objects.every(id=>core.objects.some(o=>o.id===id))&&graph.journey_projections.some(j=>[...(j.entry_contexts_any||[]),...(j.ambient_contexts_required||[]),...(j.effect_contexts_required||[])].includes(c.id))).length;
+  const contexts=graph.contexts.filter(c=>c.objects.every(id=>core.objects.some(o=>o.id===id))&&(graph.journey_projections.some(j=>[...(j.entry_contexts_any||[]),...(j.ambient_contexts_required||[]),...(j.effect_contexts_required||[])].includes(c.id))||graph.composition_units.some(u=>(u.contexts||[]).includes(c.id)))).length;
   const reqs=(graph.construction_requirements||[]).filter(r=>(r.sources||[]).some(x=>core.sources[x]||journeyIds.has(String(x).replace(/^J/,"").padStart(2,"0")))).length;
   const cont=(graph.continuity_contracts||[]).filter(r=>(r.sources||[]).some(x=>core.sources[x]||journeyIds.has(String(x).replace(/^J/,"").padStart(2,"0")))).length;
   return {
