@@ -46,9 +46,9 @@ Certified tasks: **31** across **6 journeys**. Semantic-only tasks without appro
 
 ## Reading the counts
 
-- `minimum_user_steps` = required inputs + deliberate user actions inside the journey.
-- `typical_user_steps` additionally includes expected-but-optional inputs such as an issue note or reply content.
-- `end_to_end_*` adds a certified predecessor entry action when one is defined.
-- Prototype `Continue` controls used only to advance saving/review fixtures are verified but excluded from user-effort counts.
+- minimum_user_steps = required inputs + deliberate user actions inside the journey.
+- typical_user_steps additionally includes expected-but-optional inputs.
+- end_to_end_* adds a certified predecessor entry action when one is defined.
+- Prototype Continue controls used only to advance saving/review fixtures are verified but excluded from user-effort counts.
 - Cross-actor handoffs are coordination boundaries and do not count as clicks.
 
