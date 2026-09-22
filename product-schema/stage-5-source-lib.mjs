@@ -101,6 +101,36 @@ export function parseDynamicPrototype(text){
   }
   return {states:uniq(states),actions};
 }
+
+export function parseSwitchPrototype(text){
+  const states=[],actions=[],fields=[];
+  const matches=[...text.matchAll(/\bcase\s+['"]([a-z0-9][a-z0-9-]+)['"]\s*:/gi)];
+  for(let i=0;i<matches.length;i++){
+    const state=matches[i][1],start=matches[i].index+matches[i][0].length,end=i+1<matches.length?matches[i+1].index:text.length;
+    const block=text.slice(start,end);
+    states.push(state);
+    for(const m of block.matchAll(/\bbtn\(\s*(['"\x60])([\s\S]*?)\1\s*,\s*['"]([^'"]+)['"]/g)){
+      const label=norm(m[2].replace(/\$\{[^}]+\}/g,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' '));
+      if(label)actions.push({state,label,source_event:m[3],source:'switch_prototype'});
+    }
+    for(const m of block.matchAll(/<button\b[^>]*>([\s\S]*?)<\/button>/gi)){
+      const label=norm(m[1].replace(/\$\{[^}]+\}/g,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' '));
+      if(label)actions.push({state,label,source_event:null,source:'switch_prototype'});
+    }
+    for(const m of block.matchAll(/<(input|textarea|select)\b([^>]*)>/gi)){
+      const tag=m[0];
+      const get=n=>{const a=tag.match(new RegExp(n+"\\s*=\\s*['\"]([^'\"]*)['\"]",'i'));return a?a[1]:null;};
+      const type=(get('type')||m[1]).toLowerCase();
+      if(['button','submit','reset','hidden'].includes(type))continue;
+      const label=get('aria-label')||get('placeholder')||get('name')||get('id')||type;
+      fields.push({state,label,name:get('name')||get('id')||null,type});
+    }
+  }
+  const actionMap=new Map();for(const a of actions){const k=a.state+'|'+a.label+'|'+(a.source_event||'');if(!actionMap.has(k))actionMap.set(k,a);}
+  const fieldMap=new Map();for(const x of fields){const k=x.state+'|'+(x.name||x.label)+'|'+x.type;if(!fieldMap.has(k))fieldMap.set(k,x);}
+  return {states:uniq(states),actions:[...actionMap.values()],fields:[...fieldMap.values()]};
+}
+
 export function rawFields(text){
   const out=[];
   function attr(tag,name){
