@@ -34,8 +34,9 @@ export function parseMarkdownEvents(text,path){
         for(const m of cell.matchAll(/\b([A-Z][A-Za-z0-9]+(?:[A-Z][A-Za-z0-9]+)+)\b/g))push(m[1],cols[0],cols[1],'table');
       }
     }
-    for(const m of line.matchAll(/\x60([A-Z][A-Za-z0-9]+)\x60/g))push(m[1],null,line,'backtick_prose');
-    for(const m of line.matchAll(/\*\*([A-Z][A-Za-z0-9]+)\*\*/g))push(m[1],null,line,'bold_prose');
+    const looksEvent=v=>/(Requested|Opened|Viewed|Selected|Prepared|Confirmed|Removed|Verified|Returned|Saved|Closed|Submitted|Cleared|Started|Accepted|Retried|Refreshed|Cancelled|Reported|Recorded|Added|Withdrawn|Created|Delivered|Resolved|Checked|Failed|Unknown)$/.test(v)||/^Demo[A-Z]/.test(v);
+    for(const m of line.matchAll(/\x60([A-Z][A-Za-z0-9]+)\x60/g))if(looksEvent(m[1]))push(m[1],null,line,'backtick_prose');
+    for(const m of line.matchAll(/\*\*([A-Z][A-Za-z0-9]+)\*\*/g))if(looksEvent(m[1]))push(m[1],null,line,'bold_prose');
   }
   return out;
 }
