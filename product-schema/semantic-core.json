@@ -735,7 +735,14 @@
         "payment.record"
       ],
       "scope_object": "position.scope",
-      "safety_class": "settlement"
+      "safety_class": "settlement",
+      "references": [
+        {
+          "field": "position_scope",
+          "object": "position.scope",
+          "required": true
+        }
+      ]
     },
     {
       "id": "payment.settlement_scope",
@@ -1468,7 +1475,15 @@
         "J10",
         "J11"
       ],
-      "safety_class": "settlement"
+      "safety_class": "settlement",
+      "allowed_scope_kinds": [
+        "participant_pair",
+        "group"
+      ],
+      "scope_ref_semantics": {
+        "participant_pair": "canonical participant pair identity",
+        "group": "group_id"
+      }
     }
   ],
   "operations": [
@@ -1845,7 +1860,15 @@
         "Journey 11 prepares/authorizes; it does not complete.",
         "Freeze exact source lineage before authorization; later unrelated Expenses do not mutate the prepared scope."
       ],
-      "safety_class": "settlement"
+      "safety_class": "settlement",
+      "law_refs": [
+        "LAW-POS-SCOPE-01"
+      ],
+      "reads": [
+        "position.scope",
+        "position.position",
+        "payment.settlement_scope"
+      ]
     },
     {
       "id": "settlement.authorize",
@@ -3184,8 +3207,18 @@
         "J16",
         "J17"
       ],
-      "machine_checkable": false,
-      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
+      "machine_checkable": true,
+      "safety_class": "money",
+      "constraint": {
+        "kind": "confirmed_savings_only",
+        "confirmed_available_sources": [
+          "verified_confirmation"
+        ],
+        "self_report_increases_confirmed_available": false,
+        "submitted_increases_confirmed_available": false,
+        "waiting_increases_confirmed_available": false,
+        "unknown_increases_confirmed_available": false
+      }
     },
     {
       "id": "LAW-SAV-02",
@@ -3199,8 +3232,15 @@
         "J16",
         "J17"
       ],
-      "machine_checkable": false,
-      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
+      "machine_checkable": true,
+      "safety_class": "authority",
+      "constraint": {
+        "kind": "explicit_savings_authority",
+        "participant_position_owned_by_participant": true,
+        "group_controlled_withdrawal_requires_configured_rule": true,
+        "fabricated_custody_allowed": false,
+        "fabricated_confirmation_allowed": false
+      }
     },
     {
       "id": "LAW-ACT-01",
@@ -3349,8 +3389,15 @@
       "sources": [
         "J27"
       ],
-      "machine_checkable": false,
-      "machine_checkable_reason": "Source-grounded prose law; not selected as a V1 safety-critical machine contract."
+      "machine_checkable": true,
+      "safety_class": "authority",
+      "constraint": {
+        "kind": "account_deletion_adjacent_authority",
+        "blocked_by_active_group_ownership": true,
+        "blocked_by_unresolved_money": true,
+        "routes_to_owning_journeys": true,
+        "global_erasure_claim": false
+      }
     },
     {
       "id": "LAW-SPEND-01",
