@@ -432,22 +432,26 @@
         "expense.mutation_guard",
         "payment.intent",
         "payment.settlement_scope",
-        "payment.closeout_context",
         "group.group",
         "expense.expense"
       ],
       "preserves": [
         "attempted mutation kind/target",
-        "active PaymentIntent terminality/unknown-effect state",
-        "frozen SettlementScope source lineage",
-        "optional explicit GroupCloseoutContext"
+        "current Expense dependency state",
+        "proposed post-state dependency",
+        "all unresolved SettlementScope identities",
+        "authoritative reconciliation status"
       ],
       "laws": [
         "LAW-EXP-GUARD-01",
-        "LAW-OP-04"
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-04",
+        "LAW-PAY-03",
+        "LAW-PAY-04"
       ],
       "availability": "resolve_at_effect_time",
-      "note": "Effect-time predicate. Ordinary settlements use dependency-scoped locking; an explicit GroupCloseoutContext broadens the lock to the whole Group."
+      "note": "Gate B effect-time predicate for ordinary settlements only. Whole-group closeout is semantic-only outside Gate B until a user path is approved."
     }
   ],
   "journey_projections": [
@@ -1384,7 +1388,11 @@
         "COMP-04",
         "COMP-05",
         "COMP-06",
-        "LAW-EXP-REVIEW-01"
+        "LAW-EXP-REVIEW-01",
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-PAY-03",
+        "LAW-PAY-04"
       ],
       "build_constraint_refs": [
         "BUILD-01",
@@ -1409,7 +1417,8 @@
         "REQ-J05-LOCK",
         "REQ-J06-REVIEW-RESET",
         "REQ-J08-REFRESH",
-        "REQ-J06-LOCK"
+        "REQ-J06-LOCK",
+        "REQ-J08-SETTLEMENT-GOLDEN-IMPACT"
       ]
     },
     {
@@ -1963,12 +1972,12 @@
         "active_needs_review",
         "nothing_needs_you",
         "new_empty_group",
-        "settlement_in_progress",
         "everyone_square",
         "offline"
       ],
       "sources": [
-        "J08"
+        "J08",
+        "DEC_EXP_LOCK_V2"
       ]
     },
     {
@@ -2124,17 +2133,20 @@
       "journey": "05",
       "kind": "effect_guard",
       "value": {
-        "policy": "dependency_scoped_with_explicit_group_closeout",
-        "ordinary_settlement_create": "allow_unrelated_new_expense",
-        "group_closeout_create": "block_for_closeout_group",
-        "entered_details_preserved_if_blocked": true
+        "policy": "dependency_scoped_economic_guard",
+        "ordinary_settlement_create": "block_if_proposed_state_changes_active_settlement_dependency",
+        "unresolved_guard_input": "fail_closed",
+        "locked_state": "retained_when_dependency_guard_blocks_save",
+        "entered_details_preserved_if_blocked": true,
+        "group_closeout": "future_semantic_only_outside_gate_b"
       },
       "sources": [
         "J05",
         "J05_STATE",
         "J05_RECOVERED",
         "J08",
-        "DEC_EXP_LOCK"
+        "J11",
+        "DEC_EXP_LOCK_V2"
       ]
     },
     {
@@ -2195,18 +2207,36 @@
       "journey": "06",
       "kind": "effect_guard",
       "value": {
-        "policy": "dependency_scoped_with_explicit_group_closeout",
-        "ordinary_settlement_edit_delete": "block_if_target_expense_in_active_scope_source_item_ids",
-        "unrelated_expense_edit_delete": "allow",
-        "group_closeout_edit_delete": "block_for_closeout_group",
-        "unknown_effect": "keep_relevant_scope_locked_until_reconciled"
+        "policy": "dependency_scoped_economic_guard",
+        "ordinary_settlement_edit": "block_if_current_or_proposed_state_changes_active_settlement_dependency",
+        "ordinary_settlement_delete": "block_if_current_state_changes_active_settlement_dependency",
+        "unrelated_expense_edit_delete": "allow_only_when_economically_independent",
+        "unknown_effect": "fail_closed_until_authoritative_reconciliation",
+        "open_partial_remainder": "keep_dependency_locked",
+        "group_closeout": "future_semantic_only_outside_gate_b"
       },
       "sources": [
         "J06",
         "J06_STATE",
         "J08",
         "J11",
-        "DEC_EXP_LOCK"
+        "DEC_EXP_LOCK_V2"
+      ]
+    },
+    {
+      "id": "REQ-J08-SETTLEMENT-GOLDEN-IMPACT",
+      "journey": "08",
+      "kind": "post_golden_decision_impact",
+      "value": {
+        "historical_state": "settlement_in_progress",
+        "gate_b_required": false,
+        "ordinary_settlement_add_action": "available_until_effect_time_guard_evaluates_proposed_mutation",
+        "future_closeout": "revisit_historical_blanket_unavailable_state_when_closeout_surface_is_approved"
+      },
+      "sources": [
+        "J08",
+        "J08_DECISION",
+        "DEC_EXP_LOCK_V2"
       ]
     }
   ]

@@ -284,8 +284,15 @@
     },
     "DEC_EXP_LOCK": {
       "path": "product-schema/product-decisions-v1.json",
+      "commit": "c2797bd73dbdb22854ede54cb2b461e26862b1b1",
       "git_blob": "355fff22b8c8996379ebabb8d943f289aa7ea5ad",
-      "classification": "approved human product decision after frozen Golden baseline"
+      "classification": "approved human product decision after frozen Golden baseline; immutable approving commit"
+    },
+    "DEC_EXP_LOCK_V2": {
+      "path": "product-schema/product-decisions-v2.json",
+      "commit": "880fef977911c2bb366cd3144faef73487643919",
+      "git_blob": "8c73229d1350cb21f71f9664e50cfb7cf739ac5a",
+      "classification": "approved human clarification of settlement-lock integration semantics; immutable approving commit"
     }
   },
   "domains": [
@@ -734,7 +741,7 @@
         "currency",
         "source_item_ids"
       ],
-      "meaning": "Canonical exact settlement scope: payer, recipient, exact amount, one currency and frozen source lineage selected before authorization. New unrelated ledger items never retroactively expand an already-prepared scope.",
+      "meaning": "Canonical exact settlement scope: payer, recipient, exact amount, one currency and frozen source lineage selected before authorization. Source membership does not silently widen, but current eligibility must remain valid before execution.",
       "source_journeys": [
         "10",
         "11",
@@ -744,7 +751,8 @@
       "sources": [
         "J11",
         "PAYMENT_COMPAT",
-        "DEC_EXP_LOCK"
+        "DEC_EXP_LOCK",
+        "DEC_EXP_LOCK_V2"
       ]
     },
     {
@@ -1339,7 +1347,7 @@
       "kind": "guard",
       "domain": "groups_expenses",
       "identity": [],
-      "meaning": "Effect-time predicate over the attempted Expense mutation, active nonterminal PaymentIntent/SettlementScope truth and any explicit GroupCloseoutContext. Ordinary settlement locking is dependency-scoped; explicit group closeout broadens the same guard to the whole Group.",
+      "meaning": "Effect-time predicate over attempted Expense mutation current state, proposed post-state, and all unresolved PaymentIntent/SettlementScope dependencies. Gate B uses economic dependency rather than source-id membership alone.",
       "source_journeys": [
         "05",
         "06",
@@ -1354,12 +1362,12 @@
         "J08",
         "J08_DECISION",
         "J11",
-        "DEC_EXP_LOCK"
+        "DEC_EXP_LOCK",
+        "DEC_EXP_LOCK_V2"
       ],
       "derived_from": [
         "payment.intent",
         "payment.settlement_scope",
-        "payment.closeout_context",
         "group.group",
         "expense.expense"
       ]
@@ -1416,11 +1424,14 @@
         "closeout_id",
         "group_id"
       ],
-      "meaning": "Explicit user-started whole-group closeout coordination context. It executes no payment itself; while active it broadens the ExpenseMutationGuard from dependency-scoped locking to group-wide locking for that Group.",
+      "meaning": "Approved future whole-group closeout coordination context. It broadens Expense mutation locking to the whole Group, but has no approved user surface and is explicitly outside Gate B construction.",
       "source_journeys": [],
       "sources": [
-        "DEC_EXP_LOCK"
-      ]
+        "DEC_EXP_LOCK",
+        "DEC_EXP_LOCK_V2"
+      ],
+      "delivery_status": "semantic_only_no_approved_surface",
+      "gate_boundary": "outside_gate_b_until_user_path_approved"
     }
   ],
   "operations": [
@@ -1720,7 +1731,18 @@
       ],
       "law_refs": [
         "LAW-EXP-02",
-        "LAW-ISSUE-01"
+        "LAW-ISSUE-01",
+        "LAW-PAY-04"
+      ],
+      "invalidates_prepared": [
+        "payment.intent"
+      ],
+      "dependent_state_effects": [
+        {
+          "object": "payment.intent",
+          "effect": "invalidate any prepared intent whose exact source lineage depends on the disputed Expense; require re-resolution before execution",
+          "law_ref": "LAW-PAY-04"
+        }
       ]
     },
     {
@@ -2858,8 +2880,14 @@
       "sources": [
         "J11",
         "J12",
-        "J15"
-      ]
+        "J15",
+        "DEC_EXP_LOCK_V2"
+      ],
+      "constraint": {
+        "kind": "partial_remainder_preserves_dependency",
+        "open_remainder_preserves_source_lineage": true,
+        "release_lock_only_when_no_open_remainder": true
+      }
     },
     {
       "id": "LAW-REQ-01",
@@ -3109,10 +3137,9 @@
         "expense.mutation_guard",
         "expense.expense",
         "payment.intent",
-        "payment.settlement_scope",
-        "payment.closeout_context"
+        "payment.settlement_scope"
       ],
-      "rule": "Expense mutation locking is dependency-scoped by default: an active nonterminal settlement blocks edits/deletes of its frozen source Expenses but does not absorb or block a new unrelated Expense. An explicit whole-group closeout blocks create/edit/delete for that Group. Unknown-effect settlement scope remains locked until reconciliation establishes a terminal or safe no-effect result.",
+      "rule": "For ordinary settlements, block Expense create/edit/delete only when the current state or proposed post-state would change financial truth used by an unresolved settlement. Dependency includes frozen source lineage, payer/recipient pair, currency partition, current eligible balance, dispute eligibility and any open partial remainder. Guard inputs fail closed when unresolved; unknown-effect takes precedence over an optimistic terminal label.",
       "constraint": {
         "kind": "effect_guard_required",
         "operations": [
@@ -3121,24 +3148,26 @@
           "expense.delete"
         ],
         "guard": "expense.mutation_guard",
-        "policy": "dependency_scoped_with_explicit_group_closeout",
-        "default_mode": "dependency_scoped",
+        "policy": "dependency_scoped_economic_guard",
+        "dependency_dimensions": [
+          "frozen_source_item_lineage",
+          "payer_recipient_pair",
+          "currency_partition",
+          "current_eligible_balance",
+          "dispute_eligibility",
+          "open_partial_remainder"
+        ],
+        "state_evaluation": "current_and_proposed_post_state",
         "dependency_scoped": {
-          "create": "allow_unrelated_new_expense",
-          "edit": "block_if_target_expense_in_active_scope_source_item_ids",
-          "delete": "block_if_target_expense_in_active_scope_source_item_ids",
-          "prepared_scope_retroactive_expansion": false
-        },
-        "group_closeout": {
-          "requires_explicit_context": "payment.closeout_context",
-          "create": "block_for_closeout_group",
-          "edit": "block_for_closeout_group",
-          "delete": "block_for_closeout_group"
+          "create": "block_if_proposed_state_changes_active_settlement_dependency",
+          "edit": "block_if_current_or_proposed_state_changes_active_settlement_dependency",
+          "delete": "block_if_current_state_changes_active_settlement_dependency"
         },
         "active_scope": {
-          "source": "payment.intent + payment.settlement_scope",
-          "condition": "PaymentIntent is nonterminal or has unknown possible effect",
-          "release": "terminal result, explicit pre-effect cancellation, or reconciliation proving safe no-effect/terminal truth"
+          "source": "payment.intent + payment.settlement_scope + authoritative reconciliation",
+          "fail_closed": true,
+          "condition": "scope is active unless authoritative reconciliation proves terminal/no-effect; unknown_effect overrides terminal labels; open remainder remains active",
+          "release": "authoritative terminal/no-effect truth and no open remainder referencing the dependency"
         },
         "explanation_required": true
       },
@@ -3151,7 +3180,8 @@
         "J08",
         "J08_DECISION",
         "J11",
-        "DEC_EXP_LOCK"
+        "DEC_EXP_LOCK",
+        "DEC_EXP_LOCK_V2"
       ]
     },
     {
@@ -3205,6 +3235,59 @@
         "J06_DECISION",
         "J07",
         "J07_STATE"
+      ]
+    },
+    {
+      "id": "LAW-EXP-CLOSEOUT-01",
+      "name": "Whole-group closeout broadens expense mutation lock",
+      "applies_to": [
+        "payment.closeout_context",
+        "expense.mutation_guard",
+        "expense.expense"
+      ],
+      "rule": "When a separately approved whole-group closeout surface eventually creates an active GroupCloseoutContext, create/edit/delete for that Group are locked until the closeout is safely released. This is semantic-only and outside Gate B.",
+      "constraint": {
+        "kind": "future_group_closeout_guard",
+        "status": "semantic_only_no_approved_surface",
+        "requires_explicit_context": "payment.closeout_context",
+        "operations": [
+          "expense.create",
+          "expense.edit",
+          "expense.delete"
+        ],
+        "scope": "closeout_group"
+      },
+      "sources": [
+        "DEC_EXP_LOCK",
+        "DEC_EXP_LOCK_V2"
+      ]
+    },
+    {
+      "id": "LAW-PAY-04",
+      "name": "Prepared settlement remains within current eligibility",
+      "applies_to": [
+        "payment.intent",
+        "payment.settlement_scope",
+        "expense.expense",
+        "expense.issue"
+      ],
+      "rule": "A prepared or authorized settlement may not execute when current eligible balance or source eligibility has drifted from the resolved scope. The amount cannot exceed current eligible balance; dependency-changing Expense mutations are blocked, while a newly raised dispute invalidates the dependent prepared intent for re-resolution.",
+      "constraint": {
+        "kind": "prepared_scope_eligibility_guard",
+        "amount_must_not_exceed_current_eligible_balance": true,
+        "dependency_drift_requires_re_resolution": true,
+        "disputed_source_invalidates_dependent_intent": true,
+        "dependency_dimensions": [
+          "payer_recipient_pair",
+          "currency_partition",
+          "eligible_balance",
+          "dispute_eligibility",
+          "open_partial_remainder"
+        ]
+      },
+      "sources": [
+        "J11",
+        "DEC_EXP_LOCK_V2"
       ]
     }
   ],
@@ -3324,12 +3407,28 @@
     {
       "id": "DEC-EXPENSE-SETTLEMENT-LOCK-01",
       "source": "DEC_EXP_LOCK",
-      "status": "approved",
+      "status": "approved_then_clarified",
       "resolves": "POLICY-EXPENSE-LOCK-SCOPE",
       "approved_on": "2026-09-22",
       "journeys": [
         "05",
         "06",
+        "08",
+        "11",
+        "12"
+      ],
+      "clarified_by": "DEC-EXPENSE-SETTLEMENT-LOCK-02"
+    },
+    {
+      "id": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
+      "source": "DEC_EXP_LOCK_V2",
+      "status": "approved",
+      "clarifies": "DEC-EXPENSE-SETTLEMENT-LOCK-01",
+      "approved_on": "2026-09-22",
+      "journeys": [
+        "05",
+        "06",
+        "07",
         "08",
         "11",
         "12"
@@ -3339,9 +3438,44 @@
   "resolved_product_decisions": [
     {
       "id": "DEC-EXPENSE-SETTLEMENT-LOCK-01",
-      "status": "approved_human_product_decision",
-      "rule": "Use dependency-scoped locking for ordinary settlements. Allow unrelated new Expenses because prepared settlement scope is frozen. Block edits/deletes of source Expenses. An explicit whole-group closeout broadens the same guard to block create/edit/delete for that Group until release/reconciliation.",
+      "status": "approved_then_clarified",
+      "clarified_by": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
+      "rule": "Dependency-scoped settlement locking was approved; the economic-dependency interpretation and Gate B Golden impact are defined by DEC-EXPENSE-SETTLEMENT-LOCK-02.",
       "source": "DEC_EXP_LOCK"
+    },
+    {
+      "id": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
+      "status": "approved_human_product_decision",
+      "rule": "Gate B ordinary settlement locking evaluates current and proposed economic dependency and fails closed on unresolved settlement truth. Whole-group closeout remains a future semantic-only mode outside Gate B.",
+      "source": "DEC_EXP_LOCK_V2"
+    }
+  ],
+  "golden_impacts": [
+    {
+      "id": "GOLDEN-IMPACT-J05-LOCK-02",
+      "decision": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
+      "journey": "05",
+      "state": "locked",
+      "disposition": "retained_and_rescoped",
+      "rule": "J05 locked remains a Gate B recovery state and is triggered when a proposed Expense mutation would change an unresolved settlement dependency.",
+      "sources": [
+        "J05_STATE",
+        "J05_RECOVERED",
+        "DEC_EXP_LOCK_V2"
+      ]
+    },
+    {
+      "id": "GOLDEN-IMPACT-J08-SETTLEMENT-02",
+      "decision": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
+      "journey": "08",
+      "state": "settlement_in_progress",
+      "disposition": "historical_state_not_required_in_gate_b",
+      "rule": "The historical blanket-unavailable Add Expense state is superseded for ordinary settlements and is not a Gate B required state. Revisit it when a dedicated whole-group closeout surface is approved.",
+      "sources": [
+        "J08",
+        "J08_DECISION",
+        "DEC_EXP_LOCK_V2"
+      ]
     }
   ]
 }

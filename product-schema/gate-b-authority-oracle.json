@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "oracle_id": "gate-b-authority-derived-adversarial-oracle-v4",
   "authority_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
   "purpose": "Authority-derived adversarial oracle. It verifies source evidence and high-risk machine semantics but does not require Gate B to have zero product-decision gaps; readiness is a derived report.",
@@ -66,11 +66,20 @@
           ]
         },
         {
+          "commit": "c2797bd73dbdb22854ede54cb2b461e26862b1b1",
           "path": "product-schema/product-decisions-v1.json",
           "git_blob": "355fff22b8c8996379ebabb8d943f289aa7ea5ad",
           "contains": [
-            "Dependency-scoped expense locking with explicit whole-group closeout",
-            "Allow a new unrelated Expense"
+            "Dependency-scoped expense locking with explicit whole-group closeout"
+          ]
+        },
+        {
+          "commit": "880fef977911c2bb366cd3144faef73487643919",
+          "path": "product-schema/product-decisions-v2.json",
+          "git_blob": "8c73229d1350cb21f71f9664e50cfb7cf739ac5a",
+          "contains": [
+            "Economic-dependency settlement guard and Gate B Golden impact",
+            "unknown_effect takes precedence"
           ]
         }
       ],
@@ -79,27 +88,61 @@
           "law": "LAW-EXP-GUARD-01",
           "kind": "effect_guard_required",
           "matches": {
-            "policy": "dependency_scoped_with_explicit_group_closeout",
-            "default_mode": "dependency_scoped",
+            "policy": "dependency_scoped_economic_guard",
+            "dependency_dimensions": [
+              "frozen_source_item_lineage",
+              "payer_recipient_pair",
+              "currency_partition",
+              "current_eligible_balance",
+              "dispute_eligibility",
+              "open_partial_remainder"
+            ],
+            "state_evaluation": "current_and_proposed_post_state",
             "dependency_scoped": {
-              "create": "allow_unrelated_new_expense",
-              "edit": "block_if_target_expense_in_active_scope_source_item_ids",
-              "delete": "block_if_target_expense_in_active_scope_source_item_ids",
-              "prepared_scope_retroactive_expansion": false
+              "create": "block_if_proposed_state_changes_active_settlement_dependency",
+              "edit": "block_if_current_or_proposed_state_changes_active_settlement_dependency",
+              "delete": "block_if_current_state_changes_active_settlement_dependency"
             },
-            "group_closeout": {
-              "requires_explicit_context": "payment.closeout_context",
-              "create": "block_for_closeout_group",
-              "edit": "block_for_closeout_group",
-              "delete": "block_for_closeout_group"
-            }
+            "active_scope": {
+              "source": "payment.intent + payment.settlement_scope + authoritative reconciliation",
+              "fail_closed": true,
+              "condition": "scope is active unless authoritative reconciliation proves terminal/no-effect; unknown_effect overrides terminal labels; open remainder remains active",
+              "release": "authoritative terminal/no-effect truth and no open remainder referencing the dependency"
+            },
+            "explanation_required": true
           }
         },
-        "product_decision": "DEC-EXPENSE-SETTLEMENT-LOCK-01",
-        "construction_requirements": [
-          "REQ-J05-LOCK",
-          "REQ-J06-LOCK"
-        ]
+        "product_decisions": [
+          "DEC-EXPENSE-SETTLEMENT-LOCK-01",
+          "DEC-EXPENSE-SETTLEMENT-LOCK-02"
+        ],
+        "construction_requirement_matches": [
+          {
+            "id": "REQ-J05-LOCK",
+            "matches": {
+              "policy": "dependency_scoped_economic_guard",
+              "ordinary_settlement_create": "block_if_proposed_state_changes_active_settlement_dependency",
+              "unresolved_guard_input": "fail_closed"
+            }
+          },
+          {
+            "id": "REQ-J06-LOCK",
+            "matches": {
+              "policy": "dependency_scoped_economic_guard",
+              "ordinary_settlement_edit": "block_if_current_or_proposed_state_changes_active_settlement_dependency",
+              "unknown_effect": "fail_closed_until_authoritative_reconciliation"
+            }
+          }
+        ],
+        "object_derived_from_superset": {
+          "object": "expense.mutation_guard",
+          "derived_from": [
+            "payment.intent",
+            "payment.settlement_scope",
+            "group.group",
+            "expense.expense"
+          ]
+        }
       }
     },
     {
@@ -330,7 +373,16 @@
       "required": {
         "law_constraint": {
           "law": "LAW-ISSUE-01",
-          "kind": "block_dependent_payment_items_only"
+          "kind": "block_dependent_payment_items_only",
+          "matches": {
+            "dependency_key": "disputed_expense_source_lineage"
+          }
+        },
+        "operation_invalidates_prepared": {
+          "operation": "expense.raise_issue",
+          "objects": [
+            "payment.intent"
+          ]
         }
       }
     },
@@ -486,6 +538,107 @@
           "view.position",
           "view.activity"
         ]
+      }
+    },
+    {
+      "id": "ORACLE-PREPARED-ELIGIBILITY",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/11-settle-up/spec.md",
+          "git_blob": "e26b003318f6e03d3b36401e39b1cacfdbe85fbe",
+          "contains": [
+            "The amount cannot exceed the current eligible balance.",
+            "every included source item is eligible and not disputed"
+          ]
+        }
+      ],
+      "required": {
+        "law_constraint": {
+          "law": "LAW-PAY-04",
+          "kind": "prepared_scope_eligibility_guard",
+          "matches": {
+            "amount_must_not_exceed_current_eligible_balance": true,
+            "dependency_drift_requires_re_resolution": true,
+            "disputed_source_invalidates_dependent_intent": true
+          }
+        }
+      }
+    },
+    {
+      "id": "ORACLE-PARTIAL-REMAINDER",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/11-settle-up/spec.md",
+          "git_blob": "e26b003318f6e03d3b36401e39b1cacfdbe85fbe",
+          "contains": [
+            "The remainder stays open with preserved source lineage and its own future settlement path."
+          ]
+        }
+      ],
+      "required": {
+        "law_constraint": {
+          "law": "LAW-PAY-03",
+          "kind": "partial_remainder_preserves_dependency",
+          "matches": {
+            "open_remainder_preserves_source_lineage": true,
+            "release_lock_only_when_no_open_remainder": true
+          }
+        }
+      }
+    },
+    {
+      "id": "ORACLE-GATEB-GOLDEN-IMPACT",
+      "evidence": [
+        {
+          "commit": "880fef977911c2bb366cd3144faef73487643919",
+          "path": "product-schema/product-decisions-v2.json",
+          "git_blob": "8c73229d1350cb21f71f9664e50cfb7cf739ac5a",
+          "contains": [
+            "retained_and_rescoped",
+            "not_a_gate_b_required_state_after_this_decision"
+          ]
+        }
+      ],
+      "required": {
+        "golden_impacts": [
+          "GOLDEN-IMPACT-J05-LOCK-02",
+          "GOLDEN-IMPACT-J08-SETTLEMENT-02"
+        ],
+        "construction_requirement_matches": [
+          {
+            "id": "REQ-J08-SETTLEMENT-GOLDEN-IMPACT",
+            "matches": {
+              "historical_state": "settlement_in_progress",
+              "gate_b_required": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ORACLE-FUTURE-GROUP-CLOSEOUT",
+      "evidence": [
+        {
+          "commit": "880fef977911c2bb366cd3144faef73487643919",
+          "path": "product-schema/product-decisions-v2.json",
+          "git_blob": "8c73229d1350cb21f71f9664e50cfb7cf739ac5a",
+          "contains": [
+            "semantic_only_no_approved_surface",
+            "outside Gate B"
+          ]
+        }
+      ],
+      "required": {
+        "law_constraint": {
+          "law": "LAW-EXP-CLOSEOUT-01",
+          "kind": "future_group_closeout_guard",
+          "matches": {
+            "status": "semantic_only_no_approved_surface",
+            "requires_explicit_context": "payment.closeout_context"
+          }
+        },
+        "gate_b_must_not_include_object": "payment.closeout_context",
+        "gate_b_must_not_include_law": "LAW-EXP-CLOSEOUT-01"
       }
     }
   ]
