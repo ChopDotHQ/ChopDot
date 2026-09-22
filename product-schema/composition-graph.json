@@ -469,7 +469,8 @@
         "session.enter"
       ],
       "participates_operations": [
-        "participant.link_account"
+        "participant.link_account",
+        "preferences.update"
       ],
       "renders_views": [],
       "emits_contexts": [
@@ -1302,7 +1303,8 @@
       ],
       "operations": [
         "session.enter",
-        "participant.link_account"
+        "participant.link_account",
+        "preferences.update"
       ],
       "views_rendered": [
         "view.home"
