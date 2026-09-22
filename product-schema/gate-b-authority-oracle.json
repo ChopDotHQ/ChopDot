@@ -389,6 +389,56 @@
       }
     },
     {
+      "id": "ORACLE-PREPARED-SETTLEMENT-SCOPE-FROZEN",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/11-settle-up/spec.md",
+          "git_blob": "e26b003318f6e03d3b36401e39b1cacfdbe85fbe",
+          "contains": [
+            "exact scope"
+          ]
+        },
+        {
+          "path": "product-schema/product-decisions-v1.json",
+          "git_blob": "355fff22b8c8996379ebabb8d943f289aa7ea5ad",
+          "contains": [
+            "does not retroactively expand"
+          ]
+        }
+      ],
+      "required": {
+        "law_constraint": {
+          "law": "LAW-PAY-01",
+          "kind": "exact_settlement_scope",
+          "matches": {
+            "frozen_before_authorization": true,
+            "exact_source_lineage": true,
+            "retroactive_expansion": false
+          }
+        }
+      }
+    },
+    {
+      "id": "ORACLE-EXPLICIT-GROUP-CLOSEOUT-CONTEXT",
+      "evidence": [
+        {
+          "path": "product-schema/product-decisions-v1.json",
+          "git_blob": "355fff22b8c8996379ebabb8d943f289aa7ea5ad",
+          "contains": [
+            "whole-group closeout",
+            "Block for the closeout Group."
+          ]
+        }
+      ],
+      "required": {
+        "object": "payment.closeout_context",
+        "identity": [
+          "closeout_id",
+          "group_id"
+        ]
+      }
+    },
+    {
       "id": "ORACLE-GATEA-EQUAL-ALLOCATION",
       "evidence": [
         {

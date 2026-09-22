@@ -3326,7 +3326,14 @@
       "source": "DEC_EXP_LOCK",
       "status": "approved",
       "resolves": "POLICY-EXPENSE-LOCK-SCOPE",
-      "approved_on": "2026-09-22"
+      "approved_on": "2026-09-22",
+      "journeys": [
+        "05",
+        "06",
+        "08",
+        "11",
+        "12"
+      ]
     }
   ],
   "resolved_product_decisions": [

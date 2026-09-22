@@ -23,6 +23,8 @@ export function validateHardening(core, graph, frozen, oracle) {
     if(r.composition){const u=unit(r.composition);if(!u)fail(a.id,'missing composition');else{if(JSON.stringify(u.views_rendered)!==JSON.stringify(r.views_rendered))fail(a.id,'wrong rendered views');const d=(u.views_refreshed_downstream||[]).map(x=>x.id);for(const id of r.views_refreshed_downstream||[])if(!d.includes(id))fail(a.id,'missing downstream view '+id);}}
   }
 
+  const objectIds=new Set(core.objects.map(x=>x.id));
+  for(const l of core.laws)for(const id of l.applies_to||[])if(!objectIds.has(id))fail('LAW-APPLIES-TO-MISSING-OBJECT',l.id+' applies_to missing '+id);
   const readModels=new Set(core.objects.filter(x=>x.kind==='read_model').map(x=>x.id));
   for(const o of core.operations){
     for(const id of o.changes||[])if(readModels.has(id))fail('READ-MODEL-DIRECT-WRITE',o.id+' directly changes '+id);
