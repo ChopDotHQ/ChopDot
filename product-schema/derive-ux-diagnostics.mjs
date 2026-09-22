@@ -119,6 +119,8 @@ for(const j of frozen.journeys){
     });
     if(!states.length){status='unparsed';error='no .screen sections found';}
   }catch(e){status='error';error=e.message;}
+  const stateIds=new Set(states.map(s=>s.id));
+  for(const s of states)for(const a of s.actions)if(a.target&&!stateIds.has(a.target)){a.kind='non_screen_hash_control';a.non_screen_target=true;}
   const start=entryState(states),targets=completionCandidates(states),min=shortest(start,targets,states),requiredInputs=requiredInputsByJourney[j.id]||[];
   const allActions=states.flatMap(s=>s.actions),allFields=states.flatMap(s=>s.fields);
   inventories.push({
@@ -126,7 +128,7 @@ for(const j of frozen.journeys){
     summary:{
       state_count:states.length,field_instances:allFields.length,action_instances:allActions.length,
       unique_action_labels:unique(allActions.map(x=>x.label)).length,unique_field_labels:unique(allFields.map(x=>x.label)).length,
-      semantic_action_mappings:allActions.filter(x=>x.semantic_operation).length,
+      semantic_action_mappings:allActions.filter(x=>x.semantic_operation).length,non_screen_hash_controls:allActions.filter(x=>x.non_screen_target).length,
       entry_state:start,completion_candidates:targets,
       shortest_completion_transition_count:min?.transitions??null,shortest_completion_path:min?.path??null,
       required_inputs_from_schema:requiredInputs,
