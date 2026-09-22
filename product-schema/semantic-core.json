@@ -368,7 +368,8 @@
       "sources": [
         "C1_IDENTITY",
         "POST_J28"
-      ]
+      ],
+      "safety_class": "identity"
     },
     {
       "id": "identity.account",
@@ -394,7 +395,8 @@
         "POST_J28",
         "J01",
         "J27"
-      ]
+      ],
+      "safety_class": "identity"
     },
     {
       "id": "identity.session",
@@ -462,7 +464,8 @@
         "J09",
         "J26",
         "C1_IDENTITY"
-      ]
+      ],
+      "safety_class": "composition_continuity"
     },
     {
       "id": "group.invitation",
@@ -511,7 +514,8 @@
         "C1_README",
         "J11",
         "J12"
-      ]
+      ],
+      "safety_class": "money"
     },
     {
       "id": "operation.identity",
@@ -600,7 +604,8 @@
         "J08",
         "J09",
         "J26"
-      ]
+      ],
+      "safety_class": "composition_continuity"
     },
     {
       "id": "expense.expense",
@@ -703,10 +708,10 @@
       "kind": "read_model",
       "domain": "groups_expenses",
       "identity": [
-        "participant_pair_or_group",
+        "position_scope",
         "currency"
       ],
-      "meaning": "Derived financial position showing what is owed/owing with currency separation and source lineage. It is read-only product truth derived from underlying records.",
+      "meaning": "Derived financial position showing what is owed/owing for a typed PositionScope and one currency, with source lineage. It is read-only product truth derived from underlying records.",
       "source_journeys": [
         "02",
         "08",
@@ -728,7 +733,9 @@
         "expense.issue",
         "payment.intent",
         "payment.record"
-      ]
+      ],
+      "scope_object": "position.scope",
+      "safety_class": "settlement"
     },
     {
       "id": "payment.settlement_scope",
@@ -753,7 +760,8 @@
         "PAYMENT_COMPAT",
         "DEC_EXP_LOCK",
         "DEC_EXP_LOCK_V2"
-      ]
+      ],
+      "safety_class": "settlement"
     },
     {
       "id": "payment.intent",
@@ -777,7 +785,8 @@
         "J12",
         "PAYMENT_COMPAT",
         "STORAGE_REPLAY"
-      ]
+      ],
+      "safety_class": "settlement"
     },
     {
       "id": "payment.record",
@@ -1225,7 +1234,8 @@
       "sources": [
         "J25",
         "APPROVAL_25_v1"
-      ]
+      ],
+      "safety_class": "storage_restore"
     },
     {
       "id": "storage.restore_operation",
@@ -1243,7 +1253,8 @@
       "sources": [
         "J25",
         "APPROVAL_25_v1"
-      ]
+      ],
+      "safety_class": "storage_restore"
     },
     {
       "id": "account.preferences",
@@ -1436,6 +1447,28 @@
       ],
       "delivery_status": "semantic_only_no_approved_surface",
       "gate_boundary": "outside_gate_b_until_user_path_approved"
+    },
+    {
+      "id": "position.scope",
+      "name": "PositionScope",
+      "kind": "value_object",
+      "domain": "groups_expenses",
+      "identity": [
+        "scope_kind",
+        "scope_ref"
+      ],
+      "meaning": "Typed scope for Position: either one participant pair or one Group. Currency remains the Position money partition.",
+      "source_journeys": [
+        "08",
+        "10",
+        "11"
+      ],
+      "sources": [
+        "J08",
+        "J10",
+        "J11"
+      ],
+      "safety_class": "settlement"
     }
   ],
   "operations": [
@@ -1455,7 +1488,8 @@
       "rules": [
         "Sign-in preserves original destination/invite context.",
         "Sign-in does not join a group or authorize payment."
-      ]
+      ],
+      "safety_class": "identity"
     },
     {
       "id": "participant.link_account",
@@ -1478,7 +1512,8 @@
         "Preserve participant_id and historical references.",
         "Binding is staged; mismatch/collision remains unresolved.",
         "Account-only capabilities appear only after durable verified binding."
-      ]
+      ],
+      "safety_class": "identity"
     },
     {
       "id": "group.create",
@@ -1809,7 +1844,8 @@
         "Resolve exact SettlementScope before authorization.",
         "Journey 11 prepares/authorizes; it does not complete.",
         "Freeze exact source lineage before authorization; later unrelated Expenses do not mutate the prepared scope."
-      ]
+      ],
+      "safety_class": "settlement"
     },
     {
       "id": "settlement.authorize",
@@ -1829,7 +1865,33 @@
       "rules": [
         "Approval request is not authorization; only verified result advances authority.",
         "Delegation cannot widen exact scope."
-      ]
+      ],
+      "safety_class": "settlement"
+    },
+    {
+      "id": "settlement.mark_sent",
+      "name": "Record payer sent claim",
+      "owner": "payment.intent",
+      "changes": [
+        "payment.intent"
+      ],
+      "source_journeys": [
+        "11",
+        "12"
+      ],
+      "sources": [
+        "J11",
+        "J12"
+      ],
+      "rules": [
+        "Payer sent claim changes lifecycle state but is not proof of receipt, clearing, confirmation or closure.",
+        "Preserve the same PaymentIntent/operation identity."
+      ],
+      "law_refs": [
+        "LAW-PAY-02",
+        "LAW-OP-01"
+      ],
+      "safety_class": "settlement"
     },
     {
       "id": "settlement.confirm_receipt",
@@ -1849,7 +1911,8 @@
       "rules": [
         "Receiver owns manual receipt confirmation where ChopDot cannot independently verify.",
         "Payer sent claim is not proof of receipt."
-      ]
+      ],
+      "safety_class": "settlement"
     },
     {
       "id": "settlement.close",
@@ -1873,7 +1936,8 @@
       ],
       "invalidates": [
         "position.position"
-      ]
+      ],
+      "safety_class": "settlement"
     },
     {
       "id": "settlement.reconcile",
@@ -1893,7 +1957,8 @@
       "rules": [
         "Unknown uses the same payment/operation identity.",
         "No replacement execution until trusted no-effect truth."
-      ]
+      ],
+      "safety_class": "settlement"
     },
     {
       "id": "request.create",
@@ -2198,7 +2263,8 @@
         "Local working copy and backup are distinct.",
         "Secrets/executable authority excluded.",
         "Checksum claims byte integrity only."
-      ]
+      ],
+      "safety_class": "storage_restore"
     },
     {
       "id": "storage.restore",
@@ -2221,7 +2287,8 @@
         "Preview before restore mutation.",
         "Preserve identity ambiguity and newer current facts.",
         "Unknown outcomes reconcile before retry."
-      ]
+      ],
+      "safety_class": "storage_restore"
     },
     {
       "id": "group.rename_archive",
@@ -2405,7 +2472,8 @@
         "Journey 28 coordinates recovery grammar; owning domain decides result.",
         "Possible-effect states preserve exact identity.",
         "Unknown/pending/partial does not expose replacement retry."
-      ]
+      ],
+      "safety_class": "recovery_replay"
     },
     {
       "id": "recovery.safe_retry",
@@ -2421,7 +2489,8 @@
       "rules": [
         "Replacement retry only after proven no-effect truth.",
         "Explicit stop preserves truth and enough context to resume safely."
-      ]
+      ],
+      "safety_class": "recovery_replay"
     },
     {
       "id": "notification.set_read_state",
@@ -2656,7 +2725,14 @@
       "sources": [
         "C1_IDENTITY",
         "POST_J28"
-      ]
+      ],
+      "safety_class": "identity",
+      "constraint": {
+        "kind": "stable_participant_identity",
+        "participant_id_stable": true,
+        "account_link_replaces_participant": false,
+        "historical_reference_rewrite": false
+      }
     },
     {
       "id": "LAW-ID-02",
@@ -2668,7 +2744,16 @@
       "sources": [
         "C1_IDENTITY",
         "POST_J28"
-      ]
+      ],
+      "safety_class": "identity",
+      "constraint": {
+        "kind": "identity_merge_prohibition",
+        "prohibited_merge_keys": [
+          "display_name",
+          "email"
+        ],
+        "collision_or_mismatch": "unresolved"
+      }
     },
     {
       "id": "LAW-ID-03",
@@ -2681,7 +2766,13 @@
       "sources": [
         "POST_J28",
         "C1_IDENTITY"
-      ]
+      ],
+      "safety_class": "identity",
+      "constraint": {
+        "kind": "group_scoped_unlinkability",
+        "group_visible_cross_group_stable_identifier": false,
+        "account_binding_may_be_private": true
+      }
     },
     {
       "id": "LAW-AUTH-01",
@@ -2698,7 +2789,18 @@
         "J20",
         "J21",
         "J27"
-      ]
+      ],
+      "safety_class": "authority",
+      "constraint": {
+        "kind": "presentation_not_authority",
+        "presentation_preference_creates_authority": false,
+        "authority_domains": [
+          "payment",
+          "signing",
+          "group",
+          "identity_provider"
+        ]
+      }
     },
     {
       "id": "LAW-MONEY-01",
@@ -2711,7 +2813,18 @@
         "C1_SPEND",
         "C1_README",
         "J11"
-      ]
+      ],
+      "safety_class": "money",
+      "constraint": {
+        "kind": "exact_partitioned_money",
+        "minor_units_integer": true,
+        "partition_keys": [
+          "currency",
+          "exponent"
+        ],
+        "cross_partition_combine": false,
+        "display_decimal_authority": false
+      }
     },
     {
       "id": "LAW-OP-01",
@@ -2725,7 +2838,18 @@
       "sources": [
         "J28",
         "STORAGE_REPLAY"
-      ]
+      ],
+      "safety_class": "recovery_replay",
+      "constraint": {
+        "kind": "stable_possible_effect_identity",
+        "states": [
+          "pending",
+          "unknown",
+          "partial",
+          "cancel_too_late"
+        ],
+        "same_operation_identity_until_reconciliation": true
+      }
     },
     {
       "id": "LAW-OP-02",
@@ -2742,7 +2866,12 @@
         "J24",
         "J26",
         "J27"
-      ]
+      ],
+      "safety_class": "recovery_replay",
+      "constraint": {
+        "kind": "unknown_before_replacement_retry",
+        "replacement_retry_requires_proven_no_effect": true
+      }
     },
     {
       "id": "LAW-OP-03",
@@ -2756,7 +2885,18 @@
         "J28",
         "J12",
         "J14"
-      ]
+      ],
+      "safety_class": "recovery_replay",
+      "constraint": {
+        "kind": "navigation_not_evidence",
+        "evidence_from_navigation": false,
+        "prohibited_inference_sources": [
+          "back",
+          "reload",
+          "route_change",
+          "time_alone"
+        ]
+      }
     },
     {
       "id": "LAW-OP-04",
@@ -2769,7 +2909,13 @@
         "J28",
         "J26",
         "J27"
-      ]
+      ],
+      "safety_class": "recovery_replay",
+      "constraint": {
+        "kind": "stale_truth_before_write",
+        "stale_write_behavior": "refresh_and_rereview",
+        "silent_overwrite": false
+      }
     },
     {
       "id": "LAW-HIST-01",
@@ -2784,7 +2930,14 @@
         "STORAGE_REPLAY",
         "J11",
         "J15"
-      ]
+      ],
+      "safety_class": "recovery_replay",
+      "constraint": {
+        "kind": "side_effect_free_replay",
+        "accepted_history_append_only": true,
+        "replay_external_effects": false,
+        "replay_role": "rebuild_projections"
+      }
     },
     {
       "id": "LAW-EXP-01",
@@ -2937,7 +3090,15 @@
       "sources": [
         "J14",
         "J20"
-      ]
+      ],
+      "safety_class": "authority",
+      "constraint": {
+        "kind": "receiving_disclosure_not_receipt",
+        "sharing_confirms_payment": false,
+        "copying_confirms_payment": false,
+        "expiry_confirms_payment": false,
+        "stopping_confirms_payment": false
+      }
     },
     {
       "id": "LAW-WALLET-01",
@@ -2950,7 +3111,19 @@
       "sources": [
         "J21",
         "PAYMENT_COMPAT"
-      ]
+      ],
+      "safety_class": "authority",
+      "constraint": {
+        "kind": "wallet_cannot_widen_product_authority",
+        "wallet_can_widen_scope": false,
+        "required_upstream_scope": [
+          "amount",
+          "asset",
+          "recipient",
+          "source",
+          "permission"
+        ]
+      }
     },
     {
       "id": "LAW-QR-01",
@@ -3053,7 +3226,18 @@
       "rule": "Backup is distinct from local working copy; restore previews before mutation, preserves newer current facts/identity ambiguity, excludes secrets/executable authority, and reconciles unknown outcomes.",
       "sources": [
         "APPROVAL_25_v1"
-      ]
+      ],
+      "safety_class": "storage_restore",
+      "constraint": {
+        "kind": "backup_restore_separation",
+        "backup_distinct_from_working_copy": true,
+        "restore_preview_before_mutation": true,
+        "preserve_newer_truth": true,
+        "preserve_identity_ambiguity": true,
+        "secrets_excluded": true,
+        "executable_authority_excluded": true,
+        "unknown_outcome_requires_reconciliation": true
+      }
     },
     {
       "id": "LAW-GROUP-01",
@@ -3077,7 +3261,18 @@
       "sources": [
         "J09",
         "J26"
-      ]
+      ],
+      "safety_class": "composition_continuity",
+      "constraint": {
+        "kind": "lifecycle_preserves_ledger_truth",
+        "ledger_rewrite_on_lifecycle": false,
+        "protected_facts": [
+          "expense_attribution",
+          "balances",
+          "historical_ledger",
+          "other_memberships"
+        ]
+      }
     },
     {
       "id": "LAW-PREF-01",
@@ -3377,6 +3572,31 @@
         "J11",
         "DEC_EXP_LOCK_V2"
       ]
+    },
+    {
+      "id": "LAW-POS-SCOPE-01",
+      "name": "Position scope is typed",
+      "applies_to": [
+        "position.scope",
+        "position.position",
+        "payment.settlement_scope"
+      ],
+      "rule": "Position scope is explicitly participant_pair or group. Settlement dependency/eligibility consumes participant_pair scope only; group scope remains a distinct read projection.",
+      "constraint": {
+        "kind": "typed_position_scope",
+        "allowed_scope_kinds": [
+          "participant_pair",
+          "group"
+        ],
+        "settlement_required_scope_kind": "participant_pair",
+        "currency_partition_on_position": true
+      },
+      "sources": [
+        "J08",
+        "J10",
+        "J11"
+      ],
+      "safety_class": "settlement"
     }
   ],
   "anti_collapse": [

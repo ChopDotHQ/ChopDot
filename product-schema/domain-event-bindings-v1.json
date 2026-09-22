@@ -1,0 +1,1560 @@
+{
+  "schema_version": 1,
+  "binding_id": "chopdot-domain-event-bindings-v1",
+  "authority": "AUTHORED_SCHEMA_BRIDGE",
+  "source_registry": "golden-mapping-sources.json",
+  "rule": "Every distinct frozen UI domain_event is explicitly classified. Operation bindings map Golden event vocabulary to canonical semantic operations without forcing navigation/read/demo events into mutations.",
+  "classification_vocabulary": [
+    "DOMAIN_OPERATION",
+    "NAVIGATION_TRANSITION",
+    "DRAFT_FIELD",
+    "SELECTION_STATE",
+    "DERIVED_PROJECTION",
+    "PRODUCT_REQUIREMENT",
+    "LAW_INVARIANT",
+    "RECOVERY_BEHAVIOR",
+    "EXTERNAL_HANDOFF",
+    "SYSTEM_PROGRESSION",
+    "PRESENTATION_ONLY",
+    "REVIEW_DEMO_CHROME",
+    "POST_GOLDEN_SUPERSEDED"
+  ],
+  "bindings": [
+    {
+      "domain_event": "ActivityFilterChanged",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "18"
+      ],
+      "occurrences": 24,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Reversible selection/review state before an owned effect."
+    },
+    {
+      "domain_event": "ActivityItemOpened",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "18"
+      ],
+      "occurrences": 24,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "AuthorizedRelationshipsRequested",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "CommandOutcomeCheckRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "recovery.reconcile"
+      ],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 2,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "CreateRequestRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "request.create"
+      ],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "DemoStateRequested",
+      "classification": "REVIEW_DEMO_CHROME",
+      "operation_refs": [],
+      "journeys": [
+        "18"
+      ],
+      "occurrences": 46,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Prototype/reviewer control; explicitly not canonical product-domain authority."
+    },
+    {
+      "domain_event": "DependentIssueReviewRequested",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "ExistingPaymentOpened",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "ExistingRequestOpened",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 3,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "ExpenseReviewHandoffOpened",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "GroupCapabilitiesViewed",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "GroupMembersViewed",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 7,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "InsightsNavigationOnly",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "19"
+      ],
+      "occurrences": 275,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/19-insights/UI_EVENT_MAPPING.json",
+        "prototypes/experience-workbench/journeys/19-insights/review-v1.1/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "InviteHandoffOpened",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "InviteStatusViewed",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "Journey07HandoffPreviewed",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "Journey09ReturnRequested",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 4,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+    },
+    {
+      "domain_event": "Journey12HandoffPreviewed",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 2,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "JourneyHandoffReturned",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "12"
+      ],
+      "occurrences": 5,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "MemberManagementOpened",
+      "classification": "PRODUCT_REQUIREMENT",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "medium",
+      "justification": "Approved product-state/event meaning that does not correspond to a standalone canonical operation."
+    },
+    {
+      "domain_event": "MemberRemovalRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "membership.remove"
+      ],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "MemberRemovalRetryRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "membership.remove",
+        "recovery.safe_retry"
+      ],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "MemberRemovalReviewed",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Reversible selection/review state before an owned effect."
+    },
+    {
+      "domain_event": "MemberRemovalStatusRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "recovery.reconcile"
+      ],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "NavigationBackRequested",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 23,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+    },
+    {
+      "domain_event": "NavigationOnly",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 37,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+    },
+    {
+      "domain_event": "NavigationRequested",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "11",
+        "18"
+      ],
+      "occurrences": 86,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json",
+        "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+    },
+    {
+      "domain_event": "NavigationReturned",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 28,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+    },
+    {
+      "domain_event": "NoCommand",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 2,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Approved product-state/event meaning that does not correspond to a standalone canonical operation."
+    },
+    {
+      "domain_event": "None",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [],
+      "journeys": [
+        "09",
+        "14"
+      ],
+      "occurrences": 3,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json",
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Approved product-state/event meaning that does not correspond to a standalone canonical operation."
+    },
+    {
+      "domain_event": "NotificationCenterOpened",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "18"
+      ],
+      "occurrences": 8,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+    },
+    {
+      "domain_event": "NotificationOpened",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "18"
+      ],
+      "occurrences": 4,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "NotificationReadAllRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "notification.set_read_state"
+      ],
+      "journeys": [
+        "18"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "PartialPaymentSelected",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Reversible selection/review state before an owned effect."
+    },
+    {
+      "domain_event": "PayerMarkedSent",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "settlement.mark_sent"
+      ],
+      "journeys": [
+        "11",
+        "12"
+      ],
+      "occurrences": 12,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json",
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "PayerSentClaimPrepared",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 3,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Reversible selection/review state before an owned effect."
+    },
+    {
+      "domain_event": "PaymentAmountSelected",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Reversible selection/review state before an owned effect."
+    },
+    {
+      "domain_event": "PaymentAmountSelectionOpened",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Reversible selection/review state before an owned effect."
+    },
+    {
+      "domain_event": "PaymentApprovalCancellationRequested",
+      "classification": "RECOVERY_BEHAVIOR",
+      "operation_refs": [
+        "wallet.execute_action"
+      ],
+      "journeys": [
+        "11",
+        "12"
+      ],
+      "occurrences": 3,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json",
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "PaymentApprovalRequested",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [
+        "wallet.execute_action"
+      ],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 7,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "PaymentDetailsRequested",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 2,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "PaymentIntentAuthorized",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "settlement.authorize"
+      ],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 7,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "PaymentIntentPrepared",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "settlement.prepare"
+      ],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 9,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "PaymentIntentReviewCancelled",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 14,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+    },
+    {
+      "domain_event": "PaymentIntentReviewResumed",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "11",
+        "12"
+      ],
+      "occurrences": 13,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json",
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+    },
+    {
+      "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "20"
+      ],
+      "occurrences": 299,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/20-payment-methods/review-v1/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+    },
+    {
+      "domain_event": "PaymentMethodSelected",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Reversible selection/review state before an owned effect."
+    },
+    {
+      "domain_event": "PaymentMethodSelectionOpened",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "11",
+        "12"
+      ],
+      "occurrences": 19,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json",
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Reversible selection/review state before an owned effect."
+    },
+    {
+      "domain_event": "PaymentMethodsHandoffPreviewOpened",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 2,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "PaymentQuoteRefreshRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "settlement.prepare"
+      ],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "PaymentRecoveryRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "settlement.reconcile"
+      ],
+      "journeys": [
+        "11",
+        "12"
+      ],
+      "occurrences": 5,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json",
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "PaymentRetryRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "recovery.safe_retry"
+      ],
+      "journeys": [
+        "11",
+        "12"
+      ],
+      "occurrences": 5,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json",
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "PaymentStartBlocked",
+      "classification": "RECOVERY_BEHAVIOR",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative."
+    },
+    {
+      "domain_event": "PaymentStatusRefreshRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "settlement.reconcile"
+      ],
+      "journeys": [
+        "11",
+        "12"
+      ],
+      "occurrences": 18,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json",
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "PaymentStatusViewed",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "11",
+        "12"
+      ],
+      "occurrences": 105,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json",
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "PersonDetailViewed",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 10,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "PersonScopeSelected",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 3,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Reversible selection/review state before an owned effect."
+    },
+    {
+      "domain_event": "PrototypeControlsOpened",
+      "classification": "REVIEW_DEMO_CHROME",
+      "operation_refs": [],
+      "journeys": [
+        "09",
+        "13"
+      ],
+      "occurrences": 40,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json",
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Prototype/reviewer control; explicitly not canonical product-domain authority."
+    },
+    {
+      "domain_event": "PrototypeScenarioControlsOpened",
+      "classification": "REVIEW_DEMO_CHROME",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 22,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Prototype/reviewer control; explicitly not canonical product-domain authority."
+    },
+    {
+      "domain_event": "ReceiverConfirmationRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "settlement.confirm_receipt"
+      ],
+      "journeys": [
+        "12"
+      ],
+      "occurrences": 4,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "ReceiverConfirmedPartial",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "settlement.confirm_receipt"
+      ],
+      "journeys": [
+        "12"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "ReceiverNotYetReported",
+      "classification": "PRODUCT_REQUIREMENT",
+      "operation_refs": [],
+      "journeys": [
+        "12"
+      ],
+      "occurrences": 4,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Approved product-state/event meaning that does not correspond to a standalone canonical operation."
+    },
+    {
+      "domain_event": "ReceivingDetailsClipboardWriteRequested",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "ReceivingDetailsOriginResumed",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+    },
+    {
+      "domain_event": "ReceivingDetailsRecipientPreviewOpened",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "ReceivingDetailsReloadRequested",
+      "classification": "RECOVERY_BEHAVIOR",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 3,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative."
+    },
+    {
+      "domain_event": "ReceivingLinkClipboardWriteRequested",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "ReceivingLinkCodeViewed",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "ReceivingLinkExternalHandoffCancelled",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "ReceivingLinkExternalHandoffFailed",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "ReceivingLinkExternalHandoffPreviewOpened",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "ReceivingLinkExternalHandoffReturned",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "ReceivingMethodSelected",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 3,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Reversible selection/review state before an owned effect."
+    },
+    {
+      "domain_event": "ReceivingShareAudienceReviewed",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 3,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Reversible selection/review state before an owned effect."
+    },
+    {
+      "domain_event": "ReceivingShareAudienceSelectionOpened",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Reversible selection/review state before an owned effect."
+    },
+    {
+      "domain_event": "ReceivingShareCommandRetried",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "recovery.safe_retry"
+      ],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "ReceivingShareCreateRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "receiving_share.create"
+      ],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "ReceivingShareOutcomeQueryRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "recovery.reconcile"
+      ],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "ReceivingShareStopRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "receiving_share.stop"
+      ],
+      "journeys": [
+        "14"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "RelatedPeopleViewed",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 2,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "RequestContextResumed",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+    },
+    {
+      "domain_event": "RequestDraftNoteChanged",
+      "classification": "DRAFT_FIELD",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Draft-field mutation; not accepted canonical domain truth."
+    },
+    {
+      "domain_event": "RequestDraftReopened",
+      "classification": "DRAFT_FIELD",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 2,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Draft-field mutation; not accepted canonical domain truth."
+    },
+    {
+      "domain_event": "RequestReadRetried",
+      "classification": "RECOVERY_BEHAVIOR",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative."
+    },
+    {
+      "domain_event": "RequestReviewed",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Reversible selection/review state before an owned effect."
+    },
+    {
+      "domain_event": "RequestSourceBreakdownOpened",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "RetrySameCommandRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "recovery.safe_retry"
+      ],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 2,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "SavedRecordRefreshRequested",
+      "classification": "RECOVERY_BEHAVIOR",
+      "operation_refs": [],
+      "journeys": [
+        "12"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative."
+    },
+    {
+      "domain_event": "SavedRecordViewed",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "12"
+      ],
+      "occurrences": 11,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "SettlementExitRequested",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "11",
+        "12"
+      ],
+      "occurrences": 15,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json",
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+    },
+    {
+      "domain_event": "SettlementFlowResumed",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 4,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+    },
+    {
+      "domain_event": "SettlementHistoryOpened",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "12"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "SettlementIssueOpened",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "12"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "SettlementResultViewed",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "11",
+        "12"
+      ],
+      "occurrences": 30,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json",
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "SettlementScopeRefreshed",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "settlement.prepare"
+      ],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "SettlementScopeResolvedOrRequestScopeResolved",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 3,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "SettlementScopeViewed",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 3,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "SharedGroupsViewed",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 2,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "SharedPaymentPreferenceViewed",
+      "classification": "DERIVED_PROJECTION",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 3,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "SourceSnapshotReviewRestarted",
+      "classification": "RECOVERY_BEHAVIOR",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative."
+    },
+    {
+      "domain_event": "WalletConnectionRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "wallet.connect_switch"
+      ],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "WalletSwitchRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "wallet.connect_switch"
+      ],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "WithdrawalReviewOpened",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Reversible selection/review state before an owned effect."
+    },
+    {
+      "domain_event": "WithdrawRequestRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "request.withdraw"
+      ],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
+      ],
+      "confidence": "high",
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    }
+  ]
+}

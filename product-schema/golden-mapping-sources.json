@@ -1,0 +1,515 @@
+{
+  "schema_version": 1,
+  "registry_id": "chopdot-golden-mapping-sources-v1",
+  "authority": "FROZEN_PRODUCT_AUTHORITY",
+  "product_authority_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "product_authority_tree": "cb424dafedff066fed433e106eb4468bec985d98",
+  "rule": "Stage 5 reconstruction consumes these frozen mapping/state artifacts as evidence; later branch edits cannot silently become original Golden meaning.",
+  "curated_mapping_sources": [
+    {
+      "journey": "01",
+      "kind": "GIVEN_WHEN_THEN.md",
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/GIVEN_WHEN_THEN.md",
+      "git_blob": "41efa85471653200d744b37a6404b9fa2f1910d6"
+    },
+    {
+      "journey": "01",
+      "kind": "golden-validation.json",
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/golden-validation.json",
+      "git_blob": "f6cbf2f5aa875bb3a788eb504e02e52a3337f51d"
+    },
+    {
+      "journey": "01",
+      "kind": "STATE_AND_AUTHORITY.md",
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_AND_AUTHORITY.md",
+      "git_blob": "ddef72e40443ea40a42075ce3e9f848f887dcec2"
+    },
+    {
+      "journey": "01",
+      "kind": "UI_TO_DOMAIN_EVENTS.md",
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/UI_TO_DOMAIN_EVENTS.md",
+      "git_blob": "b25bc2a2a426eba40ba9dfa607bb27473f69ebd1"
+    },
+    {
+      "journey": "09",
+      "kind": "GIVEN_WHEN_THEN.md",
+      "path": "prototypes/experience-workbench/journeys/09-manage-people/GIVEN_WHEN_THEN.md",
+      "git_blob": "70b233f054ece826343bfaabbf9526275c72b96e"
+    },
+    {
+      "journey": "09",
+      "kind": "golden-validation.json",
+      "path": "prototypes/experience-workbench/journeys/09-manage-people/golden-validation.json",
+      "git_blob": "7599fb73b8c07a383723d8ba468606e5a8e6453c"
+    },
+    {
+      "journey": "09",
+      "kind": "SCREEN_STATE_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/09-manage-people/SCREEN_STATE_MAPPING.json",
+      "git_blob": "a0c5ef4319501e28a9e98b56c6dd9e2b51f38f68"
+    },
+    {
+      "journey": "09",
+      "kind": "STATE_AND_AUTHORITY.md",
+      "path": "prototypes/experience-workbench/journeys/09-manage-people/STATE_AND_AUTHORITY.md",
+      "git_blob": "163266246cdf8178f5d67eebb495b76ff2c8b8e5"
+    },
+    {
+      "journey": "09",
+      "kind": "UI_EVENT_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json",
+      "git_blob": "0be80430a5143f2458cfd8b94adf3717582c1f8d"
+    },
+    {
+      "journey": "09",
+      "kind": "UI_TO_DOMAIN_EVENTS.md",
+      "path": "prototypes/experience-workbench/journeys/09-manage-people/UI_TO_DOMAIN_EVENTS.md",
+      "git_blob": "99befb6a99f369351b6600457bcc0487eaee2f4e"
+    },
+    {
+      "journey": "11",
+      "kind": "GIVEN_WHEN_THEN.md",
+      "path": "prototypes/experience-workbench/journeys/11-settle-up/GIVEN_WHEN_THEN.md",
+      "git_blob": "df0eda6dc8b97159b77898dd86008d97a3ee442c"
+    },
+    {
+      "journey": "11",
+      "kind": "SCREEN_STATE_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/11-settle-up/SCREEN_STATE_MAPPING.json",
+      "git_blob": "57a9c662964679e28550802c92c18652a365258f"
+    },
+    {
+      "journey": "11",
+      "kind": "STATE_AND_AUTHORITY.md",
+      "path": "prototypes/experience-workbench/journeys/11-settle-up/STATE_AND_AUTHORITY.md",
+      "git_blob": "1d515114cb5c569d5f6a43836d1af4dda20df97e"
+    },
+    {
+      "journey": "11",
+      "kind": "UI_EVENT_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json",
+      "git_blob": "254583614522fe0c43389c15535e4b3ea60bd81e"
+    },
+    {
+      "journey": "11",
+      "kind": "UI_TO_DOMAIN_EVENTS.md",
+      "path": "prototypes/experience-workbench/journeys/11-settle-up/UI_TO_DOMAIN_EVENTS.md",
+      "git_blob": "ead71e5a380585075117454911ab3eec53bd17a3"
+    },
+    {
+      "journey": "12",
+      "kind": "GIVEN_WHEN_THEN.md",
+      "path": "prototypes/experience-workbench/journeys/12-complete-settlement/GIVEN_WHEN_THEN.md",
+      "git_blob": "45749ae563c871605e7bf9a05a40f3d25e82272e"
+    },
+    {
+      "journey": "12",
+      "kind": "RETURN_CONTEXT_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/12-complete-settlement/RETURN_CONTEXT_MAPPING.json",
+      "git_blob": "482d6b84a3160cae16c169bb4b60f6e4622524db"
+    },
+    {
+      "journey": "12",
+      "kind": "SCREEN_STATE_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/12-complete-settlement/SCREEN_STATE_MAPPING.json",
+      "git_blob": "24109d54287107fb0f1a553c40221e6160ded712"
+    },
+    {
+      "journey": "12",
+      "kind": "STATE_AND_AUTHORITY.md",
+      "path": "prototypes/experience-workbench/journeys/12-complete-settlement/STATE_AND_AUTHORITY.md",
+      "git_blob": "ef115684151b3f683b490402fb7fc63915bd1eb5"
+    },
+    {
+      "journey": "12",
+      "kind": "UI_EVENT_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json",
+      "git_blob": "032e15b346e3234125068faefa8a65f53a199076"
+    },
+    {
+      "journey": "12",
+      "kind": "UI_TO_DOMAIN_EVENTS.md",
+      "path": "prototypes/experience-workbench/journeys/12-complete-settlement/UI_TO_DOMAIN_EVENTS.md",
+      "git_blob": "6b31f1a1bb0d77e259bda8539668cbb1641938d1"
+    },
+    {
+      "journey": "13",
+      "kind": "GIVEN_WHEN_THEN.md",
+      "path": "prototypes/experience-workbench/journeys/13-request-money/GIVEN_WHEN_THEN.md",
+      "git_blob": "9c58bd46aa51c9429835a65a8510ae5e4afdff97"
+    },
+    {
+      "journey": "13",
+      "kind": "golden-validation.json",
+      "path": "prototypes/experience-workbench/journeys/13-request-money/golden-validation.json",
+      "git_blob": "45c3d9b16bb8063e5eed88b0495312f3e64a59b6"
+    },
+    {
+      "journey": "13",
+      "kind": "SCREEN_STATE_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/13-request-money/SCREEN_STATE_MAPPING.json",
+      "git_blob": "294fde7a674e7d95dded0af6e4bbd670f5953a05"
+    },
+    {
+      "journey": "13",
+      "kind": "STATE_AND_AUTHORITY.md",
+      "path": "prototypes/experience-workbench/journeys/13-request-money/STATE_AND_AUTHORITY.md",
+      "git_blob": "3111409cb19adc485472d8327b245eba7ad07339"
+    },
+    {
+      "journey": "13",
+      "kind": "UI_EVENT_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json",
+      "git_blob": "83b93503ba818b229059513f511cb426a3fff2e7"
+    },
+    {
+      "journey": "13",
+      "kind": "UI_TO_DOMAIN_EVENTS.md",
+      "path": "prototypes/experience-workbench/journeys/13-request-money/UI_TO_DOMAIN_EVENTS.md",
+      "git_blob": "9491821587ac8b725b207f04cf2061ec6468810c"
+    },
+    {
+      "journey": "14",
+      "kind": "GIVEN_WHEN_THEN.md",
+      "path": "prototypes/experience-workbench/journeys/14-receive-money/GIVEN_WHEN_THEN.md",
+      "git_blob": "bd102398c3ec367cb933454b8102677879eed718"
+    },
+    {
+      "journey": "14",
+      "kind": "golden-validation.json",
+      "path": "prototypes/experience-workbench/journeys/14-receive-money/golden-validation.json",
+      "git_blob": "fe664626d5ccb554bd36246b65c36b8be672fb31"
+    },
+    {
+      "journey": "14",
+      "kind": "SCREEN_STATE_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/14-receive-money/SCREEN_STATE_MAPPING.json",
+      "git_blob": "6bb3a181c85946ccae9efa3cd2ce71ec955fa1d5"
+    },
+    {
+      "journey": "14",
+      "kind": "STATE_AND_AUTHORITY.md",
+      "path": "prototypes/experience-workbench/journeys/14-receive-money/STATE_AND_AUTHORITY.md",
+      "git_blob": "2a94887f5728a0243499534b251cfb266ef97cb2"
+    },
+    {
+      "journey": "14",
+      "kind": "UI_EVENT_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json",
+      "git_blob": "bd57a43b6161992ab0e92e962ff26e7c0fdbff90"
+    },
+    {
+      "journey": "14",
+      "kind": "UI_TO_DOMAIN_EVENTS.md",
+      "path": "prototypes/experience-workbench/journeys/14-receive-money/UI_TO_DOMAIN_EVENTS.md",
+      "git_blob": "e203478ac4e5bf16a6465b405800ca4f4a4e21f7"
+    },
+    {
+      "journey": "15",
+      "kind": "golden-validation.json",
+      "path": "prototypes/experience-workbench/journeys/15-settlement-history/golden-validation.json",
+      "git_blob": "5b6f1169fa4a82b4cd50deb1aba6846c257abb39"
+    },
+    {
+      "journey": "16",
+      "kind": "golden-validation.json",
+      "path": "prototypes/experience-workbench/journeys/16-savings-group/golden-validation.json",
+      "git_blob": "692c34d6b3a26719f0a3ba38ba9dbd55ba143e9a"
+    },
+    {
+      "journey": "17",
+      "kind": "GIVEN_WHEN_THEN.md",
+      "path": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/GIVEN_WHEN_THEN.md",
+      "git_blob": "e4dd28423eb21b8aeb55048653cb40161cc202ec"
+    },
+    {
+      "journey": "17",
+      "kind": "golden-validation.json",
+      "path": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/golden-validation.json",
+      "git_blob": "8d0650f3ae6b950251e498cbbfc3567985d1f269"
+    },
+    {
+      "journey": "17",
+      "kind": "STATE_AND_AUTHORITY.md",
+      "path": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/STATE_AND_AUTHORITY.md",
+      "git_blob": "02041554a08965d8fac8edaa20b155cb4b1fff29"
+    },
+    {
+      "journey": "17",
+      "kind": "UI_TO_DOMAIN_EVENTS.md",
+      "path": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md",
+      "git_blob": "d65ec501debad8e7ebfc567e37ee163e27c0afc0"
+    },
+    {
+      "journey": "18",
+      "kind": "GIVEN_WHEN_THEN.md",
+      "path": "prototypes/experience-workbench/journeys/18-activity-notifications/GIVEN_WHEN_THEN.md",
+      "git_blob": "ccf06f6dc869958f750389cba2ef71bec7dddc89"
+    },
+    {
+      "journey": "18",
+      "kind": "RETURN_CONTEXT_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/18-activity-notifications/RETURN_CONTEXT_MAPPING.json",
+      "git_blob": "e397fb21346132f0090d87c3483fa45ed7849edf"
+    },
+    {
+      "journey": "18",
+      "kind": "SCREEN_STATE_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/18-activity-notifications/SCREEN_STATE_MAPPING.json",
+      "git_blob": "0fef21b21f3fe2c5c37682226206f22a0b956507"
+    },
+    {
+      "journey": "18",
+      "kind": "STATE_AND_AUTHORITY.md",
+      "path": "prototypes/experience-workbench/journeys/18-activity-notifications/STATE_AND_AUTHORITY.md",
+      "git_blob": "237c1928cd02448efb232e3e9f6cb5da9a41b1a2"
+    },
+    {
+      "journey": "18",
+      "kind": "UI_EVENT_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json",
+      "git_blob": "aa299a7d379306850212220444e70ce1d4e98f59"
+    },
+    {
+      "journey": "18",
+      "kind": "UI_TO_DOMAIN_EVENTS.md",
+      "path": "prototypes/experience-workbench/journeys/18-activity-notifications/UI_TO_DOMAIN_EVENTS.md",
+      "git_blob": "f90c175f61e183f84c0c4f7cecd6a871640f484c"
+    },
+    {
+      "journey": "19",
+      "kind": "golden-validation.json",
+      "path": "prototypes/experience-workbench/journeys/19-insights/golden-validation.json",
+      "git_blob": "1ae556e8634230bb2cfb30b9e880efdd5b9b817e"
+    },
+    {
+      "journey": "19",
+      "kind": "SCREEN_STATE_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/19-insights/review-v1.1/SCREEN_STATE_MAPPING.json",
+      "git_blob": "cadd1ac1938c73dd55c41a946bcd185da5c931b1"
+    },
+    {
+      "journey": "19",
+      "kind": "UI_EVENT_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/19-insights/review-v1.1/UI_EVENT_MAPPING.json",
+      "git_blob": "658285fc134f9638e26f688a41bb3591f86905a2"
+    },
+    {
+      "journey": "19",
+      "kind": "SCREEN_STATE_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/19-insights/SCREEN_STATE_MAPPING.json",
+      "git_blob": "c33f2b427590492387e2a6668458ee8ef147ff1e"
+    },
+    {
+      "journey": "19",
+      "kind": "UI_EVENT_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/19-insights/UI_EVENT_MAPPING.json",
+      "git_blob": "bde60ee5e45a188ed7fed447c8310d00277b874e"
+    },
+    {
+      "journey": "20",
+      "kind": "SCREEN_STATE_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/20-payment-methods/review-v1/SCREEN_STATE_MAPPING.json",
+      "git_blob": "409b22c6d7311b5884392112ed92deb3f42a576a"
+    },
+    {
+      "journey": "20",
+      "kind": "UI_EVENT_MAPPING.json",
+      "path": "prototypes/experience-workbench/journeys/20-payment-methods/review-v1/UI_EVENT_MAPPING.json",
+      "git_blob": "264d97251213c9cd0ffbc25150769e09c6564389"
+    }
+  ],
+  "supporting_state_sources": [
+    {
+      "journey": "01",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_INVENTORY.md",
+      "git_blob": "82c700a7d332c64ce83a99a07376e073bcc874f4"
+    },
+    {
+      "journey": "05",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/05-add-expense/STATE_INVENTORY.md",
+      "git_blob": "e07272c1c79e55e61a7ffac2cae0e2e58396363f"
+    },
+    {
+      "journey": "06",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/STATE_INVENTORY.md",
+      "git_blob": "580390c116b7c745b7db51ca4948b7e9113d73f5"
+    },
+    {
+      "journey": "07",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/07-review-agree/STATE_INVENTORY.md",
+      "git_blob": "a24f4f4061a037af5862604f867c4b1f8f7fff6e"
+    },
+    {
+      "journey": "09",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/09-manage-people/STATE_INVENTORY.md",
+      "git_blob": "5a6b0d63868639c341799205e7745e61717c58cb"
+    },
+    {
+      "journey": "10",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/10-overall-position/STATE_INVENTORY.md",
+      "git_blob": "afc973d5d0b62baf067dfeaedb51a229800cbf59"
+    },
+    {
+      "journey": "11",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/11-settle-up/STATE_INVENTORY.md",
+      "git_blob": "f1b110969faa27f864c042804c6ee1d23622d1d5"
+    },
+    {
+      "journey": "12",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/12-complete-settlement/STATE_INVENTORY.md",
+      "git_blob": "6134699fd2ac04662d5defa082ed6ec0eb71a9b0"
+    },
+    {
+      "journey": "13",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/13-request-money/STATE_INVENTORY.md",
+      "git_blob": "29a7afd2603474abde32bffc310017f197058226"
+    },
+    {
+      "journey": "14",
+      "kind": "EDGE_CASES.md",
+      "path": "prototypes/experience-workbench/journeys/14-receive-money/EDGE_CASES.md",
+      "git_blob": "14a315cb5d2582f73c3b11e9ec32554836f44e07"
+    },
+    {
+      "journey": "14",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/14-receive-money/STATE_INVENTORY.md",
+      "git_blob": "3e44275e1136fc75cbf833940ca23bb9d314ea7a"
+    },
+    {
+      "journey": "18",
+      "kind": "EDGE_CASES.md",
+      "path": "prototypes/experience-workbench/journeys/18-activity-notifications/EDGE_CASES.md",
+      "git_blob": "483f6b151b0c81652192974e590e92f0a1387647"
+    },
+    {
+      "journey": "18",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/18-activity-notifications/STATE_INVENTORY.md",
+      "git_blob": "cc9da8741276aea61c8b63f8aa07cf902fe61d8b"
+    },
+    {
+      "journey": "20",
+      "kind": "EDGE_CASES.md",
+      "path": "prototypes/experience-workbench/journeys/20-payment-methods/EDGE_CASES.md",
+      "git_blob": "84887edc64bd4d10a6b09c7e4f565919fa5cd7d5"
+    },
+    {
+      "journey": "20",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/20-payment-methods/STATE_INVENTORY.md",
+      "git_blob": "ee5c654673cfa10863a7c6c43b69b2653761c403"
+    },
+    {
+      "journey": "21",
+      "kind": "EDGE_CASES.md",
+      "path": "prototypes/experience-workbench/journeys/21-wallet-crypto/EDGE_CASES.md",
+      "git_blob": "79bbd77224660e1b9a190a1b08221ea3201b906c"
+    },
+    {
+      "journey": "21",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/21-wallet-crypto/STATE_INVENTORY.md",
+      "git_blob": "3ec9c7e807bdfa6c6fc7fda94786da7543e1c0e8"
+    },
+    {
+      "journey": "22",
+      "kind": "EDGE_CASES.md",
+      "path": "prototypes/experience-workbench/journeys/22-qr-flows/EDGE_CASES.md",
+      "git_blob": "dcaa5ab8cd52af8b7f45ad4b30ca4b0ff0adf04a"
+    },
+    {
+      "journey": "22",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/22-qr-flows/STATE_INVENTORY.md",
+      "git_blob": "513374705ade894428d192cd13de6e5458c9c115"
+    },
+    {
+      "journey": "23",
+      "kind": "EDGE_CASES.md",
+      "path": "prototypes/experience-workbench/journeys/23-import/EDGE_CASES.md",
+      "git_blob": "826b6bbf35f644628a616cd78295b25df86412cf"
+    },
+    {
+      "journey": "23",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/23-import/STATE_INVENTORY.md",
+      "git_blob": "6f7b7b245e2076a3f7f5b5130e99a4a80392f4e8"
+    },
+    {
+      "journey": "24",
+      "kind": "EDGE_CASES.md",
+      "path": "prototypes/experience-workbench/journeys/24-export-portability/EDGE_CASES.md",
+      "git_blob": "6511859a9a684bd3e236f7c71f10e6909634cd81"
+    },
+    {
+      "journey": "24",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/24-export-portability/STATE_INVENTORY.md",
+      "git_blob": "f8029c3ca45f1e8af060bb74a313834969d34b62"
+    },
+    {
+      "journey": "25",
+      "kind": "EDGE_CASES.md",
+      "path": "prototypes/experience-workbench/journeys/25-storage-recovery/EDGE_CASES.md",
+      "git_blob": "4a9abcc2d70e34e7d5568451ade7afac66e8f5d3"
+    },
+    {
+      "journey": "25",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/25-storage-recovery/STATE_INVENTORY.md",
+      "git_blob": "70ac7aec678938be573607237dce4409809e4150"
+    },
+    {
+      "journey": "26",
+      "kind": "EDGE_CASES.md",
+      "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/EDGE_CASES.md",
+      "git_blob": "3b312d2d99c39311686de06deeb12a329132a903"
+    },
+    {
+      "journey": "26",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/STATE_INVENTORY.md",
+      "git_blob": "5dbd7e67082f001475a7269098828e8c6ec03c0e"
+    },
+    {
+      "journey": "27",
+      "kind": "EDGE_CASES.md",
+      "path": "prototypes/experience-workbench/journeys/27-account-preferences/EDGE_CASES.md",
+      "git_blob": "d0286b9975792991a1047c16b4064dc0d32cb71d"
+    },
+    {
+      "journey": "27",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/27-account-preferences/STATE_INVENTORY.md",
+      "git_blob": "99a08920b4d732b27ab4d06d35656f5721ef1ffb"
+    },
+    {
+      "journey": "28",
+      "kind": "EDGE_CASES.md",
+      "path": "prototypes/experience-workbench/journeys/28-failure-recovery/EDGE_CASES.md",
+      "git_blob": "e5e29e950bc01cd759be1ec7799649f13bc9f5e4"
+    },
+    {
+      "journey": "28",
+      "kind": "STATE_INVENTORY.md",
+      "path": "prototypes/experience-workbench/journeys/28-failure-recovery/STATE_INVENTORY.md",
+      "git_blob": "2bd84444a24b7e1b457667885e8870ff5c7b2cd9"
+    }
+  ],
+  "counts": {
+    "curated_mapping_sources": 52,
+    "supporting_state_sources": 31,
+    "total": 83
+  }
+}

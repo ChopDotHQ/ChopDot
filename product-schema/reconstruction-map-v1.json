@@ -1,0 +1,750 @@
+{
+  "schema_version": 1,
+  "map_id": "chopdot-reconstruction-map-v1",
+  "authority": "AUTHORED_CLOSURE_MAPPING",
+  "target_contract": [
+    "28 frozen Goldens",
+    "approved Phase C1 overlays",
+    "approved post-J28 decisions",
+    "approved post-Golden impacts"
+  ],
+  "classification_vocabulary": [
+    "DOMAIN_OPERATION",
+    "NAVIGATION_TRANSITION",
+    "DRAFT_FIELD",
+    "SELECTION_STATE",
+    "DERIVED_PROJECTION",
+    "PRODUCT_REQUIREMENT",
+    "LAW_INVARIANT",
+    "RECOVERY_BEHAVIOR",
+    "EXTERNAL_HANDOFF",
+    "SYSTEM_PROGRESSION",
+    "PRESENTATION_ONLY",
+    "REVIEW_DEMO_CHROME",
+    "POST_GOLDEN_SUPERSEDED"
+  ],
+  "witness_vocabulary": [
+    "USER_SURFACE",
+    "USER_TASK",
+    "SYSTEM_DERIVED",
+    "EXTERNAL_PRECONDITION",
+    "COORDINATED_OPERATION",
+    "CONTRACT_ONLY",
+    "RECOVERY_ONLY",
+    "SEMANTIC_ONLY_FUTURE",
+    "POST_GOLDEN_DECISION"
+  ],
+  "mapping_source_registry": "golden-mapping-sources.json",
+  "domain_event_bindings": "domain-event-bindings-v1.json",
+  "operation_witnesses": [
+    {
+      "schema_ref": "session.enter",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "01",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/UI_TO_DOMAIN_EVENTS.md",
+        "contains": "Continue on code"
+      }
+    },
+    {
+      "schema_ref": "participant.link_account",
+      "witness_types": [
+        "COORDINATED_OPERATION"
+      ],
+      "journey": "01",
+      "evidence": {
+        "schema_source": "C1_IDENTITY",
+        "reason": "Cross-journey identity binding is intentionally coordinated rather than journey-owned."
+      }
+    },
+    {
+      "schema_ref": "group.create",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "03",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/03-create-group/v2-golden.html",
+        "contains": "Create group"
+      }
+    },
+    {
+      "schema_ref": "group.invite",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "04",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/04-invite-join/v1-golden.html",
+        "contains": "Share invite"
+      }
+    },
+    {
+      "schema_ref": "group.join",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "04",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/04-invite-join/v1-golden.html",
+        "contains": "Join group"
+      }
+    },
+    {
+      "schema_ref": "membership.remove",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "09",
+      "evidence": {
+        "domain_event": "MemberRemovalRequested"
+      }
+    },
+    {
+      "schema_ref": "expense.create",
+      "witness_types": [
+        "USER_TASK"
+      ],
+      "journey": "05",
+      "evidence": {
+        "task_ref": "TASK-J05-EQUAL-COMMON"
+      }
+    },
+    {
+      "schema_ref": "expense.edit",
+      "witness_types": [
+        "USER_TASK"
+      ],
+      "journey": "06",
+      "evidence": {
+        "task_ref": "TASK-J06-EDIT"
+      }
+    },
+    {
+      "schema_ref": "expense.delete",
+      "witness_types": [
+        "USER_TASK"
+      ],
+      "journey": "06",
+      "evidence": {
+        "task_ref": "TASK-J06-DELETE"
+      }
+    },
+    {
+      "schema_ref": "expense.review_agree",
+      "witness_types": [
+        "USER_TASK"
+      ],
+      "journey": "07",
+      "evidence": {
+        "task_ref": "TASK-J07-AGREE"
+      }
+    },
+    {
+      "schema_ref": "expense.raise_issue",
+      "witness_types": [
+        "USER_TASK"
+      ],
+      "journey": "07",
+      "evidence": {
+        "task_ref": "TASK-J07-RAISE-ISSUE"
+      }
+    },
+    {
+      "schema_ref": "expense.resolve_issue",
+      "witness_types": [
+        "USER_TASK"
+      ],
+      "journey": "07",
+      "evidence": {
+        "task_ref": "TASK-J07-STILL-OFF-AFTER-REPLY"
+      }
+    },
+    {
+      "schema_ref": "expense.withdraw_issue",
+      "witness_types": [
+        "USER_TASK"
+      ],
+      "journey": "07",
+      "evidence": {
+        "task_ref": "TASK-J07-WITHDRAW-ISSUE"
+      }
+    },
+    {
+      "schema_ref": "expense.reply_to_issue",
+      "witness_types": [
+        "USER_TASK"
+      ],
+      "journey": "07",
+      "evidence": {
+        "task_ref": "TASK-J07-OWNER-REPLY"
+      }
+    },
+    {
+      "schema_ref": "settlement.prepare",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "11",
+      "evidence": {
+        "domain_event": "PaymentIntentPrepared"
+      }
+    },
+    {
+      "schema_ref": "settlement.authorize",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "11",
+      "evidence": {
+        "domain_event": "PaymentIntentAuthorized"
+      }
+    },
+    {
+      "schema_ref": "settlement.mark_sent",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "12",
+      "evidence": {
+        "domain_event": "PayerMarkedSent"
+      }
+    },
+    {
+      "schema_ref": "settlement.confirm_receipt",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "12",
+      "evidence": {
+        "domain_event": "ReceiverConfirmationRequested"
+      }
+    },
+    {
+      "schema_ref": "settlement.close",
+      "witness_types": [
+        "SYSTEM_DERIVED"
+      ],
+      "journey": "12",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/11-settle-up/STATE_AND_AUTHORITY.md",
+        "contains": "`closed`"
+      }
+    },
+    {
+      "schema_ref": "settlement.reconcile",
+      "witness_types": [
+        "RECOVERY_ONLY",
+        "USER_SURFACE"
+      ],
+      "journey": "12",
+      "evidence": {
+        "domain_event": "PaymentRecoveryRequested"
+      }
+    },
+    {
+      "schema_ref": "request.create",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "13",
+      "evidence": {
+        "domain_event": "CreateRequestRequested"
+      }
+    },
+    {
+      "schema_ref": "request.deliver",
+      "witness_types": [
+        "SYSTEM_DERIVED"
+      ],
+      "journey": "13",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/13-request-money/GIVEN_WHEN_THEN.md",
+        "contains": "delivery is queued"
+      }
+    },
+    {
+      "schema_ref": "request.withdraw",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "13",
+      "evidence": {
+        "domain_event": "WithdrawRequestRequested"
+      }
+    },
+    {
+      "schema_ref": "receiving_share.create",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "14",
+      "evidence": {
+        "domain_event": "ReceivingShareCreateRequested"
+      }
+    },
+    {
+      "schema_ref": "receiving_share.stop",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "14",
+      "evidence": {
+        "domain_event": "ReceivingShareStopRequested"
+      }
+    },
+    {
+      "schema_ref": "savings.contribute",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "17",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md",
+        "contains": "SavingsContributionPrepared"
+      }
+    },
+    {
+      "schema_ref": "savings.withdraw",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "17",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md",
+        "contains": "SavingsWithdrawalAuthorizationRequested"
+      }
+    },
+    {
+      "schema_ref": "payment_destination.create_update",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "20",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/20-payment-methods/STATE_INVENTORY.md",
+        "contains": "Save accepted"
+      }
+    },
+    {
+      "schema_ref": "payment_destination.remove",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "20",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/20-payment-methods/STATE_INVENTORY.md",
+        "contains": "Remove accepted"
+      }
+    },
+    {
+      "schema_ref": "wallet.connect_switch",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "21",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html",
+        "contains": "Connect browser wallet"
+      }
+    },
+    {
+      "schema_ref": "wallet.execute_action",
+      "witness_types": [
+        "USER_SURFACE",
+        "EXTERNAL_PRECONDITION"
+      ],
+      "journey": "21",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html",
+        "contains": "Approve in wallet"
+      }
+    },
+    {
+      "schema_ref": "qr.resolve",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "22",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/22-qr-flows/v1-candidate.html",
+        "contains": "Scan demo person code"
+      }
+    },
+    {
+      "schema_ref": "import.apply",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "23",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/23-import/v1-candidate.html",
+        "contains": "Import group"
+      }
+    },
+    {
+      "schema_ref": "export.create",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "24",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/24-export-portability/STATE_INVENTORY.md",
+        "contains": "Create export"
+      }
+    },
+    {
+      "schema_ref": "export.deliver",
+      "witness_types": [
+        "USER_SURFACE",
+        "EXTERNAL_PRECONDITION"
+      ],
+      "journey": "24",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/24-export-portability/STATE_INVENTORY.md",
+        "contains": "browser-download-requested"
+      }
+    },
+    {
+      "schema_ref": "storage.create_backup",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "25",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/25-storage-recovery/v1-candidate.html",
+        "contains": "Create backup"
+      }
+    },
+    {
+      "schema_ref": "storage.restore",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "25",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/25-storage-recovery/v1-candidate.html",
+        "contains": "Apply restore"
+      }
+    },
+    {
+      "schema_ref": "group.rename_archive",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "26",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/STATE_INVENTORY.md",
+        "contains": "rename-review",
+        "also_contains": "archive-review"
+      }
+    },
+    {
+      "schema_ref": "group.transfer_ownership",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "26",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/STATE_INVENTORY.md",
+        "contains": "transfer-review"
+      }
+    },
+    {
+      "schema_ref": "group.leave",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "26",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/STATE_INVENTORY.md",
+        "contains": "leave-confirm"
+      }
+    },
+    {
+      "schema_ref": "group.delete",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "26",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/STATE_INVENTORY.md",
+        "contains": "delete-final-review"
+      }
+    },
+    {
+      "schema_ref": "preferences.update",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "27",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/27-account-preferences/STATE_INVENTORY.md",
+        "contains": "profile-review"
+      }
+    },
+    {
+      "schema_ref": "session.sign_out",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "27",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/27-account-preferences/STATE_INVENTORY.md",
+        "contains": "signout-review"
+      }
+    },
+    {
+      "schema_ref": "account.delete",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "27",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/27-account-preferences/STATE_INVENTORY.md",
+        "contains": "deletion-final-review"
+      }
+    },
+    {
+      "schema_ref": "spend.authorize_execute",
+      "witness_types": [
+        "CONTRACT_ONLY"
+      ],
+      "journey": null,
+      "evidence": {
+        "schema_source": "C1_SPEND",
+        "reason": "Approved contract primitive with deliberately unselected concrete spending rail."
+      }
+    },
+    {
+      "schema_ref": "spend.materialize",
+      "witness_types": [
+        "CONTRACT_ONLY"
+      ],
+      "journey": null,
+      "evidence": {
+        "schema_source": "C1_SPEND",
+        "reason": "Approved contract-only materialization rule; no current Golden surface."
+      }
+    },
+    {
+      "schema_ref": "recovery.reconcile",
+      "witness_types": [
+        "RECOVERY_ONLY",
+        "USER_SURFACE"
+      ],
+      "journey": "28",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/28-failure-recovery/STATE_INVENTORY.md",
+        "contains": "reconcile-checking"
+      }
+    },
+    {
+      "schema_ref": "recovery.safe_retry",
+      "witness_types": [
+        "RECOVERY_ONLY",
+        "USER_SURFACE"
+      ],
+      "journey": "28",
+      "evidence": {
+        "path": "prototypes/experience-workbench/journeys/28-failure-recovery/STATE_INVENTORY.md",
+        "contains": "safe-retry-review"
+      }
+    },
+    {
+      "schema_ref": "notification.set_read_state",
+      "witness_types": [
+        "USER_SURFACE"
+      ],
+      "journey": "18",
+      "evidence": {
+        "domain_event": "NotificationReadAllRequested"
+      }
+    }
+  ],
+  "state_name_aliases": {
+    "05": {
+      "offline_saved": "offline-saved"
+    },
+    "06": {
+      "save_error": "save-error",
+      "no_permission": "no-permission",
+      "offline_detail": "offline-detail",
+      "offline_edit": "offline-edit",
+      "offline_saved": "offline-saved",
+      "not_found": "not-found"
+    },
+    "08": {
+      "active_needs_review": "active",
+      "nothing_needs_you": "waiting",
+      "new_empty_group": "empty",
+      "everyone_square": "square"
+    }
+  },
+  "required_state_triggers": [
+    {
+      "journey": "05",
+      "requirement_state": "missing",
+      "golden_state": "missing",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "required participant/payer context is unavailable before save"
+    },
+    {
+      "journey": "05",
+      "requirement_state": "duplicate",
+      "golden_state": "duplicate",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "duplicate Expense candidate is detected before creating a second canonical Expense"
+    },
+    {
+      "journey": "05",
+      "requirement_state": "offline",
+      "golden_state": "offline",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "connectivity is unavailable before canonical save"
+    },
+    {
+      "journey": "05",
+      "requirement_state": "offline_saved",
+      "golden_state": "offline-saved",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "local prototype save succeeds while offline and remains explicitly local"
+    },
+    {
+      "journey": "05",
+      "requirement_state": "error",
+      "golden_state": "error",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "save is verified failed and entered details remain available"
+    },
+    {
+      "journey": "05",
+      "requirement_state": "locked",
+      "golden_state": "locked",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "LAW-EXP-GUARD-01 blocks the proposed mutation because it changes unresolved settlement dependency"
+    },
+    {
+      "journey": "06",
+      "requirement_state": "saving",
+      "golden_state": "saving",
+      "classification": "SYSTEM_PROGRESSION",
+      "trigger": "accepted edit/delete command is in progress and duplicate mutation is disabled"
+    },
+    {
+      "journey": "06",
+      "requirement_state": "save_error",
+      "golden_state": "save-error",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "mutation is verified not saved and safe retry/review remains possible"
+    },
+    {
+      "journey": "06",
+      "requirement_state": "locked",
+      "golden_state": "locked",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "LAW-EXP-GUARD-01 blocks edit/delete because current or proposed state changes unresolved settlement dependency"
+    },
+    {
+      "journey": "06",
+      "requirement_state": "no_permission",
+      "golden_state": "no-permission",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "fresh authority no longer permits the requested mutation"
+    },
+    {
+      "journey": "06",
+      "requirement_state": "offline_detail",
+      "golden_state": "offline-detail",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "cached Expense detail is readable while offline"
+    },
+    {
+      "journey": "06",
+      "requirement_state": "offline_edit",
+      "golden_state": "offline-edit",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "write cannot safely proceed while offline"
+    },
+    {
+      "journey": "06",
+      "requirement_state": "offline_saved",
+      "golden_state": "offline-saved",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "local prototype save is explicit and not remote/shared acceptance"
+    },
+    {
+      "journey": "06",
+      "requirement_state": "conflict",
+      "golden_state": "conflict",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "reviewed Expense version is stale and current owner truth must refresh before write"
+    },
+    {
+      "journey": "06",
+      "requirement_state": "loading",
+      "golden_state": "loading",
+      "classification": "SYSTEM_PROGRESSION",
+      "trigger": "current Expense truth is loading; no mutation is implied"
+    },
+    {
+      "journey": "06",
+      "requirement_state": "not_found",
+      "golden_state": "not-found",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "target Expense cannot be resolved from current authorized truth"
+    },
+    {
+      "journey": "08",
+      "requirement_state": "active_needs_review",
+      "golden_state": "active",
+      "classification": "DERIVED_PROJECTION",
+      "trigger": "derived Attention contains a current review task"
+    },
+    {
+      "journey": "08",
+      "requirement_state": "nothing_needs_you",
+      "golden_state": "waiting",
+      "classification": "DERIVED_PROJECTION",
+      "trigger": "derived Attention is empty while other people may still have pending work"
+    },
+    {
+      "journey": "08",
+      "requirement_state": "new_empty_group",
+      "golden_state": "empty",
+      "classification": "DERIVED_PROJECTION",
+      "trigger": "Group has no Expenses and Position is zero"
+    },
+    {
+      "journey": "08",
+      "requirement_state": "everyone_square",
+      "golden_state": "square",
+      "classification": "DERIVED_PROJECTION",
+      "trigger": "derived Position is zero for all relevant balances and recent settlement/history remains visible"
+    },
+    {
+      "journey": "08",
+      "requirement_state": "offline",
+      "golden_state": "offline",
+      "classification": "RECOVERY_BEHAVIOR",
+      "trigger": "saved Group projection is shown with explicit stale/offline status"
+    }
+  ],
+  "explicit_semantic_only": [
+    {
+      "schema_ref": "payment.closeout_context",
+      "witness_type": "SEMANTIC_ONLY_FUTURE",
+      "decision": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
+      "reason": "Approved future closeout semantics; no approved user surface."
+    }
+  ],
+  "coordinated_only": [
+    {
+      "schema_ref": "participant.link_account",
+      "witness_type": "COORDINATED_OPERATION",
+      "reason": "Cross-journey identity binding is intentionally coordinated; forcing a single journey owner would misstate authority."
+    }
+  ]
+}

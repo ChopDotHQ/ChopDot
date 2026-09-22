@@ -155,6 +155,7 @@
       "name": "Position",
       "objects": [
         "position.position",
+        "position.scope",
         "identity.participant",
         "group.group",
         "money.money_v1"
@@ -165,7 +166,8 @@
       ],
       "laws": [
         "LAW-POS-01",
-        "LAW-MONEY-01"
+        "LAW-MONEY-01",
+        "LAW-POS-SCOPE-01"
       ]
     },
     {
@@ -762,7 +764,9 @@
         "settlement.prepare",
         "settlement.authorize"
       ],
-      "participates_operations": [],
+      "participates_operations": [
+        "settlement.mark_sent"
+      ],
       "renders_views": [],
       "emits_contexts": [
         "ctx.settlement",
@@ -792,7 +796,8 @@
       "owns_operations": [
         "settlement.confirm_receipt",
         "settlement.close",
-        "settlement.reconcile"
+        "settlement.reconcile",
+        "settlement.mark_sent"
       ],
       "participates_operations": [],
       "renders_views": [],
@@ -1445,7 +1450,8 @@
         "settlement.authorize",
         "settlement.confirm_receipt",
         "settlement.close",
-        "settlement.reconcile"
+        "settlement.reconcile",
+        "settlement.mark_sent"
       ],
       "continuity": [
         "One exact settlement scope crosses J11→J12.",
@@ -1455,7 +1461,12 @@
       "views_rendered": [
         "view.position"
       ],
-      "views_refreshed_downstream": []
+      "views_refreshed_downstream": [],
+      "law_refs": [
+        "LAW-POS-SCOPE-01",
+        "LAW-PAY-02",
+        "LAW-OP-01"
+      ]
     },
     {
       "id": "composition.request_receiving",
@@ -1836,27 +1847,62 @@
   "shared_composition_laws": [
     {
       "id": "COMP-01",
-      "rule": "The same underlying object identity survives adjacent journey handoffs; routes do not create replacement domain objects."
+      "rule": "The same underlying object identity survives adjacent journey handoffs; routes do not create replacement domain objects.",
+      "safety_class": "composition_continuity",
+      "constraint": {
+        "kind": "handoff_identity_preservation",
+        "replacement_domain_object_on_route": false
+      }
     },
     {
       "id": "COMP-02",
-      "rule": "Only an operation owner may mutate its semantic object; projections/read models cannot mutate source truth."
+      "rule": "Only an operation owner may mutate its semantic object; projections/read models cannot mutate source truth.",
+      "safety_class": "composition_continuity",
+      "constraint": {
+        "kind": "single_operation_owner",
+        "projection_may_mutate_source_truth": false
+      }
     },
     {
       "id": "COMP-03",
-      "rule": "Derived views refresh from accepted underlying state; no journey manually overwrites Position, Activity, Insights or history to simulate an outcome."
+      "rule": "Derived views refresh from accepted underlying state; no journey manually overwrites Position, Activity, Insights or history to simulate an outcome.",
+      "safety_class": "composition_continuity",
+      "constraint": {
+        "kind": "derived_view_refresh",
+        "manual_projection_overwrite": false
+      }
     },
     {
       "id": "COMP-04",
-      "rule": "Possible-effect recovery preserves the original operation identity and returns to the owning journey after verified outcome/safe retry/explicit stop."
+      "rule": "Possible-effect recovery preserves the original operation identity and returns to the owning journey after verified outcome/safe retry/explicit stop.",
+      "safety_class": "composition_continuity",
+      "constraint": {
+        "kind": "recovery_identity_preservation",
+        "same_operation_identity": true,
+        "return_after": [
+          "verified_outcome",
+          "safe_retry",
+          "explicit_stop"
+        ]
+      }
     },
     {
       "id": "COMP-05",
-      "rule": "Gate A partial capability coverage is not promoted to full journey integration."
+      "rule": "Gate A partial capability coverage is not promoted to full journey integration.",
+      "safety_class": "composition_continuity",
+      "constraint": {
+        "kind": "partial_coverage_not_promoted",
+        "partial_capability_implies_full_journey": false
+      }
     },
     {
       "id": "COMP-06",
-      "rule": "Approved Goldens define experience projection; the schema references them and does not duplicate or redesign their visual hierarchy/copy."
+      "rule": "Approved Goldens define experience projection; the schema references them and does not duplicate or redesign their visual hierarchy/copy.",
+      "safety_class": "composition_continuity",
+      "constraint": {
+        "kind": "golden_projection_authority",
+        "schema_may_redesign_golden_projection": false
+      }
     }
   ],
   "ambient_contexts": [
