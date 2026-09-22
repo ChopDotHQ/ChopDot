@@ -99,7 +99,7 @@
     },
     {
       "domain_event": "CommandOutcomeCheckRequested",
-      "classification": "DOMAIN_OPERATION",
+      "classification": "RECOVERY_BEHAVIOR",
       "operation_refs": [
         "recovery.reconcile"
       ],
@@ -494,7 +494,7 @@
     },
     {
       "domain_event": "MemberRemovalRetryRequested",
-      "classification": "DOMAIN_OPERATION",
+      "classification": "RECOVERY_BEHAVIOR",
       "operation_refs": [
         "membership.remove"
       ],
@@ -531,7 +531,7 @@
     },
     {
       "domain_event": "MemberRemovalStatusRequested",
-      "classification": "DOMAIN_OPERATION",
+      "classification": "RECOVERY_BEHAVIOR",
       "operation_refs": [
         "recovery.reconcile"
       ],
@@ -928,7 +928,8 @@
         "settlement.close"
       ],
       "journeys": [
-        "11"
+        "11",
+        "12"
       ],
       "occurrences": 1,
       "source_paths": [
@@ -1099,7 +1100,7 @@
     },
     {
       "domain_event": "PaymentQuoteRefreshRequested",
-      "classification": "DOMAIN_OPERATION",
+      "classification": "RECOVERY_BEHAVIOR",
       "operation_refs": [
         "settlement.prepare"
       ],
@@ -1121,7 +1122,7 @@
     },
     {
       "domain_event": "PaymentRecoveryRequested",
-      "classification": "DOMAIN_OPERATION",
+      "classification": "RECOVERY_BEHAVIOR",
       "operation_refs": [
         "settlement.reconcile"
       ],
@@ -1145,7 +1146,7 @@
     },
     {
       "domain_event": "PaymentRetryRequested",
-      "classification": "DOMAIN_OPERATION",
+      "classification": "RECOVERY_BEHAVIOR",
       "operation_refs": [
         "recovery.safe_retry"
       ],
@@ -1200,7 +1201,7 @@
     },
     {
       "domain_event": "PaymentStatusRefreshRequested",
-      "classification": "DOMAIN_OPERATION",
+      "classification": "RECOVERY_BEHAVIOR",
       "operation_refs": [
         "settlement.reconcile"
       ],
@@ -1371,7 +1372,7 @@
     },
     {
       "domain_event": "ReceiverConfirmedPartial",
-      "classification": "DOMAIN_OPERATION",
+      "classification": "SYSTEM_PROGRESSION",
       "operation_refs": [
         "settlement.confirm_receipt"
       ],
@@ -1603,7 +1604,7 @@
     },
     {
       "domain_event": "ReceivingShareCommandRetried",
-      "classification": "DOMAIN_OPERATION",
+      "classification": "RECOVERY_BEHAVIOR",
       "operation_refs": [
         "recovery.safe_retry"
       ],
@@ -1647,7 +1648,7 @@
     },
     {
       "domain_event": "ReceivingShareOutcomeQueryRequested",
-      "classification": "DOMAIN_OPERATION",
+      "classification": "RECOVERY_BEHAVIOR",
       "operation_refs": [
         "recovery.reconcile"
       ],
@@ -1819,7 +1820,7 @@
     },
     {
       "domain_event": "RetrySameCommandRequested",
-      "classification": "DOMAIN_OPERATION",
+      "classification": "RECOVERY_BEHAVIOR",
       "operation_refs": [
         "recovery.safe_retry"
       ],
@@ -2242,7 +2243,7 @@
     },
     {
       "domain_event": "SettlementScopeRefreshed",
-      "classification": "DOMAIN_OPERATION",
+      "classification": "RECOVERY_BEHAVIOR",
       "operation_refs": [
         "settlement.prepare"
       ],
