@@ -66,7 +66,7 @@
       ],
       "journey": "03",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/03-create-group/v2-golden.html",
+        "path": "prototypes/experience-workbench/journeys/03-create-group/spec.md",
         "contains": "Create group"
       }
     },
@@ -77,8 +77,8 @@
       ],
       "journey": "04",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/04-invite-join/v1-golden.html",
-        "contains": "Share invite"
+        "path": "prototypes/experience-workbench/journeys/04-invite-join/spec.md",
+        "contains": "Invite people"
       }
     },
     {
@@ -88,7 +88,7 @@
       ],
       "journey": "04",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/04-invite-join/v1-golden.html",
+        "path": "prototypes/experience-workbench/journeys/04-invite-join/spec.md",
         "contains": "Join group"
       }
     },
