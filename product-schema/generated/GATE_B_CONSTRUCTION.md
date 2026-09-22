@@ -1,6 +1,6 @@
 # Generated Gate B Construction Packet
 
-**Derived view — not product authority or implementation authorization. Pre-Gate-B readiness: READY_FOR_HUMAN_AUTHORIZATION.**
+**Derived view — not product authority or implementation authorization. Pre-Gate-B readiness: BLOCKED.**
 
 ## Authority recoveries
 
@@ -12,13 +12,13 @@
 
 ## Product decisions required
 
-- None
+- **POLICY-EXPENSE-LOCK-SCOPE** — Approved J05/J06/J08 behavior establishes a settlement-in-progress lock for Expense create/edit/delete, but frozen J08 decision history explicitly defers whether integration should keep the historical group-wide lock or narrow it to the active settlement/item scope.
 
 ## Resolved authority interpretations
 
 - **RESOLVED-J05-ARTIFACT-01** — The recovered standalone J05 V1 candidate is the Gate B fidelity artifact because its exact 27-state / 98-link fingerprint and required paths match the frozen approved state inventory and visual-QA record.
-- **RESOLVED-EXPENSE-LOCK-01** — Settlement-in-progress is a Group-level expense-mutation lock for create/edit/delete. The later dependent-item dispute rule governs settlement eligibility and does not override this mutation lock.
 - **RESOLVED-EXPENSE-REVIEW-01** — A successful persisted Expense change resets current prior reviews to needs-review-again while preserving review history; owner correction does not resolve an issue without reviewer action in J07.
+- **RESOLVED-EXPENSE-LOCK-EXISTENCE-01** — Settlement-in-progress locks Expense create/edit/delete; the exact lock scope remains POLICY-EXPENSE-LOCK-SCOPE.
 
 ## Construction order
 
@@ -41,18 +41,19 @@ Refreshed downstream only: `view.position` → Gate C, `view.activity` → Gate 
 ### J08 — Group Home
 - **REQ-J08-HIERARCHY** (ordered_hierarchy): ["group_identity","what_needs_you","your_position","recent","people_settle_handoffs","global_bottom_navigation"]
 - **REQ-J08-STATES** (required_states): ["active_needs_review","nothing_needs_you","new_empty_group","settlement_in_progress","everyone_square","offline"]
+- **REQ-J08-REFRESH** (canonical_refresh): {"after_expense_create":["position","group_recent","attention"],"after_expense_edit":["position","group_recent","attention","change_history"],"after_expense_delete":["position","group_recent","attention","change_history"],"deleted_expense_not_present_as_current_recent_expense":true,"no_second_fixture_store":true}
 
 ### J05 — Add an Expense
 - **REQ-J05-DEFAULTS** (defaults): {"required_user_input":["amount","description"],"payer":"you","participants":"everyone","split_method":"equal","date":"today","receipt":"none"}
 - **REQ-J05-DETAIL-PATHS** (editable_paths): {"payer":true,"participants":true,"split_methods":["equal","exact","shares"],"date":true,"receipt":true,"no_common_path_review_page":true}
 - **REQ-J05-RECOVERY** (required_states): ["missing","duplicate","offline","offline_saved","error","locked"]
-- **REQ-J05-LOCK** (effect_guard): {"scope":"group","locked_when":"settlement_in_progress","blocked_operations":["expense.create","expense.edit","expense.delete"],"entered_details_preserved":true}
+- **REQ-J05-LOCK** (effect_guard): {"scope":"REQUIRES_PRODUCT_DECISION","locked_when":"active settlement intersects target under selected scope policy","blocked_operations":["expense.create","expense.edit","expense.delete"],"entered_details_preserved":true}
 
 ### J06 — Review / Correct an Expense
 - **REQ-J06-DETAIL** (ordered_detail): ["amount","name","review_change_status","payer_personal_share_date","split","receipt_history","contextual_actions"]
 - **REQ-J06-PERMISSIONS** (permission_boundary): {"edit_delete":["expense_owner","authorized_role"],"other_member_handoff":"07","fake_edit_controls":false}
 - **REQ-J06-RECOVERY** (required_states): ["saving","save_error","locked","no_permission","offline_detail","offline_edit","offline_saved","conflict","loading","not_found"]
-- **REQ-J06-REVIEW-RESET** (dependent_state_transition): {"on_successful_persisted_edit":"reset_current_reviews_to_needs_review_again","preserve_review_history":true,"open_issue_requires_j07_resolution":true,"owner_edit_cannot_mark_agreed":true}
+- **REQ-J06-REVIEW-RESET** (dependent_state_transition): {"trigger":{"path":"Save changes","persistence":"accepted"},"affected_review_set":"reviewers_current_at_edit_acceptance","include_participants_removed_by_edit":true,"result":"needs_review_again","preserve_review_history":true,"open_issue_requires_j07_resolution":true,"owner_edit_cannot_mark_agreed":true}
 
 ### J07 — Review / Agree / Raise an Issue
 - **REQ-J07-LANGUAGE** (literal_language): {"prompt":"Does this look right?","agree":"Looks right","issue":"Something's off","defer":"Not now","reassess_negative":"Still off"}

@@ -27,4 +27,4 @@ const lines=['# Generated Gate B Construction Packet','',
   '## Build constraints','',...p.build_constraints.map(x=>'- **'+x.id+'** — '+x.rule),''
 ];
 writeFileSync(join(out,'GATE_B_CONSTRUCTION.md'),lines.join('\n')+'\n');
-console.log(JSON.stringify({schema_status:x.report.schema_status,pre_gate_b_readiness:x.report.pre_gate_b_readiness,recoveries:p.authority_recoveries.map(x=>x.id),blockers:p.authority_blockers.length,product_decisions:p.product_decisions_required.length,result:'PASS'},null,2));
+console.log(JSON.stringify({schema_status:x.report.schema_status,pre_gate_b_readiness:x.report.pre_gate_b_readiness,recoveries:p.authority_recoveries.map(x=>x.id),blockers:p.authority_blockers.length,product_decisions:p.product_decisions_required.map(x=>x.id),result:'PASS'},null,2));

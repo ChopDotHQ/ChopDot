@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "generated_view": "gate-b-construction",
   "authority": "DERIVED_ONLY",
   "gate": {
@@ -8,7 +8,7 @@
     "status": "planned_not_implemented_by_schema",
     "goal": "A user can add, inspect, edit/review, agree/question, and return to an updated group without a Golden contract regression.",
     "implementation_authorized": false,
-    "pre_gate_b_readiness": "READY_FOR_HUMAN_AUTHORIZATION"
+    "pre_gate_b_readiness": "BLOCKED"
   },
   "construction_order": [
     "08",
@@ -86,6 +86,36 @@
             "offline"
           ],
           "sources": [
+            "J08"
+          ]
+        },
+        {
+          "id": "REQ-J08-REFRESH",
+          "journey": "08",
+          "kind": "canonical_refresh",
+          "value": {
+            "after_expense_create": [
+              "position",
+              "group_recent",
+              "attention"
+            ],
+            "after_expense_edit": [
+              "position",
+              "group_recent",
+              "attention",
+              "change_history"
+            ],
+            "after_expense_delete": [
+              "position",
+              "group_recent",
+              "attention",
+              "change_history"
+            ],
+            "deleted_expense_not_present_as_current_recent_expense": true,
+            "no_second_fixture_store": true
+          },
+          "sources": [
+            "J06",
             "J08"
           ]
         }
@@ -274,8 +304,8 @@
           "journey": "05",
           "kind": "effect_guard",
           "value": {
-            "scope": "group",
-            "locked_when": "settlement_in_progress",
+            "scope": "REQUIRES_PRODUCT_DECISION",
+            "locked_when": "active settlement intersects target under selected scope policy",
             "blocked_operations": [
               "expense.create",
               "expense.edit",
@@ -287,7 +317,10 @@
             "J05",
             "J05_STATE",
             "J05_RECOVERED",
-            "J08"
+            "J06",
+            "J06_STATE",
+            "J08",
+            "J08_DECISION"
           ]
         }
       ],
@@ -426,7 +459,13 @@
           "journey": "06",
           "kind": "dependent_state_transition",
           "value": {
-            "on_successful_persisted_edit": "reset_current_reviews_to_needs_review_again",
+            "trigger": {
+              "path": "Save changes",
+              "persistence": "accepted"
+            },
+            "affected_review_set": "reviewers_current_at_edit_acceptance",
+            "include_participants_removed_by_edit": true,
+            "result": "needs_review_again",
             "preserve_review_history": true,
             "open_issue_requires_j07_resolution": true,
             "owner_edit_cannot_mark_agreed": true
@@ -666,7 +705,8 @@
       "REQ-J07-LANGUAGE",
       "REQ-J07-ISSUE-LOOP",
       "REQ-J05-LOCK",
-      "REQ-J06-REVIEW-RESET"
+      "REQ-J06-REVIEW-RESET",
+      "REQ-J08-REFRESH"
     ],
     "integration_constraint_refs": [
       "GATEA-MONEY-EQUAL-01"
@@ -858,8 +898,8 @@
       "journey": "05",
       "kind": "effect_guard",
       "value": {
-        "scope": "group",
-        "locked_when": "settlement_in_progress",
+        "scope": "REQUIRES_PRODUCT_DECISION",
+        "locked_when": "active settlement intersects target under selected scope policy",
         "blocked_operations": [
           "expense.create",
           "expense.edit",
@@ -871,7 +911,10 @@
         "J05",
         "J05_STATE",
         "J05_RECOVERED",
-        "J08"
+        "J06",
+        "J06_STATE",
+        "J08",
+        "J08_DECISION"
       ]
     },
     {
@@ -879,7 +922,13 @@
       "journey": "06",
       "kind": "dependent_state_transition",
       "value": {
-        "on_successful_persisted_edit": "reset_current_reviews_to_needs_review_again",
+        "trigger": {
+          "path": "Save changes",
+          "persistence": "accepted"
+        },
+        "affected_review_set": "reviewers_current_at_edit_acceptance",
+        "include_participants_removed_by_edit": true,
+        "result": "needs_review_again",
         "preserve_review_history": true,
         "open_issue_requires_j07_resolution": true,
         "owner_edit_cannot_mark_agreed": true
@@ -889,6 +938,36 @@
         "J06_STATE",
         "J07",
         "J07_STATE"
+      ]
+    },
+    {
+      "id": "REQ-J08-REFRESH",
+      "journey": "08",
+      "kind": "canonical_refresh",
+      "value": {
+        "after_expense_create": [
+          "position",
+          "group_recent",
+          "attention"
+        ],
+        "after_expense_edit": [
+          "position",
+          "group_recent",
+          "attention",
+          "change_history"
+        ],
+        "after_expense_delete": [
+          "position",
+          "group_recent",
+          "attention",
+          "change_history"
+        ],
+        "deleted_expense_not_present_as_current_recent_expense": true,
+        "no_second_fixture_store": true
+      },
+      "sources": [
+        "J06",
+        "J08"
       ]
     }
   ],
@@ -1041,19 +1120,19 @@
       "domain": "groups_expenses",
       "identity": [
         "expense_id",
-        "change_ref"
+        "from_revision_id",
+        "to_revision_id"
       ],
       "derived_from": [
-        "expense.expense"
+        "expense.revision"
       ],
-      "meaning": "Read-only implementation-neutral history projection showing important accepted changes to an Expense; the product contract does not require a particular event/outbox storage architecture.",
+      "meaning": "Read-only old→new change projection derived from accepted persisted Expense revisions; it can show important deltas such as participant/share changes without becoming a mutation surface.",
       "source_journeys": [
         "06"
       ],
       "sources": [
         "J06",
-        "J06_STATE",
-        "STORAGE_REPLAY"
+        "J06_STATE"
       ]
     },
     {
@@ -1112,7 +1191,7 @@
       "kind": "guard",
       "domain": "groups_expenses",
       "identity": [],
-      "meaning": "Group-scoped effect-time guard for Expense create/edit/delete. When the Group is in the approved `settlement in progress` state, expense mutations are locked for that Group.",
+      "meaning": "Effect-time predicate derived from active settlement truth plus the target Group/Expense. It decides whether create/edit/delete falls inside the settlement mutation lock; the lock's exact group-wide vs scoped boundary remains a product decision.",
       "source_journeys": [
         "05",
         "06",
@@ -1122,9 +1201,17 @@
         "J05",
         "J05_STATE",
         "J05_RECOVERED",
+        "J06",
         "J06_STATE",
         "J08",
-        "J08_DECISION"
+        "J08_DECISION",
+        "J11"
+      ],
+      "derived_from": [
+        "payment.intent",
+        "payment.settlement_scope",
+        "group.group",
+        "expense.expense"
       ]
     },
     {
@@ -1166,6 +1253,26 @@
         "J07",
         "J08",
         "J18"
+      ]
+    },
+    {
+      "id": "expense.revision",
+      "name": "ExpenseRevision",
+      "kind": "contract_primitive",
+      "domain": "groups_expenses",
+      "identity": [
+        "expense_id",
+        "revision_id"
+      ],
+      "meaning": "Accepted persisted Expense snapshot/revision used to compare prior and current Expense truth without selecting an event-store or database architecture.",
+      "source_journeys": [
+        "05",
+        "06"
+      ],
+      "sources": [
+        "J05",
+        "J06",
+        "J06_STATE"
       ]
     },
     {
@@ -1347,6 +1454,53 @@
       ]
     },
     {
+      "id": "payment.intent",
+      "name": "PaymentIntent",
+      "kind": "entity",
+      "domain": "payments",
+      "identity": [
+        "payment_id",
+        "idempotency_key"
+      ],
+      "meaning": "Typed settlement lifecycle for an already-existing obligation. Preparing/authorizing a payment is distinct from execution, receipt and closure.",
+      "source_journeys": [
+        "11",
+        "12",
+        "15",
+        "18",
+        "28"
+      ],
+      "sources": [
+        "J11",
+        "J12",
+        "PAYMENT_COMPAT",
+        "STORAGE_REPLAY"
+      ]
+    },
+    {
+      "id": "payment.settlement_scope",
+      "name": "SettlementScope",
+      "kind": "value_object",
+      "domain": "payments",
+      "identity": [
+        "payer",
+        "recipient",
+        "currency",
+        "source_item_ids"
+      ],
+      "meaning": "Canonical exact settlement scope: payer, recipient, amount, one currency, source groups/items, selected method, expiry and idempotency identity.",
+      "source_journeys": [
+        "10",
+        "11",
+        "12",
+        "15"
+      ],
+      "sources": [
+        "J11",
+        "PAYMENT_COMPAT"
+      ]
+    },
+    {
       "id": "position.position",
       "name": "Position",
       "kind": "read_model",
@@ -1389,7 +1543,8 @@
         "expense.expense",
         "expense.split",
         "expense.allocation",
-        "expense.receipt"
+        "expense.receipt",
+        "expense.revision"
       ],
       "source_journeys": [
         "05"
@@ -1428,7 +1583,8 @@
         "expense.split",
         "expense.allocation",
         "expense.receipt",
-        "expense.review"
+        "expense.review",
+        "expense.revision"
       ],
       "source_journeys": [
         "06"
@@ -1439,7 +1595,7 @@
       "rules": [
         "Reuse Journey 05 fields and controls with existing values.",
         "Only the expense owner or an authorized role may edit.",
-        "A successful persisted Expense change resets current prior reviews to needs-review-again while preserving review history.",
+        "After the Journey 06 Save changes path is accepted, reviews current at edit acceptance reset to needs-review-again, including a participant removed by that edit.",
         "An owner edit may answer/correct an issue but cannot itself resolve the reviewer's issue or fabricate agreement."
       ],
       "invalidates": [
@@ -1464,7 +1620,7 @@
       "dependent_state_effects": [
         {
           "object": "expense.review",
-          "effect": "reset all current prior reviews to needs_review_again after a successful persisted Expense change; preserve prior review history",
+          "effect": "after accepted persistence, reset reviews current at edit acceptance to needs_review_again and preserve prior review history",
           "law_ref": "LAW-EXP-REVIEW-01"
         },
         {
@@ -1481,7 +1637,8 @@
       "changes": [
         "expense.expense",
         "expense.review",
-        "expense.issue"
+        "expense.issue",
+        "expense.revision"
       ],
       "source_journeys": [
         "06"
@@ -1728,7 +1885,7 @@
         "payment.intent",
         "payment.settlement_scope"
       ],
-      "rule": "While a Group is in the approved `settlement in progress` state, Expense create/edit/delete are locked group-wide. The lock preserves entered context and ends only when the owning settlement flow no longer reports settlement in progress.",
+      "rule": "Settlement-in-progress can lock Expense create/edit/delete at effect time. The existence of the lock and the three blocked mutation families are approved; whether the lock applies to the whole Group or only the active settlement scope is deliberately unresolved.",
       "constraint": {
         "kind": "effect_guard_required",
         "operations": [
@@ -1737,19 +1894,26 @@
           "expense.delete"
         ],
         "guard": "expense.mutation_guard",
-        "scope": "group",
-        "lock_when": {
-          "group_settlement_state": "in_progress"
-        },
-        "unlock_when": "owning settlement projection no longer reports in_progress"
+        "scope_policy": "REQUIRES_PRODUCT_DECISION",
+        "predicate": {
+          "active_settlement_source": "payment.intent",
+          "settlement_scope_source": "payment.settlement_scope",
+          "target_sources": [
+            "group.group",
+            "expense.expense"
+          ],
+          "condition": "active nonterminal settlement intersects the target under the selected lock-scope policy"
+        }
       },
       "sources": [
         "J05",
         "J05_STATE",
         "J05_RECOVERED",
+        "J06",
         "J06_STATE",
         "J08",
-        "J08_DECISION"
+        "J08_DECISION",
+        "J11"
       ]
     },
     {
@@ -1757,13 +1921,20 @@
       "name": "Accepted Expense mutations feed read-only change history",
       "applies_to": [
         "expense.change_record",
-        "expense.expense"
+        "expense.expense",
+        "expense.revision"
       ],
-      "rule": "Important accepted Expense changes must remain readable as change history without turning history into a mutation surface. The storage mechanism is intentionally unspecified.",
+      "rule": "Important accepted Expense changes remain readable as old→new history derived from accepted prior/current revisions. History is read-only and storage-neutral.",
       "sources": [
         "J06",
         "J06_STATE"
-      ]
+      ],
+      "constraint": {
+        "kind": "requires_prior_accepted_revision",
+        "source_object": "expense.revision",
+        "requires_prior_revision": true,
+        "read_only": true
+      }
     },
     {
       "id": "LAW-ISSUE-01",
@@ -1796,7 +1967,8 @@
       "constraint": {
         "kind": "derived_read_model",
         "direct_mutation": false,
-        "currency_partitioned": true
+        "currency_partitioned": true,
+        "lineage_explainable": true
       }
     },
     {
@@ -1823,11 +1995,19 @@
         "expense.expense",
         "expense.review"
       ],
-      "rule": "After any successful persisted Expense edit that changes the Expense, all current prior review agreements for that Expense become stale and move to `needs review again` / changed state. Prior review history is preserved. An open issue remains unresolved until Journey 07 records reviewer resolution; the edit itself cannot fabricate agreement.",
+      "rule": "Any Expense edit accepted by the Journey 06 Save changes path resets the reviews that were current at edit acceptance to `needs review again`, including a reviewer who the edit removes from the split. Review history remains readable. An open issue remains unresolved until Journey 07 records reviewer resolution.",
       "constraint": {
         "kind": "successful_edit_resets_current_reviews",
-        "trigger": "successful persisted expense edit with a material state change",
-        "affected_reviews": "all current reviews for the expense",
+        "trigger": {
+          "journey": "06",
+          "operation": "expense.edit",
+          "path": "Save changes",
+          "persistence": "accepted"
+        },
+        "affected_reviews": {
+          "basis": "reviewers_current_at_edit_acceptance",
+          "include_removed_participants": true
+        },
         "current_result": "needs_review_again",
         "preserve_prior_review_history": true,
         "open_issue_resolution": "remains unresolved until Journey 07 reviewer action",
@@ -2123,18 +2303,23 @@
       "name": "Expense mutation guard",
       "objects": [
         "expense.mutation_guard",
+        "payment.intent",
+        "payment.settlement_scope",
         "group.group",
         "expense.expense"
       ],
       "preserves": [
-        "current authoritative group settlement-in-progress lock state"
+        "active settlement identity/state",
+        "settlement scope",
+        "target Group/Expense",
+        "selected lock-scope policy once authorized"
       ],
       "laws": [
         "LAW-EXP-GUARD-01",
         "LAW-OP-04"
       ],
       "availability": "resolve_at_effect_time",
-      "note": "Effect-time Group guard. Gate B consumes the observable settlement-in-progress state; Gate C later owns how settlement lifecycle produces that state."
+      "note": "Effect-time guard inputs only. Gate B does not own settlement lifecycle UI; it consumes the guard predicate. Scope remains POLICY-EXPENSE-LOCK-SCOPE."
     }
   ],
   "handoffs": {
@@ -2491,7 +2676,20 @@
     }
   ],
   "authority_blockers": [],
-  "product_decisions_required": [],
+  "product_decisions_required": [
+    {
+      "id": "POLICY-EXPENSE-LOCK-SCOPE",
+      "classification": "requires_product_decision",
+      "journeys": [
+        "05",
+        "06",
+        "08",
+        "11"
+      ],
+      "statement": "Approved J05/J06/J08 behavior establishes a settlement-in-progress lock for Expense create/edit/delete, but frozen J08 decision history explicitly defers whether integration should keep the historical group-wide lock or narrow it to the active settlement/item scope.",
+      "handling": "Keep the effect guard and blocked operation families. Do not choose group-wide vs active-settlement/item scope until explicit human product authorization."
+    }
+  ],
   "resolved_authority_interpretations": [
     {
       "id": "RESOLVED-J05-ARTIFACT-01",
@@ -2504,25 +2702,6 @@
         "J05",
         "J05_STATE",
         "J05_RECOVERED"
-      ]
-    },
-    {
-      "id": "RESOLVED-EXPENSE-LOCK-01",
-      "status": "resolved_from_frozen_golden_behavior",
-      "journeys": [
-        "05",
-        "06",
-        "08"
-      ],
-      "rule": "Settlement-in-progress is a Group-level expense-mutation lock for create/edit/delete. The later dependent-item dispute rule governs settlement eligibility and does not override this mutation lock.",
-      "sources": [
-        "J05",
-        "J05_STATE",
-        "J05_RECOVERED",
-        "J06_STATE",
-        "J08",
-        "J08_DECISION",
-        "J11"
       ]
     },
     {
@@ -2539,6 +2718,25 @@
         "J06_DECISION",
         "J07",
         "J07_STATE"
+      ]
+    },
+    {
+      "id": "RESOLVED-EXPENSE-LOCK-EXISTENCE-01",
+      "status": "partially_resolved_scope_open",
+      "journeys": [
+        "05",
+        "06",
+        "08"
+      ],
+      "rule": "Settlement-in-progress locks Expense create/edit/delete; the exact lock scope remains POLICY-EXPENSE-LOCK-SCOPE.",
+      "sources": [
+        "J05",
+        "J05_STATE",
+        "J05_RECOVERED",
+        "J06",
+        "J06_STATE",
+        "J08",
+        "J08_DECISION"
       ]
     }
   ],

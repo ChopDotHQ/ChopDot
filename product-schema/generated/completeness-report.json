@@ -1,11 +1,11 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "generated_view": "schema-hardening-completeness",
   "schema_status": "PASS",
-  "pre_gate_b_readiness": "READY_FOR_HUMAN_AUTHORIZATION",
+  "pre_gate_b_readiness": "BLOCKED",
   "audits": {
     "objects": {
-      "total": 47,
+      "total": 48,
       "orphans": []
     },
     "views": {
@@ -33,7 +33,7 @@
       "gate_b": "composition.core_expense_loop"
     },
     "construction_requirements": {
-      "total": 12
+      "total": 13
     },
     "integration_constraints": {
       "total": 1
@@ -82,5 +82,18 @@
     }
   ],
   "authority_blockers": [],
-  "product_decisions_required": []
+  "product_decisions_required": [
+    {
+      "id": "POLICY-EXPENSE-LOCK-SCOPE",
+      "classification": "requires_product_decision",
+      "journeys": [
+        "05",
+        "06",
+        "08",
+        "11"
+      ],
+      "statement": "Approved J05/J06/J08 behavior establishes a settlement-in-progress lock for Expense create/edit/delete, but frozen J08 decision history explicitly defers whether integration should keep the historical group-wide lock or narrow it to the active settlement/item scope.",
+      "handling": "Keep the effect guard and blocked operation families. Do not choose group-wide vs active-settlement/item scope until explicit human product authorization."
+    }
+  ]
 }
