@@ -460,7 +460,12 @@
       ],
       "journey": "27",
       "evidence": {
-        "control_binding_id": "CTRL-J27-PROFILE"
+        "control_binding_id": "CTRL-J27-PROFILE",
+        "additional_control_binding_ids": [
+          "CTRL-J01-PROFILE-SAVE",
+          "CTRL-J27-NOTIFICATIONS",
+          "CTRL-J27-APPEARANCE"
+        ]
       }
     },
     {
@@ -1944,6 +1949,15 @@
       "target": "retrying",
       "operation": "recovery.safe_retry",
       "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J01-PROFILE-SAVE",
+      "journey": "01",
+      "state": "profile",
+      "label_exact": "Continue",
+      "operation": "preferences.update",
+      "relation": "commits",
+      "evidence_path": "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html"
     }
   ],
   "journey_governance": {
