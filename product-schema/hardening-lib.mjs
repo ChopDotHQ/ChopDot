@@ -21,6 +21,14 @@ export function validateHardening(core, graph, frozen, oracle) {
     if(r.operation_changes_exact){const o=op(r.operation_changes_exact.operation);if(!o||JSON.stringify(o.changes||[])!==JSON.stringify(r.operation_changes_exact.changes))fail(a.id,'wrong changes for '+r.operation_changes_exact.operation);}
     if(r.operation_invalidates_prepared){const o=op(r.operation_invalidates_prepared.operation);for(const id of r.operation_invalidates_prepared.objects||[])if(!has(o?.invalidates_prepared,id))fail(a.id,r.operation_invalidates_prepared.operation+' missing prepared invalidation '+id);}
     if(r.object_derived_from){const o=obj(r.object_derived_from.object);if(!o||JSON.stringify(o.derived_from||[])!==JSON.stringify(r.object_derived_from.derived_from))fail(a.id,'wrong derived_from for '+r.object_derived_from.object);}
+    if(r.object_kind){const o=obj(r.object_kind.object);if(!o||o.kind!==r.object_kind.kind)fail(a.id,'wrong object kind '+r.object_kind.object);}
+    if(r.object_derived_from_exact){const o=obj(r.object_derived_from_exact.object);if(!o||JSON.stringify(o.derived_from||[])!==JSON.stringify(r.object_derived_from_exact.derived_from))fail(a.id,'wrong exact derived_from '+r.object_derived_from_exact.object);}
+    if(r.exact_context){const c=graph.contexts.find(x=>x.id===r.exact_context.context);if(!c||JSON.stringify(c.objects||[])!==JSON.stringify(r.exact_context.objects)||c.availability!==r.exact_context.availability||JSON.stringify(c.laws||[])!==JSON.stringify(r.exact_context.laws))fail(a.id,'context mismatch '+r.exact_context.context);}
+    for(const spec of Array.isArray(r.construction_requirement_exact)?r.construction_requirement_exact:[]){const q=req(spec.id);if(!q||JSON.stringify(q.value)!==JSON.stringify(spec.value))fail(a.id,'requirement exact mismatch '+spec.id);}
+    for(const spec of r.operation_invalidates_prepared_exact||[]){const o=op(spec.operation);if(!o||JSON.stringify(o.invalidates_prepared||[])!==JSON.stringify(spec.objects))fail(a.id,'prepared invalidation mismatch '+spec.operation);}
+    if(r.approved_decision_exact){const d=(core.approved_product_decisions||[]).find(x=>x.id===r.approved_decision_exact.id);if(!d||!matches(d,r.approved_decision_exact.fields))fail(a.id,'approved decision mismatch '+r.approved_decision_exact.id);}
+    for(const spec of r.golden_impact_exact||[]){const gi=(core.golden_impacts||[]).find(x=>x.id===spec.id);if(!gi||!matches(gi,Object.fromEntries(Object.entries(spec).filter(([k])=>k!=='id'))))fail(a.id,'golden impact mismatch '+spec.id);}
+    if(r.executable_reference_exact){const er=(core.executable_reference_contracts||[]).find(x=>x.id===r.executable_reference_exact.id);if(!er||!matches(er,r.executable_reference_exact))fail(a.id,'executable reference mismatch '+r.executable_reference_exact.id);}
     if(r.object_derived_from_superset){const o=obj(r.object_derived_from_superset.object);for(const id of r.object_derived_from_superset.derived_from||[])if(!has(o?.derived_from,id))fail(a.id,r.object_derived_from_superset.object+' missing derived input '+id);}
     if(r.construction_requirement&&!req(r.construction_requirement))fail(a.id,'missing requirement '+r.construction_requirement);
     if(r.integration_constraint){const c=integration.get(r.integration_constraint);if(!c||c.constraint?.kind!==r.kind)fail(a.id,'missing integration constraint '+r.integration_constraint);}
@@ -45,6 +53,7 @@ export function validateHardening(core, graph, frozen, oracle) {
     if(r05?.policy!==gc.policy||r05?.ordinary_settlement_create!==gc.dependency_scoped?.create||r05?.unresolved_guard_input!=='fail_closed')fail('GUARD-REQ-J05-CONSISTENCY','REQ-J05-LOCK disagrees with LAW-EXP-GUARD-01');
     if(r06?.policy!==gc.policy||r06?.ordinary_settlement_edit!==gc.dependency_scoped?.edit||r06?.ordinary_settlement_delete!==gc.dependency_scoped?.delete||r06?.unknown_effect!=='fail_closed_until_authoritative_reconciliation')fail('GUARD-REQ-J06-CONSISTENCY','REQ-J06-LOCK disagrees with LAW-EXP-GUARD-01');
   }
+  if(req('REQ-J06-LOCK')?.value?.open_partial_remainder!=='keep_dependency_locked'||law('LAW-PAY-03')?.constraint?.release_lock_only_when_no_open_remainder!==true)fail('PARTIAL-REMAINDER-REQ-LAW-CONSISTENCY','REQ-J06-LOCK disagrees with LAW-PAY-03');
   const guardObj=obj('expense.mutation_guard');for(const id of ['payment.intent','payment.settlement_scope','group.group','expense.expense'])if(!has(guardObj?.derived_from,id))fail('GUARD-DERIVATION', 'expense.mutation_guard missing '+id);
   if(has(ctxObjects(graph,'ctx.expense_guard'),'payment.closeout_context'))fail('GATEB-CLOSEOUT-LEAK','future closeout context leaked into Gate B expense guard');
   if((req('REQ-J08-STATES')?.value||[]).includes('settlement_in_progress'))fail('GOLDEN-IMPACT-J08-NOT-APPLIED','historical blanket lock still required in Gate B');
@@ -95,41 +104,82 @@ export function evaluateExpenseContract(core,frozen,fixture){
 export function evaluateExpenseMutationGuard(core,fixture){
   const c=lawOf(core,'LAW-EXP-GUARD-01')?.constraint;
   if(c?.policy!=='dependency_scoped_economic_guard')throw new Error('unsupported expense guard policy');
-  const op=fixture.operation;
-  if(!c.operations.includes(op))return {blocked:false,reason:'operation_not_guarded'};
-  if(!Object.prototype.hasOwnProperty.call(fixture,'active_settlements'))return {blocked:true,reason:'settlement_state_unresolved_fail_closed'};
-  if(!Array.isArray(fixture.active_settlements))return {blocked:true,reason:'settlement_state_unresolved_fail_closed'};
+  const block=(reason,extra={})=>({blocked:true,reason,...extra});
+  const allow=(reason)=>({blocked:false,reason});
+  const isObj=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
+  const norm=x=>String(x??'').trim();
+  const normCurrency=x=>norm(x).toUpperCase();
+  const samePair=(a,b,x,y)=>{a=norm(a);b=norm(b);x=norm(x);y=norm(y);return !!a&&!!b&&!!x&&!!y&&((a===x&&b===y)||(a===y&&b===x));};
+  const isoMs=x=>{const n=Date.parse(x);return Number.isFinite(n)?n:null;};
+  const arrayStrings=x=>Array.isArray(x)&&x.every(v=>typeof v==='string');
+  const equalSet=(a,b)=>{if(!arrayStrings(a)||!arrayStrings(b))return false;const x=[...new Set(a.map(norm).filter(Boolean))].sort(),y=[...new Set(b.map(norm).filter(Boolean))].sort();return JSON.stringify(x)===JSON.stringify(y);};
 
-  const futureCloseout=lawOf(core,'LAW-EXP-CLOSEOUT-01')?.constraint;
+  if(!isObj(fixture))return block('guard_input_incomplete_fail_closed');
+  const opId=fixture.operation;
+  if(!core.operations.some(o=>o.id===opId))return block('unknown_operation_fail_closed');
+  if(!c.operations.includes(opId))return allow('operation_not_guarded');
+  if(!norm(fixture.group_id)||!Array.isArray(fixture.active_settlements)||isoMs(fixture.evaluated_state_as_of)===null)return block('guard_input_incomplete_fail_closed');
+
+  // Future closeout remains supported by the reference evaluator but is outside Gate B construction.
+  const closeoutLaw=lawOf(core,'LAW-EXP-CLOSEOUT-01')?.constraint;
+  if(fixture.closeout_contexts!==undefined&&!Array.isArray(fixture.closeout_contexts))return block('closeout_input_malformed_fail_closed');
   for(const x of fixture.closeout_contexts||[]){
-    if(futureCloseout?.status==='semantic_only_no_approved_surface'&&x?.active===true&&x.group_id===fixture.group_id)return {blocked:true,reason:'explicit_group_closeout',closeout_id:x.closeout_id||null};
+    if(!isObj(x)||typeof x.active!=='boolean'||!norm(x.group_id))return block('closeout_input_malformed_fail_closed');
+    if(closeoutLaw?.status==='semantic_only_no_approved_surface'&&x.active===true&&norm(x.group_id)===norm(fixture.group_id))return block('explicit_group_closeout',{closeout_id:norm(x.closeout_id)||null});
   }
 
-  const unresolved=fixture.active_settlements.filter(s=>{
-    if(s?.unknown_effect===true)return true;
-    if(s?.open_remainder===true)return true;
-    if(s?.reconciled_no_effect===true)return false;
-    if(s?.authoritative_terminal===true)return false;
-    return true;
-  });
+  if(fixture.active_settlements.length===0)return allow('no_unresolved_settlements');
 
-  const samePair=(a,b,x,y)=>a&&b&&x&&y&&((a===x&&b===y)||(a===y&&b===x));
-  const stateTouches=(state,s)=>{
-    if(!state)return false;
-    if(state.expense_id&&(s.source_item_ids||[]).includes(state.expense_id))return true;
-    for(const e of state.pair_currency_effects||[]){
-      if(e?.minor_units===0)continue;
-      if(e?.currency===s.currency&&samePair(e.party_a,e.party_b,s.payer_participant_id,s.recipient_participant_id))return true;
-    }
-    const byPayment=state.eligible_balance_after_by_payment_id||{};
-    if(Object.prototype.hasOwnProperty.call(byPayment,s.payment_id)&&Number.isFinite(s.prepared_amount_minor_units)&&byPayment[s.payment_id]<s.prepared_amount_minor_units)return true;
-    return false;
-  };
+  const requiredFields=c.active_scope?.required_settlement_fields||[];
+  const allowedStates=new Set(c.active_scope?.terminality?.allowed||[]);
+  const unresolvedStates=new Set(c.active_scope?.terminality?.unresolved||[]);
+  const releaseStates=new Set(c.active_scope?.terminality?.release_candidates||[]);
+  const evalMs=isoMs(fixture.evaluated_state_as_of);
+  const unresolved=[];
 
+  for(const raw of fixture.active_settlements){
+    if(!isObj(raw))return block('settlement_descriptor_incomplete_fail_closed');
+    for(const f of requiredFields)if(!(f in raw))return block('settlement_descriptor_incomplete_fail_closed',{payment_id:norm(raw.payment_id)||null,missing_field:f});
+    if(!norm(raw.payment_id)||!norm(raw.payer_participant_id)||!norm(raw.recipient_participant_id)||!normCurrency(raw.currency)||!arrayStrings(raw.source_item_ids)||!Number.isFinite(raw.prepared_amount_minor_units)||!allowedStates.has(raw.resolution_status))return block('settlement_descriptor_malformed_fail_closed',{payment_id:norm(raw.payment_id)||null});
+    if(unresolvedStates.has(raw.resolution_status)){unresolved.push(raw);continue;}
+    if(!releaseStates.has(raw.resolution_status))return block('settlement_terminality_unrecognized_fail_closed',{payment_id:raw.payment_id});
+    const ev=raw.reconciliation_evidence;
+    if(!isObj(ev)||ev.authority_verified!==true||isoMs(ev.as_of)===null||isoMs(ev.as_of)<evalMs)return block('reconciliation_evidence_incomplete_or_stale_fail_closed',{payment_id:raw.payment_id});
+  }
+  if(unresolved.length===0)return allow('all_scopes_authoritatively_released');
+
+  const needCurrent=opId==='expense.edit'||opId==='expense.delete';
+  const needProposed=opId==='expense.create'||opId==='expense.edit';
+  if(needCurrent&&!isObj(fixture.current))return block('economic_state_incomplete_fail_closed');
+  if(needProposed&&!isObj(fixture.proposed))return block('economic_state_incomplete_fail_closed');
+  const stateList=[...(needCurrent?[fixture.current]:[]),...(needProposed?[fixture.proposed]:[])];
+  for(const st of stateList){
+    if(!norm(st.expense_id)||!Array.isArray(st.pair_currency_effects))return block('economic_state_incomplete_fail_closed');
+    for(const e of st.pair_currency_effects)if(!isObj(e)||!norm(e.party_a)||!norm(e.party_b)||!normCurrency(e.currency)||!Number.isFinite(e.minor_units))return block('economic_state_malformed_fail_closed');
+  }
+
+  const before=fixture.dependency_snapshot_before_by_payment_id,after=fixture.dependency_snapshot_after_by_payment_id;
+  if(!isObj(before)||!isObj(after))return block('dependency_snapshot_incomplete_fail_closed');
+
+  const hits=[];
   for(const s of unresolved){
-    const current=fixture.current||null,proposed=fixture.proposed||null;
-    const hit=op==='expense.create'?stateTouches(proposed,s):op==='expense.edit'?(stateTouches(current,s)||stateTouches(proposed,s)):stateTouches(current,s);
-    if(hit)return {blocked:true,reason:'mutation_changes_active_settlement_dependency',payment_id:s.payment_id};
+    const pid=norm(s.payment_id);
+    if(!isObj(before[pid])||!isObj(after[pid]))return block('dependency_snapshot_incomplete_fail_closed',{payment_id:pid});
+    const b=before[pid],a=after[pid];
+    for(const snap of [b,a])if(!Number.isFinite(snap.eligible_balance_minor_units)||typeof snap.dispute_eligible!=='boolean'||!arrayStrings(snap.source_item_ids))return block('dependency_snapshot_malformed_fail_closed',{payment_id:pid});
+    let touched=false;
+    if(b.eligible_balance_minor_units!==a.eligible_balance_minor_units)touched=true;
+    if(b.dispute_eligible!==a.dispute_eligible)touched=true;
+    if(!equalSet(b.source_item_ids,a.source_item_ids))touched=true;
+    for(const st of stateList){
+      if((s.source_item_ids||[]).map(norm).includes(norm(st.expense_id)))touched=true;
+      for(const e of st.pair_currency_effects){
+        if(e.minor_units!==0&&normCurrency(e.currency)===normCurrency(s.currency)&&samePair(e.party_a,e.party_b,s.payer_participant_id,s.recipient_participant_id))touched=true;
+      }
+    }
+    if(touched)hits.push(pid);
   }
-  return {blocked:false,reason:'economically_independent_of_active_settlements'};
+  if(hits.length)return block('mutation_changes_active_settlement_dependency',{payment_ids:[...new Set(hits)],payment_id:hits[0]});
+  return allow('economically_independent_of_active_settlements');
 }
+

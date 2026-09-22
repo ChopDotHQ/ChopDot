@@ -23,7 +23,7 @@ const lines=['# Generated Gate B Construction Packet','',
 'Provenance caveat: '+p.gate_a_reuse.provenance_caveat,'',
 '## Continuity contracts','',...p.continuity_contracts.map(x=>'- **'+x.id+'** — '+x.rule),'',
 '## Composition laws','',...p.composition_laws.map(x=>'- **'+x.id+'** — '+x.rule),'',
-'## Gate B law set','',...p.laws.map(x=>'- **'+x.id+'** — '+x.rule),'',
+'## Gate B law set','',...p.laws.map(x=>'- **'+x.id+'** — '+x.rule),'','## Executable reference contracts','',...(p.executable_reference_contracts||[]).map(x=>'- **'+x.id+'** — `'+x.path+' :: '+x.export+'` blob `'+x.git_blob+'` ('+x.authority+')'),'',
 '## Build constraints','',...p.build_constraints.map(x=>'- **'+x.id+'** — '+x.rule),'',
 '## Gate boundary','',
 'Whole-group closeout is semantic-only and intentionally absent from Gate B until an approved user surface exists.'];

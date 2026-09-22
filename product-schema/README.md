@@ -1,21 +1,21 @@
 # ChopDot Product Schema V1
 
-Status: **post-Claude settlement-dependency hardening candidate**
+Status: **freeze candidate after final adversarial hardening**
 
-The approved settlement-lock policy is now split cleanly:
+The primary artifact is the composable ChopDot Product Schema. Gate-specific construction packets are downstream derived views, not the purpose or authority of the schema.
 
-- Gate B uses an **economic dependency guard** for ordinary settlements.
-- The guard evaluates both current Expense state and proposed post-state.
-- A create/edit/delete is blocked only when it would change an unresolved settlement dependency: source lineage, payer/recipient pair, currency, eligible balance, dispute eligibility, or open partial remainder.
-- Guard inputs fail closed when settlement truth is unresolved; `unknown_effect` outranks optimistic terminal labels.
-- A partial remainder preserves its dependency lock.
-- Raising an issue is allowed, but invalidates any dependent prepared PaymentIntent for re-resolution.
-- J05 `locked` remains a Gate B recovery state, now dependency-triggered.
-- J08's historical blanket `settlement_in_progress` Add-disabled state is recorded as a post-Golden impact and is no longer required in Gate B.
-- Whole-group closeout remains an approved **semantic-only future mode** with no approved surface, and is intentionally excluded from Gate B construction.
+Final settlement-dependency hardening now makes the approved policy mechanically load-bearing:
+- guard evaluation is effect-time and fail-closed;
+- create/edit/delete require complete operation-specific current/proposed state when unresolved settlements exist;
+- every settlement descriptor uses a closed resolution-state enumeration;
+- released scopes require fresh authoritative reconciliation evidence;
+- every unresolved settlement requires before/after dependency snapshots for eligible balance, dispute eligibility and source lineage;
+- any change to those dependency snapshots blocks the mutation;
+- `expense.issue` and `position.position` are explicit guard inputs;
+- dispute-state transitions invalidate dependent prepared PaymentIntents for re-resolution;
+- J05 `locked` survives, but its historical blanket-lock copy is explicitly superseded for ordinary dependency-scoped locking;
+- whole-group closeout remains semantic-only and outside Gate B until it has an approved surface.
 
-Decision provenance is immutable:
-- `DEC-EXPENSE-SETTLEMENT-LOCK-01` is pinned at approving commit `c2797bd73dbdb22854ede54cb2b461e26862b1b1`.
-- `DEC-EXPENSE-SETTLEMENT-LOCK-02` is pinned at approving commit `880fef977911c2bb366cd3144faef73487643919`.
+Gate B reaches locked/reconciliation states through a read-only unresolved-settlement seed injected into the same canonical shared prototype state. It does not introduce a second fixture store or implement Gate C settlement execution.
 
-Historical Goldens remain frozen; post-Golden impacts are recorded explicitly rather than rewritten into them.
+The executable reference for the guard is pinned in `executable_reference_contracts` and emitted into the derived construction packet.

@@ -432,15 +432,19 @@
         "expense.mutation_guard",
         "payment.intent",
         "payment.settlement_scope",
+        "expense.issue",
+        "position.position",
         "group.group",
         "expense.expense"
       ],
       "preserves": [
         "attempted mutation kind/target",
-        "current Expense dependency state",
-        "proposed post-state dependency",
-        "all unresolved SettlementScope identities",
-        "authoritative reconciliation status"
+        "current Expense state",
+        "proposed post-state",
+        "before/after eligible-balance snapshot for each unresolved PaymentIntent",
+        "before/after dispute eligibility for each unresolved PaymentIntent",
+        "exact unresolved SettlementScope descriptors",
+        "authoritative reconciliation provenance and freshness"
       ],
       "laws": [
         "LAW-EXP-GUARD-01",
@@ -451,7 +455,7 @@
         "LAW-PAY-04"
       ],
       "availability": "resolve_at_effect_time",
-      "note": "Gate B effect-time predicate for ordinary settlements only. Whole-group closeout is semantic-only outside Gate B until a user path is approved."
+      "note": "Gate B effect-time predicate for ordinary settlements. Missing or malformed guard evidence fails closed. Whole-group closeout remains future semantic-only."
     }
   ],
   "journey_projections": [
@@ -1418,7 +1422,8 @@
         "REQ-J06-REVIEW-RESET",
         "REQ-J08-REFRESH",
         "REQ-J06-LOCK",
-        "REQ-J08-SETTLEMENT-GOLDEN-IMPACT"
+        "REQ-J08-SETTLEMENT-GOLDEN-IMPACT",
+        "REQ-GATEB-SETTLEMENT-SEED"
       ]
     },
     {
@@ -2138,7 +2143,9 @@
         "unresolved_guard_input": "fail_closed",
         "locked_state": "retained_when_dependency_guard_blocks_save",
         "entered_details_preserved_if_blocked": true,
-        "group_closeout": "future_semantic_only_outside_gate_b"
+        "group_closeout": "future_semantic_only_outside_gate_b",
+        "locked_copy_policy": "historical_blanket_lock_copy_superseded_for_ordinary_settlement",
+        "blocked_explanation": "identify_blocking_settlement_or_dependency"
       },
       "sources": [
         "J05",
@@ -2236,6 +2243,25 @@
       "sources": [
         "J08",
         "J08_DECISION",
+        "DEC_EXP_LOCK_V2"
+      ]
+    },
+    {
+      "id": "REQ-GATEB-SETTLEMENT-SEED",
+      "kind": "external_precondition_fixture",
+      "value": {
+        "purpose": "exercise unresolved-settlement guard states in Gate B without implementing Gate C settlement operations",
+        "source": "inject read-only PaymentIntent + SettlementScope + dependency snapshots into canonical shared prototype state",
+        "canonical_shared_state": true,
+        "second_store_exemption": "none; a parallel fixture store remains forbidden",
+        "may_prepare_authorize_execute_or_close_payment": false,
+        "evaluator_reference": "REF-EXPENSE-MUTATION-GUARD-V1"
+      },
+      "sources": [
+        "J05",
+        "J06",
+        "J08",
+        "J11",
         "DEC_EXP_LOCK_V2"
       ]
     }
