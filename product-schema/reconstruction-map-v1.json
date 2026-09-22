@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "map_id": "chopdot-reconstruction-map-v1",
   "authority": "AUTHORED_CLOSURE_MAPPING",
   "target_contract": [
@@ -44,8 +44,7 @@
       ],
       "journey": "01",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/UI_TO_DOMAIN_EVENTS.md",
-        "contains": "Continue on code"
+        "control_binding_id": "CTRL-J01-SESSION-VERIFY"
       }
     },
     {
@@ -66,8 +65,7 @@
       ],
       "journey": "03",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/03-create-group/spec.md",
-        "contains": "Create group"
+        "control_binding_id": "CTRL-J03-CREATE"
       }
     },
     {
@@ -77,8 +75,7 @@
       ],
       "journey": "04",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/04-invite-join/spec.md",
-        "contains": "Invite people"
+        "control_binding_id": "CTRL-J04-INVITE"
       }
     },
     {
@@ -88,8 +85,7 @@
       ],
       "journey": "04",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/04-invite-join/spec.md",
-        "contains": "Join group"
+        "control_binding_id": "CTRL-J04-JOIN"
       }
     },
     {
@@ -229,8 +225,7 @@
       ],
       "journey": "12",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/11-settle-up/STATE_AND_AUTHORITY.md",
-        "contains": "`closed`"
+        "domain_event": "PaymentClosed"
       }
     },
     {
@@ -261,8 +256,9 @@
       ],
       "journey": "13",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/13-request-money/GIVEN_WHEN_THEN.md",
-        "contains": "delivery is queued"
+        "path": "prototypes/experience-workbench/journeys/13-request-money/source/model.cjs",
+        "contains": "delivery:'queued'",
+        "also_contains": "function deliver(s,id,result)"
       }
     },
     {
@@ -302,8 +298,7 @@
       ],
       "journey": "17",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md",
-        "contains": "SavingsContributionPrepared"
+        "control_binding_id": "CTRL-J17-CONTRIBUTE"
       }
     },
     {
@@ -313,8 +308,7 @@
       ],
       "journey": "17",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md",
-        "contains": "SavingsWithdrawalAuthorizationRequested"
+        "control_binding_id": "CTRL-J17-WITHDRAW"
       }
     },
     {
@@ -324,8 +318,7 @@
       ],
       "journey": "20",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/20-payment-methods/STATE_INVENTORY.md",
-        "contains": "Save accepted"
+        "control_binding_id": "CTRL-J20-CREATE"
       }
     },
     {
@@ -335,8 +328,7 @@
       ],
       "journey": "20",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/20-payment-methods/STATE_INVENTORY.md",
-        "contains": "Remove accepted"
+        "control_binding_id": "CTRL-J20-REMOVE"
       }
     },
     {
@@ -346,8 +338,7 @@
       ],
       "journey": "21",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html",
-        "contains": "Connect browser wallet"
+        "control_binding_id": "CTRL-J21-CONNECT"
       }
     },
     {
@@ -358,8 +349,7 @@
       ],
       "journey": "21",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html",
-        "contains": "Approve in wallet"
+        "control_binding_id": "CTRL-J21-EXECUTE"
       }
     },
     {
@@ -369,8 +359,7 @@
       ],
       "journey": "22",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/22-qr-flows/v1-candidate.html",
-        "contains": "Scan demo person code"
+        "control_binding_id": "CTRL-J22-RESOLVE"
       }
     },
     {
@@ -380,8 +369,7 @@
       ],
       "journey": "23",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/23-import/v1-candidate.html",
-        "contains": "Import group"
+        "control_binding_id": "CTRL-J23-IMPORT"
       }
     },
     {
@@ -391,8 +379,7 @@
       ],
       "journey": "24",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/24-export-portability/STATE_INVENTORY.md",
-        "contains": "Create export"
+        "control_binding_id": "CTRL-J24-CREATE"
       }
     },
     {
@@ -403,8 +390,7 @@
       ],
       "journey": "24",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/24-export-portability/STATE_INVENTORY.md",
-        "contains": "browser-download-requested"
+        "control_binding_id": "CTRL-J24-DELIVER-DOWNLOAD"
       }
     },
     {
@@ -414,8 +400,7 @@
       ],
       "journey": "25",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/25-storage-recovery/v1-candidate.html",
-        "contains": "Create backup"
+        "control_binding_id": "CTRL-J25-BACKUP"
       }
     },
     {
@@ -425,8 +410,7 @@
       ],
       "journey": "25",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/25-storage-recovery/v1-candidate.html",
-        "contains": "Apply restore"
+        "control_binding_id": "CTRL-J25-RESTORE"
       }
     },
     {
@@ -436,9 +420,7 @@
       ],
       "journey": "26",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/STATE_INVENTORY.md",
-        "contains": "rename-review",
-        "also_contains": "archive-review"
+        "control_binding_id": "CTRL-J26-RENAME"
       }
     },
     {
@@ -448,8 +430,7 @@
       ],
       "journey": "26",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/STATE_INVENTORY.md",
-        "contains": "transfer-review"
+        "control_binding_id": "CTRL-J26-TRANSFER"
       }
     },
     {
@@ -459,8 +440,7 @@
       ],
       "journey": "26",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/STATE_INVENTORY.md",
-        "contains": "leave-confirm"
+        "control_binding_id": "CTRL-J26-LEAVE"
       }
     },
     {
@@ -470,8 +450,7 @@
       ],
       "journey": "26",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/26-group-lifecycle/STATE_INVENTORY.md",
-        "contains": "delete-final-review"
+        "control_binding_id": "CTRL-J26-DELETE"
       }
     },
     {
@@ -481,8 +460,7 @@
       ],
       "journey": "27",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/27-account-preferences/STATE_INVENTORY.md",
-        "contains": "profile-review"
+        "control_binding_id": "CTRL-J27-PROFILE"
       }
     },
     {
@@ -492,8 +470,7 @@
       ],
       "journey": "27",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/27-account-preferences/STATE_INVENTORY.md",
-        "contains": "signout-review"
+        "control_binding_id": "CTRL-J27-SIGNOUT"
       }
     },
     {
@@ -503,8 +480,7 @@
       ],
       "journey": "27",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/27-account-preferences/STATE_INVENTORY.md",
-        "contains": "deletion-final-review"
+        "control_binding_id": "CTRL-J27-DELETE"
       }
     },
     {
@@ -537,8 +513,7 @@
       ],
       "journey": "28",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/28-failure-recovery/STATE_INVENTORY.md",
-        "contains": "reconcile-checking"
+        "control_binding_id": "CTRL-J28-RECONCILE"
       }
     },
     {
@@ -549,8 +524,7 @@
       ],
       "journey": "28",
       "evidence": {
-        "path": "prototypes/experience-workbench/journeys/28-failure-recovery/STATE_INVENTORY.md",
-        "contains": "safe-retry-review"
+        "control_binding_id": "CTRL-J28-SAFE-RETRY"
       }
     },
     {
@@ -1544,6 +1518,7 @@
     {
       "id": "SUP-J08-SETTLING",
       "journey": "08",
+      "piece_id": "J08/state/settling",
       "piece_type": "state",
       "piece_selector": "settling",
       "golden_impact": "GOLDEN-IMPACT-J08-SETTLEMENT-02",
@@ -1554,12 +1529,645 @@
     {
       "id": "SUP-J05-LOCK-COPY",
       "journey": "05",
+      "piece_id": "J05/locked/copy/historical-blanket-lock",
       "piece_type": "copy",
-      "piece_selector": "locked blanket copy",
+      "piece_selector": "historical-blanket-lock",
       "golden_impact": "GOLDEN-IMPACT-J05-LOCK-02",
       "decision": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
       "disposition": "POST_GOLDEN_SUPERSEDED",
       "reason": "Historical blanket-lock copy is superseded for ordinary dependency-scoped locking; the locked state itself remains."
     }
-  ]
+  ],
+  "control_bindings": [
+    {
+      "id": "CTRL-J01-SESSION-VERIFY",
+      "journey": "01",
+      "state": "code",
+      "label_exact": "Continue",
+      "operation": "session.enter",
+      "relation": "initiates",
+      "evidence_path": "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html"
+    },
+    {
+      "id": "CTRL-J03-CREATE",
+      "journey": "03",
+      "state": "entry",
+      "label_exact": "Create group",
+      "target": "success",
+      "operation": "group.create",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J04-INVITE",
+      "journey": "04",
+      "state": "share",
+      "label_exact": "Share invite",
+      "target": "invite-sent",
+      "operation": "group.invite",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J04-JOIN",
+      "journey": "04",
+      "state": "join",
+      "label_exact": "Join group",
+      "target": "joined",
+      "operation": "group.join",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J17-CONTRIBUTE",
+      "journey": "17",
+      "state": "add-review",
+      "label_exact": "I added CHF 180.00",
+      "target": "add-sent",
+      "operation": "savings.contribute",
+      "relation": "reports_claim"
+    },
+    {
+      "id": "CTRL-J17-WITHDRAW",
+      "journey": "17",
+      "state": "withdraw-review",
+      "label_exact": "Confirm withdrawal",
+      "target": "withdraw-pending",
+      "operation": "savings.withdraw",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J20-CREATE",
+      "journey": "20",
+      "state": "review-new-bank",
+      "label_exact": "Save method",
+      "target": "save-pending",
+      "operation": "payment_destination.create_update",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J20-UPDATE",
+      "journey": "20",
+      "state": "review-edit-bank",
+      "label_exact": "Save update",
+      "target": "save-pending",
+      "operation": "payment_destination.create_update",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J20-AVAILABILITY",
+      "journey": "20",
+      "state": "availability",
+      "label_exact": "Save availability",
+      "target": "save-accepted",
+      "operation": "payment_destination.create_update",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J20-REMOVE",
+      "journey": "20",
+      "state": "remove-confirm",
+      "label_exact": "Remove method",
+      "target": "remove-pending",
+      "operation": "payment_destination.remove",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J21-CONNECT",
+      "journey": "21",
+      "state": "chooser",
+      "label_exact": "Connect browser wallet",
+      "target": "connect-pending",
+      "operation": "wallet.connect_switch",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J21-SWITCH",
+      "journey": "21",
+      "state": "connected",
+      "label_exact": "Switch account or network",
+      "target": "switch-account-review",
+      "operation": "wallet.connect_switch",
+      "relation": "prepares"
+    },
+    {
+      "id": "CTRL-J21-EXECUTE",
+      "journey": "21",
+      "state": "action-review",
+      "label_exact": "Approve in wallet",
+      "target": "signature-pending",
+      "operation": "wallet.execute_action",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J22-RESOLVE",
+      "journey": "22",
+      "state": "scanner-ready",
+      "label_exact": "Scan demo person code",
+      "target": "reading",
+      "operation": "qr.resolve",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J23-IMPORT",
+      "journey": "23",
+      "state": "import-confirmation",
+      "label_exact": "Confirm import",
+      "target": "importing",
+      "operation": "import.apply",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J24-CREATE",
+      "journey": "24",
+      "state": "export-confirmation",
+      "label_exact": "Create export",
+      "target": "generating",
+      "operation": "export.create",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J24-DELIVER-DOWNLOAD",
+      "journey": "24",
+      "state": "choose-destination",
+      "label_exact": "Download on this device",
+      "target": "browser-download-requested",
+      "operation": "export.deliver",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J24-DELIVER-SHARE",
+      "journey": "24",
+      "state": "choose-destination",
+      "label_exact": "Share or save elsewhere",
+      "target": "share-sheet-opened",
+      "operation": "export.deliver",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J25-BACKUP",
+      "journey": "25",
+      "state": "backup-confirmation",
+      "label_exact": "Create backup",
+      "target": "backup-creating",
+      "operation": "storage.create_backup",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J25-RESTORE",
+      "journey": "25",
+      "state": "restore-confirmation",
+      "label_exact": "Apply restore",
+      "target": "restore-applying",
+      "operation": "storage.restore",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J26-RENAME",
+      "journey": "26",
+      "state": "rename-review",
+      "label_exact": "Save name",
+      "target": "rename-saving",
+      "operation": "group.rename_archive",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J26-ARCHIVE",
+      "journey": "26",
+      "state": "archive-confirm",
+      "label_exact": "Archive group",
+      "target": "archiving",
+      "operation": "group.rename_archive",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J26-UNARCHIVE",
+      "journey": "26",
+      "state": "unarchive-review",
+      "label_exact": "Restore active group",
+      "target": "unarchiving",
+      "operation": "group.rename_archive",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J26-TRANSFER",
+      "journey": "26",
+      "state": "transfer-confirm",
+      "label_exact": "Transfer ownership",
+      "target": "transfer-saving",
+      "operation": "group.transfer_ownership",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J26-LEAVE",
+      "journey": "26",
+      "state": "leave-confirm",
+      "label_exact": "Leave group",
+      "target": "leaving",
+      "operation": "group.leave",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J26-DELETE",
+      "journey": "26",
+      "state": "delete-final-review",
+      "label_exact": "Delete group",
+      "target": "deleting",
+      "operation": "group.delete",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J27-PROFILE",
+      "journey": "27",
+      "state": "profile-review",
+      "label_exact": "Save display name",
+      "target": "profile-saving",
+      "operation": "preferences.update",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J27-NOTIFICATIONS",
+      "journey": "27",
+      "state": "notifications-review",
+      "label_exact": "Save preferences",
+      "target": "notifications-saving",
+      "operation": "preferences.update",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J27-APPEARANCE",
+      "journey": "27",
+      "state": "appearance-preview",
+      "label_exact": "Save Dark",
+      "target": "appearance-saving",
+      "operation": "preferences.update",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J27-SIGNOUT",
+      "journey": "27",
+      "state": "signout-review",
+      "label_exact": "Sign out",
+      "target": "signing-out",
+      "operation": "session.sign_out",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J27-DELETE",
+      "journey": "27",
+      "state": "deletion-final-review",
+      "label_exact": "Delete account",
+      "target": "deletion-requesting",
+      "operation": "account.delete",
+      "relation": "initiates"
+    },
+    {
+      "id": "CTRL-J28-RECONCILE",
+      "journey": "28",
+      "state": "result-unknown",
+      "label_exact": "Check same operation",
+      "target": "reconcile-checking",
+      "operation": "recovery.reconcile",
+      "relation": "queries"
+    },
+    {
+      "id": "CTRL-J28-SAFE-RETRY",
+      "journey": "28",
+      "state": "safe-retry-review",
+      "label_exact": "Start replacement",
+      "target": "retrying",
+      "operation": "recovery.safe_retry",
+      "relation": "initiates"
+    }
+  ],
+  "journey_governance": {
+    "11": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-PAY-01",
+      "LAW-PAY-02",
+      "LAW-PAY-03",
+      "LAW-PAY-04"
+    ],
+    "12": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-PAY-02",
+      "LAW-PAY-03",
+      "LAW-PAY-04"
+    ],
+    "13": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-REQ-01"
+    ],
+    "14": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-DEST-01"
+    ],
+    "17": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-SAV-01",
+      "LAW-SAV-02"
+    ],
+    "18": [
+      "LAW-OP-03",
+      "LAW-ACT-01"
+    ],
+    "20": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-AUTH-01",
+      "LAW-DEST-01"
+    ],
+    "21": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-WALLET-01"
+    ],
+    "22": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-QR-01"
+    ],
+    "23": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-IMPORT-01"
+    ],
+    "24": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-HIST-01",
+      "LAW-EXPORT-01"
+    ],
+    "25": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-HIST-01",
+      "LAW-STORAGE-01"
+    ],
+    "26": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-OP-04",
+      "LAW-GROUP-01",
+      "LAW-GROUP-02"
+    ],
+    "27": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-OP-04",
+      "LAW-AUTH-01",
+      "LAW-PREF-01",
+      "LAW-ACCOUNT-01"
+    ],
+    "28": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-OP-04"
+    ],
+    "05": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-OP-04",
+      "LAW-EXP-GUARD-01"
+    ],
+    "06": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-OP-04",
+      "LAW-EXP-GUARD-01"
+    ],
+    "07": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-ISSUE-01"
+    ],
+    "09": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-GROUP-02"
+    ]
+  },
+  "authored_pieces": [
+    {
+      "piece_id": "J05/locked/copy/historical-blanket-lock",
+      "journey": "05",
+      "state": "locked",
+      "piece": "Expenses are locked. Settlement is in progress.",
+      "piece_type": "copy",
+      "classification": "POST_GOLDEN_SUPERSEDED",
+      "schema_refs": [
+        "GOLDEN-IMPACT-J05-LOCK-02",
+        "DEC-EXPENSE-SETTLEMENT-LOCK-02"
+      ],
+      "authority_ref": "product-schema/recovered-evidence/j05-v1-approved-candidate.html",
+      "justification": "Historical blanket-lock copy is preserved as evidence but superseded for ordinary dependency-scoped settlement locking."
+    }
+  ],
+  "required_state_evidence": [
+    {
+      "journey": "08",
+      "requirement_state": "active_needs_review",
+      "golden_state": "active",
+      "source_ref": "J08",
+      "contains": "One thing needs you."
+    },
+    {
+      "journey": "08",
+      "requirement_state": "nothing_needs_you",
+      "golden_state": "waiting",
+      "source_ref": "J08",
+      "contains": "Nothing needs you."
+    },
+    {
+      "journey": "08",
+      "requirement_state": "new_empty_group",
+      "golden_state": "empty",
+      "source_ref": "J08",
+      "contains": "Ready when you are."
+    },
+    {
+      "journey": "08",
+      "requirement_state": "everyone_square",
+      "golden_state": "square",
+      "source_ref": "J08",
+      "contains": "Everyone’s square."
+    },
+    {
+      "journey": "08",
+      "requirement_state": "offline",
+      "golden_state": "offline",
+      "source_ref": "J08",
+      "contains": "clear offline status"
+    }
+  ],
+  "overlay_witnesses": [
+    {
+      "source_ref": "C1_IDENTITY",
+      "schema_refs": [
+        "identity.participant",
+        "identity.guest_capability",
+        "participant.link_account",
+        "LAW-ID-01",
+        "LAW-ID-02",
+        "LAW-ID-03",
+        "LAW-OP-01",
+        "LAW-OP-02"
+      ]
+    },
+    {
+      "source_ref": "C1_SPEND",
+      "schema_refs": [
+        "spend.intent",
+        "spend.effect",
+        "spend.authorize_execute",
+        "spend.materialize",
+        "LAW-SPEND-01",
+        "LAW-SPEND-02",
+        "LAW-MONEY-01",
+        "LAW-OP-01",
+        "LAW-OP-02"
+      ]
+    },
+    {
+      "source_ref": "C1_EXECUTION",
+      "schema_refs": [
+        "spend.authorize_execute",
+        "spend.materialize"
+      ]
+    },
+    {
+      "source_ref": "C1_README",
+      "schema_refs": [
+        "identity.participant",
+        "spend.intent",
+        "LAW-ID-01",
+        "LAW-SPEND-01"
+      ]
+    },
+    {
+      "source_ref": "POST_J28",
+      "schema_refs": [
+        "identity.participant",
+        "spend.intent",
+        "LAW-ID-01",
+        "LAW-ID-02",
+        "LAW-ID-03",
+        "LAW-SPEND-01",
+        "LAW-SPEND-02"
+      ]
+    },
+    {
+      "source_ref": "DEC_EXP_LOCK",
+      "schema_refs": [
+        "LAW-EXP-GUARD-01",
+        "payment.closeout_context"
+      ]
+    },
+    {
+      "source_ref": "DEC_EXP_LOCK_V2",
+      "schema_refs": [
+        "LAW-EXP-GUARD-01",
+        "LAW-PAY-03",
+        "LAW-PAY-04",
+        "GOLDEN-IMPACT-J05-LOCK-02",
+        "GOLDEN-IMPACT-J08-SETTLEMENT-02"
+      ]
+    }
+  ],
+  "safety_class_manifest": {
+    "identity": [
+      "identity.participant",
+      "identity.account",
+      "session.enter",
+      "participant.link_account",
+      "LAW-ID-01",
+      "LAW-ID-02",
+      "LAW-ID-03"
+    ],
+    "money": [
+      "money.money_v1",
+      "LAW-MONEY-01",
+      "LAW-SAV-01",
+      "LAW-SAV-02"
+    ],
+    "recovery_replay": [
+      "recovery.reconcile",
+      "recovery.safe_retry",
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-OP-04",
+      "LAW-HIST-01"
+    ],
+    "storage_restore": [
+      "storage.backup",
+      "storage.restore_operation",
+      "storage.create_backup",
+      "storage.restore",
+      "LAW-STORAGE-01"
+    ],
+    "authority": [
+      "payment_destination.create_update",
+      "payment_destination.remove",
+      "wallet.connect_switch",
+      "wallet.execute_action",
+      "LAW-AUTH-01",
+      "LAW-DEST-01",
+      "LAW-WALLET-01",
+      "LAW-ACCOUNT-01"
+    ],
+    "settlement": [
+      "payment.intent",
+      "payment.settlement_scope",
+      "position.position",
+      "position.scope",
+      "settlement.prepare",
+      "settlement.authorize",
+      "settlement.mark_sent",
+      "settlement.confirm_receipt",
+      "settlement.close",
+      "settlement.reconcile",
+      "LAW-POS-SCOPE-01",
+      "LAW-PAY-01",
+      "LAW-PAY-02",
+      "LAW-PAY-03",
+      "LAW-PAY-04",
+      "LAW-EXP-GUARD-01"
+    ],
+    "composition_continuity": [
+      "group.group",
+      "group.membership",
+      "group.rename_archive",
+      "group.transfer_ownership",
+      "group.leave",
+      "group.delete",
+      "LAW-GROUP-02",
+      "COMP-01",
+      "COMP-02",
+      "COMP-03",
+      "COMP-04",
+      "COMP-05",
+      "COMP-06"
+    ]
+  }
 }
