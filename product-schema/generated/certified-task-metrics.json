@@ -1,0 +1,982 @@
+{
+  "schema_version": 1,
+  "generated_view": "certified-task-metrics",
+  "authority": "DERIVED_ONLY",
+  "summary": {
+    "certified_tasks": 31,
+    "journeys_with_certified_tasks": 6,
+    "semantic_only_tasks": 1
+  },
+  "tasks": [
+    {
+      "id": "TASK-J05-COMMON-EQUAL",
+      "journey": "05",
+      "name": "Add common equal-split expense",
+      "status": "certified",
+      "start_state": "entry",
+      "completion_state": "success",
+      "user_action_steps": 1,
+      "required_input_steps": 2,
+      "typical_input_steps": 2,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 3,
+      "typical_user_steps": 3,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 4,
+      "end_to_end_typical_user_steps": 4,
+      "states_visited": [
+        "entry",
+        "success"
+      ],
+      "semantic_operations": [
+        "expense.create"
+      ],
+      "source_refs": [
+        "J05 core path",
+        "REQ-J05-DEFAULTS"
+      ],
+      "notes": [],
+      "friction_band": "short"
+    },
+    {
+      "id": "TASK-J05-CHANGE-PAYER",
+      "journey": "05",
+      "name": "Add expense with another payer",
+      "status": "certified",
+      "start_state": "entry",
+      "completion_state": "success-marc",
+      "user_action_steps": 3,
+      "required_input_steps": 2,
+      "typical_input_steps": 2,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 5,
+      "typical_user_steps": 5,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 6,
+      "end_to_end_typical_user_steps": 6,
+      "states_visited": [
+        "entry",
+        "payer",
+        "entry-marc",
+        "success-marc"
+      ],
+      "semantic_operations": [
+        "expense.create"
+      ],
+      "source_refs": [
+        "J05 detail paths"
+      ],
+      "notes": [],
+      "friction_band": "moderate"
+    },
+    {
+      "id": "TASK-J05-TWO-PERSON-EQUAL",
+      "journey": "05",
+      "name": "Add equal expense for two participants",
+      "status": "certified",
+      "start_state": "entry",
+      "completion_state": "success-two",
+      "user_action_steps": 4,
+      "required_input_steps": 2,
+      "typical_input_steps": 2,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 6,
+      "typical_user_steps": 6,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 7,
+      "end_to_end_typical_user_steps": 7,
+      "states_visited": [
+        "entry",
+        "split",
+        "split-two",
+        "entry-two",
+        "success-two"
+      ],
+      "semantic_operations": [
+        "expense.create"
+      ],
+      "source_refs": [
+        "J05 participants path"
+      ],
+      "notes": [],
+      "friction_band": "longer_precision_path"
+    },
+    {
+      "id": "TASK-J05-EXACT",
+      "journey": "05",
+      "name": "Add exact-split expense",
+      "status": "certified",
+      "start_state": "entry",
+      "completion_state": "success-exact",
+      "user_action_steps": 5,
+      "required_input_steps": 3,
+      "typical_input_steps": 3,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 8,
+      "typical_user_steps": 8,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 9,
+      "end_to_end_typical_user_steps": 9,
+      "states_visited": [
+        "entry",
+        "split",
+        "method",
+        "exact",
+        "entry-exact",
+        "success-exact"
+      ],
+      "semantic_operations": [
+        "expense.create"
+      ],
+      "source_refs": [
+        "J05 Exact detail path"
+      ],
+      "notes": [],
+      "friction_band": "longer_precision_path"
+    },
+    {
+      "id": "TASK-J05-SHARES",
+      "journey": "05",
+      "name": "Add shares-based expense",
+      "status": "certified",
+      "start_state": "entry",
+      "completion_state": "success-exact",
+      "user_action_steps": 5,
+      "required_input_steps": 3,
+      "typical_input_steps": 3,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 8,
+      "typical_user_steps": 8,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 9,
+      "end_to_end_typical_user_steps": 9,
+      "states_visited": [
+        "entry",
+        "split",
+        "method",
+        "shares",
+        "entry-exact",
+        "success-exact"
+      ],
+      "semantic_operations": [
+        "expense.create"
+      ],
+      "source_refs": [
+        "J05 Shares detail path"
+      ],
+      "notes": [],
+      "friction_band": "longer_precision_path"
+    },
+    {
+      "id": "TASK-J05-RECEIPT",
+      "journey": "05",
+      "name": "Add expense with receipt",
+      "status": "certified",
+      "start_state": "entry",
+      "completion_state": "success-receipt",
+      "user_action_steps": 4,
+      "required_input_steps": 3,
+      "typical_input_steps": 3,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 7,
+      "typical_user_steps": 7,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 8,
+      "end_to_end_typical_user_steps": 8,
+      "states_visited": [
+        "entry",
+        "details",
+        "receipt",
+        "entry-receipt",
+        "success-receipt"
+      ],
+      "semantic_operations": [
+        "expense.create"
+      ],
+      "source_refs": [
+        "J05 receipt detail path"
+      ],
+      "notes": [],
+      "friction_band": "longer_precision_path"
+    },
+    {
+      "id": "TASK-J06-EDIT",
+      "journey": "06",
+      "name": "Edit an existing expense",
+      "status": "certified",
+      "start_state": "detail",
+      "completion_state": "updated",
+      "user_action_steps": 2,
+      "required_input_steps": 1,
+      "typical_input_steps": 1,
+      "prototype_system_steps": 1,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 3,
+      "typical_user_steps": 3,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 4,
+      "end_to_end_typical_user_steps": 4,
+      "states_visited": [
+        "detail",
+        "edit",
+        "saving",
+        "updated"
+      ],
+      "semantic_operations": [
+        "expense.edit"
+      ],
+      "source_refs": [
+        "J06 owner core path"
+      ],
+      "notes": [
+        "Prototype Continue advances the saving demo and is not counted as user effort."
+      ],
+      "friction_band": "short"
+    },
+    {
+      "id": "TASK-J06-DELETE",
+      "journey": "06",
+      "name": "Delete an owned expense",
+      "status": "certified",
+      "start_state": "detail",
+      "completion_state": "deleted",
+      "user_action_steps": 3,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 3,
+      "typical_user_steps": 3,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 4,
+      "end_to_end_typical_user_steps": 4,
+      "states_visited": [
+        "detail",
+        "more-own",
+        "delete-confirm",
+        "deleted"
+      ],
+      "semantic_operations": [
+        "expense.delete"
+      ],
+      "source_refs": [
+        "J06 delete core path"
+      ],
+      "notes": [],
+      "friction_band": "short"
+    },
+    {
+      "id": "TASK-J06-VIEW-HISTORY",
+      "journey": "06",
+      "name": "Inspect expense history and return",
+      "status": "certified",
+      "start_state": "detail",
+      "completion_state": "detail",
+      "user_action_steps": 2,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 2,
+      "typical_user_steps": 2,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 3,
+      "end_to_end_typical_user_steps": 3,
+      "states_visited": [
+        "detail",
+        "history",
+        "detail"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J06 information hierarchy"
+      ],
+      "notes": [],
+      "friction_band": "short"
+    },
+    {
+      "id": "TASK-J06-VIEW-RECEIPT",
+      "journey": "06",
+      "name": "Inspect receipt and return",
+      "status": "certified",
+      "start_state": "detail",
+      "completion_state": "detail",
+      "user_action_steps": 2,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 2,
+      "typical_user_steps": 2,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 3,
+      "end_to_end_typical_user_steps": 3,
+      "states_visited": [
+        "detail",
+        "receipt-view",
+        "detail"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J06 information hierarchy"
+      ],
+      "notes": [],
+      "friction_band": "short"
+    },
+    {
+      "id": "TASK-J06-OTHER-MEMBER-REVIEW-HANDOFF",
+      "journey": "06",
+      "name": "Hand another member to expense review",
+      "status": "certified",
+      "start_state": "other",
+      "completion_state": "review-handoff",
+      "user_action_steps": 1,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 1,
+      "typical_user_steps": 1,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 2,
+      "end_to_end_typical_user_steps": 2,
+      "states_visited": [
+        "other",
+        "review-handoff"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J06 other-member core path"
+      ],
+      "notes": [],
+      "friction_band": "very_short"
+    },
+    {
+      "id": "TASK-J07-AGREE",
+      "journey": "07",
+      "name": "Agree that an expense looks right",
+      "status": "certified",
+      "start_state": "review",
+      "completion_state": "reviewed",
+      "user_action_steps": 1,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 1,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 1,
+      "typical_user_steps": 1,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 2,
+      "end_to_end_typical_user_steps": 2,
+      "states_visited": [
+        "review",
+        "saving",
+        "reviewed"
+      ],
+      "semantic_operations": [
+        "expense.review_agree"
+      ],
+      "source_refs": [
+        "J07 core reviewer path"
+      ],
+      "notes": [
+        "Direct Group Home attention handoff is counted as the entry action."
+      ],
+      "friction_band": "very_short"
+    },
+    {
+      "id": "TASK-J07-RAISE-ISSUE",
+      "journey": "07",
+      "name": "Raise an issue about your share",
+      "status": "certified",
+      "start_state": "review",
+      "completion_state": "issue-sent-share",
+      "user_action_steps": 3,
+      "required_input_steps": 0,
+      "typical_input_steps": 1,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 3,
+      "typical_user_steps": 4,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 4,
+      "end_to_end_typical_user_steps": 5,
+      "states_visited": [
+        "review",
+        "reasons",
+        "note-share",
+        "issue-sent-share"
+      ],
+      "semantic_operations": [
+        "expense.raise_issue"
+      ],
+      "source_refs": [
+        "J07 issue path"
+      ],
+      "notes": [
+        "Optional note affects typical, not minimum, step count."
+      ],
+      "friction_band": "short"
+    },
+    {
+      "id": "TASK-J07-WITHDRAW-ISSUE",
+      "journey": "07",
+      "name": "Withdraw a raised issue",
+      "status": "certified",
+      "start_state": "waiting-share",
+      "completion_state": "review",
+      "user_action_steps": 2,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 2,
+      "typical_user_steps": 2,
+      "entry_user_steps": 0,
+      "end_to_end_minimum_user_steps": 2,
+      "end_to_end_typical_user_steps": 2,
+      "states_visited": [
+        "waiting-share",
+        "withdraw",
+        "review"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J07 state inventory withdraw"
+      ],
+      "notes": [],
+      "friction_band": "very_short"
+    },
+    {
+      "id": "TASK-J07-OWNER-REPLY",
+      "journey": "07",
+      "name": "Reply to an expense issue",
+      "status": "certified",
+      "start_state": "owner-issue",
+      "completion_state": "reply-sent",
+      "user_action_steps": 2,
+      "required_input_steps": 0,
+      "typical_input_steps": 1,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 2,
+      "typical_user_steps": 3,
+      "entry_user_steps": 0,
+      "end_to_end_minimum_user_steps": 2,
+      "end_to_end_typical_user_steps": 3,
+      "states_visited": [
+        "owner-issue",
+        "reply",
+        "reply-sent"
+      ],
+      "semantic_operations": [
+        "expense.reply_to_issue"
+      ],
+      "source_refs": [
+        "J07 owner-resolution loop"
+      ],
+      "notes": [
+        "Reply content is counted as a typical input because the flow requires a reply but the static artifact does not expose an editable DOM field."
+      ],
+      "friction_band": "very_short"
+    },
+    {
+      "id": "TASK-J07-REVIEW-AGAIN",
+      "journey": "07",
+      "name": "Agree after an expense changed",
+      "status": "certified",
+      "start_state": "changed",
+      "completion_state": "reviewed-again",
+      "user_action_steps": 1,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 1,
+      "typical_user_steps": 1,
+      "entry_user_steps": 0,
+      "end_to_end_minimum_user_steps": 1,
+      "end_to_end_typical_user_steps": 1,
+      "states_visited": [
+        "changed",
+        "reviewed-again"
+      ],
+      "semantic_operations": [
+        "expense.review_agree"
+      ],
+      "source_refs": [
+        "J07 changed / reviewed-again states"
+      ],
+      "notes": [],
+      "friction_band": "very_short"
+    },
+    {
+      "id": "TASK-J07-ACCEPT-REPLY",
+      "journey": "07",
+      "name": "Accept an owner's reply",
+      "status": "certified",
+      "start_state": "member-reply",
+      "completion_state": "resolved-reply",
+      "user_action_steps": 1,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 1,
+      "typical_user_steps": 1,
+      "entry_user_steps": 0,
+      "end_to_end_minimum_user_steps": 1,
+      "end_to_end_typical_user_steps": 1,
+      "states_visited": [
+        "member-reply",
+        "resolved-reply"
+      ],
+      "semantic_operations": [
+        "expense.review_agree"
+      ],
+      "source_refs": [
+        "J07 owner-resolution loop"
+      ],
+      "notes": [],
+      "friction_band": "very_short"
+    },
+    {
+      "id": "TASK-J07-STILL-OFF-AFTER-REPLY",
+      "journey": "07",
+      "name": "Keep an issue open after owner reply",
+      "status": "certified",
+      "start_state": "member-reply",
+      "completion_state": "issue-sent-share",
+      "user_action_steps": 3,
+      "required_input_steps": 0,
+      "typical_input_steps": 1,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 3,
+      "typical_user_steps": 4,
+      "entry_user_steps": 0,
+      "end_to_end_minimum_user_steps": 3,
+      "end_to_end_typical_user_steps": 4,
+      "states_visited": [
+        "member-reply",
+        "reasons",
+        "note-share",
+        "issue-sent-share"
+      ],
+      "semantic_operations": [
+        "expense.resolve_issue"
+      ],
+      "source_refs": [
+        "J07 owner-resolution loop"
+      ],
+      "notes": [],
+      "friction_band": "short"
+    },
+    {
+      "id": "TASK-J08-OPEN-ADD",
+      "journey": "08",
+      "name": "Open Add Expense from Group Home",
+      "status": "certified",
+      "start_state": "active",
+      "completion_state": "add-handoff",
+      "user_action_steps": 1,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 1,
+      "typical_user_steps": 1,
+      "entry_user_steps": 0,
+      "end_to_end_minimum_user_steps": 1,
+      "end_to_end_typical_user_steps": 1,
+      "states_visited": [
+        "active",
+        "add-handoff"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J08 primary exits"
+      ],
+      "notes": [],
+      "friction_band": "very_short"
+    },
+    {
+      "id": "TASK-J08-OPEN-REVIEW",
+      "journey": "08",
+      "name": "Open review task from Group Home",
+      "status": "certified",
+      "start_state": "active",
+      "completion_state": "review-handoff",
+      "user_action_steps": 1,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 1,
+      "typical_user_steps": 1,
+      "entry_user_steps": 0,
+      "end_to_end_minimum_user_steps": 1,
+      "end_to_end_typical_user_steps": 1,
+      "states_visited": [
+        "active",
+        "review-handoff"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J08 primary exits"
+      ],
+      "notes": [],
+      "friction_band": "very_short"
+    },
+    {
+      "id": "TASK-J08-OPEN-BALANCES",
+      "journey": "08",
+      "name": "Open balances from Group Home",
+      "status": "certified",
+      "start_state": "active",
+      "completion_state": "balances-handoff",
+      "user_action_steps": 1,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 1,
+      "typical_user_steps": 1,
+      "entry_user_steps": 0,
+      "end_to_end_minimum_user_steps": 1,
+      "end_to_end_typical_user_steps": 1,
+      "states_visited": [
+        "active",
+        "balances-handoff"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J08 primary exits"
+      ],
+      "notes": [],
+      "friction_band": "very_short"
+    },
+    {
+      "id": "TASK-J08-OPEN-SETTLE",
+      "journey": "08",
+      "name": "Open settlement from Group Home",
+      "status": "certified",
+      "start_state": "active",
+      "completion_state": "settle-handoff",
+      "user_action_steps": 1,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 1,
+      "typical_user_steps": 1,
+      "entry_user_steps": 0,
+      "end_to_end_minimum_user_steps": 1,
+      "end_to_end_typical_user_steps": 1,
+      "states_visited": [
+        "active",
+        "settle-handoff"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J08 primary exits"
+      ],
+      "notes": [],
+      "friction_band": "very_short"
+    },
+    {
+      "id": "TASK-J08-EMPTY-FIRST-EXPENSE",
+      "journey": "08",
+      "name": "Start first expense from empty group",
+      "status": "certified",
+      "start_state": "empty",
+      "completion_state": "add-handoff",
+      "user_action_steps": 1,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 1,
+      "typical_user_steps": 1,
+      "entry_user_steps": 0,
+      "end_to_end_minimum_user_steps": 1,
+      "end_to_end_typical_user_steps": 1,
+      "states_visited": [
+        "empty",
+        "add-handoff"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J08 empty state"
+      ],
+      "notes": [],
+      "friction_band": "very_short"
+    },
+    {
+      "id": "TASK-J11-TWINT-DEFAULT",
+      "journey": "11",
+      "name": "Prepare default full TWINT settlement and hand off",
+      "status": "certified",
+      "start_state": "settle",
+      "completion_state": "twint-handoff",
+      "user_action_steps": 2,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 2,
+      "typical_user_steps": 2,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 3,
+      "end_to_end_typical_user_steps": 3,
+      "states_visited": [
+        "settle",
+        "twint-review",
+        "twint-handoff"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J11 primary path"
+      ],
+      "notes": [],
+      "friction_band": "short"
+    },
+    {
+      "id": "TASK-J11-PARTIAL-TWINT",
+      "journey": "11",
+      "name": "Prepare partial TWINT settlement and hand off",
+      "status": "certified",
+      "start_state": "settle",
+      "completion_state": "partial-handoff",
+      "user_action_steps": 4,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 4,
+      "typical_user_steps": 4,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 5,
+      "end_to_end_typical_user_steps": 5,
+      "states_visited": [
+        "settle",
+        "amount",
+        "amount-partial",
+        "partial-review",
+        "partial-handoff"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J11 partial amount rules"
+      ],
+      "notes": [],
+      "friction_band": "moderate"
+    },
+    {
+      "id": "TASK-J11-BANK",
+      "journey": "11",
+      "name": "Prepare bank-transfer settlement and hand off",
+      "status": "certified",
+      "start_state": "settle",
+      "completion_state": "bank-handoff",
+      "user_action_steps": 4,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 4,
+      "typical_user_steps": 4,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 5,
+      "end_to_end_typical_user_steps": 5,
+      "states_visited": [
+        "settle",
+        "methods",
+        "bank",
+        "bank-review",
+        "bank-handoff"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J11 method rules"
+      ],
+      "notes": [],
+      "friction_band": "moderate"
+    },
+    {
+      "id": "TASK-J11-WALLET",
+      "journey": "11",
+      "name": "Prepare wallet settlement and request approval",
+      "status": "certified",
+      "start_state": "settle",
+      "completion_state": "wallet-handoff",
+      "user_action_steps": 4,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 4,
+      "typical_user_steps": 4,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 5,
+      "end_to_end_typical_user_steps": 5,
+      "states_visited": [
+        "settle",
+        "methods",
+        "wallet",
+        "wallet-review",
+        "wallet-handoff"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J11 wallet path"
+      ],
+      "notes": [],
+      "friction_band": "moderate"
+    },
+    {
+      "id": "TASK-J11-CASH",
+      "journey": "11",
+      "name": "Record an external cash/other payment handoff",
+      "status": "certified",
+      "start_state": "settle",
+      "completion_state": "cash-handoff",
+      "user_action_steps": 4,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 4,
+      "typical_user_steps": 4,
+      "entry_user_steps": 1,
+      "end_to_end_minimum_user_steps": 5,
+      "end_to_end_typical_user_steps": 5,
+      "states_visited": [
+        "settle",
+        "methods",
+        "cash",
+        "cash-confirm",
+        "cash-handoff"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J11 external/manual path"
+      ],
+      "notes": [],
+      "friction_band": "moderate"
+    },
+    {
+      "id": "TASK-J12-PAYER-MARK-SENT",
+      "journey": "12",
+      "name": "Mark TWINT payment sent and reach waiting state",
+      "status": "certified",
+      "start_state": "twint-return",
+      "completion_state": "twint-waiting",
+      "user_action_steps": 2,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 0,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 2,
+      "typical_user_steps": 2,
+      "entry_user_steps": 0,
+      "end_to_end_minimum_user_steps": 2,
+      "end_to_end_typical_user_steps": 2,
+      "states_visited": [
+        "twint-return",
+        "twint-sent",
+        "twint-waiting"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J12 core external/manual path"
+      ],
+      "notes": [],
+      "friction_band": "very_short"
+    },
+    {
+      "id": "TASK-J12-RECEIVER-CONFIRM",
+      "journey": "12",
+      "name": "Receiver confirms receipt and sees settlement complete",
+      "status": "certified",
+      "start_state": "receiver-review",
+      "completion_state": "payment-complete",
+      "user_action_steps": 2,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 1,
+      "coordination_handoffs": 0,
+      "minimum_user_steps": 2,
+      "typical_user_steps": 2,
+      "entry_user_steps": 0,
+      "end_to_end_minimum_user_steps": 2,
+      "end_to_end_typical_user_steps": 2,
+      "states_visited": [
+        "receiver-review",
+        "receiver-confirming",
+        "payment-received",
+        "payment-complete"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J12 receiver confirmation path"
+      ],
+      "notes": [
+        "Saving confirmation is system/prototype progression and is not counted as user effort."
+      ],
+      "friction_band": "very_short"
+    },
+    {
+      "id": "TASK-J12-FULL-MANUAL-COMPLETE",
+      "journey": "12",
+      "name": "Complete a full external/manual settlement across payer and receiver",
+      "status": "certified",
+      "start_state": "twint-return",
+      "completion_state": "payment-complete",
+      "user_action_steps": 4,
+      "required_input_steps": 0,
+      "typical_input_steps": 0,
+      "prototype_system_steps": 1,
+      "coordination_handoffs": 1,
+      "minimum_user_steps": 4,
+      "typical_user_steps": 4,
+      "entry_user_steps": 0,
+      "end_to_end_minimum_user_steps": 4,
+      "end_to_end_typical_user_steps": 4,
+      "states_visited": [
+        "twint-return",
+        "twint-sent",
+        "twint-waiting",
+        "receiver-review",
+        "receiver-confirming",
+        "payment-received",
+        "payment-complete"
+      ],
+      "semantic_operations": [],
+      "source_refs": [
+        "J12 core external/manual path"
+      ],
+      "notes": [
+        "Cross-actor handoff is a coordination boundary, not a user interaction."
+      ],
+      "friction_band": "short"
+    },
+    {
+      "id": "TASK-GROUP-CLOSEOUT-START",
+      "journey": "11",
+      "name": "Start explicit whole-group closeout",
+      "status": "semantic_only_no_approved_surface",
+      "minimum_user_steps": null,
+      "typical_user_steps": null,
+      "end_to_end_minimum_user_steps": null,
+      "end_to_end_typical_user_steps": null,
+      "reason": "The approved hybrid lock policy defines GroupCloseoutContext semantics, but no frozen Golden currently defines the normal user control/path that starts a whole-group closeout."
+    }
+  ]
+}

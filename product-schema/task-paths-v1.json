@@ -1,0 +1,1405 @@
+{
+  "schema_version": 1,
+  "schema_id": "chopdot-certified-task-paths-v1",
+  "authority": "DIAGNOSTIC_DEFINITION_ONLY",
+  "rule": "Task definitions name and measure source-backed user jobs. They do not change Golden UX or semantic product authority. User-action counts exclude prototype-only/system progression.",
+  "certification_scope": {
+    "certified_task_count": 31,
+    "journeys": [
+      "05",
+      "06",
+      "07",
+      "08",
+      "11",
+      "12"
+    ],
+    "future_rule": "Other journeys retain heuristic journey-path metrics until a source-backed task is explicitly certified."
+  },
+  "tasks": [
+    {
+      "id": "TASK-J05-COMMON-EQUAL",
+      "journey": "05",
+      "name": "Add common equal-split expense",
+      "status": "certified",
+      "start_state": "entry",
+      "steps": [
+        {
+          "type": "input",
+          "state": "entry",
+          "name": "amount",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "input",
+          "state": "entry",
+          "name": "description",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "user_action",
+          "from_state": "entry",
+          "action": {
+            "label_exact": "Add expense",
+            "target": "success"
+          },
+          "semantic_operation": "expense.create"
+        }
+      ],
+      "completion_state": "success",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_exact": "Add expense",
+          "target": "add-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J05 core path",
+        "REQ-J05-DEFAULTS"
+      ]
+    },
+    {
+      "id": "TASK-J05-CHANGE-PAYER",
+      "journey": "05",
+      "name": "Add expense with another payer",
+      "status": "certified",
+      "start_state": "entry",
+      "steps": [
+        {
+          "type": "input",
+          "state": "entry",
+          "name": "amount",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "input",
+          "state": "entry",
+          "name": "description",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "user_action",
+          "from_state": "entry",
+          "action": {
+            "label_starts_with": "Paid by Who covered it?",
+            "target": "payer"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "payer",
+          "action": {
+            "label_starts_with": "M Marc",
+            "target": "entry-marc"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "entry-marc",
+          "action": {
+            "label_exact": "Add expense",
+            "target": "success-marc"
+          },
+          "semantic_operation": "expense.create"
+        }
+      ],
+      "completion_state": "success-marc",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_exact": "Add expense",
+          "target": "add-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J05 detail paths"
+      ]
+    },
+    {
+      "id": "TASK-J05-TWO-PERSON-EQUAL",
+      "journey": "05",
+      "name": "Add equal expense for two participants",
+      "status": "certified",
+      "start_state": "entry",
+      "steps": [
+        {
+          "type": "input",
+          "state": "entry",
+          "name": "amount",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "input",
+          "state": "entry",
+          "name": "description",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "user_action",
+          "from_state": "entry",
+          "action": {
+            "label_starts_with": "Split equally 4 people",
+            "target": "split"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "split",
+          "action": {
+            "label_exact": "Preview two people",
+            "target": "split-two"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "split-two",
+          "action": {
+            "label_exact": "Done",
+            "target": "entry-two"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "entry-two",
+          "action": {
+            "label_exact": "Add expense",
+            "target": "success-two"
+          },
+          "semantic_operation": "expense.create"
+        }
+      ],
+      "completion_state": "success-two",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_exact": "Add expense",
+          "target": "add-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J05 participants path"
+      ]
+    },
+    {
+      "id": "TASK-J05-EXACT",
+      "journey": "05",
+      "name": "Add exact-split expense",
+      "status": "certified",
+      "start_state": "entry",
+      "steps": [
+        {
+          "type": "input",
+          "state": "entry",
+          "name": "amount",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "input",
+          "state": "entry",
+          "name": "description",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "user_action",
+          "from_state": "entry",
+          "action": {
+            "label_starts_with": "Split equally 4 people",
+            "target": "split"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "split",
+          "action": {
+            "label_starts_with": "Split equally Change method",
+            "target": "method"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "method",
+          "action": {
+            "label_exact": "Exact",
+            "target": "exact"
+          }
+        },
+        {
+          "type": "input",
+          "state": "exact",
+          "name": "exact_allocations",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "user_action",
+          "from_state": "exact",
+          "action": {
+            "label_exact": "Done",
+            "target": "entry-exact"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "entry-exact",
+          "action": {
+            "label_exact": "Add expense",
+            "target": "success-exact"
+          },
+          "semantic_operation": "expense.create"
+        }
+      ],
+      "completion_state": "success-exact",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_exact": "Add expense",
+          "target": "add-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J05 Exact detail path"
+      ]
+    },
+    {
+      "id": "TASK-J05-SHARES",
+      "journey": "05",
+      "name": "Add shares-based expense",
+      "status": "certified",
+      "start_state": "entry",
+      "steps": [
+        {
+          "type": "input",
+          "state": "entry",
+          "name": "amount",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "input",
+          "state": "entry",
+          "name": "description",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "user_action",
+          "from_state": "entry",
+          "action": {
+            "label_starts_with": "Split equally 4 people",
+            "target": "split"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "split",
+          "action": {
+            "label_starts_with": "Split equally Change method",
+            "target": "method"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "method",
+          "action": {
+            "label_exact": "Shares",
+            "target": "shares"
+          }
+        },
+        {
+          "type": "input",
+          "state": "shares",
+          "name": "share_weights",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "user_action",
+          "from_state": "shares",
+          "action": {
+            "label_exact": "Done",
+            "target": "entry-exact"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "entry-exact",
+          "action": {
+            "label_exact": "Add expense",
+            "target": "success-exact"
+          },
+          "semantic_operation": "expense.create"
+        }
+      ],
+      "completion_state": "success-exact",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_exact": "Add expense",
+          "target": "add-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J05 Shares detail path"
+      ]
+    },
+    {
+      "id": "TASK-J05-RECEIPT",
+      "journey": "05",
+      "name": "Add expense with receipt",
+      "status": "certified",
+      "start_state": "entry",
+      "steps": [
+        {
+          "type": "input",
+          "state": "entry",
+          "name": "amount",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "input",
+          "state": "entry",
+          "name": "description",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "user_action",
+          "from_state": "entry",
+          "action": {
+            "label_starts_with": "Today No receipt Details",
+            "target": "details"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "details",
+          "action": {
+            "label_starts_with": "Add receipt",
+            "target": "receipt"
+          }
+        },
+        {
+          "type": "input",
+          "state": "receipt",
+          "name": "receipt_file",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "user_action",
+          "from_state": "receipt",
+          "action": {
+            "label_exact": "Use receipt",
+            "target": "entry-receipt"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "entry-receipt",
+          "action": {
+            "label_exact": "Add expense",
+            "target": "success-receipt"
+          },
+          "semantic_operation": "expense.create"
+        }
+      ],
+      "completion_state": "success-receipt",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_exact": "Add expense",
+          "target": "add-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J05 receipt detail path"
+      ]
+    },
+    {
+      "id": "TASK-J06-EDIT",
+      "journey": "06",
+      "name": "Edit an existing expense",
+      "status": "certified",
+      "start_state": "detail",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "detail",
+          "action": {
+            "label_exact": "Edit",
+            "target": "edit"
+          }
+        },
+        {
+          "type": "input",
+          "state": "edit",
+          "name": "changed_field",
+          "required": true,
+          "typical": true
+        },
+        {
+          "type": "user_action",
+          "from_state": "edit",
+          "action": {
+            "label_exact": "Save changes",
+            "target": "saving"
+          },
+          "semantic_operation": "expense.edit"
+        },
+        {
+          "type": "prototype_progression",
+          "from_state": "saving",
+          "action": {
+            "label_exact": "Continue",
+            "target": "updated"
+          }
+        }
+      ],
+      "completion_state": "updated",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_starts_with": "Train tickets You paid",
+          "target": "expense-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J06 owner core path"
+      ],
+      "notes": [
+        "Prototype Continue advances the saving demo and is not counted as user effort."
+      ]
+    },
+    {
+      "id": "TASK-J06-DELETE",
+      "journey": "06",
+      "name": "Delete an owned expense",
+      "status": "certified",
+      "start_state": "detail",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "detail",
+          "action": {
+            "label_exact": "More",
+            "target": "more-own"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "more-own",
+          "action": {
+            "label_starts_with": "Delete expense",
+            "target": "delete-confirm"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "delete-confirm",
+          "action": {
+            "label_exact": "Delete expense",
+            "target": "deleted"
+          },
+          "semantic_operation": "expense.delete"
+        }
+      ],
+      "completion_state": "deleted",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_starts_with": "Train tickets You paid",
+          "target": "expense-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J06 delete core path"
+      ]
+    },
+    {
+      "id": "TASK-J06-VIEW-HISTORY",
+      "journey": "06",
+      "name": "Inspect expense history and return",
+      "status": "certified",
+      "start_state": "detail",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "detail",
+          "action": {
+            "label_starts_with": "History Created today",
+            "target": "history"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "history",
+          "action": {
+            "label_exact": "Done",
+            "target": "detail"
+          }
+        }
+      ],
+      "completion_state": "detail",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_starts_with": "Train tickets You paid",
+          "target": "expense-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J06 information hierarchy"
+      ]
+    },
+    {
+      "id": "TASK-J06-VIEW-RECEIPT",
+      "journey": "06",
+      "name": "Inspect receipt and return",
+      "status": "certified",
+      "start_state": "detail",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "detail",
+          "action": {
+            "label_starts_with": "Receipt zeughauskeller.jpg",
+            "target": "receipt-view"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "receipt-view",
+          "action": {
+            "label_exact": "Done",
+            "target": "detail"
+          }
+        }
+      ],
+      "completion_state": "detail",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_starts_with": "Train tickets You paid",
+          "target": "expense-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J06 information hierarchy"
+      ]
+    },
+    {
+      "id": "TASK-J06-OTHER-MEMBER-REVIEW-HANDOFF",
+      "journey": "06",
+      "name": "Hand another member to expense review",
+      "status": "certified",
+      "start_state": "other",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "other",
+          "action": {
+            "label_exact": "Review expense",
+            "target": "review-handoff"
+          }
+        }
+      ],
+      "completion_state": "review-handoff",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_starts_with": "Dinner Marc paid",
+          "target": "expense-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J06 other-member core path"
+      ]
+    },
+    {
+      "id": "TASK-J07-AGREE",
+      "journey": "07",
+      "name": "Agree that an expense looks right",
+      "status": "certified",
+      "start_state": "review",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "review",
+          "action": {
+            "label_exact": "Looks right",
+            "target": "saving"
+          },
+          "semantic_operation": "expense.review_agree"
+        },
+        {
+          "type": "prototype_progression",
+          "from_state": "saving",
+          "action": {
+            "label_exact": "Continue",
+            "target": "reviewed"
+          }
+        }
+      ],
+      "completion_state": "reviewed",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_starts_with": "Dinner CHF 128 · Marc paid",
+          "target": "review-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J07 core reviewer path"
+      ],
+      "notes": [
+        "Direct Group Home attention handoff is counted as the entry action."
+      ]
+    },
+    {
+      "id": "TASK-J07-RAISE-ISSUE",
+      "journey": "07",
+      "name": "Raise an issue about your share",
+      "status": "certified",
+      "start_state": "review",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "review",
+          "action": {
+            "label_exact": "Something's off",
+            "target": "reasons"
+          },
+          "semantic_operation": "expense.raise_issue"
+        },
+        {
+          "type": "user_action",
+          "from_state": "reasons",
+          "action": {
+            "label_starts_with": "My share",
+            "target": "note-share"
+          }
+        },
+        {
+          "type": "input",
+          "state": "note-share",
+          "name": "optional_note",
+          "required": false,
+          "typical": true
+        },
+        {
+          "type": "user_action",
+          "from_state": "note-share",
+          "action": {
+            "label_exact": "Send to Marc",
+            "target": "issue-sent-share"
+          }
+        }
+      ],
+      "completion_state": "issue-sent-share",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_starts_with": "Dinner CHF 128 · Marc paid",
+          "target": "review-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J07 issue path"
+      ],
+      "notes": [
+        "Optional note affects typical, not minimum, step count."
+      ]
+    },
+    {
+      "id": "TASK-J07-WITHDRAW-ISSUE",
+      "journey": "07",
+      "name": "Withdraw a raised issue",
+      "status": "certified",
+      "start_state": "waiting-share",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "waiting-share",
+          "action": {
+            "label_exact": "Withdraw request",
+            "target": "withdraw"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "withdraw",
+          "action": {
+            "label_exact": "Withdraw request",
+            "target": "review"
+          }
+        }
+      ],
+      "completion_state": "review",
+      "source_refs": [
+        "J07 state inventory withdraw"
+      ]
+    },
+    {
+      "id": "TASK-J07-OWNER-REPLY",
+      "journey": "07",
+      "name": "Reply to an expense issue",
+      "status": "certified",
+      "start_state": "owner-issue",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "owner-issue",
+          "action": {
+            "label_exact": "Reply",
+            "target": "reply"
+          }
+        },
+        {
+          "type": "input",
+          "state": "reply",
+          "name": "reply_content",
+          "required": false,
+          "typical": true
+        },
+        {
+          "type": "user_action",
+          "from_state": "reply",
+          "action": {
+            "label_exact": "Send reply",
+            "target": "reply-sent"
+          }
+        }
+      ],
+      "completion_state": "reply-sent",
+      "source_refs": [
+        "J07 owner-resolution loop"
+      ],
+      "notes": [
+        "Reply content is counted as a typical input because the flow requires a reply but the static artifact does not expose an editable DOM field."
+      ]
+    },
+    {
+      "id": "TASK-J07-REVIEW-AGAIN",
+      "journey": "07",
+      "name": "Agree after an expense changed",
+      "status": "certified",
+      "start_state": "changed",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "changed",
+          "action": {
+            "label_exact": "Looks right",
+            "target": "reviewed-again"
+          },
+          "semantic_operation": "expense.review_agree"
+        }
+      ],
+      "completion_state": "reviewed-again",
+      "source_refs": [
+        "J07 changed / reviewed-again states"
+      ]
+    },
+    {
+      "id": "TASK-J07-ACCEPT-REPLY",
+      "journey": "07",
+      "name": "Accept an owner's reply",
+      "status": "certified",
+      "start_state": "member-reply",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "member-reply",
+          "action": {
+            "label_exact": "Looks right",
+            "target": "resolved-reply"
+          },
+          "semantic_operation": "expense.review_agree"
+        }
+      ],
+      "completion_state": "resolved-reply",
+      "source_refs": [
+        "J07 owner-resolution loop"
+      ]
+    },
+    {
+      "id": "TASK-J07-STILL-OFF-AFTER-REPLY",
+      "journey": "07",
+      "name": "Keep an issue open after owner reply",
+      "status": "certified",
+      "start_state": "member-reply",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "member-reply",
+          "action": {
+            "label_exact": "Still off",
+            "target": "reasons"
+          },
+          "semantic_operation": "expense.resolve_issue"
+        },
+        {
+          "type": "user_action",
+          "from_state": "reasons",
+          "action": {
+            "label_starts_with": "My share",
+            "target": "note-share"
+          }
+        },
+        {
+          "type": "input",
+          "state": "note-share",
+          "name": "optional_note",
+          "required": false,
+          "typical": true
+        },
+        {
+          "type": "user_action",
+          "from_state": "note-share",
+          "action": {
+            "label_exact": "Send to Marc",
+            "target": "issue-sent-share"
+          }
+        }
+      ],
+      "completion_state": "issue-sent-share",
+      "source_refs": [
+        "J07 owner-resolution loop"
+      ]
+    },
+    {
+      "id": "TASK-J08-OPEN-ADD",
+      "journey": "08",
+      "name": "Open Add Expense from Group Home",
+      "status": "certified",
+      "start_state": "active",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "active",
+          "action": {
+            "label_exact": "Add expense",
+            "target": "add-handoff"
+          }
+        }
+      ],
+      "completion_state": "add-handoff",
+      "source_refs": [
+        "J08 primary exits"
+      ]
+    },
+    {
+      "id": "TASK-J08-OPEN-REVIEW",
+      "journey": "08",
+      "name": "Open review task from Group Home",
+      "status": "certified",
+      "start_state": "active",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "active",
+          "action": {
+            "label_starts_with": "Dinner CHF 128 · Marc paid",
+            "target": "review-handoff"
+          }
+        }
+      ],
+      "completion_state": "review-handoff",
+      "source_refs": [
+        "J08 primary exits"
+      ]
+    },
+    {
+      "id": "TASK-J08-OPEN-BALANCES",
+      "journey": "08",
+      "name": "Open balances from Group Home",
+      "status": "certified",
+      "start_state": "active",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "active",
+          "action": {
+            "label_exact": "View balances",
+            "target": "balances-handoff"
+          }
+        }
+      ],
+      "completion_state": "balances-handoff",
+      "source_refs": [
+        "J08 primary exits"
+      ]
+    },
+    {
+      "id": "TASK-J08-OPEN-SETTLE",
+      "journey": "08",
+      "name": "Open settlement from Group Home",
+      "status": "certified",
+      "start_state": "active",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "active",
+          "action": {
+            "label_starts_with": "Settle 2 balances open",
+            "target": "settle-handoff"
+          }
+        }
+      ],
+      "completion_state": "settle-handoff",
+      "source_refs": [
+        "J08 primary exits"
+      ]
+    },
+    {
+      "id": "TASK-J08-EMPTY-FIRST-EXPENSE",
+      "journey": "08",
+      "name": "Start first expense from empty group",
+      "status": "certified",
+      "start_state": "empty",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "empty",
+          "action": {
+            "label_exact": "Add expense",
+            "target": "add-handoff"
+          }
+        }
+      ],
+      "completion_state": "add-handoff",
+      "source_refs": [
+        "J08 empty state"
+      ]
+    },
+    {
+      "id": "TASK-J11-TWINT-DEFAULT",
+      "journey": "11",
+      "name": "Prepare default full TWINT settlement and hand off",
+      "status": "certified",
+      "start_state": "settle",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "settle",
+          "action": {
+            "label_exact": "Continue",
+            "target": "twint-review"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "twint-review",
+          "action": {
+            "label_exact": "Open TWINT",
+            "target": "twint-handoff"
+          }
+        }
+      ],
+      "completion_state": "twint-handoff",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_starts_with": "Settle 2 balances open",
+          "target": "settle-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J11 primary path"
+      ]
+    },
+    {
+      "id": "TASK-J11-PARTIAL-TWINT",
+      "journey": "11",
+      "name": "Prepare partial TWINT settlement and hand off",
+      "status": "certified",
+      "start_state": "settle",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "settle",
+          "action": {
+            "label_starts_with": "Pay full balance",
+            "target": "amount"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "amount",
+          "action": {
+            "label_exact": "CHF 20",
+            "target": "amount-partial"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "amount-partial",
+          "action": {
+            "label_exact": "Use CHF 20.00",
+            "target": "partial-review"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "partial-review",
+          "action": {
+            "label_exact": "Open TWINT",
+            "target": "partial-handoff"
+          }
+        }
+      ],
+      "completion_state": "partial-handoff",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_starts_with": "Settle 2 balances open",
+          "target": "settle-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J11 partial amount rules"
+      ]
+    },
+    {
+      "id": "TASK-J11-BANK",
+      "journey": "11",
+      "name": "Prepare bank-transfer settlement and hand off",
+      "status": "certified",
+      "start_state": "settle",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "settle",
+          "action": {
+            "label_starts_with": "TWINT Jeanine's preferred method",
+            "target": "methods"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "methods",
+          "action": {
+            "label_starts_with": "Bank transfer",
+            "target": "bank"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "bank",
+          "action": {
+            "label_exact": "Review transfer",
+            "target": "bank-review"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "bank-review",
+          "action": {
+            "label_exact": "Open bank app",
+            "target": "bank-handoff"
+          }
+        }
+      ],
+      "completion_state": "bank-handoff",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_starts_with": "Settle 2 balances open",
+          "target": "settle-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J11 method rules"
+      ]
+    },
+    {
+      "id": "TASK-J11-WALLET",
+      "journey": "11",
+      "name": "Prepare wallet settlement and request approval",
+      "status": "certified",
+      "start_state": "settle",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "settle",
+          "action": {
+            "label_starts_with": "TWINT Jeanine's preferred method",
+            "target": "methods"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "methods",
+          "action": {
+            "label_starts_with": "Wallet Pay an agreed equivalent",
+            "target": "wallet"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "wallet",
+          "action": {
+            "label_exact": "Review wallet payment",
+            "target": "wallet-review"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "wallet-review",
+          "action": {
+            "label_exact": "Approve in wallet",
+            "target": "wallet-handoff"
+          }
+        }
+      ],
+      "completion_state": "wallet-handoff",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_starts_with": "Settle 2 balances open",
+          "target": "settle-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J11 wallet path"
+      ]
+    },
+    {
+      "id": "TASK-J11-CASH",
+      "journey": "11",
+      "name": "Record an external cash/other payment handoff",
+      "status": "certified",
+      "start_state": "settle",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "settle",
+          "action": {
+            "label_starts_with": "TWINT Jeanine's preferred method",
+            "target": "methods"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "methods",
+          "action": {
+            "label_starts_with": "Cash or paid elsewhere",
+            "target": "cash"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "cash",
+          "action": {
+            "label_exact": "Record a payment",
+            "target": "cash-confirm"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "cash-confirm",
+          "action": {
+            "label_exact": "Record as sent",
+            "target": "cash-handoff"
+          }
+        }
+      ],
+      "completion_state": "cash-handoff",
+      "entry_trigger": {
+        "journey": "08",
+        "state": "active",
+        "action": {
+          "label_starts_with": "Settle 2 balances open",
+          "target": "settle-handoff"
+        },
+        "count_as_user_step": true
+      },
+      "source_refs": [
+        "J11 external/manual path"
+      ]
+    },
+    {
+      "id": "TASK-J12-PAYER-MARK-SENT",
+      "journey": "12",
+      "name": "Mark TWINT payment sent and reach waiting state",
+      "status": "certified",
+      "start_state": "twint-return",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "twint-return",
+          "action": {
+            "label_exact": "Yes, I sent it",
+            "target": "twint-sent"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "twint-sent",
+          "action": {
+            "label_exact": "View confirmation status",
+            "target": "twint-waiting"
+          }
+        }
+      ],
+      "completion_state": "twint-waiting",
+      "source_refs": [
+        "J12 core external/manual path"
+      ]
+    },
+    {
+      "id": "TASK-J12-RECEIVER-CONFIRM",
+      "journey": "12",
+      "name": "Receiver confirms receipt and sees settlement complete",
+      "status": "certified",
+      "start_state": "receiver-review",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "receiver-review",
+          "action": {
+            "label_exact": "Yes, it arrived",
+            "target": "receiver-confirming"
+          }
+        },
+        {
+          "type": "prototype_progression",
+          "from_state": "receiver-confirming",
+          "action": {
+            "label_exact": "Continue",
+            "target": "payment-received"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "payment-received",
+          "action": {
+            "label_exact": "View updated balance",
+            "target": "payment-complete"
+          }
+        }
+      ],
+      "completion_state": "payment-complete",
+      "source_refs": [
+        "J12 receiver confirmation path"
+      ],
+      "notes": [
+        "Saving confirmation is system/prototype progression and is not counted as user effort."
+      ]
+    },
+    {
+      "id": "TASK-J12-FULL-MANUAL-COMPLETE",
+      "journey": "12",
+      "name": "Complete a full external/manual settlement across payer and receiver",
+      "status": "certified",
+      "start_state": "twint-return",
+      "steps": [
+        {
+          "type": "user_action",
+          "from_state": "twint-return",
+          "action": {
+            "label_exact": "Yes, I sent it",
+            "target": "twint-sent"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "twint-sent",
+          "action": {
+            "label_exact": "View confirmation status",
+            "target": "twint-waiting"
+          }
+        },
+        {
+          "type": "cross_actor_handoff",
+          "from_state": "twint-waiting",
+          "to_state": "receiver-review"
+        },
+        {
+          "type": "user_action",
+          "from_state": "receiver-review",
+          "action": {
+            "label_exact": "Yes, it arrived",
+            "target": "receiver-confirming"
+          }
+        },
+        {
+          "type": "prototype_progression",
+          "from_state": "receiver-confirming",
+          "action": {
+            "label_exact": "Continue",
+            "target": "payment-received"
+          }
+        },
+        {
+          "type": "user_action",
+          "from_state": "payment-received",
+          "action": {
+            "label_exact": "View updated balance",
+            "target": "payment-complete"
+          }
+        }
+      ],
+      "completion_state": "payment-complete",
+      "source_refs": [
+        "J12 core external/manual path"
+      ],
+      "notes": [
+        "Cross-actor handoff is a coordination boundary, not a user interaction."
+      ]
+    },
+    {
+      "id": "TASK-GROUP-CLOSEOUT-START",
+      "journey": "11",
+      "name": "Start explicit whole-group closeout",
+      "status": "semantic_only_no_approved_surface",
+      "source_refs": [
+        "DEC-EXPENSE-SETTLEMENT-LOCK-01"
+      ],
+      "reason": "The approved hybrid lock policy defines GroupCloseoutContext semantics, but no frozen Golden currently defines the normal user control/path that starts a whole-group closeout."
+    }
+  ]
+}
