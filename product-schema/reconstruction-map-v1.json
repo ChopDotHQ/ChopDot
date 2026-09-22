@@ -1963,6 +1963,10 @@
     }
   ],
   "journey_governance": {
+    "10": [
+      "LAW-OP-03",
+      "LAW-POS-01"
+    ],
     "11": [
       "LAW-OP-01",
       "LAW-OP-02",
@@ -1992,6 +1996,19 @@
       "LAW-OP-03",
       "LAW-DEST-01"
     ],
+    "15": [
+      "LAW-OP-01",
+      "LAW-OP-03",
+      "LAW-PAY-02",
+      "LAW-PAY-03"
+    ],
+    "16": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-SAV-01",
+      "LAW-SAV-02"
+    ],
     "17": [
       "LAW-OP-01",
       "LAW-OP-02",
@@ -2002,6 +2019,9 @@
     "18": [
       "LAW-OP-03",
       "LAW-ACT-01"
+    ],
+    "19": [
+      "LAW-OP-03"
     ],
     "20": [
       "LAW-OP-01",
@@ -2090,6 +2110,34 @@
       "LAW-OP-02",
       "LAW-OP-03",
       "LAW-GROUP-02"
+    ],
+    "01": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-OP-04",
+      "LAW-ID-01"
+    ],
+    "02": [
+      "LAW-OP-03"
+    ],
+    "03": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-GROUP-02"
+    ],
+    "04": [
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-03",
+      "LAW-ID-01",
+      "LAW-GROUP-02"
+    ],
+    "08": [
+      "LAW-OP-03",
+      "LAW-POS-01",
+      "LAW-ACT-01"
     ]
   },
   "authored_pieces": [
@@ -2294,5 +2342,13 @@
       "COMP-05",
       "COMP-06"
     ]
-  }
+  },
+  "extraction_exemptions": [
+    {
+      "journey": "02",
+      "reason": "Approved Home / Orientation is one static Golden surface with no internal state registry; its root anchors are navigation/handoff affordances and never canonical domain writes.",
+      "canonical_state": "home",
+      "root_action_classification": "EXTERNAL_HANDOFF"
+    }
+  ]
 }
