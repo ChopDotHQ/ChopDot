@@ -4,7 +4,7 @@
   "authority": "FROZEN_PRODUCT_AUTHORITY",
   "product_authority_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
   "product_authority_tree": "cb424dafedff066fed433e106eb4468bec985d98",
-  "rule": "Stage 5 reconstruction consumes these frozen mapping/state artifacts as evidence; later branch edits cannot silently become original Golden meaning.",
+  "rule": "Stage 5.1 reconstruction consumes all frozen curated mappings, state/edge sources, and executable/decision mapping sources. Later branch edits cannot silently become original Golden meaning.",
   "curated_mapping_sources": [
     {
       "journey": "01",
@@ -510,6 +510,63 @@
   "counts": {
     "curated_mapping_sources": 52,
     "supporting_state_sources": 31,
-    "total": 83
-  }
+    "total": 92,
+    "executable_mapping_sources": 9
+  },
+  "executable_mapping_sources": [
+    {
+      "journey": "01",
+      "kind": "model.cjs",
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs",
+      "git_blob": "8295002973e05c4b229ea6dfed48cd3b4b65310e"
+    },
+    {
+      "journey": "09",
+      "kind": "model.cjs",
+      "path": "prototypes/experience-workbench/journeys/09-manage-people/source/model.cjs",
+      "git_blob": "011ad33a65a6af484fed344f7991b7d3a2c820da"
+    },
+    {
+      "journey": "11",
+      "kind": "DECISIONS.json",
+      "path": "prototypes/experience-workbench/journeys/11-settle-up/DECISIONS.json",
+      "git_blob": "7931c4519ba7e090be26135a5a801023c8577dde"
+    },
+    {
+      "journey": "12",
+      "kind": "DECISIONS.json",
+      "path": "prototypes/experience-workbench/journeys/12-complete-settlement/DECISIONS.json",
+      "git_blob": "5532b4ca2c0703bb2a9f24657308539ed00ae9df"
+    },
+    {
+      "journey": "13",
+      "kind": "model.cjs",
+      "path": "prototypes/experience-workbench/journeys/13-request-money/source/model.cjs",
+      "git_blob": "23178b866f9a9033be47f389ea5e8ad6e5b96bba"
+    },
+    {
+      "journey": "14",
+      "kind": "model.cjs",
+      "path": "prototypes/experience-workbench/journeys/14-receive-money/source/model.cjs",
+      "git_blob": "e6a149f729eef3de04c0980a62a5dfd6dc70bf75"
+    },
+    {
+      "journey": "18",
+      "kind": "model.cjs",
+      "path": "prototypes/experience-workbench/journeys/18-activity-notifications/source/model.cjs",
+      "git_blob": "10d2258e8e711dd16b47547ce185851756236e3b"
+    },
+    {
+      "journey": "19",
+      "kind": "model.cjs",
+      "path": "prototypes/experience-workbench/journeys/19-insights/source/model.cjs",
+      "git_blob": "6868112fa5d7f2b7a02747b44e7b6331297d352e"
+    },
+    {
+      "journey": "20",
+      "kind": "model.cjs",
+      "path": "prototypes/experience-workbench/journeys/20-payment-methods/source/model.cjs",
+      "git_blob": "ae35646295924feb9742bfeb67c2cfe91a8b2db1"
+    }
+  ]
 }
