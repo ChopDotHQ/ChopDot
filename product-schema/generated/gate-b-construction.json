@@ -1646,7 +1646,14 @@
         "payment.record"
       ],
       "scope_object": "position.scope",
-      "safety_class": "settlement"
+      "safety_class": "settlement",
+      "references": [
+        {
+          "field": "position_scope",
+          "object": "position.scope",
+          "required": true
+        }
+      ]
     },
     {
       "id": "position.scope",
@@ -1668,7 +1675,15 @@
         "J10",
         "J11"
       ],
-      "safety_class": "settlement"
+      "safety_class": "settlement",
+      "allowed_scope_kinds": [
+        "participant_pair",
+        "group"
+      ],
+      "scope_ref_semantics": {
+        "participant_pair": "canonical participant pair identity",
+        "group": "group_id"
+      }
     }
   ],
   "operation_contracts": [
@@ -1708,6 +1723,13 @@
         "LAW-EXP-GUARD-01"
       ],
       "guards": [
+        "expense.mutation_guard"
+      ],
+      "reads": [
+        "group.group",
+        "group.membership",
+        "identity.participant",
+        "money.money_v1",
         "expense.mutation_guard"
       ]
     },
@@ -1765,6 +1787,13 @@
           "effect": "open issue remains unresolved until Journey 07 reviewer resolution",
           "law_ref": "LAW-EXP-02"
         }
+      ],
+      "reads": [
+        "expense.expense",
+        "group.membership",
+        "identity.participant",
+        "money.money_v1",
+        "expense.mutation_guard"
       ]
     },
     {
@@ -1800,6 +1829,12 @@
         "LAW-EXP-HISTORY-01"
       ],
       "guards": [
+        "expense.mutation_guard"
+      ],
+      "reads": [
+        "expense.expense",
+        "group.membership",
+        "identity.participant",
         "expense.mutation_guard"
       ]
     },
@@ -2164,7 +2199,8 @@
         "DEC_EXP_LOCK",
         "DEC_EXP_LOCK_V2"
       ],
-      "machine_checkable": true
+      "machine_checkable": true,
+      "safety_class": "settlement"
     },
     {
       "id": "LAW-EXP-HISTORY-01",
@@ -2345,7 +2381,8 @@
         "open_remainder_preserves_source_lineage": true,
         "release_lock_only_when_no_open_remainder": true
       },
-      "machine_checkable": true
+      "machine_checkable": true,
+      "safety_class": "settlement"
     },
     {
       "id": "LAW-PAY-04",
@@ -2374,7 +2411,8 @@
         "J11",
         "DEC_EXP_LOCK_V2"
       ],
-      "machine_checkable": true
+      "machine_checkable": true,
+      "safety_class": "settlement"
     },
     {
       "id": "LAW-GROUP-02",
@@ -2783,7 +2821,8 @@
         "expense.issue",
         "position.position",
         "group.group",
-        "expense.expense"
+        "expense.expense",
+        "position.scope"
       ],
       "preserves": [
         "attempted mutation kind/target",
@@ -2800,7 +2839,8 @@
         "LAW-OP-02",
         "LAW-OP-04",
         "LAW-PAY-03",
-        "LAW-PAY-04"
+        "LAW-PAY-04",
+        "LAW-POS-SCOPE-01"
       ],
       "availability": "resolve_at_effect_time",
       "note": "Gate B effect-time predicate for ordinary settlements. Missing or malformed guard evidence fails closed. Whole-group closeout remains future semantic-only."

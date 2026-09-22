@@ -1,3108 +1,519 @@
 {
-  "schema_version": 1,
-  "generated_view": "mechanical-mutation-coverage",
+  "schema_version": 2,
+  "generated_view": "independent-safety-mutation-coverage",
   "baseline_errors": [],
+  "detector": "independent fixed invariants + frozen authority; old safety snapshots are co-mutated and do not count as detectors",
   "domains": {
-    "authority": {
-      "applicable": 48,
-      "detected": 48,
-      "score": 100
-    },
-    "composition_continuity": {
-      "applicable": 56,
-      "detected": 56,
+    "money": {
+      "applicable": 9,
+      "detected": 9,
       "score": 100
     },
     "identity": {
-      "applicable": 42,
-      "detected": 42,
-      "score": 100
-    },
-    "money": {
-      "applicable": 14,
-      "detected": 14,
+      "applicable": 6,
+      "detected": 6,
       "score": 100
     },
     "recovery_replay": {
-      "applicable": 43,
-      "detected": 43,
-      "score": 100
-    },
-    "settlement": {
-      "applicable": 70,
-      "detected": 70,
+      "applicable": 7,
+      "detected": 7,
       "score": 100
     },
     "storage_restore": {
-      "applicable": 33,
-      "detected": 33,
+      "applicable": 5,
+      "detected": 5,
+      "score": 100
+    },
+    "authority": {
+      "applicable": 8,
+      "detected": 8,
+      "score": 100
+    },
+    "settlement": {
+      "applicable": 16,
+      "detected": 16,
+      "score": 100
+    },
+    "composition_continuity": {
+      "applicable": 7,
+      "detected": 7,
       "score": 100
     }
   },
   "total": {
-    "applicable": 306,
-    "detected": 306,
+    "applicable": 58,
+    "detected": 58,
     "score": 100
   },
   "results": [
     {
-      "schema_ref": "COMP-01",
-      "safety_class": "composition_continuity",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
+      "name": "money-cross-partition",
+      "domain": "money",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "MONEY-LAW"
       ]
     },
     {
-      "schema_ref": "COMP-01",
-      "safety_class": "composition_continuity",
-      "path": "constraint.replacement_domain_object_on_route",
-      "operator": "INVERT_BOOLEAN",
+      "name": "money-drop-exponent",
+      "domain": "money",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "MONEY-IDENTITY"
       ]
     },
     {
-      "schema_ref": "COMP-02",
-      "safety_class": "composition_continuity",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
+      "name": "money-display-authority",
+      "domain": "money",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "MONEY-LAW"
       ]
     },
     {
-      "schema_ref": "COMP-02",
-      "safety_class": "composition_continuity",
-      "path": "constraint.projection_may_mutate_source_truth",
-      "operator": "INVERT_BOOLEAN",
+      "name": "savings-self-report-confirms",
+      "domain": "money",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SAVINGS-CONFIRMATION"
       ]
     },
     {
-      "schema_ref": "COMP-03",
-      "safety_class": "composition_continuity",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
+      "name": "savings-submitted-confirms",
+      "domain": "money",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SAVINGS-CONFIRMATION"
       ]
     },
     {
-      "schema_ref": "COMP-03",
-      "safety_class": "composition_continuity",
-      "path": "constraint.manual_projection_overwrite",
-      "operator": "INVERT_BOOLEAN",
+      "name": "savings-unknown-confirms",
+      "domain": "money",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SAVINGS-CONFIRMATION"
       ]
     },
     {
-      "schema_ref": "COMP-04",
-      "safety_class": "composition_continuity",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
+      "name": "participant-identity-account",
+      "domain": "identity",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "ID-PARTICIPANT"
       ]
     },
     {
-      "schema_ref": "COMP-04",
-      "safety_class": "composition_continuity",
-      "path": "constraint.same_operation_identity",
-      "operator": "INVERT_BOOLEAN",
+      "name": "link-replaces-participant",
+      "domain": "identity",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "ID-STABILITY"
       ]
     },
     {
-      "schema_ref": "COMP-04",
-      "safety_class": "composition_continuity",
-      "path": "constraint.return_after",
-      "operator": "WEAKEN_EXACT_SET",
+      "name": "link-rewrites-history",
+      "domain": "identity",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "ID-STABILITY"
       ]
     },
     {
-      "schema_ref": "COMP-04",
-      "safety_class": "composition_continuity",
-      "path": "constraint.return_after",
-      "operator": "WIDEN_SET",
+      "name": "email-merge-allowed",
+      "domain": "identity",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "ID-MERGE"
       ]
     },
     {
-      "schema_ref": "COMP-04",
-      "safety_class": "composition_continuity",
-      "path": "constraint.return_after",
-      "operator": "REORDER_SET",
+      "name": "collision-auto-merges",
+      "domain": "identity",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "ID-MERGE"
       ]
     },
     {
-      "schema_ref": "COMP-05",
-      "safety_class": "composition_continuity",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
+      "name": "cross-group-id-visible",
+      "domain": "identity",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "ID-PRIVACY"
       ]
     },
     {
-      "schema_ref": "COMP-05",
-      "safety_class": "composition_continuity",
-      "path": "constraint.partial_capability_implies_full_journey",
-      "operator": "INVERT_BOOLEAN",
+      "name": "unknown-new-operation",
+      "domain": "recovery_replay",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "RECOVERY-IDENTITY"
       ]
     },
     {
-      "schema_ref": "COMP-06",
-      "safety_class": "composition_continuity",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
+      "name": "unknown-state-removed",
+      "domain": "recovery_replay",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "RECOVERY-IDENTITY"
       ]
     },
     {
-      "schema_ref": "COMP-06",
-      "safety_class": "composition_continuity",
-      "path": "constraint.schema_may_redesign_golden_projection",
-      "operator": "INVERT_BOOLEAN",
+      "name": "retry-without-no-effect",
+      "domain": "recovery_replay",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "RECOVERY-RETRY"
       ]
     },
     {
-      "schema_ref": "group.delete",
-      "safety_class": "composition_continuity",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
+      "name": "navigation-becomes-evidence",
+      "domain": "recovery_replay",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "RECOVERY-NAV"
       ]
     },
     {
-      "schema_ref": "group.delete",
-      "safety_class": "composition_continuity",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
+      "name": "stale-silent-overwrite",
+      "domain": "recovery_replay",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "RECOVERY-STALE"
       ]
     },
     {
-      "schema_ref": "group.delete",
-      "safety_class": "composition_continuity",
-      "path": "changes",
-      "operator": "WIDEN_SET",
+      "name": "history-replay-effects",
+      "domain": "recovery_replay",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "RECOVERY-REPLAY"
       ]
     },
     {
-      "schema_ref": "group.delete",
-      "safety_class": "composition_continuity",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
+      "name": "restore-secrets",
+      "domain": "storage_restore",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "STORAGE-LAW"
       ]
     },
     {
-      "schema_ref": "group.delete",
-      "safety_class": "composition_continuity",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
+      "name": "restore-overwrites-newer",
+      "domain": "storage_restore",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "STORAGE-LAW"
       ]
     },
     {
-      "schema_ref": "group.delete",
-      "safety_class": "composition_continuity",
-      "path": "guards",
-      "operator": "WIDEN_SET",
+      "name": "restore-no-preview",
+      "domain": "storage_restore",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "STORAGE-LAW"
       ]
     },
     {
-      "schema_ref": "group.group",
-      "safety_class": "composition_continuity",
-      "path": "kind",
-      "operator": "REPLACE_VALUE",
+      "name": "restore-unknown-no-reconcile",
+      "domain": "storage_restore",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "STORAGE-LAW"
       ]
     },
     {
-      "schema_ref": "group.group",
-      "safety_class": "composition_continuity",
-      "path": "identity",
-      "operator": "WEAKEN_EXACT_SET",
+      "name": "restore-owner-group",
+      "domain": "storage_restore",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "STORAGE-OWNER"
       ]
     },
     {
-      "schema_ref": "group.group",
-      "safety_class": "composition_continuity",
-      "path": "identity",
-      "operator": "WIDEN_SET",
+      "name": "preference-creates-authority",
+      "domain": "authority",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "AUTH-PREFERENCE"
       ]
     },
     {
-      "schema_ref": "group.group",
-      "safety_class": "composition_continuity",
-      "path": "derived_from",
-      "operator": "WIDEN_SET",
+      "name": "share-confirms-payment",
+      "domain": "authority",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "AUTH-DESTINATION"
       ]
     },
     {
-      "schema_ref": "group.leave",
-      "safety_class": "composition_continuity",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
+      "name": "wallet-widens-scope",
+      "domain": "authority",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "AUTH-WALLET"
       ]
     },
     {
-      "schema_ref": "group.leave",
-      "safety_class": "composition_continuity",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
+      "name": "delete-ignores-owner",
+      "domain": "authority",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "AUTH-ACCOUNT-DELETE"
       ]
     },
     {
-      "schema_ref": "group.leave",
-      "safety_class": "composition_continuity",
-      "path": "changes",
-      "operator": "WIDEN_SET",
+      "name": "delete-ignores-money",
+      "domain": "authority",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "AUTH-ACCOUNT-DELETE"
       ]
     },
     {
-      "schema_ref": "group.leave",
-      "safety_class": "composition_continuity",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
+      "name": "delete-global-erasure",
+      "domain": "authority",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "AUTH-ACCOUNT-DELETE"
       ]
     },
     {
-      "schema_ref": "group.leave",
-      "safety_class": "composition_continuity",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
+      "name": "savings-admin-owns-position",
+      "domain": "authority",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SAVINGS-AUTHORITY"
       ]
     },
     {
-      "schema_ref": "group.leave",
-      "safety_class": "composition_continuity",
-      "path": "guards",
-      "operator": "WIDEN_SET",
+      "name": "savings-fabricated-confirmation",
+      "domain": "authority",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SAVINGS-AUTHORITY"
       ]
     },
     {
-      "schema_ref": "group.membership",
-      "safety_class": "composition_continuity",
-      "path": "kind",
-      "operator": "REPLACE_VALUE",
+      "name": "position-add-any-scope",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "POSITION-SCOPE"
       ]
     },
     {
-      "schema_ref": "group.membership",
-      "safety_class": "composition_continuity",
-      "path": "identity",
-      "operator": "WEAKEN_EXACT_SET",
+      "name": "settlement-group-scope",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "POSITION-SETTLEMENT"
       ]
     },
     {
-      "schema_ref": "group.membership",
-      "safety_class": "composition_continuity",
-      "path": "identity",
-      "operator": "WIDEN_SET",
+      "name": "position-drop-reference",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "POSITION-REFERENCE"
       ]
     },
     {
-      "schema_ref": "group.membership",
-      "safety_class": "composition_continuity",
-      "path": "identity",
-      "operator": "REORDER_SET",
+      "name": "prepare-drop-scope-law",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "POSITION-PREPARE"
       ]
     },
     {
-      "schema_ref": "group.membership",
-      "safety_class": "composition_continuity",
-      "path": "derived_from",
-      "operator": "WIDEN_SET",
+      "name": "prepare-drop-position-read",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "POSITION-PREPARE"
       ]
     },
     {
-      "schema_ref": "group.rename_archive",
-      "safety_class": "composition_continuity",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
+      "name": "ctx-settlement-drop-scope",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "POSITION-CONTEXT"
       ]
     },
     {
-      "schema_ref": "group.rename_archive",
-      "safety_class": "composition_continuity",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
+      "name": "ctx-guard-drop-scope-law",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "POSITION-CONTEXT"
       ]
     },
     {
-      "schema_ref": "group.rename_archive",
-      "safety_class": "composition_continuity",
-      "path": "changes",
-      "operator": "WIDEN_SET",
+      "name": "scope-retro-expands",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SETTLEMENT-SCOPE"
       ]
     },
     {
-      "schema_ref": "group.rename_archive",
-      "safety_class": "composition_continuity",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
+      "name": "sent-confirms-receipt",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SETTLEMENT-LIFECYCLE"
       ]
     },
     {
-      "schema_ref": "group.rename_archive",
-      "safety_class": "composition_continuity",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
+      "name": "partial-equals-closed",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SETTLEMENT-LIFECYCLE"
       ]
     },
     {
-      "schema_ref": "group.rename_archive",
-      "safety_class": "composition_continuity",
-      "path": "guards",
-      "operator": "WIDEN_SET",
+      "name": "partial-releases-lock",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SETTLEMENT-PARTIAL"
       ]
     },
     {
-      "schema_ref": "group.transfer_ownership",
-      "safety_class": "composition_continuity",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
+      "name": "prepared-over-eligible",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SETTLEMENT-ELIGIBILITY"
       ]
     },
     {
-      "schema_ref": "group.transfer_ownership",
-      "safety_class": "composition_continuity",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
+      "name": "guard-fail-open",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SETTLEMENT-GUARD"
       ]
     },
     {
-      "schema_ref": "group.transfer_ownership",
-      "safety_class": "composition_continuity",
-      "path": "changes",
-      "operator": "WIDEN_SET",
+      "name": "guard-drop-dispute",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SETTLEMENT-GUARD"
       ]
     },
     {
-      "schema_ref": "group.transfer_ownership",
-      "safety_class": "composition_continuity",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
+      "name": "close-owned-by-position",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SETTLEMENT-CLOSE-OWNER"
       ]
     },
     {
-      "schema_ref": "group.transfer_ownership",
-      "safety_class": "composition_continuity",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
+      "name": "route-replaces-object",
+      "domain": "composition_continuity",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "COMPOSITION-LAW"
       ]
     },
     {
-      "schema_ref": "group.transfer_ownership",
-      "safety_class": "composition_continuity",
-      "path": "guards",
-      "operator": "WIDEN_SET",
+      "name": "projection-may-mutate",
+      "domain": "composition_continuity",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "COMPOSITION-LAW"
       ]
     },
     {
-      "schema_ref": "identity.account",
-      "safety_class": "identity",
-      "path": "kind",
-      "operator": "REPLACE_VALUE",
+      "name": "manual-view-overwrite",
+      "domain": "composition_continuity",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "COMPOSITION-LAW"
       ]
     },
     {
-      "schema_ref": "identity.account",
-      "safety_class": "identity",
-      "path": "identity",
-      "operator": "WEAKEN_EXACT_SET",
+      "name": "recovery-new-identity",
+      "domain": "composition_continuity",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "COMPOSITION-LAW"
       ]
     },
     {
-      "schema_ref": "identity.account",
-      "safety_class": "identity",
-      "path": "identity",
-      "operator": "WIDEN_SET",
+      "name": "partial-promoted",
+      "domain": "composition_continuity",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "COMPOSITION-LAW"
       ]
     },
     {
-      "schema_ref": "identity.account",
-      "safety_class": "identity",
-      "path": "derived_from",
-      "operator": "WIDEN_SET",
+      "name": "schema-redesigns-golden",
+      "domain": "composition_continuity",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "COMPOSITION-LAW"
       ]
     },
     {
-      "schema_ref": "identity.participant",
-      "safety_class": "identity",
-      "path": "kind",
-      "operator": "REPLACE_VALUE",
+      "name": "lifecycle-rewrites-ledger",
+      "domain": "composition_continuity",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "GROUP-LIFECYCLE"
       ]
     },
     {
-      "schema_ref": "identity.participant",
-      "safety_class": "identity",
-      "path": "identity",
-      "operator": "WEAKEN_EXACT_SET",
+      "name": "declass-money-law",
+      "domain": "money",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SAFETY-MANIFEST",
+        "SAFETY-TAGS"
       ]
     },
     {
-      "schema_ref": "identity.participant",
-      "safety_class": "identity",
-      "path": "identity",
-      "operator": "WIDEN_SET",
+      "name": "delete-money-law",
+      "domain": "money",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SAFETY-MANIFEST",
+        "SAFETY-TAGS",
+        "MONEY-LAW"
       ]
     },
     {
-      "schema_ref": "identity.participant",
-      "safety_class": "identity",
-      "path": "identity",
-      "operator": "REORDER_SET",
+      "name": "move-money-law-to-authority",
+      "domain": "money",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SAFETY-MANIFEST",
+        "SAFETY-TAGS"
       ]
     },
     {
-      "schema_ref": "identity.participant",
-      "safety_class": "identity",
-      "path": "derived_from",
-      "operator": "WIDEN_SET",
+      "name": "invent-force-close",
+      "domain": "settlement",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SAFETY-MANIFEST",
+        "SAFETY-TAGS"
       ]
     },
     {
-      "schema_ref": "LAW-AUTH-01",
-      "safety_class": "authority",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
+      "name": "declass-recovery",
+      "domain": "recovery_replay",
       "detected": true,
       "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-AUTH-01",
-      "safety_class": "authority",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-AUTH-01",
-      "safety_class": "authority",
-      "path": "applies_to",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-AUTH-01",
-      "safety_class": "authority",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-AUTH-01",
-      "safety_class": "authority",
-      "path": "constraint.presentation_preference_creates_authority",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-AUTH-01",
-      "safety_class": "authority",
-      "path": "constraint.authority_domains",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-AUTH-01",
-      "safety_class": "authority",
-      "path": "constraint.authority_domains",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-AUTH-01",
-      "safety_class": "authority",
-      "path": "constraint.authority_domains",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-DEST-01",
-      "safety_class": "authority",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-DEST-01",
-      "safety_class": "authority",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-DEST-01",
-      "safety_class": "authority",
-      "path": "applies_to",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-DEST-01",
-      "safety_class": "authority",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-DEST-01",
-      "safety_class": "authority",
-      "path": "constraint.sharing_confirms_payment",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-DEST-01",
-      "safety_class": "authority",
-      "path": "constraint.copying_confirms_payment",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-DEST-01",
-      "safety_class": "authority",
-      "path": "constraint.expiry_confirms_payment",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-DEST-01",
-      "safety_class": "authority",
-      "path": "constraint.stopping_confirms_payment",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-GROUP-02",
-      "safety_class": "composition_continuity",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-GROUP-02",
-      "safety_class": "composition_continuity",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-GROUP-02",
-      "safety_class": "composition_continuity",
-      "path": "applies_to",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-GROUP-02",
-      "safety_class": "composition_continuity",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-GROUP-02",
-      "safety_class": "composition_continuity",
-      "path": "constraint.ledger_rewrite_on_lifecycle",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-GROUP-02",
-      "safety_class": "composition_continuity",
-      "path": "constraint.protected_facts",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-GROUP-02",
-      "safety_class": "composition_continuity",
-      "path": "constraint.protected_facts",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-GROUP-02",
-      "safety_class": "composition_continuity",
-      "path": "constraint.protected_facts",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-HIST-01",
-      "safety_class": "recovery_replay",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-HIST-01",
-      "safety_class": "recovery_replay",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-HIST-01",
-      "safety_class": "recovery_replay",
-      "path": "applies_to",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-HIST-01",
-      "safety_class": "recovery_replay",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-HIST-01",
-      "safety_class": "recovery_replay",
-      "path": "constraint.accepted_history_append_only",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-HIST-01",
-      "safety_class": "recovery_replay",
-      "path": "constraint.replay_external_effects",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-HIST-01",
-      "safety_class": "recovery_replay",
-      "path": "constraint.replay_role",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-01",
-      "safety_class": "identity",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-01",
-      "safety_class": "identity",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-01",
-      "safety_class": "identity",
-      "path": "applies_to",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-01",
-      "safety_class": "identity",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-01",
-      "safety_class": "identity",
-      "path": "constraint.participant_id_stable",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-01",
-      "safety_class": "identity",
-      "path": "constraint.account_link_replaces_participant",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-01",
-      "safety_class": "identity",
-      "path": "constraint.historical_reference_rewrite",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-02",
-      "safety_class": "identity",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-02",
-      "safety_class": "identity",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-02",
-      "safety_class": "identity",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-02",
-      "safety_class": "identity",
-      "path": "constraint.prohibited_merge_keys",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-02",
-      "safety_class": "identity",
-      "path": "constraint.prohibited_merge_keys",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-02",
-      "safety_class": "identity",
-      "path": "constraint.prohibited_merge_keys",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-02",
-      "safety_class": "identity",
-      "path": "constraint.collision_or_mismatch",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-03",
-      "safety_class": "identity",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-03",
-      "safety_class": "identity",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-03",
-      "safety_class": "identity",
-      "path": "applies_to",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-03",
-      "safety_class": "identity",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-03",
-      "safety_class": "identity",
-      "path": "constraint.group_visible_cross_group_stable_identifier",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-ID-03",
-      "safety_class": "identity",
-      "path": "constraint.account_binding_may_be_private",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-MONEY-01",
-      "safety_class": "money",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-MONEY-01",
-      "safety_class": "money",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-MONEY-01",
-      "safety_class": "money",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-MONEY-01",
-      "safety_class": "money",
-      "path": "constraint.minor_units_integer",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-MONEY-01",
-      "safety_class": "money",
-      "path": "constraint.partition_keys",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-MONEY-01",
-      "safety_class": "money",
-      "path": "constraint.partition_keys",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-MONEY-01",
-      "safety_class": "money",
-      "path": "constraint.partition_keys",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-MONEY-01",
-      "safety_class": "money",
-      "path": "constraint.cross_partition_combine",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-MONEY-01",
-      "safety_class": "money",
-      "path": "constraint.display_decimal_authority",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-01",
-      "safety_class": "recovery_replay",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-01",
-      "safety_class": "recovery_replay",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-01",
-      "safety_class": "recovery_replay",
-      "path": "applies_to",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-01",
-      "safety_class": "recovery_replay",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-01",
-      "safety_class": "recovery_replay",
-      "path": "constraint.states",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-01",
-      "safety_class": "recovery_replay",
-      "path": "constraint.states",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-01",
-      "safety_class": "recovery_replay",
-      "path": "constraint.states",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-01",
-      "safety_class": "recovery_replay",
-      "path": "constraint.same_operation_identity_until_reconciliation",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-02",
-      "safety_class": "recovery_replay",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-02",
-      "safety_class": "recovery_replay",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-02",
-      "safety_class": "recovery_replay",
-      "path": "applies_to",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-02",
-      "safety_class": "recovery_replay",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-02",
-      "safety_class": "recovery_replay",
-      "path": "constraint.replacement_retry_requires_proven_no_effect",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-03",
-      "safety_class": "recovery_replay",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-03",
-      "safety_class": "recovery_replay",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-03",
-      "safety_class": "recovery_replay",
-      "path": "applies_to",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-03",
-      "safety_class": "recovery_replay",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-03",
-      "safety_class": "recovery_replay",
-      "path": "constraint.evidence_from_navigation",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-03",
-      "safety_class": "recovery_replay",
-      "path": "constraint.prohibited_inference_sources",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-03",
-      "safety_class": "recovery_replay",
-      "path": "constraint.prohibited_inference_sources",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-03",
-      "safety_class": "recovery_replay",
-      "path": "constraint.prohibited_inference_sources",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-04",
-      "safety_class": "recovery_replay",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-04",
-      "safety_class": "recovery_replay",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-04",
-      "safety_class": "recovery_replay",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-04",
-      "safety_class": "recovery_replay",
-      "path": "constraint.stale_write_behavior",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-OP-04",
-      "safety_class": "recovery_replay",
-      "path": "constraint.silent_overwrite",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-POS-SCOPE-01",
-      "safety_class": "settlement",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-POS-SCOPE-01",
-      "safety_class": "settlement",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-POS-SCOPE-01",
-      "safety_class": "settlement",
-      "path": "applies_to",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-POS-SCOPE-01",
-      "safety_class": "settlement",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-POS-SCOPE-01",
-      "safety_class": "settlement",
-      "path": "constraint.allowed_scope_kinds",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-POS-SCOPE-01",
-      "safety_class": "settlement",
-      "path": "constraint.allowed_scope_kinds",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-POS-SCOPE-01",
-      "safety_class": "settlement",
-      "path": "constraint.allowed_scope_kinds",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-POS-SCOPE-01",
-      "safety_class": "settlement",
-      "path": "constraint.settlement_required_scope_kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-POS-SCOPE-01",
-      "safety_class": "settlement",
-      "path": "constraint.currency_partition_on_position",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-STORAGE-01",
-      "safety_class": "storage_restore",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-STORAGE-01",
-      "safety_class": "storage_restore",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-STORAGE-01",
-      "safety_class": "storage_restore",
-      "path": "applies_to",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-STORAGE-01",
-      "safety_class": "storage_restore",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-STORAGE-01",
-      "safety_class": "storage_restore",
-      "path": "constraint.backup_distinct_from_working_copy",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-STORAGE-01",
-      "safety_class": "storage_restore",
-      "path": "constraint.restore_preview_before_mutation",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-STORAGE-01",
-      "safety_class": "storage_restore",
-      "path": "constraint.preserve_newer_truth",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-STORAGE-01",
-      "safety_class": "storage_restore",
-      "path": "constraint.preserve_identity_ambiguity",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-STORAGE-01",
-      "safety_class": "storage_restore",
-      "path": "constraint.secrets_excluded",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-STORAGE-01",
-      "safety_class": "storage_restore",
-      "path": "constraint.executable_authority_excluded",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-STORAGE-01",
-      "safety_class": "storage_restore",
-      "path": "constraint.unknown_outcome_requires_reconciliation",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-WALLET-01",
-      "safety_class": "authority",
-      "path": "applies_to",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-WALLET-01",
-      "safety_class": "authority",
-      "path": "applies_to",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-WALLET-01",
-      "safety_class": "authority",
-      "path": "applies_to",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-WALLET-01",
-      "safety_class": "authority",
-      "path": "constraint.kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-WALLET-01",
-      "safety_class": "authority",
-      "path": "constraint.wallet_can_widen_scope",
-      "operator": "INVERT_BOOLEAN",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-WALLET-01",
-      "safety_class": "authority",
-      "path": "constraint.required_upstream_scope",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-WALLET-01",
-      "safety_class": "authority",
-      "path": "constraint.required_upstream_scope",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "LAW-WALLET-01",
-      "safety_class": "authority",
-      "path": "constraint.required_upstream_scope",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "money.money_v1",
-      "safety_class": "money",
-      "path": "kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "money.money_v1",
-      "safety_class": "money",
-      "path": "identity",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "money.money_v1",
-      "safety_class": "money",
-      "path": "identity",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "money.money_v1",
-      "safety_class": "money",
-      "path": "identity",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "money.money_v1",
-      "safety_class": "money",
-      "path": "derived_from",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "participant.link_account",
-      "safety_class": "identity",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "participant.link_account",
-      "safety_class": "identity",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "participant.link_account",
-      "safety_class": "identity",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "participant.link_account",
-      "safety_class": "identity",
-      "path": "changes",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "participant.link_account",
-      "safety_class": "identity",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "participant.link_account",
-      "safety_class": "identity",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "participant.link_account",
-      "safety_class": "identity",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment_destination.create_update",
-      "safety_class": "authority",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment_destination.create_update",
-      "safety_class": "authority",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment_destination.create_update",
-      "safety_class": "authority",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment_destination.create_update",
-      "safety_class": "authority",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment_destination.create_update",
-      "safety_class": "authority",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment_destination.create_update",
-      "safety_class": "authority",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment_destination.remove",
-      "safety_class": "authority",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment_destination.remove",
-      "safety_class": "authority",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment_destination.remove",
-      "safety_class": "authority",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment_destination.remove",
-      "safety_class": "authority",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment_destination.remove",
-      "safety_class": "authority",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment_destination.remove",
-      "safety_class": "authority",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment.intent",
-      "safety_class": "settlement",
-      "path": "kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment.intent",
-      "safety_class": "settlement",
-      "path": "identity",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment.intent",
-      "safety_class": "settlement",
-      "path": "identity",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment.intent",
-      "safety_class": "settlement",
-      "path": "identity",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment.intent",
-      "safety_class": "settlement",
-      "path": "derived_from",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment.settlement_scope",
-      "safety_class": "settlement",
-      "path": "kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment.settlement_scope",
-      "safety_class": "settlement",
-      "path": "identity",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment.settlement_scope",
-      "safety_class": "settlement",
-      "path": "identity",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment.settlement_scope",
-      "safety_class": "settlement",
-      "path": "identity",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "payment.settlement_scope",
-      "safety_class": "settlement",
-      "path": "derived_from",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "position.position",
-      "safety_class": "settlement",
-      "path": "kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "position.position",
-      "safety_class": "settlement",
-      "path": "identity",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "position.position",
-      "safety_class": "settlement",
-      "path": "identity",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "position.position",
-      "safety_class": "settlement",
-      "path": "identity",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "position.position",
-      "safety_class": "settlement",
-      "path": "derived_from",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "position.position",
-      "safety_class": "settlement",
-      "path": "derived_from",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "position.position",
-      "safety_class": "settlement",
-      "path": "derived_from",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "position.scope",
-      "safety_class": "settlement",
-      "path": "kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "position.scope",
-      "safety_class": "settlement",
-      "path": "identity",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "position.scope",
-      "safety_class": "settlement",
-      "path": "identity",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "position.scope",
-      "safety_class": "settlement",
-      "path": "identity",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "position.scope",
-      "safety_class": "settlement",
-      "path": "derived_from",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "recovery.reconcile",
-      "safety_class": "recovery_replay",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "recovery.reconcile",
-      "safety_class": "recovery_replay",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "recovery.reconcile",
-      "safety_class": "recovery_replay",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "recovery.reconcile",
-      "safety_class": "recovery_replay",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "recovery.reconcile",
-      "safety_class": "recovery_replay",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "recovery.safe_retry",
-      "safety_class": "recovery_replay",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "recovery.safe_retry",
-      "safety_class": "recovery_replay",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "recovery.safe_retry",
-      "safety_class": "recovery_replay",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "recovery.safe_retry",
-      "safety_class": "recovery_replay",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "recovery.safe_retry",
-      "safety_class": "recovery_replay",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "session.enter",
-      "safety_class": "identity",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "session.enter",
-      "safety_class": "identity",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "session.enter",
-      "safety_class": "identity",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "session.enter",
-      "safety_class": "identity",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "session.enter",
-      "safety_class": "identity",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "session.enter",
-      "safety_class": "identity",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.authorize",
-      "safety_class": "settlement",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.authorize",
-      "safety_class": "settlement",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.authorize",
-      "safety_class": "settlement",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.authorize",
-      "safety_class": "settlement",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.authorize",
-      "safety_class": "settlement",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.authorize",
-      "safety_class": "settlement",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.close",
-      "safety_class": "settlement",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.close",
-      "safety_class": "settlement",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.close",
-      "safety_class": "settlement",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.close",
-      "safety_class": "settlement",
-      "path": "changes",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.close",
-      "safety_class": "settlement",
-      "path": "invalidates",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.close",
-      "safety_class": "settlement",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.close",
-      "safety_class": "settlement",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.close",
-      "safety_class": "settlement",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.confirm_receipt",
-      "safety_class": "settlement",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.confirm_receipt",
-      "safety_class": "settlement",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.confirm_receipt",
-      "safety_class": "settlement",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.confirm_receipt",
-      "safety_class": "settlement",
-      "path": "changes",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.confirm_receipt",
-      "safety_class": "settlement",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.confirm_receipt",
-      "safety_class": "settlement",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.confirm_receipt",
-      "safety_class": "settlement",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.mark_sent",
-      "safety_class": "settlement",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.mark_sent",
-      "safety_class": "settlement",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.mark_sent",
-      "safety_class": "settlement",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.mark_sent",
-      "safety_class": "settlement",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.mark_sent",
-      "safety_class": "settlement",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.mark_sent",
-      "safety_class": "settlement",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.prepare",
-      "safety_class": "settlement",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.prepare",
-      "safety_class": "settlement",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.prepare",
-      "safety_class": "settlement",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.prepare",
-      "safety_class": "settlement",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.prepare",
-      "safety_class": "settlement",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.prepare",
-      "safety_class": "settlement",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.reconcile",
-      "safety_class": "settlement",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.reconcile",
-      "safety_class": "settlement",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.reconcile",
-      "safety_class": "settlement",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.reconcile",
-      "safety_class": "settlement",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.reconcile",
-      "safety_class": "settlement",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "settlement.reconcile",
-      "safety_class": "settlement",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.backup",
-      "safety_class": "storage_restore",
-      "path": "kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.backup",
-      "safety_class": "storage_restore",
-      "path": "identity",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.backup",
-      "safety_class": "storage_restore",
-      "path": "identity",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.backup",
-      "safety_class": "storage_restore",
-      "path": "identity",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.backup",
-      "safety_class": "storage_restore",
-      "path": "derived_from",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.create_backup",
-      "safety_class": "storage_restore",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.create_backup",
-      "safety_class": "storage_restore",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.create_backup",
-      "safety_class": "storage_restore",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.create_backup",
-      "safety_class": "storage_restore",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.create_backup",
-      "safety_class": "storage_restore",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.create_backup",
-      "safety_class": "storage_restore",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.restore",
-      "safety_class": "storage_restore",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.restore",
-      "safety_class": "storage_restore",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.restore",
-      "safety_class": "storage_restore",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.restore",
-      "safety_class": "storage_restore",
-      "path": "changes",
-      "operator": "REORDER_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.restore",
-      "safety_class": "storage_restore",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.restore",
-      "safety_class": "storage_restore",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.restore",
-      "safety_class": "storage_restore",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.restore_operation",
-      "safety_class": "storage_restore",
-      "path": "kind",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.restore_operation",
-      "safety_class": "storage_restore",
-      "path": "identity",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.restore_operation",
-      "safety_class": "storage_restore",
-      "path": "identity",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "storage.restore_operation",
-      "safety_class": "storage_restore",
-      "path": "derived_from",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "wallet.connect_switch",
-      "safety_class": "authority",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "wallet.connect_switch",
-      "safety_class": "authority",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "wallet.connect_switch",
-      "safety_class": "authority",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "wallet.connect_switch",
-      "safety_class": "authority",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "wallet.connect_switch",
-      "safety_class": "authority",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "wallet.connect_switch",
-      "safety_class": "authority",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "wallet.execute_action",
-      "safety_class": "authority",
-      "path": "owner",
-      "operator": "REPLACE_VALUE",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "wallet.execute_action",
-      "safety_class": "authority",
-      "path": "changes",
-      "operator": "WEAKEN_EXACT_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "wallet.execute_action",
-      "safety_class": "authority",
-      "path": "changes",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "wallet.execute_action",
-      "safety_class": "authority",
-      "path": "invalidates",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "wallet.execute_action",
-      "safety_class": "authority",
-      "path": "invalidates_prepared",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
-      ]
-    },
-    {
-      "schema_ref": "wallet.execute_action",
-      "safety_class": "authority",
-      "path": "guards",
-      "operator": "WIDEN_SET",
-      "detected": true,
-      "detected_by": [
-        "SAFETY_CONTRACT_DRIFT"
+        "SAFETY-MANIFEST",
+        "SAFETY-TAGS"
       ]
     }
   ]

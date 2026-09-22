@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "generated_view": "reconstruction-coverage",
   "target_contract": [
     "28 frozen Goldens",
@@ -9,610 +9,1096 @@
   ],
   "status": "PASS",
   "source_pins": {
-    "total": 83,
-    "matched": 83,
+    "total": 92,
+    "matched": 92,
     "errors": []
   },
   "event_vocabulary": {
     "json_rows": 1325,
-    "markdown_event_rows": 105,
-    "distinct_events": 134,
-    "bound_events": 134,
-    "missing": [],
-    "extra": []
+    "markdown_event_rows": 191,
+    "model_event_rows": 8,
+    "distinct_events": 141,
+    "bound_events": 141,
+    "errors": []
   },
   "golden_pieces": {
-    "total": 4160,
-    "states": 1029,
-    "actions": 3102,
-    "fields": 29,
-    "classified": 4160,
+    "total": 4418,
+    "states": 1105,
+    "actions": 3277,
+    "fields": 35,
+    "classified": 4418,
     "unjustified_unmapped": 0,
+    "pseudo_pieces": 0,
+    "ungoverned_recovery": 0,
     "by_classification": {
-      "DRAFT_FIELD": 32,
-      "NAVIGATION_TRANSITION": 2460,
-      "RECOVERY_BEHAVIOR": 267,
-      "EXTERNAL_HANDOFF": 125,
-      "PRODUCT_REQUIREMENT": 637,
-      "SELECTION_STATE": 20,
-      "DOMAIN_OPERATION": 101,
+      "PRODUCT_REQUIREMENT": 680,
+      "RECOVERY_BEHAVIOR": 296,
+      "REVIEW_DEMO_CHROME": 424,
+      "NAVIGATION_TRANSITION": 2598,
+      "EXTERNAL_HANDOFF": 136,
+      "DOMAIN_OPERATION": 95,
+      "DRAFT_FIELD": 38,
       "SYSTEM_PROGRESSION": 57,
       "DERIVED_PROJECTION": 69,
-      "POST_GOLDEN_SUPERSEDED": 1,
-      "REVIEW_DEMO_CHROME": 391
+      "POST_GOLDEN_SUPERSEDED": 2,
+      "SELECTION_STATE": 23
     },
     "per_journey": [
       {
         "journey": "01",
         "name": "Enter ChopDot",
-        "source_modes": [
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
-        "states": 1,
-        "actions": 9,
-        "fields": 3,
-        "pieces": 13,
+        "states": 25,
+        "actions": 30,
+        "fields": 6,
+        "pieces": 61,
         "by_classification": {
-          "DRAFT_FIELD": 3,
-          "NAVIGATION_TRANSITION": 3,
-          "RECOVERY_BEHAVIOR": 1,
+          "PRODUCT_REQUIREMENT": 20,
+          "RECOVERY_BEHAVIOR": 7,
+          "REVIEW_DEMO_CHROME": 5,
+          "NAVIGATION_TRANSITION": 18,
           "EXTERNAL_HANDOFF": 3,
-          "PRODUCT_REQUIREMENT": 2,
-          "SELECTION_STATE": 1
+          "DOMAIN_OPERATION": 2,
+          "DRAFT_FIELD": 6
+        },
+        "denominator": {
+          "journey": "01",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 17,
+            "executable_model": 17,
+            "dynamic_source": 0,
+            "switch_source": 24,
+            "static_inventory": 1,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 24,
+          "final_states": 25,
+          "action_counts": {
+            "static_unique": 0,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 30
+          },
+          "declared_action_minimum": 30
         }
       },
       {
         "journey": "02",
         "name": "Home / Orientation",
-        "source_modes": [
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 1,
         "actions": 12,
         "fields": 0,
         "pieces": 13,
         "by_classification": {
-          "PRODUCT_REQUIREMENT": 12,
-          "EXTERNAL_HANDOFF": 1
+          "PRODUCT_REQUIREMENT": 1,
+          "EXTERNAL_HANDOFF": 12
+        },
+        "denominator": {
+          "journey": "02",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 0,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 1,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 1,
+          "final_states": 1,
+          "action_counts": {
+            "static_unique": 12,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 12
         }
       },
       {
         "journey": "03",
         "name": "Create a Group",
-        "source_modes": [
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 11,
         "actions": 30,
         "fields": 1,
         "pieces": 42,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 30,
-          "DRAFT_FIELD": 1,
           "PRODUCT_REQUIREMENT": 7,
           "RECOVERY_BEHAVIOR": 2,
-          "EXTERNAL_HANDOFF": 2
+          "EXTERNAL_HANDOFF": 2,
+          "NAVIGATION_TRANSITION": 29,
+          "DOMAIN_OPERATION": 1,
+          "DRAFT_FIELD": 1
+        },
+        "denominator": {
+          "journey": "03",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 0,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 11,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 11,
+          "final_states": 11,
+          "action_counts": {
+            "static_unique": 30,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 30
         }
       },
       {
         "journey": "04",
         "name": "Invite / Join a Group",
-        "source_modes": [
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 14,
         "actions": 26,
         "fields": 1,
         "pieces": 41,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 26,
-          "DRAFT_FIELD": 1,
           "PRODUCT_REQUIREMENT": 11,
           "RECOVERY_BEHAVIOR": 2,
-          "EXTERNAL_HANDOFF": 1
+          "EXTERNAL_HANDOFF": 1,
+          "NAVIGATION_TRANSITION": 24,
+          "DOMAIN_OPERATION": 2,
+          "DRAFT_FIELD": 1
+        },
+        "denominator": {
+          "journey": "04",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 0,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 14,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 14,
+          "final_states": 14,
+          "action_counts": {
+            "static_unique": 26,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 26
         }
       },
       {
         "journey": "05",
         "name": "Add an Expense",
-        "source_modes": [
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 27,
         "actions": 84,
         "fields": 10,
-        "pieces": 121,
+        "pieces": 122,
         "by_classification": {
+          "PRODUCT_REQUIREMENT": 21,
+          "RECOVERY_BEHAVIOR": 6,
           "NAVIGATION_TRANSITION": 77,
           "DOMAIN_OPERATION": 7,
           "DRAFT_FIELD": 10,
-          "PRODUCT_REQUIREMENT": 21,
-          "RECOVERY_BEHAVIOR": 6
+          "POST_GOLDEN_SUPERSEDED": 1
+        },
+        "denominator": {
+          "journey": "05",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 27,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 27,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 27,
+          "final_states": 27,
+          "action_counts": {
+            "static_unique": 84,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 84
         }
       },
       {
         "journey": "06",
         "name": "Review / Correct an Expense",
-        "source_modes": [
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 31,
         "actions": 110,
         "fields": 2,
         "pieces": 143,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 108,
-          "DOMAIN_OPERATION": 2,
-          "DRAFT_FIELD": 2,
           "PRODUCT_REQUIREMENT": 19,
           "RECOVERY_BEHAVIOR": 9,
           "SYSTEM_PROGRESSION": 2,
-          "EXTERNAL_HANDOFF": 1
+          "EXTERNAL_HANDOFF": 1,
+          "NAVIGATION_TRANSITION": 108,
+          "DOMAIN_OPERATION": 2,
+          "DRAFT_FIELD": 2
+        },
+        "denominator": {
+          "journey": "06",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 31,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 31,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 31,
+          "final_states": 31,
+          "action_counts": {
+            "static_unique": 110,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 110
         }
       },
       {
         "journey": "07",
         "name": "Review / Agree / Raise an Issue",
-        "source_modes": [
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 61,
         "actions": 147,
         "fields": 0,
         "pieces": 208,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 135,
-          "DOMAIN_OPERATION": 12,
           "PRODUCT_REQUIREMENT": 49,
           "EXTERNAL_HANDOFF": 1,
           "RECOVERY_BEHAVIOR": 10,
-          "SYSTEM_PROGRESSION": 1
+          "SYSTEM_PROGRESSION": 1,
+          "NAVIGATION_TRANSITION": 135,
+          "DOMAIN_OPERATION": 12
+        },
+        "denominator": {
+          "journey": "07",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 31,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 61,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 61,
+          "final_states": 61,
+          "action_counts": {
+            "static_unique": 147,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 147
         }
       },
       {
         "journey": "08",
         "name": "Group Home",
-        "source_modes": [
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 19,
         "actions": 54,
         "fields": 0,
         "pieces": 73,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 54,
           "DERIVED_PROJECTION": 4,
           "EXTERNAL_HANDOFF": 10,
           "PRODUCT_REQUIREMENT": 3,
           "RECOVERY_BEHAVIOR": 1,
-          "POST_GOLDEN_SUPERSEDED": 1
+          "POST_GOLDEN_SUPERSEDED": 1,
+          "NAVIGATION_TRANSITION": 54
+        },
+        "denominator": {
+          "journey": "08",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 0,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 19,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 19,
+          "final_states": 19,
+          "action_counts": {
+            "static_unique": 54,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 54
         }
       },
       {
         "journey": "09",
         "name": "Manage People",
-        "source_modes": [
-          "SCREEN_STATE_MAPPING",
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
-        "states": 19,
-        "actions": 83,
-        "fields": 1,
-        "pieces": 103,
+        "states": 32,
+        "actions": 100,
+        "fields": 2,
+        "pieces": 134,
         "by_classification": {
-          "DRAFT_FIELD": 1,
-          "DERIVED_PROJECTION": 25,
-          "NAVIGATION_TRANSITION": 26,
-          "REVIEW_DEMO_CHROME": 18,
-          "SELECTION_STATE": 4,
+          "PRODUCT_REQUIREMENT": 21,
+          "RECOVERY_BEHAVIOR": 13,
           "EXTERNAL_HANDOFF": 6,
-          "PRODUCT_REQUIREMENT": 12,
-          "DOMAIN_OPERATION": 3,
-          "SYSTEM_PROGRESSION": 3,
-          "RECOVERY_BEHAVIOR": 5
+          "SYSTEM_PROGRESSION": 4,
+          "NAVIGATION_TRANSITION": 39,
+          "REVIEW_DEMO_CHROME": 19,
+          "DERIVED_PROJECTION": 25,
+          "SELECTION_STATE": 4,
+          "DOMAIN_OPERATION": 1,
+          "DRAFT_FIELD": 2
+        },
+        "denominator": {
+          "journey": "09",
+          "state_counts": {
+            "screen_mapping": 18,
+            "state_inventory": 18,
+            "executable_model": 18,
+            "dynamic_source": 0,
+            "switch_source": 31,
+            "static_inventory": 1,
+            "event_mapping": 18
+          },
+          "declared_state_minimum": 31,
+          "final_states": 32,
+          "action_counts": {
+            "static_unique": 0,
+            "event_mapping_unique": 86,
+            "dynamic_unique": 0,
+            "switch_unique": 17
+          },
+          "declared_action_minimum": 86
         }
       },
       {
         "journey": "10",
         "name": "Overall Position",
-        "source_modes": [
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 34,
         "actions": 136,
         "fields": 0,
         "pieces": 170,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 136,
           "EXTERNAL_HANDOFF": 8,
           "PRODUCT_REQUIREMENT": 22,
           "SYSTEM_PROGRESSION": 3,
-          "RECOVERY_BEHAVIOR": 1
+          "RECOVERY_BEHAVIOR": 1,
+          "NAVIGATION_TRANSITION": 136
+        },
+        "denominator": {
+          "journey": "10",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 34,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 34,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 34,
+          "final_states": 34,
+          "action_counts": {
+            "static_unique": 136,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 136
         }
       },
       {
         "journey": "11",
         "name": "Settle Up",
-        "source_modes": [
-          "SCREEN_STATE_MAPPING",
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 93,
         "actions": 256,
         "fields": 3,
         "pieces": 352,
         "by_classification": {
-          "DRAFT_FIELD": 3,
-          "NAVIGATION_TRANSITION": 214,
-          "DOMAIN_OPERATION": 42,
           "PRODUCT_REQUIREMENT": 72,
           "EXTERNAL_HANDOFF": 13,
-          "RECOVERY_BEHAVIOR": 8
+          "RECOVERY_BEHAVIOR": 8,
+          "NAVIGATION_TRANSITION": 228,
+          "DOMAIN_OPERATION": 28,
+          "DRAFT_FIELD": 3
+        },
+        "denominator": {
+          "journey": "11",
+          "state_counts": {
+            "screen_mapping": 93,
+            "state_inventory": 31,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 93,
+            "event_mapping": 93
+          },
+          "declared_state_minimum": 93,
+          "final_states": 93,
+          "action_counts": {
+            "static_unique": 256,
+            "event_mapping_unique": 139,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 256
         }
       },
       {
         "journey": "12",
         "name": "Complete Settlement",
-        "source_modes": [
-          "SCREEN_STATE_MAPPING",
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 67,
         "actions": 168,
         "fields": 0,
         "pieces": 235,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 145,
-          "DOMAIN_OPERATION": 23,
           "PRODUCT_REQUIREMENT": 51,
           "EXTERNAL_HANDOFF": 4,
           "RECOVERY_BEHAVIOR": 10,
-          "SYSTEM_PROGRESSION": 2
+          "SYSTEM_PROGRESSION": 2,
+          "NAVIGATION_TRANSITION": 162,
+          "DOMAIN_OPERATION": 6
+        },
+        "denominator": {
+          "journey": "12",
+          "state_counts": {
+            "screen_mapping": 67,
+            "state_inventory": 67,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 67,
+            "event_mapping": 67
+          },
+          "declared_state_minimum": 67,
+          "final_states": 67,
+          "action_counts": {
+            "static_unique": 168,
+            "event_mapping_unique": 168,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 168
         }
       },
       {
         "journey": "13",
         "name": "Request Money",
-        "source_modes": [
-          "SCREEN_STATE_MAPPING",
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
-        "states": 22,
-        "actions": 72,
-        "fields": 1,
-        "pieces": 95,
+        "states": 40,
+        "actions": 93,
+        "fields": 2,
+        "pieces": 135,
         "by_classification": {
-          "DRAFT_FIELD": 4,
-          "NAVIGATION_TRANSITION": 28,
-          "REVIEW_DEMO_CHROME": 22,
-          "RECOVERY_BEHAVIOR": 10,
-          "SELECTION_STATE": 2,
+          "PRODUCT_REQUIREMENT": 26,
+          "RECOVERY_BEHAVIOR": 20,
+          "EXTERNAL_HANDOFF": 5,
+          "SYSTEM_PROGRESSION": 7,
+          "NAVIGATION_TRANSITION": 41,
+          "REVIEW_DEMO_CHROME": 23,
           "DERIVED_PROJECTION": 4,
-          "DOMAIN_OPERATION": 6,
-          "EXTERNAL_HANDOFF": 4,
-          "PRODUCT_REQUIREMENT": 10,
-          "SYSTEM_PROGRESSION": 5
+          "SELECTION_STATE": 2,
+          "DOMAIN_OPERATION": 2,
+          "DRAFT_FIELD": 5
+        },
+        "denominator": {
+          "journey": "13",
+          "state_counts": {
+            "screen_mapping": 22,
+            "state_inventory": 22,
+            "executable_model": 22,
+            "dynamic_source": 0,
+            "switch_source": 40,
+            "static_inventory": 0,
+            "event_mapping": 22
+          },
+          "declared_state_minimum": 40,
+          "final_states": 40,
+          "action_counts": {
+            "static_unique": 0,
+            "event_mapping_unique": 72,
+            "dynamic_unique": 0,
+            "switch_unique": 21
+          },
+          "declared_action_minimum": 72
         }
       },
       {
         "journey": "14",
         "name": "Receive / Share Payment Details",
-        "source_modes": [
-          "SCREEN_STATE_MAPPING",
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
-        "states": 22,
-        "actions": 84,
-        "fields": 1,
-        "pieces": 107,
+        "states": 39,
+        "actions": 108,
+        "fields": 2,
+        "pieces": 149,
         "by_classification": {
-          "DRAFT_FIELD": 1,
-          "NAVIGATION_TRANSITION": 36,
-          "REVIEW_DEMO_CHROME": 22,
-          "SELECTION_STATE": 7,
-          "RECOVERY_BEHAVIOR": 7,
+          "PRODUCT_REQUIREMENT": 30,
           "EXTERNAL_HANDOFF": 9,
-          "DOMAIN_OPERATION": 4,
-          "SYSTEM_PROGRESSION": 3,
+          "RECOVERY_BEHAVIOR": 14,
+          "SYSTEM_PROGRESSION": 4,
+          "NAVIGATION_TRANSITION": 56,
+          "REVIEW_DEMO_CHROME": 23,
+          "SELECTION_STATE": 7,
+          "DOMAIN_OPERATION": 2,
           "DERIVED_PROJECTION": 2,
-          "PRODUCT_REQUIREMENT": 16
+          "DRAFT_FIELD": 2
+        },
+        "denominator": {
+          "journey": "14",
+          "state_counts": {
+            "screen_mapping": 22,
+            "state_inventory": 22,
+            "executable_model": 22,
+            "dynamic_source": 0,
+            "switch_source": 39,
+            "static_inventory": 0,
+            "event_mapping": 22
+          },
+          "declared_state_minimum": 39,
+          "final_states": 39,
+          "action_counts": {
+            "static_unique": 0,
+            "event_mapping_unique": 86,
+            "dynamic_unique": 0,
+            "switch_unique": 24
+          },
+          "declared_action_minimum": 86
         }
       },
       {
         "journey": "15",
         "name": "Settlement History",
-        "source_modes": [
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 9,
         "actions": 35,
         "fields": 0,
         "pieces": 44,
         "by_classification": {
-          "REVIEW_DEMO_CHROME": 9,
-          "NAVIGATION_TRANSITION": 26,
           "PRODUCT_REQUIREMENT": 7,
-          "RECOVERY_BEHAVIOR": 2
+          "RECOVERY_BEHAVIOR": 2,
+          "NAVIGATION_TRANSITION": 26,
+          "REVIEW_DEMO_CHROME": 9
+        },
+        "denominator": {
+          "journey": "15",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 0,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 9,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 9,
+          "final_states": 9,
+          "action_counts": {
+            "static_unique": 35,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 35
         }
       },
       {
         "journey": "16",
         "name": "Savings Group",
-        "source_modes": [
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 14,
         "actions": 54,
         "fields": 0,
         "pieces": 68,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 41,
-          "REVIEW_DEMO_CHROME": 13,
           "PRODUCT_REQUIREMENT": 12,
           "RECOVERY_BEHAVIOR": 1,
-          "SYSTEM_PROGRESSION": 1
+          "SYSTEM_PROGRESSION": 1,
+          "REVIEW_DEMO_CHROME": 13,
+          "NAVIGATION_TRANSITION": 41
+        },
+        "denominator": {
+          "journey": "16",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 0,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 14,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 14,
+          "final_states": 14,
+          "action_counts": {
+            "static_unique": 54,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 54
         }
       },
       {
         "journey": "17",
         "name": "Contribute / Withdraw Savings",
-        "source_modes": [
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 21,
-        "actions": 106,
+        "actions": 95,
         "fields": 4,
-        "pieces": 131,
+        "pieces": 120,
         "by_classification": {
-          "DRAFT_FIELD": 4,
-          "RECOVERY_BEHAVIOR": 8,
-          "EXTERNAL_HANDOFF": 1,
-          "DOMAIN_OPERATION": 1,
-          "PRODUCT_REQUIREMENT": 21,
-          "SYSTEM_PROGRESSION": 5,
-          "SELECTION_STATE": 2,
+          "PRODUCT_REQUIREMENT": 14,
+          "RECOVERY_BEHAVIOR": 6,
+          "SYSTEM_PROGRESSION": 1,
+          "NAVIGATION_TRANSITION": 66,
           "REVIEW_DEMO_CHROME": 21,
-          "NAVIGATION_TRANSITION": 68
+          "SELECTION_STATE": 6,
+          "DOMAIN_OPERATION": 2,
+          "DRAFT_FIELD": 4
+        },
+        "denominator": {
+          "journey": "17",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 0,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 21,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 21,
+          "final_states": 21,
+          "action_counts": {
+            "static_unique": 95,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 95
         }
       },
       {
         "journey": "18",
         "name": "Activity & Notifications",
-        "source_modes": [
-          "SCREEN_STATE_MAPPING",
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 36,
         "actions": 234,
         "fields": 0,
         "pieces": 270,
         "by_classification": {
+          "PRODUCT_REQUIREMENT": 24,
+          "RECOVERY_BEHAVIOR": 3,
+          "EXTERNAL_HANDOFF": 8,
+          "SYSTEM_PROGRESSION": 1,
           "NAVIGATION_TRANSITION": 190,
           "REVIEW_DEMO_CHROME": 37,
           "SELECTION_STATE": 4,
           "DERIVED_PROJECTION": 2,
-          "DOMAIN_OPERATION": 1,
-          "PRODUCT_REQUIREMENT": 24,
-          "RECOVERY_BEHAVIOR": 3,
-          "EXTERNAL_HANDOFF": 8,
-          "SYSTEM_PROGRESSION": 1
+          "DOMAIN_OPERATION": 1
+        },
+        "denominator": {
+          "journey": "18",
+          "state_counts": {
+            "screen_mapping": 36,
+            "state_inventory": 36,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 36,
+            "event_mapping": 36
+          },
+          "declared_state_minimum": 36,
+          "final_states": 36,
+          "action_counts": {
+            "static_unique": 193,
+            "event_mapping_unique": 192,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 193
         }
       },
       {
         "journey": "19",
         "name": "Insights",
-        "source_modes": [
-          "SCREEN_STATE_MAPPING",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 27,
         "actions": 171,
         "fields": 0,
         "pieces": 198,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 112,
-          "REVIEW_DEMO_CHROME": 27,
-          "DERIVED_PROJECTION": 32,
           "PRODUCT_REQUIREMENT": 22,
           "RECOVERY_BEHAVIOR": 2,
           "EXTERNAL_HANDOFF": 2,
-          "SYSTEM_PROGRESSION": 1
+          "SYSTEM_PROGRESSION": 1,
+          "NAVIGATION_TRANSITION": 112,
+          "REVIEW_DEMO_CHROME": 27,
+          "DERIVED_PROJECTION": 32
+        },
+        "denominator": {
+          "journey": "19",
+          "state_counts": {
+            "screen_mapping": 27,
+            "state_inventory": 0,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 27,
+            "event_mapping": 27
+          },
+          "declared_state_minimum": 27,
+          "final_states": 27,
+          "action_counts": {
+            "static_unique": 139,
+            "event_mapping_unique": 171,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 171
         }
       },
       {
         "journey": "20",
         "name": "Payment Methods",
-        "source_modes": [
-          "SCREEN_STATE_MAPPING",
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 59,
         "actions": 361,
         "fields": 0,
         "pieces": 420,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 297,
-          "REVIEW_DEMO_CHROME": 64,
           "PRODUCT_REQUIREMENT": 42,
           "RECOVERY_BEHAVIOR": 11,
           "EXTERNAL_HANDOFF": 3,
-          "SYSTEM_PROGRESSION": 3
+          "SYSTEM_PROGRESSION": 3,
+          "NAVIGATION_TRANSITION": 293,
+          "REVIEW_DEMO_CHROME": 64,
+          "DOMAIN_OPERATION": 4
+        },
+        "denominator": {
+          "journey": "20",
+          "state_counts": {
+            "screen_mapping": 59,
+            "state_inventory": 0,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 59,
+            "event_mapping": 59
+          },
+          "declared_state_minimum": 59,
+          "final_states": 59,
+          "action_counts": {
+            "static_unique": 298,
+            "event_mapping_unique": 299,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 299
         }
       },
       {
         "journey": "21",
         "name": "Wallet & Crypto",
-        "source_modes": [
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 47,
         "actions": 98,
         "fields": 0,
         "pieces": 145,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 60,
-          "REVIEW_DEMO_CHROME": 38,
           "PRODUCT_REQUIREMENT": 19,
           "RECOVERY_BEHAVIOR": 12,
           "SYSTEM_PROGRESSION": 5,
-          "EXTERNAL_HANDOFF": 11
+          "EXTERNAL_HANDOFF": 11,
+          "NAVIGATION_TRANSITION": 57,
+          "DOMAIN_OPERATION": 3,
+          "REVIEW_DEMO_CHROME": 38
+        },
+        "denominator": {
+          "journey": "21",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 0,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 47,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 47,
+          "final_states": 47,
+          "action_counts": {
+            "static_unique": 98,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 98
         }
       },
       {
         "journey": "22",
         "name": "QR Flows",
-        "source_modes": [
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 45,
         "actions": 104,
         "fields": 0,
         "pieces": 149,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 103,
-          "REVIEW_DEMO_CHROME": 1,
           "RECOVERY_BEHAVIOR": 14,
           "SYSTEM_PROGRESSION": 2,
           "PRODUCT_REQUIREMENT": 24,
-          "EXTERNAL_HANDOFF": 5
+          "EXTERNAL_HANDOFF": 5,
+          "NAVIGATION_TRANSITION": 103,
+          "DOMAIN_OPERATION": 1
+        },
+        "denominator": {
+          "journey": "22",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 0,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 45,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 45,
+          "final_states": 45,
+          "action_counts": {
+            "static_unique": 104,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 104
         }
       },
       {
         "journey": "23",
         "name": "Import Data / Group",
-        "source_modes": [
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 42,
         "actions": 97,
         "fields": 0,
         "pieces": 139,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 96,
-          "REVIEW_DEMO_CHROME": 1,
           "PRODUCT_REQUIREMENT": 25,
           "RECOVERY_BEHAVIOR": 14,
-          "EXTERNAL_HANDOFF": 3
+          "EXTERNAL_HANDOFF": 3,
+          "NAVIGATION_TRANSITION": 95,
+          "REVIEW_DEMO_CHROME": 1,
+          "DOMAIN_OPERATION": 1
+        },
+        "denominator": {
+          "journey": "23",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 0,
+            "executable_model": 0,
+            "dynamic_source": 0,
+            "switch_source": 0,
+            "static_inventory": 42,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 42,
+          "final_states": 42,
+          "action_counts": {
+            "static_unique": 97,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 0,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 97
         }
       },
       {
         "journey": "24",
         "name": "Export / Portability",
-        "source_modes": [
-          "STATE_INVENTORY",
-          "STATIC_SURFACE_INVENTORY"
-        ],
-        "states": 48,
-        "actions": 6,
+        "states": 49,
+        "actions": 109,
         "fields": 0,
-        "pieces": 54,
+        "pieces": 158,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 6,
-          "PRODUCT_REQUIREMENT": 30,
+          "PRODUCT_REQUIREMENT": 31,
           "RECOVERY_BEHAVIOR": 14,
           "EXTERNAL_HANDOFF": 3,
-          "SYSTEM_PROGRESSION": 1
+          "SYSTEM_PROGRESSION": 1,
+          "NAVIGATION_TRANSITION": 80,
+          "REVIEW_DEMO_CHROME": 26,
+          "DOMAIN_OPERATION": 3
+        },
+        "denominator": {
+          "journey": "24",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 49,
+            "executable_model": 0,
+            "dynamic_source": 45,
+            "switch_source": 0,
+            "static_inventory": 0,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 49,
+          "final_states": 49,
+          "action_counts": {
+            "static_unique": 6,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 103,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 103
         }
       },
       {
         "journey": "25",
         "name": "Storage / Backup / Recovery",
-        "source_modes": [
-          "STATE_INVENTORY",
-          "DYNAMIC_SOURCE_DEFS",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 71,
         "actions": 159,
         "fields": 0,
         "pieces": 230,
         "by_classification": {
-          "EXTERNAL_HANDOFF": 10,
-          "NAVIGATION_TRANSITION": 122,
-          "REVIEW_DEMO_CHROME": 33,
           "PRODUCT_REQUIREMENT": 44,
           "RECOVERY_BEHAVIOR": 17,
-          "SYSTEM_PROGRESSION": 4
+          "SYSTEM_PROGRESSION": 4,
+          "EXTERNAL_HANDOFF": 10,
+          "NAVIGATION_TRANSITION": 120,
+          "REVIEW_DEMO_CHROME": 33,
+          "DOMAIN_OPERATION": 2
+        },
+        "denominator": {
+          "journey": "25",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 0,
+            "executable_model": 0,
+            "dynamic_source": 71,
+            "switch_source": 0,
+            "static_inventory": 0,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 71,
+          "final_states": 71,
+          "action_counts": {
+            "static_unique": 6,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 153,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 153
         }
       },
       {
         "journey": "26",
         "name": "Group Lifecycle",
-        "source_modes": [
-          "STATE_INVENTORY",
-          "DYNAMIC_SOURCE_DEFS",
-          "STATIC_SURFACE_INVENTORY"
-        ],
-        "states": 83,
+        "states": 86,
         "actions": 197,
         "fields": 1,
-        "pieces": 281,
+        "pieces": 284,
         "by_classification": {
-          "DRAFT_FIELD": 1,
-          "NAVIGATION_TRANSITION": 144,
-          "REVIEW_DEMO_CHROME": 53,
-          "PRODUCT_REQUIREMENT": 27,
+          "PRODUCT_REQUIREMENT": 30,
           "RECOVERY_BEHAVIOR": 43,
           "SYSTEM_PROGRESSION": 8,
-          "EXTERNAL_HANDOFF": 5
+          "EXTERNAL_HANDOFF": 5,
+          "NAVIGATION_TRANSITION": 138,
+          "REVIEW_DEMO_CHROME": 53,
+          "DOMAIN_OPERATION": 6,
+          "DRAFT_FIELD": 1
+        },
+        "denominator": {
+          "journey": "26",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 86,
+            "executable_model": 0,
+            "dynamic_source": 83,
+            "switch_source": 0,
+            "static_inventory": 0,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 86,
+          "final_states": 86,
+          "action_counts": {
+            "static_unique": 6,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 191,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 191
         }
       },
       {
         "journey": "27",
         "name": "Account & Preferences",
-        "source_modes": [
-          "STATE_INVENTORY",
-          "DYNAMIC_SOURCE_DEFS",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 67,
         "actions": 125,
         "fields": 1,
         "pieces": 193,
         "by_classification": {
-          "DRAFT_FIELD": 1,
-          "REVIEW_DEMO_CHROME": 23,
-          "NAVIGATION_TRANSITION": 102,
           "PRODUCT_REQUIREMENT": 24,
           "RECOVERY_BEHAVIOR": 33,
           "SYSTEM_PROGRESSION": 5,
-          "EXTERNAL_HANDOFF": 5
+          "EXTERNAL_HANDOFF": 5,
+          "NAVIGATION_TRANSITION": 97,
+          "REVIEW_DEMO_CHROME": 23,
+          "DOMAIN_OPERATION": 5,
+          "DRAFT_FIELD": 1
+        },
+        "denominator": {
+          "journey": "27",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 67,
+            "executable_model": 0,
+            "dynamic_source": 67,
+            "switch_source": 0,
+            "static_inventory": 0,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 67,
+          "final_states": 67,
+          "action_counts": {
+            "static_unique": 6,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 119,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 119
         }
       },
       {
         "journey": "28",
         "name": "Things Go Wrong / Recovery",
-        "source_modes": [
-          "STATE_INVENTORY",
-          "DYNAMIC_SOURCE_DEFS",
-          "STATIC_SURFACE_INVENTORY"
-        ],
         "states": 38,
         "actions": 84,
         "fields": 0,
         "pieces": 122,
         "by_classification": {
-          "NAVIGATION_TRANSITION": 75,
-          "REVIEW_DEMO_CHROME": 9,
           "EXTERNAL_HANDOFF": 6,
           "RECOVERY_BEHAVIOR": 21,
           "PRODUCT_REQUIREMENT": 9,
-          "SYSTEM_PROGRESSION": 2
+          "SYSTEM_PROGRESSION": 2,
+          "NAVIGATION_TRANSITION": 73,
+          "REVIEW_DEMO_CHROME": 9,
+          "DOMAIN_OPERATION": 2
+        },
+        "denominator": {
+          "journey": "28",
+          "state_counts": {
+            "screen_mapping": 0,
+            "state_inventory": 38,
+            "executable_model": 0,
+            "dynamic_source": 38,
+            "switch_source": 0,
+            "static_inventory": 0,
+            "event_mapping": 0
+          },
+          "declared_state_minimum": 38,
+          "final_states": 38,
+          "action_counts": {
+            "static_unique": 6,
+            "event_mapping_unique": 0,
+            "dynamic_unique": 78,
+            "switch_unique": 0
+          },
+          "declared_action_minimum": 78
         }
       }
     ]
@@ -622,15 +1108,11 @@
       "total": 50,
       "witnessed": 50
     },
-    "operations": {
-      "total": 49,
-      "witnessed": 49
-    },
     "laws": {
       "total": 41,
       "witnessed": 41,
-      "machine_checkable": 28,
-      "declared_prose_only": 13
+      "machine_checkable": 32,
+      "declared_prose_only": 9
     },
     "views": {
       "total": 7,
@@ -647,6 +1129,10 @@
     "continuity": {
       "total": 4,
       "witnessed": 4
+    },
+    "operations": {
+      "total": 49,
+      "witnessed": 49
     }
   },
   "operation_witnesses": {
@@ -667,7 +1153,10 @@
         "resolved": true,
         "triggered": true,
         "classification": "DERIVED_PROJECTION",
-        "trigger": "derived Attention contains a current review task"
+        "governed_by": [
+          "view.group_home",
+          "LAW-ACT-01"
+        ]
       },
       {
         "journey": "08",
@@ -677,7 +1166,10 @@
         "resolved": true,
         "triggered": true,
         "classification": "DERIVED_PROJECTION",
-        "trigger": "derived Attention is empty while other people may still have pending work"
+        "governed_by": [
+          "view.group_home",
+          "LAW-ACT-01"
+        ]
       },
       {
         "journey": "08",
@@ -687,7 +1179,10 @@
         "resolved": true,
         "triggered": true,
         "classification": "DERIVED_PROJECTION",
-        "trigger": "Group has no Expenses and Position is zero"
+        "governed_by": [
+          "view.group_home",
+          "LAW-POS-01"
+        ]
       },
       {
         "journey": "08",
@@ -697,7 +1192,10 @@
         "resolved": true,
         "triggered": true,
         "classification": "DERIVED_PROJECTION",
-        "trigger": "derived Position is zero for all relevant balances and recent settlement/history remains visible"
+        "governed_by": [
+          "view.group_home",
+          "LAW-POS-01"
+        ]
       },
       {
         "journey": "08",
@@ -707,7 +1205,9 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "saved Group projection is shown with explicit stale/offline status"
+        "governed_by": [
+          "LAW-OP-03"
+        ]
       },
       {
         "journey": "05",
@@ -717,7 +1217,12 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "required participant/payer context is unavailable before save"
+        "governed_by": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04"
+        ]
       },
       {
         "journey": "05",
@@ -727,7 +1232,12 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "duplicate Expense candidate is detected before creating a second canonical Expense"
+        "governed_by": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04"
+        ]
       },
       {
         "journey": "05",
@@ -737,7 +1247,12 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "connectivity is unavailable before canonical save"
+        "governed_by": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04"
+        ]
       },
       {
         "journey": "05",
@@ -747,7 +1262,12 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "local prototype save succeeds while offline and remains explicitly local"
+        "governed_by": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04"
+        ]
       },
       {
         "journey": "05",
@@ -757,7 +1277,12 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "save is verified failed and entered details remain available"
+        "governed_by": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04"
+        ]
       },
       {
         "journey": "05",
@@ -767,7 +1292,9 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "LAW-EXP-GUARD-01 blocks the proposed mutation because it changes unresolved settlement dependency"
+        "governed_by": [
+          "LAW-EXP-GUARD-01"
+        ]
       },
       {
         "journey": "06",
@@ -777,7 +1304,12 @@
         "resolved": true,
         "triggered": true,
         "classification": "SYSTEM_PROGRESSION",
-        "trigger": "accepted edit/delete command is in progress and duplicate mutation is disabled"
+        "governed_by": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04"
+        ]
       },
       {
         "journey": "06",
@@ -787,7 +1319,12 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "mutation is verified not saved and safe retry/review remains possible"
+        "governed_by": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04"
+        ]
       },
       {
         "journey": "06",
@@ -797,7 +1334,9 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "LAW-EXP-GUARD-01 blocks edit/delete because current or proposed state changes unresolved settlement dependency"
+        "governed_by": [
+          "LAW-EXP-GUARD-01"
+        ]
       },
       {
         "journey": "06",
@@ -807,7 +1346,12 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "fresh authority no longer permits the requested mutation"
+        "governed_by": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04"
+        ]
       },
       {
         "journey": "06",
@@ -817,7 +1361,12 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "cached Expense detail is readable while offline"
+        "governed_by": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04"
+        ]
       },
       {
         "journey": "06",
@@ -827,7 +1376,12 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "write cannot safely proceed while offline"
+        "governed_by": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04"
+        ]
       },
       {
         "journey": "06",
@@ -837,7 +1391,12 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "local prototype save is explicit and not remote/shared acceptance"
+        "governed_by": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04"
+        ]
       },
       {
         "journey": "06",
@@ -847,7 +1406,12 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "reviewed Expense version is stale and current owner truth must refresh before write"
+        "governed_by": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04"
+        ]
       },
       {
         "journey": "06",
@@ -857,7 +1421,12 @@
         "resolved": true,
         "triggered": true,
         "classification": "SYSTEM_PROGRESSION",
-        "trigger": "current Expense truth is loading; no mutation is implied"
+        "governed_by": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04"
+        ]
       },
       {
         "journey": "06",
@@ -867,32 +1436,619 @@
         "resolved": true,
         "triggered": true,
         "classification": "RECOVERY_BEHAVIOR",
-        "trigger": "target Expense cannot be resolved from current authorized truth"
+        "governed_by": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04"
+        ]
       }
     ],
     "errors": []
   },
-  "supersessions": [
-    {
-      "id": "SUP-J08-SETTLING",
-      "journey": "08",
-      "piece_type": "state",
-      "piece_selector": "settling",
-      "golden_impact": "GOLDEN-IMPACT-J08-SETTLEMENT-02",
-      "decision": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
-      "disposition": "POST_GOLDEN_SUPERSEDED",
-      "reason": "Historical blanket Add-disabled settlement state is preserved as evidence but no longer required for ordinary settlement composition."
-    },
-    {
-      "id": "SUP-J05-LOCK-COPY",
-      "journey": "05",
-      "piece_type": "copy",
-      "piece_selector": "locked blanket copy",
-      "golden_impact": "GOLDEN-IMPACT-J05-LOCK-02",
-      "decision": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
-      "disposition": "POST_GOLDEN_SUPERSEDED",
-      "reason": "Historical blanket-lock copy is superseded for ordinary dependency-scoped locking; the locked state itself remains."
-    }
-  ],
+  "overlays": {
+    "required": 7,
+    "errors": []
+  },
+  "supersessions": {
+    "total": 2,
+    "errors": []
+  },
+  "extraction": {
+    "errors": [],
+    "source_denominators": [
+      {
+        "journey": "01",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 17,
+          "executable_model": 17,
+          "dynamic_source": 0,
+          "switch_source": 24,
+          "static_inventory": 1,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 24,
+        "final_states": 25,
+        "action_counts": {
+          "static_unique": 0,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 30
+        },
+        "declared_action_minimum": 30
+      },
+      {
+        "journey": "02",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 0,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 1,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 1,
+        "final_states": 1,
+        "action_counts": {
+          "static_unique": 12,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 12
+      },
+      {
+        "journey": "03",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 0,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 11,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 11,
+        "final_states": 11,
+        "action_counts": {
+          "static_unique": 30,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 30
+      },
+      {
+        "journey": "04",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 0,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 14,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 14,
+        "final_states": 14,
+        "action_counts": {
+          "static_unique": 26,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 26
+      },
+      {
+        "journey": "05",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 27,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 27,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 27,
+        "final_states": 27,
+        "action_counts": {
+          "static_unique": 84,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 84
+      },
+      {
+        "journey": "06",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 31,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 31,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 31,
+        "final_states": 31,
+        "action_counts": {
+          "static_unique": 110,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 110
+      },
+      {
+        "journey": "07",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 31,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 61,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 61,
+        "final_states": 61,
+        "action_counts": {
+          "static_unique": 147,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 147
+      },
+      {
+        "journey": "08",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 0,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 19,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 19,
+        "final_states": 19,
+        "action_counts": {
+          "static_unique": 54,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 54
+      },
+      {
+        "journey": "09",
+        "state_counts": {
+          "screen_mapping": 18,
+          "state_inventory": 18,
+          "executable_model": 18,
+          "dynamic_source": 0,
+          "switch_source": 31,
+          "static_inventory": 1,
+          "event_mapping": 18
+        },
+        "declared_state_minimum": 31,
+        "final_states": 32,
+        "action_counts": {
+          "static_unique": 0,
+          "event_mapping_unique": 86,
+          "dynamic_unique": 0,
+          "switch_unique": 17
+        },
+        "declared_action_minimum": 86
+      },
+      {
+        "journey": "10",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 34,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 34,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 34,
+        "final_states": 34,
+        "action_counts": {
+          "static_unique": 136,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 136
+      },
+      {
+        "journey": "11",
+        "state_counts": {
+          "screen_mapping": 93,
+          "state_inventory": 31,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 93,
+          "event_mapping": 93
+        },
+        "declared_state_minimum": 93,
+        "final_states": 93,
+        "action_counts": {
+          "static_unique": 256,
+          "event_mapping_unique": 139,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 256
+      },
+      {
+        "journey": "12",
+        "state_counts": {
+          "screen_mapping": 67,
+          "state_inventory": 67,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 67,
+          "event_mapping": 67
+        },
+        "declared_state_minimum": 67,
+        "final_states": 67,
+        "action_counts": {
+          "static_unique": 168,
+          "event_mapping_unique": 168,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 168
+      },
+      {
+        "journey": "13",
+        "state_counts": {
+          "screen_mapping": 22,
+          "state_inventory": 22,
+          "executable_model": 22,
+          "dynamic_source": 0,
+          "switch_source": 40,
+          "static_inventory": 0,
+          "event_mapping": 22
+        },
+        "declared_state_minimum": 40,
+        "final_states": 40,
+        "action_counts": {
+          "static_unique": 0,
+          "event_mapping_unique": 72,
+          "dynamic_unique": 0,
+          "switch_unique": 21
+        },
+        "declared_action_minimum": 72
+      },
+      {
+        "journey": "14",
+        "state_counts": {
+          "screen_mapping": 22,
+          "state_inventory": 22,
+          "executable_model": 22,
+          "dynamic_source": 0,
+          "switch_source": 39,
+          "static_inventory": 0,
+          "event_mapping": 22
+        },
+        "declared_state_minimum": 39,
+        "final_states": 39,
+        "action_counts": {
+          "static_unique": 0,
+          "event_mapping_unique": 86,
+          "dynamic_unique": 0,
+          "switch_unique": 24
+        },
+        "declared_action_minimum": 86
+      },
+      {
+        "journey": "15",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 0,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 9,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 9,
+        "final_states": 9,
+        "action_counts": {
+          "static_unique": 35,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 35
+      },
+      {
+        "journey": "16",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 0,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 14,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 14,
+        "final_states": 14,
+        "action_counts": {
+          "static_unique": 54,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 54
+      },
+      {
+        "journey": "17",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 0,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 21,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 21,
+        "final_states": 21,
+        "action_counts": {
+          "static_unique": 95,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 95
+      },
+      {
+        "journey": "18",
+        "state_counts": {
+          "screen_mapping": 36,
+          "state_inventory": 36,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 36,
+          "event_mapping": 36
+        },
+        "declared_state_minimum": 36,
+        "final_states": 36,
+        "action_counts": {
+          "static_unique": 193,
+          "event_mapping_unique": 192,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 193
+      },
+      {
+        "journey": "19",
+        "state_counts": {
+          "screen_mapping": 27,
+          "state_inventory": 0,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 27,
+          "event_mapping": 27
+        },
+        "declared_state_minimum": 27,
+        "final_states": 27,
+        "action_counts": {
+          "static_unique": 139,
+          "event_mapping_unique": 171,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 171
+      },
+      {
+        "journey": "20",
+        "state_counts": {
+          "screen_mapping": 59,
+          "state_inventory": 0,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 59,
+          "event_mapping": 59
+        },
+        "declared_state_minimum": 59,
+        "final_states": 59,
+        "action_counts": {
+          "static_unique": 298,
+          "event_mapping_unique": 299,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 299
+      },
+      {
+        "journey": "21",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 0,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 47,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 47,
+        "final_states": 47,
+        "action_counts": {
+          "static_unique": 98,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 98
+      },
+      {
+        "journey": "22",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 0,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 45,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 45,
+        "final_states": 45,
+        "action_counts": {
+          "static_unique": 104,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 104
+      },
+      {
+        "journey": "23",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 0,
+          "executable_model": 0,
+          "dynamic_source": 0,
+          "switch_source": 0,
+          "static_inventory": 42,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 42,
+        "final_states": 42,
+        "action_counts": {
+          "static_unique": 97,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 0,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 97
+      },
+      {
+        "journey": "24",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 49,
+          "executable_model": 0,
+          "dynamic_source": 45,
+          "switch_source": 0,
+          "static_inventory": 0,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 49,
+        "final_states": 49,
+        "action_counts": {
+          "static_unique": 6,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 103,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 103
+      },
+      {
+        "journey": "25",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 0,
+          "executable_model": 0,
+          "dynamic_source": 71,
+          "switch_source": 0,
+          "static_inventory": 0,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 71,
+        "final_states": 71,
+        "action_counts": {
+          "static_unique": 6,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 153,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 153
+      },
+      {
+        "journey": "26",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 86,
+          "executable_model": 0,
+          "dynamic_source": 83,
+          "switch_source": 0,
+          "static_inventory": 0,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 86,
+        "final_states": 86,
+        "action_counts": {
+          "static_unique": 6,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 191,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 191
+      },
+      {
+        "journey": "27",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 67,
+          "executable_model": 0,
+          "dynamic_source": 67,
+          "switch_source": 0,
+          "static_inventory": 0,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 67,
+        "final_states": 67,
+        "action_counts": {
+          "static_unique": 6,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 119,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 119
+      },
+      {
+        "journey": "28",
+        "state_counts": {
+          "screen_mapping": 0,
+          "state_inventory": 38,
+          "executable_model": 0,
+          "dynamic_source": 38,
+          "switch_source": 0,
+          "static_inventory": 0,
+          "event_mapping": 0
+        },
+        "declared_state_minimum": 38,
+        "final_states": 38,
+        "action_counts": {
+          "static_unique": 6,
+          "event_mapping_unique": 0,
+          "dynamic_unique": 78,
+          "switch_unique": 0
+        },
+        "declared_action_minimum": 78
+      }
+    ]
+  },
+  "independent_safety": {
+    "errors": []
+  },
   "errors": []
 }
