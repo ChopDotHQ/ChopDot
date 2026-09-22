@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   schema:
@@ -47,12 +47,7 @@ jobs:
           path: product-schema/generated
           if-no-files-found: error
           retention-days: 7
-      - name: One-shot pin Stage 5.1 closure outputs
+      - name: Verify generated outputs are pinned
         run: |
-          if ! git diff --quiet -- product-schema/generated || [ -n "$(git ls-files --others --exclude-standard product-schema/generated)" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add product-schema/generated
-            git commit -m "schema: pin Stage 5.1 evidence-backed closure outputs"
-            git push origin HEAD:research/product-schema-v1
-          fi
+          git diff --exit-code -- product-schema/generated
+          test -z "$(git ls-files --others --exclude-standard product-schema/generated)"
