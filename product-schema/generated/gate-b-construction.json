@@ -1,5 +1,5 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "generated_view": "gate-b-construction",
   "authority": "DERIVED_ONLY",
   "gate": {
@@ -8,7 +8,7 @@
     "status": "planned_not_implemented_by_schema",
     "goal": "A user can add, inspect, edit/review, agree/question, and return to an updated group without a Golden contract regression.",
     "implementation_authorized": false,
-    "pre_gate_b_readiness": "BLOCKED"
+    "pre_gate_b_readiness": "READY_FOR_HUMAN_AUTHORIZATION"
   },
   "construction_order": [
     "08",
@@ -304,23 +304,17 @@
           "journey": "05",
           "kind": "effect_guard",
           "value": {
-            "scope": "REQUIRES_PRODUCT_DECISION",
-            "locked_when": "active settlement intersects target under selected scope policy",
-            "blocked_operations": [
-              "expense.create",
-              "expense.edit",
-              "expense.delete"
-            ],
-            "entered_details_preserved": true
+            "policy": "dependency_scoped_with_explicit_group_closeout",
+            "ordinary_settlement_create": "allow_unrelated_new_expense",
+            "group_closeout_create": "block_for_closeout_group",
+            "entered_details_preserved_if_blocked": true
           },
           "sources": [
             "J05",
             "J05_STATE",
             "J05_RECOVERED",
-            "J06",
-            "J06_STATE",
             "J08",
-            "J08_DECISION"
+            "DEC_EXP_LOCK"
           ]
         }
       ],
@@ -475,6 +469,25 @@
             "J06_STATE",
             "J07",
             "J07_STATE"
+          ]
+        },
+        {
+          "id": "REQ-J06-LOCK",
+          "journey": "06",
+          "kind": "effect_guard",
+          "value": {
+            "policy": "dependency_scoped_with_explicit_group_closeout",
+            "ordinary_settlement_edit_delete": "block_if_target_expense_in_active_scope_source_item_ids",
+            "unrelated_expense_edit_delete": "allow",
+            "group_closeout_edit_delete": "block_for_closeout_group",
+            "unknown_effect": "keep_relevant_scope_locked_until_reconciled"
+          },
+          "sources": [
+            "J06",
+            "J06_STATE",
+            "J08",
+            "J11",
+            "DEC_EXP_LOCK"
           ]
         }
       ],
@@ -706,7 +719,8 @@
       "REQ-J07-ISSUE-LOOP",
       "REQ-J05-LOCK",
       "REQ-J06-REVIEW-RESET",
-      "REQ-J08-REFRESH"
+      "REQ-J08-REFRESH",
+      "REQ-J06-LOCK"
     ],
     "integration_constraint_refs": [
       "GATEA-MONEY-EQUAL-01"
@@ -898,23 +912,17 @@
       "journey": "05",
       "kind": "effect_guard",
       "value": {
-        "scope": "REQUIRES_PRODUCT_DECISION",
-        "locked_when": "active settlement intersects target under selected scope policy",
-        "blocked_operations": [
-          "expense.create",
-          "expense.edit",
-          "expense.delete"
-        ],
-        "entered_details_preserved": true
+        "policy": "dependency_scoped_with_explicit_group_closeout",
+        "ordinary_settlement_create": "allow_unrelated_new_expense",
+        "group_closeout_create": "block_for_closeout_group",
+        "entered_details_preserved_if_blocked": true
       },
       "sources": [
         "J05",
         "J05_STATE",
         "J05_RECOVERED",
-        "J06",
-        "J06_STATE",
         "J08",
-        "J08_DECISION"
+        "DEC_EXP_LOCK"
       ]
     },
     {
@@ -968,6 +976,25 @@
       "sources": [
         "J06",
         "J08"
+      ]
+    },
+    {
+      "id": "REQ-J06-LOCK",
+      "journey": "06",
+      "kind": "effect_guard",
+      "value": {
+        "policy": "dependency_scoped_with_explicit_group_closeout",
+        "ordinary_settlement_edit_delete": "block_if_target_expense_in_active_scope_source_item_ids",
+        "unrelated_expense_edit_delete": "allow",
+        "group_closeout_edit_delete": "block_for_closeout_group",
+        "unknown_effect": "keep_relevant_scope_locked_until_reconciled"
+      },
+      "sources": [
+        "J06",
+        "J06_STATE",
+        "J08",
+        "J11",
+        "DEC_EXP_LOCK"
       ]
     }
   ],
@@ -1191,7 +1218,7 @@
       "kind": "guard",
       "domain": "groups_expenses",
       "identity": [],
-      "meaning": "Effect-time predicate derived from active settlement truth plus the target Group/Expense. It decides whether create/edit/delete falls inside the settlement mutation lock; the lock's exact group-wide vs scoped boundary remains a product decision.",
+      "meaning": "Effect-time predicate over the attempted Expense mutation, active nonterminal PaymentIntent/SettlementScope truth and any explicit GroupCloseoutContext. Ordinary settlement locking is dependency-scoped; explicit group closeout broadens the same guard to the whole Group.",
       "source_journeys": [
         "05",
         "06",
@@ -1205,11 +1232,13 @@
         "J06_STATE",
         "J08",
         "J08_DECISION",
-        "J11"
+        "J11",
+        "DEC_EXP_LOCK"
       ],
       "derived_from": [
         "payment.intent",
         "payment.settlement_scope",
+        "payment.closeout_context",
         "group.group",
         "expense.expense"
       ]
@@ -1454,6 +1483,21 @@
       ]
     },
     {
+      "id": "payment.closeout_context",
+      "name": "GroupCloseoutContext",
+      "kind": "contract_primitive",
+      "domain": "payments",
+      "identity": [
+        "closeout_id",
+        "group_id"
+      ],
+      "meaning": "Explicit user-started whole-group closeout coordination context. It executes no payment itself; while active it broadens the ExpenseMutationGuard from dependency-scoped locking to group-wide locking for that Group.",
+      "source_journeys": [],
+      "sources": [
+        "DEC_EXP_LOCK"
+      ]
+    },
+    {
       "id": "payment.intent",
       "name": "PaymentIntent",
       "kind": "entity",
@@ -1488,7 +1532,7 @@
         "currency",
         "source_item_ids"
       ],
-      "meaning": "Canonical exact settlement scope: payer, recipient, amount, one currency, source groups/items, selected method, expiry and idempotency identity.",
+      "meaning": "Canonical exact settlement scope: payer, recipient, exact amount, one currency and frozen source lineage selected before authorization. New unrelated ledger items never retroactively expand an already-prepared scope.",
       "source_journeys": [
         "10",
         "11",
@@ -1497,7 +1541,8 @@
       ],
       "sources": [
         "J11",
-        "PAYMENT_COMPAT"
+        "PAYMENT_COMPAT",
+        "DEC_EXP_LOCK"
       ]
     },
     {
@@ -1883,9 +1928,10 @@
         "expense.mutation_guard",
         "expense.expense",
         "payment.intent",
-        "payment.settlement_scope"
+        "payment.settlement_scope",
+        "payment.closeout_context"
       ],
-      "rule": "Settlement-in-progress can lock Expense create/edit/delete at effect time. The existence of the lock and the three blocked mutation families are approved; whether the lock applies to the whole Group or only the active settlement scope is deliberately unresolved.",
+      "rule": "Expense mutation locking is dependency-scoped by default: an active nonterminal settlement blocks edits/deletes of its frozen source Expenses but does not absorb or block a new unrelated Expense. An explicit whole-group closeout blocks create/edit/delete for that Group. Unknown-effect settlement scope remains locked until reconciliation establishes a terminal or safe no-effect result.",
       "constraint": {
         "kind": "effect_guard_required",
         "operations": [
@@ -1894,16 +1940,26 @@
           "expense.delete"
         ],
         "guard": "expense.mutation_guard",
-        "scope_policy": "REQUIRES_PRODUCT_DECISION",
-        "predicate": {
-          "active_settlement_source": "payment.intent",
-          "settlement_scope_source": "payment.settlement_scope",
-          "target_sources": [
-            "group.group",
-            "expense.expense"
-          ],
-          "condition": "active nonterminal settlement intersects the target under the selected lock-scope policy"
-        }
+        "policy": "dependency_scoped_with_explicit_group_closeout",
+        "default_mode": "dependency_scoped",
+        "dependency_scoped": {
+          "create": "allow_unrelated_new_expense",
+          "edit": "block_if_target_expense_in_active_scope_source_item_ids",
+          "delete": "block_if_target_expense_in_active_scope_source_item_ids",
+          "prepared_scope_retroactive_expansion": false
+        },
+        "group_closeout": {
+          "requires_explicit_context": "payment.closeout_context",
+          "create": "block_for_closeout_group",
+          "edit": "block_for_closeout_group",
+          "delete": "block_for_closeout_group"
+        },
+        "active_scope": {
+          "source": "payment.intent + payment.settlement_scope",
+          "condition": "PaymentIntent is nonterminal or has unknown possible effect",
+          "release": "terminal result, explicit pre-effect cancellation, or reconciliation proving safe no-effect/terminal truth"
+        },
+        "explanation_required": true
       },
       "sources": [
         "J05",
@@ -1913,7 +1969,8 @@
         "J06_STATE",
         "J08",
         "J08_DECISION",
-        "J11"
+        "J11",
+        "DEC_EXP_LOCK"
       ]
     },
     {
@@ -2305,21 +2362,22 @@
         "expense.mutation_guard",
         "payment.intent",
         "payment.settlement_scope",
+        "payment.closeout_context",
         "group.group",
         "expense.expense"
       ],
       "preserves": [
-        "active settlement identity/state",
-        "settlement scope",
-        "target Group/Expense",
-        "selected lock-scope policy once authorized"
+        "attempted mutation kind/target",
+        "active PaymentIntent terminality/unknown-effect state",
+        "frozen SettlementScope source lineage",
+        "optional explicit GroupCloseoutContext"
       ],
       "laws": [
         "LAW-EXP-GUARD-01",
         "LAW-OP-04"
       ],
       "availability": "resolve_at_effect_time",
-      "note": "Effect-time guard inputs only. Gate B does not own settlement lifecycle UI; it consumes the guard predicate. Scope remains POLICY-EXPENSE-LOCK-SCOPE."
+      "note": "Effect-time predicate. Ordinary settlements use dependency-scoped locking; an explicit GroupCloseoutContext broadens the lock to the whole Group."
     }
   ],
   "handoffs": {
@@ -2676,18 +2734,29 @@
     }
   ],
   "authority_blockers": [],
-  "product_decisions_required": [
+  "product_decisions_required": [],
+  "approved_product_decisions": [
     {
-      "id": "POLICY-EXPENSE-LOCK-SCOPE",
-      "classification": "requires_product_decision",
+      "id": "DEC-EXPENSE-SETTLEMENT-LOCK-01",
+      "source": "DEC_EXP_LOCK",
+      "status": "approved",
+      "resolves": "POLICY-EXPENSE-LOCK-SCOPE",
+      "approved_on": "2026-09-22",
       "journeys": [
         "05",
         "06",
         "08",
-        "11"
-      ],
-      "statement": "Approved J05/J06/J08 behavior establishes a settlement-in-progress lock for Expense create/edit/delete, but frozen J08 decision history explicitly defers whether integration should keep the historical group-wide lock or narrow it to the active settlement/item scope.",
-      "handling": "Keep the effect guard and blocked operation families. Do not choose group-wide vs active-settlement/item scope until explicit human product authorization."
+        "11",
+        "12"
+      ]
+    }
+  ],
+  "resolved_product_decisions": [
+    {
+      "id": "DEC-EXPENSE-SETTLEMENT-LOCK-01",
+      "status": "approved_human_product_decision",
+      "rule": "Use dependency-scoped locking for ordinary settlements. Allow unrelated new Expenses because prepared settlement scope is frozen. Block edits/deletes of source Expenses. An explicit whole-group closeout broadens the same guard to block create/edit/delete for that Group until release/reconciliation.",
+      "source": "DEC_EXP_LOCK"
     }
   ],
   "resolved_authority_interpretations": [
@@ -2718,25 +2787,6 @@
         "J06_DECISION",
         "J07",
         "J07_STATE"
-      ]
-    },
-    {
-      "id": "RESOLVED-EXPENSE-LOCK-EXISTENCE-01",
-      "status": "partially_resolved_scope_open",
-      "journeys": [
-        "05",
-        "06",
-        "08"
-      ],
-      "rule": "Settlement-in-progress locks Expense create/edit/delete; the exact lock scope remains POLICY-EXPENSE-LOCK-SCOPE.",
-      "sources": [
-        "J05",
-        "J05_STATE",
-        "J05_RECOVERED",
-        "J06",
-        "J06_STATE",
-        "J08",
-        "J08_DECISION"
       ]
     }
   ],

@@ -1,19 +1,17 @@
 # ChopDot Product Schema V1
 
-Status: **hybrid settlement-lock decision encoded — schema candidate for final adversarial freeze review**
+Status: **hybrid settlement-lock policy approved and encoded — final pre-freeze candidate**
 
-Current authored schema:
-- `frozen-baseline.json`
-- `semantic-core.json`
-- `composition-graph.json`
-- `gate-b-authority-oracle.json`
-- `product-decisions-v1.json`
+The final Gate B product-decision gap is resolved by explicit post-Golden human decision `DEC-EXPENSE-SETTLEMENT-LOCK-01` in `product-decisions-v1.json`.
 
-The last Gate B policy gap is resolved by explicit human product decision `DEC-EXPENSE-SETTLEMENT-LOCK-01`:
+Policy:
 - ordinary settlements use dependency-scoped locking;
-- new unrelated Expenses remain allowed because prepared SettlementScope is frozen;
-- edits/deletes of source Expenses are blocked while the relevant settlement is active/nonterminal or unknown-effect;
-- an explicit whole-group closeout broadens the same guard to block create/edit/delete for that Group;
-- relevant unknown-effect scope remains locked until reconciliation/terminal truth.
+- prepared SettlementScope is exact and never retroactively expands;
+- unrelated new Expenses remain allowed during an ordinary settlement;
+- edits/deletes of Expenses inside an active nonterminal/unknown-effect settlement source scope are blocked;
+- an explicit `GroupCloseoutContext` broadens the same guard to block create/edit/delete for that Group;
+- relevant unknown-effect scope remains locked until reconciliation or terminal/safe-no-effect truth.
 
-This decision is deliberately recorded as a post-Golden human product decision, not retroactively attributed to the frozen Goldens.
+Historical Goldens remain frozen. This decision is explicitly newer product authority and is not rewritten into historical sources.
+
+Current generated readiness should be `READY_FOR_HUMAN_AUTHORIZATION` only when schema verification passes and there are no remaining authority blockers or unresolved Gate B product decisions.
