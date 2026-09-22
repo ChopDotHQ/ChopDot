@@ -563,147 +563,256 @@
       "requirement_state": "missing",
       "golden_state": "missing",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "required participant/payer context is unavailable before save"
+      "trigger": "required participant/payer context is unavailable before save",
+      "governed_by": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
     },
     {
       "journey": "05",
       "requirement_state": "duplicate",
       "golden_state": "duplicate",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "duplicate Expense candidate is detected before creating a second canonical Expense"
+      "trigger": "duplicate Expense candidate is detected before creating a second canonical Expense",
+      "governed_by": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
     },
     {
       "journey": "05",
       "requirement_state": "offline",
       "golden_state": "offline",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "connectivity is unavailable before canonical save"
+      "trigger": "connectivity is unavailable before canonical save",
+      "governed_by": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
     },
     {
       "journey": "05",
       "requirement_state": "offline_saved",
       "golden_state": "offline-saved",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "local prototype save succeeds while offline and remains explicitly local"
+      "trigger": "local prototype save succeeds while offline and remains explicitly local",
+      "governed_by": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
     },
     {
       "journey": "05",
       "requirement_state": "error",
       "golden_state": "error",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "save is verified failed and entered details remain available"
+      "trigger": "save is verified failed and entered details remain available",
+      "governed_by": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
     },
     {
       "journey": "05",
       "requirement_state": "locked",
       "golden_state": "locked",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "LAW-EXP-GUARD-01 blocks the proposed mutation because it changes unresolved settlement dependency"
+      "trigger": "LAW-EXP-GUARD-01 blocks the proposed mutation because it changes unresolved settlement dependency",
+      "governed_by": [
+        "LAW-EXP-GUARD-01"
+      ]
     },
     {
       "journey": "06",
       "requirement_state": "saving",
       "golden_state": "saving",
       "classification": "SYSTEM_PROGRESSION",
-      "trigger": "accepted edit/delete command is in progress and duplicate mutation is disabled"
+      "trigger": "accepted edit/delete command is in progress and duplicate mutation is disabled",
+      "governed_by": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
     },
     {
       "journey": "06",
       "requirement_state": "save_error",
       "golden_state": "save-error",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "mutation is verified not saved and safe retry/review remains possible"
+      "trigger": "mutation is verified not saved and safe retry/review remains possible",
+      "governed_by": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
     },
     {
       "journey": "06",
       "requirement_state": "locked",
       "golden_state": "locked",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "LAW-EXP-GUARD-01 blocks edit/delete because current or proposed state changes unresolved settlement dependency"
+      "trigger": "LAW-EXP-GUARD-01 blocks edit/delete because current or proposed state changes unresolved settlement dependency",
+      "governed_by": [
+        "LAW-EXP-GUARD-01"
+      ]
     },
     {
       "journey": "06",
       "requirement_state": "no_permission",
       "golden_state": "no-permission",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "fresh authority no longer permits the requested mutation"
+      "trigger": "fresh authority no longer permits the requested mutation",
+      "governed_by": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
     },
     {
       "journey": "06",
       "requirement_state": "offline_detail",
       "golden_state": "offline-detail",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "cached Expense detail is readable while offline"
+      "trigger": "cached Expense detail is readable while offline",
+      "governed_by": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
     },
     {
       "journey": "06",
       "requirement_state": "offline_edit",
       "golden_state": "offline-edit",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "write cannot safely proceed while offline"
+      "trigger": "write cannot safely proceed while offline",
+      "governed_by": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
     },
     {
       "journey": "06",
       "requirement_state": "offline_saved",
       "golden_state": "offline-saved",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "local prototype save is explicit and not remote/shared acceptance"
+      "trigger": "local prototype save is explicit and not remote/shared acceptance",
+      "governed_by": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
     },
     {
       "journey": "06",
       "requirement_state": "conflict",
       "golden_state": "conflict",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "reviewed Expense version is stale and current owner truth must refresh before write"
+      "trigger": "reviewed Expense version is stale and current owner truth must refresh before write",
+      "governed_by": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
     },
     {
       "journey": "06",
       "requirement_state": "loading",
       "golden_state": "loading",
       "classification": "SYSTEM_PROGRESSION",
-      "trigger": "current Expense truth is loading; no mutation is implied"
+      "trigger": "current Expense truth is loading; no mutation is implied",
+      "governed_by": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
     },
     {
       "journey": "06",
       "requirement_state": "not_found",
       "golden_state": "not-found",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "target Expense cannot be resolved from current authorized truth"
+      "trigger": "target Expense cannot be resolved from current authorized truth",
+      "governed_by": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04"
+      ]
     },
     {
       "journey": "08",
       "requirement_state": "active_needs_review",
       "golden_state": "active",
       "classification": "DERIVED_PROJECTION",
-      "trigger": "derived Attention contains a current review task"
+      "trigger": "derived Attention contains a current review task",
+      "governed_by": [
+        "view.group_home",
+        "LAW-ACT-01"
+      ]
     },
     {
       "journey": "08",
       "requirement_state": "nothing_needs_you",
       "golden_state": "waiting",
       "classification": "DERIVED_PROJECTION",
-      "trigger": "derived Attention is empty while other people may still have pending work"
+      "trigger": "derived Attention is empty while other people may still have pending work",
+      "governed_by": [
+        "view.group_home",
+        "LAW-ACT-01"
+      ]
     },
     {
       "journey": "08",
       "requirement_state": "new_empty_group",
       "golden_state": "empty",
       "classification": "DERIVED_PROJECTION",
-      "trigger": "Group has no Expenses and Position is zero"
+      "trigger": "Group has no Expenses and Position is zero",
+      "governed_by": [
+        "view.group_home",
+        "LAW-POS-01"
+      ]
     },
     {
       "journey": "08",
       "requirement_state": "everyone_square",
       "golden_state": "square",
       "classification": "DERIVED_PROJECTION",
-      "trigger": "derived Position is zero for all relevant balances and recent settlement/history remains visible"
+      "trigger": "derived Position is zero for all relevant balances and recent settlement/history remains visible",
+      "governed_by": [
+        "view.group_home",
+        "LAW-POS-01"
+      ]
     },
     {
       "journey": "08",
       "requirement_state": "offline",
       "golden_state": "offline",
       "classification": "RECOVERY_BEHAVIOR",
-      "trigger": "saved Group projection is shown with explicit stale/offline status"
+      "trigger": "saved Group projection is shown with explicit stale/offline status",
+      "governed_by": [
+        "LAW-OP-03"
+      ]
     }
   ],
   "explicit_semantic_only": [
