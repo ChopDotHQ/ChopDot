@@ -12,6 +12,10 @@
 - **GOLDEN-IMPACT-J05-LOCK-02** — J05 `locked`: J05 locked remains a Gate B recovery state and is triggered when a proposed Expense mutation would change an unresolved settlement dependency.
 - **GOLDEN-IMPACT-J08-SETTLEMENT-02** — J08 `settlement_in_progress`: The historical blanket-unavailable Add Expense state is superseded for ordinary settlements and is not a Gate B required state. Revisit it when a dedicated whole-group closeout surface is approved.
 
+## Authority recoveries
+
+- **RECOVERY-J05-GOLDEN-01** — Use the pinned recovered full candidate for Gate B Golden-fidelity review while preserving the frozen branch and its incomplete structured-source record unchanged.
+
 ## Authority blockers
 
 - None
@@ -26,6 +30,15 @@
 2. J05 — Add an Expense
 3. J06 — Review / Correct an Expense
 4. J07 — Review / Agree / Raise an Issue
+
+## Inherited accepted Gate A constraints
+
+- **GATEA-MONEY-EQUAL-01** — Equal allocation uses canonical integer MoneyV1, unique trimmed participant IDs in stable sorted order, floor division for the base share, deterministic +1 minor-unit remainder assignment to the first stable-sorted IDs, the same currency/exponent partition, and exact conservation.
+
+## Render scope
+
+Rendered in Gate B: `view.group_home`
+Refreshed downstream only: `view.position` → Gate C, `view.activity` → Gate D
 
 ## Journey construction requirements
 
@@ -52,6 +65,32 @@
 - **REQ-J07-LANGUAGE** (literal_language): {"prompt":"Does this look right?","agree":"Looks right","issue":"Something's off","defer":"Not now","reassess_negative":"Still off"}
 - **REQ-J07-ISSUE-LOOP** (resolution_loop): {"issue_input":["reason","optional_note"],"owner_actions":["edit_via_J06","reply"],"reviewer_actions":["looks_right","still_off","withdraw_issue"],"resolution_owner":"07"}
 
+## Gate A qualified reuse
+
+- `ctx.group` — one local group fixture/state continuity
+- `ctx.expense_draft` — bounded draft Back/reopen/reload continuity
+- `ctx.expense` — common equal-split expense subset only
+- `ctx.position` — Home/common-expense position demonstration only; not J10 integration
+- `ctx.activity` — Home attention/task-continuity demonstration only; not J18 integration
+
+Provenance caveat: J05 stylesheet is preview-owned reconstruction; approved Golden HTML is unchanged.
+
+## Continuity contracts
+
+- **CONT-EXP-01** — J05 creates the same Expense lineage consumed by J08/J06/J07.
+- **CONT-EXP-02** — J06 mutates the existing Expense and appends accepted history; it never creates a correction-copy Expense.
+- **CONT-EXP-03** — J07 review/issue/reply/withdraw state remains attached to the same Expense and reviewer/issue lineage.
+- **CONT-EXP-04** — Group Home refreshes Attention/Group Recent/Position from canonical underlying state; the standalone J10 Position and J18 Activity screens remain outside Gate B.
+
+## Composition laws
+
+- **COMP-01** — The same underlying object identity survives adjacent journey handoffs; routes do not create replacement domain objects.
+- **COMP-02** — Only an operation owner may mutate its semantic object; projections/read models cannot mutate source truth.
+- **COMP-03** — Derived views refresh from accepted underlying state; no journey manually overwrites Position, Activity, Insights or history to simulate an outcome.
+- **COMP-04** — Possible-effect recovery preserves the original operation identity and returns to the owning journey after verified outcome/safe retry/explicit stop.
+- **COMP-05** — Gate A partial capability coverage is not promoted to full journey integration.
+- **COMP-06** — Approved Goldens define experience projection; the schema references them and does not duplicate or redesign their visual hierarchy/copy.
+
 ## Gate B law set
 
 - **LAW-EXP-01** — An explicit custom split must add to the Expense total within the exact money partition.
@@ -73,10 +112,13 @@
 - **LAW-HIST-01** — Accepted history is append-only/replay-safe; replay rebuilds projections and never repeats external/payment/signing/receipt/closure effects.
 - **LAW-OP-04** — Stale/conflicting reviewed state refreshes current owner truth and requires re-review rather than overwriting it.
 
+## Build constraints
+
+- **BUILD-01** — Do not infer full J05/J08 coverage from the bounded Gate A expense demonstration.
+- **BUILD-02** — Do not redesign Golden hierarchy, copy, actions, permission boundaries, or recovery meaning.
+- **BUILD-03** — Do not introduce production storage, real authentication, financial execution, provider selection, Product Integrator, protected merge, or deployment as Gate B work.
+- **BUILD-04** — Do not use Product IR/funding/conformance research branches as product authority.
+
 ## Gate boundary
 
-Rendered in Gate B: `view.group_home`
-Refreshed downstream only: `view.position` → Gate C, `view.activity` → Gate D
-
-Whole-group closeout is semantic-only and intentionally absent from this packet until an approved user surface exists.
-
+Whole-group closeout is semantic-only and intentionally absent from Gate B until an approved user surface exists.
