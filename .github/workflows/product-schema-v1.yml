@@ -37,6 +37,9 @@ jobs:
       - run: node product-schema/verify-ux-diagnostics.mjs
       - run: node product-schema/derive-task-metrics.mjs
       - run: node product-schema/verify-task-metrics.mjs
+      - run: node product-schema/derive-stage-5.mjs
+      - run: node product-schema/verify-reconstruction-closure.mjs
+      - run: node product-schema/verify-mechanical-mutations.mjs
       - name: Upload generated schema diagnostics
         uses: actions/upload-artifact@v4
         with:
