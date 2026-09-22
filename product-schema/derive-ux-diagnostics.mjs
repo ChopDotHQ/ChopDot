@@ -35,13 +35,18 @@ function decode(s=''){return s.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replac
 function attr(tag,name){const m=tag.match(new RegExp(name+"\\s*=\\s*['\"]([^'\"]*)['\"]","i"));return m?decode(m[1]):null;}
 function visible(html=''){return decode(html.replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<svg[\s\S]*?<\/svg>/gi,' ').replace(/<[^>]+>/g,' ')).replace(/\s+/g,' ').trim();}
 function extractScreens(doc){
-  const tokens=[...doc.matchAll(/<section\b[^>]*>|<\/section>/gi)],screens=[];
+  const tokens=[...doc.matchAll(/<(section|div|article|main)\b[^>]*>|<\/(section|div|article|main)>/gi)],screens=[];
   for(let i=0;i<tokens.length;i++){
-    const tag=tokens[i][0];if(/^<\/section/i.test(tag))continue;
-    const cls=attr(tag,'class')||'',id=attr(tag,'id');
+    const tag=tokens[i][0];if(/^<\//.test(tag))continue;
+    const tagName=(tokens[i][1]||'').toLowerCase(),cls=attr(tag,'class')||'',id=attr(tag,'id');
     if(!id||!cls.split(/\s+/).includes('screen'))continue;
     let depth=1,end=null;
-    for(let k=i+1;k<tokens.length;k++){if(/^<\/section/i.test(tokens[k][0]))depth--;else depth++;if(depth===0){end=tokens[k].index+tokens[k][0].length;break;}}
+    for(let k=i+1;k<tokens.length;k++){
+      const tk=tokens[k][0],openName=(tokens[k][1]||'').toLowerCase(),closeName=(tokens[k][2]||'').toLowerCase();
+      if(openName===tagName)depth++;
+      if(closeName===tagName)depth--;
+      if(depth===0){end=tokens[k].index+tk.length;break;}
+    }
     if(end===null)throw new Error('Unclosed screen '+id);
     screens.push({id,html:doc.slice(tokens[i].index,end)});
   }
