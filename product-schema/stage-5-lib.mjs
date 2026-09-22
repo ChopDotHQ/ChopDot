@@ -1,247 +1,218 @@
-import { readFrozen,frozenBlob,rowsOfJson,parseMarkdownEvents,parseScreenStates,parseCodedStateInventory,parseDynamicPrototype,rawFields,stateClass,actionClass,addPiece,uniq,norm,normTarget,slug } from './stage-5-source-lib.mjs';
-import { deriveMechanicalMutationCoverage } from './stage-5-safety-lib.mjs';
+
+import {
+  readFrozen,frozenBlob,rowsOfJson,parseMarkdownEvents,parseModelEvents,parseScreenStates,
+  parseCodedStateInventory,parseExecutableStates,parseDynamicPrototype,parseSwitchPrototype,
+  rawFields,stateClass,actionClass,addPiece,uniq,norm,normTarget,slug
+} from './stage-5-source-lib.mjs';
+import { deriveIndependentMutationCoverage,validateIndependentSafety } from './stage-5-safety-lib.mjs';
 import { deriveBlastRadius } from './stage-5-blast-lib.mjs';
+import {
+  validateEventBindings,applyAndValidateControlBindings,validateOperationWitnesses,
+  validateRequiredStates,validateSupersessions,validateOverlayWitnesses,semanticWitnessStats
+} from './stage-5-validation-lib.mjs';
+
+const has=(a,x)=>Array.isArray(a)&&a.includes(x);
 
 export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstruction,ui,tasks}){
-  const cache=new Map(),commit=registry.product_authority_commit;
-  const bindingByEvent=new Map(bindings.bindings.map(x=>[x.domain_event,x]));
+  const cache=new Map(),productCommit=registry.product_authority_commit;
+  const readAt=(commit,path)=>readFrozen(root,commit,path,cache);
+  const readProduct=path=>readAt(productCommit,path);
+  const sourceCommit=s=>s?.commit||productCommit;
+  const readSourceRef=ref=>{
+    const s=core.sources[ref];
+    if(!s)throw new Error('Unknown source ref '+ref);
+    return readAt(sourceCommit(s),s.path);
+  };
+  const verifySourceRef=ref=>{
+    const s=core.sources[ref];if(!s)return false;
+    try{return frozenBlob(root,sourceCommit(s),s.path)===s.git_blob;}catch{return false;}
+  };
 
-  const sourcePins=[...(registry.curated_mapping_sources||[]),...(registry.supporting_state_sources||[])].map(s=>{
-    const actual=frozenBlob(root,commit,s.path);
+  const registered=[...(registry.curated_mapping_sources||[]),...(registry.supporting_state_sources||[]),...(registry.executable_mapping_sources||[])];
+  const sourcePins=registered.map(s=>{
+    const actual=frozenBlob(root,productCommit,s.path);
     return {...s,actual_git_blob:actual,matches:s.git_blob===actual};
   });
-  const sourceErrors=sourcePins.filter(x=>!x.matches).map(x=>({id:'SOURCE_PIN_MISMATCH',path:x.path,expected:x.git_blob,actual:x.actual_git_blob}));
+  const sourceErrors=sourcePins.filter(x=>!x.matches).map(x=>({id:'SOURCE-PIN-MISMATCH',path:x.path,expected:x.git_blob,actual:x.actual_git_blob}));
 
-  const jsonEventRows=[],mdEventRows=[],eventSet=new Set();
+  const jsonEventRows=[],mdEventRows=[],modelEventRows=[],eventSet=new Set();
   for(const s of registry.curated_mapping_sources||[]){
     if(s.kind==='UI_EVENT_MAPPING.json'){
-      for(const r of rowsOfJson(readFrozen(root,commit,s.path,cache))){
-        const event=r.domain_event||r.event||r.domainEvent;
-        if(event){eventSet.add(event);jsonEventRows.push({journey:s.journey,path:s.path,row:r,event});}
+      for(const row of rowsOfJson(readProduct(s.path))){
+        const event=row.domain_event||row.event||row.domainEvent;
+        if(event){eventSet.add(event);jsonEventRows.push({journey:s.journey,path:s.path,row,event});}
       }
     }else if(s.kind==='UI_TO_DOMAIN_EVENTS.md'){
-      for(const r of parseMarkdownEvents(readFrozen(root,commit,s.path,cache),s.path)){
-        eventSet.add(r.event);mdEventRows.push({journey:s.journey,...r});
+      for(const row of parseMarkdownEvents(readProduct(s.path),s.path)){
+        eventSet.add(row.event);mdEventRows.push({journey:s.journey,...row});
       }
     }
   }
-  const boundSet=new Set(bindings.bindings.map(x=>x.domain_event));
-  const eventMissing=[...eventSet].filter(x=>!boundSet.has(x)).sort();
-  const eventExtra=[...boundSet].filter(x=>!eventSet.has(x)).sort();
+  for(const s of (registry.executable_mapping_sources||[]).filter(x=>x.kind==='model.cjs')){
+    for(const row of parseModelEvents(readProduct(s.path),s.path)){
+      eventSet.add(row.event);modelEventRows.push({journey:s.journey,...row});
+    }
+  }
+  const eventErrors=validateEventBindings(core,bindings,eventSet);
+  const bindingByEvent=new Map((bindings.bindings||[]).map(x=>[x.domain_event,x]));
 
   const uiBy=new Map(ui.journeys.map(x=>[x.journey,x]));
-  const pieces=[],journeyReports=[];
-  const requiredTriggerBy=new Map((reconstruction.required_state_triggers||[]).map(x=>[x.journey+'|'+x.requirement_state,x]));
+  const protoByJourney=new Map(),stateSetByJourney=new Map(),pieces=[],extractionErrors=[],sourceDenominators=[];
+
+  const governance=(journey,classification)=>{
+    if(!['RECOVERY_BEHAVIOR','SYSTEM_PROGRESSION'].includes(classification))return [];
+    return (reconstruction.journey_governance?.[journey]||[]).filter(ref=>core.laws.some(x=>x.id===ref)||core.derived_models.some(x=>x.id===ref)||core.operations.some(x=>x.id===ref));
+  };
 
   for(const j of frozen.journeys){
     const jid=j.id,pm=new Map(),states=new Set(),sourceModes=[];
-    const uj=uiBy.get(jid),protoPath=j.prototype.path;
-    const proto=readFrozen(root,commit,protoPath,cache),dynamic=parseDynamicPrototype(proto);
+    const protoPath=j.prototype.path,proto=readProduct(protoPath),uj=uiBy.get(jid);
+    protoByJourney.set(jid,{path:protoPath,text:proto});
+
     const screenSource=(registry.curated_mapping_sources||[]).find(x=>x.journey===jid&&x.kind==='SCREEN_STATE_MAPPING.json');
-    if(screenSource){
-      for(const s of parseScreenStates(readFrozen(root,commit,screenSource.path,cache)))states.add(s);
-      sourceModes.push('SCREEN_STATE_MAPPING');
-    }
     const stateSource=(registry.supporting_state_sources||[]).find(x=>x.journey===jid&&x.kind==='STATE_INVENTORY.md');
-    if(stateSource){
-      for(const s of parseCodedStateInventory(readFrozen(root,commit,stateSource.path,cache),jid))states.add(s);
-      sourceModes.push('STATE_INVENTORY');
-    }
-    if(dynamic.states.length){
-      for(const s of dynamic.states)states.add(s);
-      sourceModes.push('DYNAMIC_SOURCE_DEFS');
-    }
-    if(uj){
-      const rich=states.size>0;
-      for(const s of uj.states||[])if(!(rich&&s.id==='artifact-root'))states.add(s.id);
-      sourceModes.push('STATIC_SURFACE_INVENTORY');
-    }
+    const modelSource=(registry.executable_mapping_sources||[]).find(x=>x.journey===jid&&x.kind==='model.cjs');
+
+    const screenStates=screenSource?parseScreenStates(readProduct(screenSource.path)):[];
+    const inventoryStates=stateSource?parseCodedStateInventory(readProduct(stateSource.path),jid):[];
+    const modelStates=modelSource?parseExecutableStates(readProduct(modelSource.path)):[];
+    const dynamic=parseDynamicPrototype(proto),switchUI=parseSwitchPrototype(proto);
+    const uiStates=(uj?.states||[]).map(x=>x.id).filter(x=>x!=='artifact-root');
     const jsonRows=jsonEventRows.filter(x=>x.journey===jid);
-    for(const x of jsonRows){
-      const s=x.row.screen||x.row.route||x.row.state;
-      if(s)states.add(norm(s));
+    const jsonStates=uniq(jsonRows.map(x=>x.row.screen||x.row.route||x.row.state).filter(Boolean).map(norm));
+
+    for(const [mode,arr] of [['SCREEN_STATE_MAPPING',screenStates],['STATE_INVENTORY',inventoryStates],['EXECUTABLE_MODEL',modelStates],['DYNAMIC_SOURCE_DEFS',dynamic.states],['SWITCH_SOURCE_DEFS',switchUI.states],['STATIC_SURFACE_INVENTORY',uiStates],['UI_EVENT_MAPPING',jsonStates]]){
+      if(arr.length){sourceModes.push(mode);for(const s of arr)states.add(norm(s));}
     }
-    if(!states.size)states.add('artifact-root');
+    if(!states.size){
+      extractionErrors.push({id:'EXTRACTION-NO-STATES',journey:jid,prototype:protoPath});
+    }
+
+    const stateCounts={screen_mapping:screenStates.length,state_inventory:inventoryStates.length,executable_model:modelStates.length,dynamic_source:dynamic.states.length,switch_source:switchUI.states.length,static_inventory:uiStates.length,event_mapping:jsonStates.length};
+    const declaredMinimum=Math.max(0,...Object.values(stateCounts));
+    if(states.size<declaredMinimum)extractionErrors.push({id:'EXTRACTION-STATE-UNDERCOUNT',journey:jid,states:states.size,declared_minimum:declaredMinimum,state_counts:stateCounts});
+    if(proto.includes('const defs=')&&dynamic.states.length===0)extractionErrors.push({id:'EXTRACTION-DYNAMIC-STATE-PARSER-MISS',journey:jid});
+    stateSetByJourney.set(jid,states);
 
     for(const id of [...states].sort()){
-      const cls=stateClass(jid,id,reconstruction);
-      addPiece(pm,{
-        piece_id:'J'+jid+'/state/'+id,journey:jid,state:id,piece:id,piece_type:'state',
-        classification:cls.classification,schema_refs:cls.schema_refs,
-        authority_refs:uniq([protoPath,stateSource?.path,screenSource?.path]),
-        justification:cls.justification,mapping_confidence:'high'
-      });
+      const cls=stateClass(jid,id,reconstruction),refs=uniq([...(cls.schema_refs||[]),...governance(jid,cls.classification)]);
+      addPiece(pm,{piece_id:'J'+jid+'/state/'+id,journey:jid,state:id,piece:id,piece_type:'state',classification:cls.classification,schema_refs:refs,authority_refs:uniq([protoPath,stateSource?.path,screenSource?.path,modelSource?.path]),justification:cls.justification,mapping_confidence:'high'});
     }
 
     const stateIds=new Set(states);
     function addAction(a,authority,event=null){
-      const state=norm(a.state||a.screen||a.route||'@unknown');
-      const label=norm(a.label||a.action||'');
-      const target=normTarget(a.target||a.href||a.to||'');
+      const state=norm(a.state||a.screen||a.route||''),label=norm(a.label||a.action||''),target=normTarget(a.target||a.href||a.to||'');
       if(!label&&!target)return;
       const binding=event?bindingByEvent.get(event):null;
-      const cls=actionClass({...a,label,target},binding,stateIds);
-      const id='J'+jid+'/'+state+'/action/'+slug(label)+'@'+slug(target||'none');
-      addPiece(pm,{
-        piece_id:id,journey:jid,state,piece:label||target,piece_type:'visible_action',
-        classification:cls.classification,schema_refs:cls.schema_refs,authority_refs:uniq([authority]),
-        justification:cls.justification,mapping_confidence:binding?.confidence||'derived',
-        domain_event:event||null,target:target||null
-      });
+      let cls=actionClass({...a,label,target},binding,stateIds);
+      if(cls.classification==='UNJUSTIFIED'&&a.source_event){
+        if(/CHECK|STATUS|RETRY|RECOVER|CANCEL/i.test(a.source_event))cls={classification:'RECOVERY_BEHAVIOR',schema_refs:[],justification:'Local source event is recovery/status control; canonical outcome remains governed by recovery laws.'};
+        else if(/SEND|REQUEST_APPROVAL|PROVIDER/i.test(a.source_event))cls={classification:'EXTERNAL_HANDOFF',schema_refs:[],justification:'Local source event crosses into a provider/system boundary.'};
+        else cls={classification:'NAVIGATION_TRANSITION',schema_refs:[],justification:'Local source event changes reversible prototype/navigation state without canonical domain acceptance.'};
+      }
+      if(cls.classification==='UNJUSTIFIED'&&/send (a )?(new )?code/i.test(label))cls={classification:'EXTERNAL_HANDOFF',schema_refs:[],justification:'Sign-in code request crosses to the identity provider boundary.'};
+      const refs=uniq([...(cls.schema_refs||[]),...governance(jid,cls.classification)]);
+      const id='J'+jid+'/'+(state||'source')+'/action/'+slug(label)+'@'+slug(target||a.source_event||'none');
+      addPiece(pm,{piece_id:id,journey:jid,state:state||null,piece:label||target,piece_type:'visible_action',classification:cls.classification,schema_refs:refs,authority_refs:uniq([authority]),justification:cls.justification,mapping_confidence:binding?.confidence||'derived',domain_event:event||null,target:target||null,source_event:a.source_event||null});
     }
 
-    if(uj){
-      for(const s of uj.states||[])for(const a of s.actions||[])addAction({...a,state:s.id},uj.artifact?.path||protoPath,a.domain_event||null);
-    }
+    if(uj)for(const s of uj.states||[])for(const a of s.actions||[])addAction({...a,state:s.id},uj.artifact?.path||protoPath,a.domain_event||null);
     for(const x of jsonRows)addAction({...x.row,state:x.row.screen||x.row.route||x.row.state},x.path,x.event);
-    if(!jsonRows.length){
-      for(const x of mdEventRows.filter(x=>x.journey===jid))addAction({state:'@mapping',label:x.action,target:''},x.path,x.event);
-    }
     for(const a of dynamic.actions)addAction(a,protoPath,null);
+    for(const a of switchUI.actions)addAction(a,protoPath,null);
 
     const fieldSeen=new Set();
-    if(uj){
-      for(const s of uj.states||[])for(const f of s.fields||[]){
-        const k=norm(f.name||f.label)+'|'+s.id;
-        if(fieldSeen.has(k))continue;
-        fieldSeen.add(k);
-        addPiece(pm,{
-          piece_id:'J'+jid+'/'+s.id+'/field/'+slug(f.name||f.label),journey:jid,state:s.id,piece:f.label||f.name||f.type,piece_type:'field',
-          classification:'DRAFT_FIELD',schema_refs:[],authority_refs:[uj.artifact?.path||protoPath],
-          justification:'Editable/selected field value is draft/input state until an owning operation accepts it.',mapping_confidence:'derived'
-        });
-      }
+    if(uj)for(const s of uj.states||[])for(const field of s.fields||[]){
+      const key=s.id+'|'+norm(field.name||field.label);if(fieldSeen.has(key))continue;fieldSeen.add(key);
+      addPiece(pm,{piece_id:'J'+jid+'/'+s.id+'/field/'+slug(field.name||field.label),journey:jid,state:s.id,piece:field.label||field.name||field.type,piece_type:'field',classification:'DRAFT_FIELD',schema_refs:[],authority_refs:[uj.artifact?.path||protoPath],justification:'Editable/selected field is draft/input state until an owning operation accepts it.',mapping_confidence:'derived'});
     }
-    for(const f of rawFields(proto)){
-      const k=norm(f.name||f.label)+'|@artifact';
-      if(fieldSeen.has(k))continue;
-      fieldSeen.add(k);
-      addPiece(pm,{
-        piece_id:'J'+jid+'/@artifact/field/'+slug(f.name||f.label),journey:jid,state:'@artifact',piece:f.label||f.name||f.type,piece_type:'field',
-        classification:'DRAFT_FIELD',schema_refs:[],authority_refs:[protoPath],
-        justification:'Source-level field recovered from frozen prototype; treated as draft/input state until accepted by an owning operation.',mapping_confidence:'source_recovered'
-      });
+    for(const field of switchUI.fields){
+      const key=field.state+'|'+norm(field.name||field.label);if(fieldSeen.has(key))continue;fieldSeen.add(key);
+      addPiece(pm,{piece_id:'J'+jid+'/'+field.state+'/field/'+slug(field.name||field.label),journey:jid,state:field.state,piece:field.label||field.name||field.type,piece_type:'field',classification:'DRAFT_FIELD',schema_refs:[],authority_refs:[protoPath],justification:'Field recovered from a frozen switch-rendered Golden state.',mapping_confidence:'source_recovered'});
+    }
+    for(const field of rawFields(proto)){
+      const key='source|'+norm(field.name||field.label);if(fieldSeen.has(key))continue;fieldSeen.add(key);
+      addPiece(pm,{piece_id:'J'+jid+'/field/source/'+slug(field.name||field.label),journey:jid,state:null,piece:field.label||field.name||field.type,piece_type:'field',classification:'DRAFT_FIELD',schema_refs:[],authority_refs:[protoPath],justification:'Source-level field recovered from frozen prototype; no pseudo-state is invented.',mapping_confidence:'source_recovered'});
     }
 
-    const arr=[...pm.values()].sort((a,b)=>a.piece_id.localeCompare(b.piece_id));
+    const arr=[...pm.values()];
+    const uiActionCount=(uj?.states||[]).reduce((n,s)=>n+(s.actions||[]).length,0);
+    const expectedActionMinimum=Math.max(uiActionCount,jsonRows.length,dynamic.actions.length,switchUI.actions.length);
+    if(arr.filter(x=>x.piece_type==='visible_action').length<expectedActionMinimum)extractionErrors.push({id:'EXTRACTION-ACTION-UNDERCOUNT',journey:jid,actions:arr.filter(x=>x.piece_type==='visible_action').length,declared_minimum:expectedActionMinimum});
+    sourceDenominators.push({journey:jid,state_counts:stateCounts,declared_state_minimum:declaredMinimum,final_states:states.size,action_counts:{static:uiActionCount,event_mapping:jsonRows.length,dynamic:dynamic.actions.length,switch:switchUI.actions.length},declared_action_minimum:expectedActionMinimum});
     pieces.push(...arr);
-    const byClass={};for(const p of arr)byClass[p.classification]=(byClass[p.classification]||0)+1;
-    journeyReports.push({
-      journey:jid,name:j.name,source_modes:uniq(sourceModes),
-      states:arr.filter(x=>x.piece_type==='state').length,
-      actions:arr.filter(x=>x.piece_type==='visible_action').length,
-      fields:arr.filter(x=>x.piece_type==='field').length,
-      pieces:arr.length,by_classification:byClass
-    });
   }
 
-  const operationIds=new Set(core.operations.map(x=>x.id));
-  const taskIds=new Set((tasks.tasks||[]).map(x=>x.id));
-  const witnessErrors=[],seenWitness=new Map();
-  for(const w of reconstruction.operation_witnesses||[]){
-    if(!operationIds.has(w.schema_ref))witnessErrors.push({id:'WITNESS_UNKNOWN_OPERATION',schema_ref:w.schema_ref});
-    seenWitness.set(w.schema_ref,(seenWitness.get(w.schema_ref)||0)+1);
-    const e=w.evidence||{};
-    if(e.domain_event){
-      const b=bindingByEvent.get(e.domain_event);
-      if(!b)witnessErrors.push({id:'WITNESS_EVENT_MISSING',schema_ref:w.schema_ref,event:e.domain_event});
-      else if(!(b.operation_refs||[]).includes(w.schema_ref)&&!(w.witness_types||[]).includes('RECOVERY_ONLY'))witnessErrors.push({id:'WITNESS_EVENT_NOT_BOUND',schema_ref:w.schema_ref,event:e.domain_event});
-    }
-    if(e.task_ref&&!taskIds.has(e.task_ref))witnessErrors.push({id:'WITNESS_TASK_MISSING',schema_ref:w.schema_ref,task:e.task_ref});
-    if(e.path){
-      const txt=readFrozen(root,commit,e.path,cache);
-      if(e.contains&&!txt.includes(e.contains))witnessErrors.push({id:'WITNESS_PHRASE_MISSING',schema_ref:w.schema_ref,path:e.path,contains:e.contains});
-      if(e.also_contains&&!txt.includes(e.also_contains))witnessErrors.push({id:'WITNESS_PHRASE_MISSING',schema_ref:w.schema_ref,path:e.path,contains:e.also_contains});
-    }
-    if(e.schema_source&&!core.sources[e.schema_source])witnessErrors.push({id:'WITNESS_SCHEMA_SOURCE_MISSING',schema_ref:w.schema_ref,source:e.schema_source});
-    if((w.witness_types||[]).includes('CONTRACT_ONLY')&&!(graph.contract_only_operations||[]).includes(w.schema_ref))witnessErrors.push({id:'CONTRACT_ONLY_MISMATCH',schema_ref:w.schema_ref});
-    if((w.witness_types||[]).includes('COORDINATED_OPERATION')&&!(graph.coordinated_operations||[]).some(x=>x.id===w.schema_ref))witnessErrors.push({id:'COORDINATED_OPERATION_MISMATCH',schema_ref:w.schema_ref});
-  }
-  for(const id of operationIds)if(!seenWitness.has(id))witnessErrors.push({id:'UNWITNESSED_OPERATION',schema_ref:id});
+  for(const p of reconstruction.authored_pieces||[])pieces.push({...p,authority_refs:uniq([p.authority_ref]),mapping_confidence:'authored_exact_piece'});
 
-  const stateSetByJourney=new Map(journeyReports.map(j=>[
-    j.journey,
-    new Set(pieces.filter(p=>p.journey===j.journey&&p.piece_type==='state').map(p=>p.state))
-  ]));
-  const required=[];
-  for(const r of graph.construction_requirements||[]){
-    if(r.kind!=='required_states')continue;
-    for(const name of r.value||[]){
-      const alias=reconstruction.state_name_aliases?.[r.journey]?.[name]||name;
-      const target=stateSetByJourney.get(r.journey)?.has(alias);
-      const trig=requiredTriggerBy.get(r.journey+'|'+name);
-      required.push({
-        journey:r.journey,requirement:r.id,requirement_state:name,golden_state:alias,
-        resolved:!!target,triggered:!!trig,classification:trig?.classification||null,trigger:trig?.trigger||null
-      });
-    }
-  }
-  const requiredErrors=required.filter(x=>!x.resolved||!x.triggered).map(x=>({id:!x.resolved?'REQUIRED_STATE_UNRESOLVED':'REQUIRED_STATE_TRIGGER_MISSING',...x}));
-
-  const semanticStats={
-    objects:{total:core.objects.length,witnessed:core.objects.filter(x=>(x.source_journeys||[]).length||(x.sources||[]).length).length},
-    operations:{total:core.operations.length,witnessed:operationIds.size-witnessErrors.filter(x=>x.id==='UNWITNESSED_OPERATION').length},
-    laws:{total:core.laws.length,witnessed:core.laws.filter(x=>(x.sources||[]).length).length,machine_checkable:core.laws.filter(x=>x.machine_checkable).length,declared_prose_only:core.laws.filter(x=>x.machine_checkable===false).length},
-    views:{total:core.derived_models.length,witnessed:core.derived_models.filter(x=>(x.source_journeys||[]).length||(x.sources||[]).length).length},
-    contexts:{
-      total:graph.contexts.length,
-      witnessed:graph.contexts.filter(c=>
-        graph.journey_projections.some(j=>[
-          ...(j.entry_contexts_any||[]),...(j.ambient_contexts_required||[]),
-          ...(j.effect_contexts_required||[]),...(j.emits_contexts||[])
-        ].includes(c.id))||graph.composition_units.some(u=>(u.contexts||[]).includes(c.id))
-      ).length
-    },
-    requirements:{total:(graph.construction_requirements||[]).length,witnessed:(graph.construction_requirements||[]).filter(x=>x.journey||x.sources?.length).length},
-    continuity:{total:(graph.continuity_contracts||[]).length,witnessed:(graph.continuity_contracts||[]).filter(x=>(x.sources||[]).length).length}
+  const sourceControlExists=b=>{
+    const info=protoByJourney.get(b.journey);if(!info)return false;
+    const text=b.evidence_path?readProduct(b.evidence_path):info.text;
+    return stateSetByJourney.get(b.journey)?.has(b.state)&&text.includes(b.label_exact)&&(b.target===undefined||text.includes(b.target));
   };
-  const semanticUnwitnessed=Object.entries(semanticStats)
-    .filter(([,x])=>x.witnessed!==undefined&&x.witnessed<x.total)
-    .map(([kind,x])=>({kind,unwitnessed:x.total-x.witnessed}));
+  const controlErrors=applyAndValidateControlBindings(core,reconstruction,pieces,sourceControlExists);
 
-  const byClass={};for(const p of pieces)byClass[p.classification]=(byClass[p.classification]||0)+1;
-  const unclassified=pieces.filter(x=>!bindings.classification_vocabulary.includes(x.classification));
+  for(const p of pieces){
+    if(['RECOVERY_BEHAVIOR','SYSTEM_PROGRESSION'].includes(p.classification)&&!(p.schema_refs||[]).length)p.schema_refs=governance(p.journey,p.classification);
+  }
+
+  const witnessErrors=validateOperationWitnesses(core,graph,reconstruction,pieces,bindings,tasks,readProduct);
+  const required=validateRequiredStates(core,graph,reconstruction,pieces,readSourceRef);
+  const supersessionErrors=validateSupersessions(core,reconstruction,pieces);
+  const overlayErrors=validateOverlayWitnesses(core,graph,reconstruction,verifySourceRef);
+
+  const semanticStats=semanticWitnessStats(core,graph,frozen);
+  const semanticErrors=[];
+  for(const [kind,s] of Object.entries(semanticStats))if(s.witnessed!==undefined&&s.witnessed<s.total)semanticErrors.push({id:'SEMANTIC-WITNESS-GAP',kind,unwitnessed:s.total-s.witnessed});
+
+  const unjustified=pieces.filter(p=>p.classification==='UNJUSTIFIED'||!bindings.classification_vocabulary.includes(p.classification));
+  const pseudoPieces=pieces.filter(p=>String(p.state||'').startsWith('@')||p.piece_id.includes('/@'));
+  const recoveryUngoverned=pieces.filter(p=>['RECOVERY_BEHAVIOR','SYSTEM_PROGRESSION'].includes(p.classification)&&!(p.schema_refs||[]).length);
+
+  const authority={
+    c1Identity:JSON.parse(readSourceRef('C1_IDENTITY')),
+    c1Spend:JSON.parse(readSourceRef('C1_SPEND')),
+    j17Text:readSourceRef('J17'),
+    j27Text:readSourceRef('J27'),
+    j28Text:readSourceRef('J28'),
+    j25Html:readProduct(frozen.journeys.find(x=>x.id==='25').prototype.path)
+  };
+  const independentSafetyErrors=validateIndependentSafety(core,graph,reconstruction,authority);
+  const mutations=deriveIndependentMutationCoverage(core,graph,reconstruction,authority);
+
+  const eventErrorsAll=[...eventErrors];
   const errors=[
-    ...sourceErrors,
-    ...eventMissing.map(event=>({id:'UNBOUND_DOMAIN_EVENT',event})),
-    ...eventExtra.map(event=>({id:'EXTRA_DOMAIN_EVENT_BINDING',event})),
-    ...witnessErrors,...requiredErrors,
-    ...unclassified.map(x=>({id:'UNCLASSIFIED_PIECE',piece_id:x.piece_id})),
-    ...semanticUnwitnessed.map(x=>({id:'UNWITNESSED_SEMANTIC_CATEGORY',...x}))
+    ...sourceErrors,...extractionErrors,...eventErrorsAll,...controlErrors,...witnessErrors,...required.errors,
+    ...supersessionErrors,...overlayErrors,...semanticErrors,
+    ...unjustified.map(p=>({id:'UNJUSTIFIED-PIECE',piece_id:p.piece_id,journey:p.journey,piece:p.piece})),
+    ...pseudoPieces.map(p=>({id:'PSEUDO-PIECE',piece_id:p.piece_id})),
+    ...recoveryUngoverned.map(p=>({id:'UNGOVERNED-RECOVERY-PIECE',piece_id:p.piece_id})),
+    ...independentSafetyErrors.map(e=>({id:'INDEPENDENT-SAFETY-'+e.id,...e}))
   ];
 
+  const byClass={};for(const p of pieces)byClass[p.classification]=(byClass[p.classification]||0)+1;
+  const perJourney=frozen.journeys.map(j=>{
+    const ps=pieces.filter(p=>p.journey===j.id),d=sourceDenominators.find(x=>x.journey===j.id),classes={};
+    for(const p of ps)classes[p.classification]=(classes[p.classification]||0)+1;
+    return {journey:j.id,name:j.name,states:ps.filter(x=>x.piece_type==='state').length,actions:ps.filter(x=>x.piece_type==='visible_action').length,fields:ps.filter(x=>x.piece_type==='field').length,pieces:ps.length,by_classification:classes,denominator:d};
+  });
+
   const coverage={
-    schema_version:1,generated_view:'reconstruction-coverage',
+    schema_version:2,generated_view:'reconstruction-coverage',
     target_contract:reconstruction.target_contract,status:errors.length?'FAIL':'PASS',
     source_pins:{total:sourcePins.length,matched:sourcePins.filter(x=>x.matches).length,errors:sourceErrors},
-    event_vocabulary:{
-      json_rows:jsonEventRows.length,markdown_event_rows:mdEventRows.length,
-      distinct_events:eventSet.size,bound_events:boundSet.size,missing:eventMissing,extra:eventExtra
-    },
-    golden_pieces:{
-      total:pieces.length,states:pieces.filter(x=>x.piece_type==='state').length,
-      actions:pieces.filter(x=>x.piece_type==='visible_action').length,
-      fields:pieces.filter(x=>x.piece_type==='field').length,
-      classified:pieces.length-unclassified.length,unjustified_unmapped:unclassified.length,
-      by_classification:byClass,per_journey:journeyReports
-    },
-    semantic_witnesses:semanticStats,
-    operation_witnesses:{
-      total:core.operations.length,
-      witnessed:core.operations.length-witnessErrors.filter(x=>x.id==='UNWITNESSED_OPERATION').length,
-      errors:witnessErrors
-    },
-    required_states:{
-      total:required.length,resolved:required.filter(x=>x.resolved).length,
-      triggered:required.filter(x=>x.triggered).length,rows:required,errors:requiredErrors
-    },
-    supersessions:reconstruction.supersessions||[],errors
+    event_vocabulary:{json_rows:jsonEventRows.length,markdown_event_rows:mdEventRows.length,model_event_rows:modelEventRows.length,distinct_events:eventSet.size,bound_events:(bindings.bindings||[]).length,errors:eventErrorsAll},
+    golden_pieces:{total:pieces.length,states:pieces.filter(x=>x.piece_type==='state').length,actions:pieces.filter(x=>x.piece_type==='visible_action').length,fields:pieces.filter(x=>x.piece_type==='field').length,classified:pieces.length-unjustified.length,unjustified_unmapped:unjustified.length,pseudo_pieces:pseudoPieces.length,ungoverned_recovery:recoveryUngoverned.length,by_classification:byClass,per_journey:perJourney},
+    semantic_witnesses:{...semanticStats,operations:{total:core.operations.length,witnessed:core.operations.length-witnessErrors.filter(x=>x.id==='WITNESS-OPERATION-MISSING').length}},
+    operation_witnesses:{total:core.operations.length,witnessed:core.operations.length-witnessErrors.filter(x=>x.id==='WITNESS-OPERATION-MISSING').length,errors:witnessErrors},
+    required_states:{total:required.rows.length,resolved:required.rows.filter(x=>x.resolved).length,triggered:required.rows.filter(x=>x.triggered).length,rows:required.rows,errors:required.errors},
+    overlays:{required:7,errors:overlayErrors},
+    supersessions:{total:(reconstruction.supersessions||[]).length,errors:supersessionErrors},
+    extraction:{errors:extractionErrors,source_denominators:sourceDenominators},
+    independent_safety:{errors:independentSafetyErrors},
+    errors
   };
 
-  return {
-    coverage,
-    mutations:deriveMechanicalMutationCoverage(core,graph,reconstruction),
-    blast:deriveBlastRadius(core,graph,tasks),
-    pieces
-  };
+  const blast=deriveBlastRadius(core,graph,tasks,pieces);
+  return {coverage,mutations,blast,pieces};
 }
