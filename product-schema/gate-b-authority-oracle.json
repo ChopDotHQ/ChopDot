@@ -70,7 +70,7 @@
           "git_blob": "355fff22b8c8996379ebabb8d943f289aa7ea5ad",
           "contains": [
             "Dependency-scoped expense locking with explicit whole-group closeout",
-            "allow_unrelated_new_expense"
+            "Allow a new unrelated Expense"
           ]
         }
       ],
