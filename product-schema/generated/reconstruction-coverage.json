@@ -1,0 +1,898 @@
+{
+  "schema_version": 1,
+  "generated_view": "reconstruction-coverage",
+  "target_contract": [
+    "28 frozen Goldens",
+    "approved Phase C1 overlays",
+    "approved post-J28 decisions",
+    "approved post-Golden impacts"
+  ],
+  "status": "PASS",
+  "source_pins": {
+    "total": 83,
+    "matched": 83,
+    "errors": []
+  },
+  "event_vocabulary": {
+    "json_rows": 1325,
+    "markdown_event_rows": 105,
+    "distinct_events": 134,
+    "bound_events": 134,
+    "missing": [],
+    "extra": []
+  },
+  "golden_pieces": {
+    "total": 4160,
+    "states": 1029,
+    "actions": 3102,
+    "fields": 29,
+    "classified": 4160,
+    "unjustified_unmapped": 0,
+    "by_classification": {
+      "DRAFT_FIELD": 32,
+      "NAVIGATION_TRANSITION": 2460,
+      "RECOVERY_BEHAVIOR": 267,
+      "EXTERNAL_HANDOFF": 125,
+      "PRODUCT_REQUIREMENT": 637,
+      "SELECTION_STATE": 20,
+      "DOMAIN_OPERATION": 101,
+      "SYSTEM_PROGRESSION": 57,
+      "DERIVED_PROJECTION": 69,
+      "POST_GOLDEN_SUPERSEDED": 1,
+      "REVIEW_DEMO_CHROME": 391
+    },
+    "per_journey": [
+      {
+        "journey": "01",
+        "name": "Enter ChopDot",
+        "source_modes": [
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 1,
+        "actions": 9,
+        "fields": 3,
+        "pieces": 13,
+        "by_classification": {
+          "DRAFT_FIELD": 3,
+          "NAVIGATION_TRANSITION": 3,
+          "RECOVERY_BEHAVIOR": 1,
+          "EXTERNAL_HANDOFF": 3,
+          "PRODUCT_REQUIREMENT": 2,
+          "SELECTION_STATE": 1
+        }
+      },
+      {
+        "journey": "02",
+        "name": "Home / Orientation",
+        "source_modes": [
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 1,
+        "actions": 12,
+        "fields": 0,
+        "pieces": 13,
+        "by_classification": {
+          "PRODUCT_REQUIREMENT": 12,
+          "EXTERNAL_HANDOFF": 1
+        }
+      },
+      {
+        "journey": "03",
+        "name": "Create a Group",
+        "source_modes": [
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 11,
+        "actions": 30,
+        "fields": 1,
+        "pieces": 42,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 30,
+          "DRAFT_FIELD": 1,
+          "PRODUCT_REQUIREMENT": 7,
+          "RECOVERY_BEHAVIOR": 2,
+          "EXTERNAL_HANDOFF": 2
+        }
+      },
+      {
+        "journey": "04",
+        "name": "Invite / Join a Group",
+        "source_modes": [
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 14,
+        "actions": 26,
+        "fields": 1,
+        "pieces": 41,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 26,
+          "DRAFT_FIELD": 1,
+          "PRODUCT_REQUIREMENT": 11,
+          "RECOVERY_BEHAVIOR": 2,
+          "EXTERNAL_HANDOFF": 1
+        }
+      },
+      {
+        "journey": "05",
+        "name": "Add an Expense",
+        "source_modes": [
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 27,
+        "actions": 84,
+        "fields": 10,
+        "pieces": 121,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 77,
+          "DOMAIN_OPERATION": 7,
+          "DRAFT_FIELD": 10,
+          "PRODUCT_REQUIREMENT": 21,
+          "RECOVERY_BEHAVIOR": 6
+        }
+      },
+      {
+        "journey": "06",
+        "name": "Review / Correct an Expense",
+        "source_modes": [
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 31,
+        "actions": 110,
+        "fields": 2,
+        "pieces": 143,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 108,
+          "DOMAIN_OPERATION": 2,
+          "DRAFT_FIELD": 2,
+          "PRODUCT_REQUIREMENT": 19,
+          "RECOVERY_BEHAVIOR": 9,
+          "SYSTEM_PROGRESSION": 2,
+          "EXTERNAL_HANDOFF": 1
+        }
+      },
+      {
+        "journey": "07",
+        "name": "Review / Agree / Raise an Issue",
+        "source_modes": [
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 61,
+        "actions": 147,
+        "fields": 0,
+        "pieces": 208,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 135,
+          "DOMAIN_OPERATION": 12,
+          "PRODUCT_REQUIREMENT": 49,
+          "EXTERNAL_HANDOFF": 1,
+          "RECOVERY_BEHAVIOR": 10,
+          "SYSTEM_PROGRESSION": 1
+        }
+      },
+      {
+        "journey": "08",
+        "name": "Group Home",
+        "source_modes": [
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 19,
+        "actions": 54,
+        "fields": 0,
+        "pieces": 73,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 54,
+          "DERIVED_PROJECTION": 4,
+          "EXTERNAL_HANDOFF": 10,
+          "PRODUCT_REQUIREMENT": 3,
+          "RECOVERY_BEHAVIOR": 1,
+          "POST_GOLDEN_SUPERSEDED": 1
+        }
+      },
+      {
+        "journey": "09",
+        "name": "Manage People",
+        "source_modes": [
+          "SCREEN_STATE_MAPPING",
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 19,
+        "actions": 83,
+        "fields": 1,
+        "pieces": 103,
+        "by_classification": {
+          "DRAFT_FIELD": 1,
+          "DERIVED_PROJECTION": 25,
+          "NAVIGATION_TRANSITION": 26,
+          "REVIEW_DEMO_CHROME": 18,
+          "SELECTION_STATE": 4,
+          "EXTERNAL_HANDOFF": 6,
+          "PRODUCT_REQUIREMENT": 12,
+          "DOMAIN_OPERATION": 3,
+          "SYSTEM_PROGRESSION": 3,
+          "RECOVERY_BEHAVIOR": 5
+        }
+      },
+      {
+        "journey": "10",
+        "name": "Overall Position",
+        "source_modes": [
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 34,
+        "actions": 136,
+        "fields": 0,
+        "pieces": 170,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 136,
+          "EXTERNAL_HANDOFF": 8,
+          "PRODUCT_REQUIREMENT": 22,
+          "SYSTEM_PROGRESSION": 3,
+          "RECOVERY_BEHAVIOR": 1
+        }
+      },
+      {
+        "journey": "11",
+        "name": "Settle Up",
+        "source_modes": [
+          "SCREEN_STATE_MAPPING",
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 93,
+        "actions": 256,
+        "fields": 3,
+        "pieces": 352,
+        "by_classification": {
+          "DRAFT_FIELD": 3,
+          "NAVIGATION_TRANSITION": 214,
+          "DOMAIN_OPERATION": 42,
+          "PRODUCT_REQUIREMENT": 72,
+          "EXTERNAL_HANDOFF": 13,
+          "RECOVERY_BEHAVIOR": 8
+        }
+      },
+      {
+        "journey": "12",
+        "name": "Complete Settlement",
+        "source_modes": [
+          "SCREEN_STATE_MAPPING",
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 67,
+        "actions": 168,
+        "fields": 0,
+        "pieces": 235,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 145,
+          "DOMAIN_OPERATION": 23,
+          "PRODUCT_REQUIREMENT": 51,
+          "EXTERNAL_HANDOFF": 4,
+          "RECOVERY_BEHAVIOR": 10,
+          "SYSTEM_PROGRESSION": 2
+        }
+      },
+      {
+        "journey": "13",
+        "name": "Request Money",
+        "source_modes": [
+          "SCREEN_STATE_MAPPING",
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 22,
+        "actions": 72,
+        "fields": 1,
+        "pieces": 95,
+        "by_classification": {
+          "DRAFT_FIELD": 4,
+          "NAVIGATION_TRANSITION": 28,
+          "REVIEW_DEMO_CHROME": 22,
+          "RECOVERY_BEHAVIOR": 10,
+          "SELECTION_STATE": 2,
+          "DERIVED_PROJECTION": 4,
+          "DOMAIN_OPERATION": 6,
+          "EXTERNAL_HANDOFF": 4,
+          "PRODUCT_REQUIREMENT": 10,
+          "SYSTEM_PROGRESSION": 5
+        }
+      },
+      {
+        "journey": "14",
+        "name": "Receive / Share Payment Details",
+        "source_modes": [
+          "SCREEN_STATE_MAPPING",
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 22,
+        "actions": 84,
+        "fields": 1,
+        "pieces": 107,
+        "by_classification": {
+          "DRAFT_FIELD": 1,
+          "NAVIGATION_TRANSITION": 36,
+          "REVIEW_DEMO_CHROME": 22,
+          "SELECTION_STATE": 7,
+          "RECOVERY_BEHAVIOR": 7,
+          "EXTERNAL_HANDOFF": 9,
+          "DOMAIN_OPERATION": 4,
+          "SYSTEM_PROGRESSION": 3,
+          "DERIVED_PROJECTION": 2,
+          "PRODUCT_REQUIREMENT": 16
+        }
+      },
+      {
+        "journey": "15",
+        "name": "Settlement History",
+        "source_modes": [
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 9,
+        "actions": 35,
+        "fields": 0,
+        "pieces": 44,
+        "by_classification": {
+          "REVIEW_DEMO_CHROME": 9,
+          "NAVIGATION_TRANSITION": 26,
+          "PRODUCT_REQUIREMENT": 7,
+          "RECOVERY_BEHAVIOR": 2
+        }
+      },
+      {
+        "journey": "16",
+        "name": "Savings Group",
+        "source_modes": [
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 14,
+        "actions": 54,
+        "fields": 0,
+        "pieces": 68,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 41,
+          "REVIEW_DEMO_CHROME": 13,
+          "PRODUCT_REQUIREMENT": 12,
+          "RECOVERY_BEHAVIOR": 1,
+          "SYSTEM_PROGRESSION": 1
+        }
+      },
+      {
+        "journey": "17",
+        "name": "Contribute / Withdraw Savings",
+        "source_modes": [
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 21,
+        "actions": 106,
+        "fields": 4,
+        "pieces": 131,
+        "by_classification": {
+          "DRAFT_FIELD": 4,
+          "RECOVERY_BEHAVIOR": 8,
+          "EXTERNAL_HANDOFF": 1,
+          "DOMAIN_OPERATION": 1,
+          "PRODUCT_REQUIREMENT": 21,
+          "SYSTEM_PROGRESSION": 5,
+          "SELECTION_STATE": 2,
+          "REVIEW_DEMO_CHROME": 21,
+          "NAVIGATION_TRANSITION": 68
+        }
+      },
+      {
+        "journey": "18",
+        "name": "Activity & Notifications",
+        "source_modes": [
+          "SCREEN_STATE_MAPPING",
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 36,
+        "actions": 234,
+        "fields": 0,
+        "pieces": 270,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 190,
+          "REVIEW_DEMO_CHROME": 37,
+          "SELECTION_STATE": 4,
+          "DERIVED_PROJECTION": 2,
+          "DOMAIN_OPERATION": 1,
+          "PRODUCT_REQUIREMENT": 24,
+          "RECOVERY_BEHAVIOR": 3,
+          "EXTERNAL_HANDOFF": 8,
+          "SYSTEM_PROGRESSION": 1
+        }
+      },
+      {
+        "journey": "19",
+        "name": "Insights",
+        "source_modes": [
+          "SCREEN_STATE_MAPPING",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 27,
+        "actions": 171,
+        "fields": 0,
+        "pieces": 198,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 112,
+          "REVIEW_DEMO_CHROME": 27,
+          "DERIVED_PROJECTION": 32,
+          "PRODUCT_REQUIREMENT": 22,
+          "RECOVERY_BEHAVIOR": 2,
+          "EXTERNAL_HANDOFF": 2,
+          "SYSTEM_PROGRESSION": 1
+        }
+      },
+      {
+        "journey": "20",
+        "name": "Payment Methods",
+        "source_modes": [
+          "SCREEN_STATE_MAPPING",
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 59,
+        "actions": 361,
+        "fields": 0,
+        "pieces": 420,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 297,
+          "REVIEW_DEMO_CHROME": 64,
+          "PRODUCT_REQUIREMENT": 42,
+          "RECOVERY_BEHAVIOR": 11,
+          "EXTERNAL_HANDOFF": 3,
+          "SYSTEM_PROGRESSION": 3
+        }
+      },
+      {
+        "journey": "21",
+        "name": "Wallet & Crypto",
+        "source_modes": [
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 47,
+        "actions": 98,
+        "fields": 0,
+        "pieces": 145,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 60,
+          "REVIEW_DEMO_CHROME": 38,
+          "PRODUCT_REQUIREMENT": 19,
+          "RECOVERY_BEHAVIOR": 12,
+          "SYSTEM_PROGRESSION": 5,
+          "EXTERNAL_HANDOFF": 11
+        }
+      },
+      {
+        "journey": "22",
+        "name": "QR Flows",
+        "source_modes": [
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 45,
+        "actions": 104,
+        "fields": 0,
+        "pieces": 149,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 103,
+          "REVIEW_DEMO_CHROME": 1,
+          "RECOVERY_BEHAVIOR": 14,
+          "SYSTEM_PROGRESSION": 2,
+          "PRODUCT_REQUIREMENT": 24,
+          "EXTERNAL_HANDOFF": 5
+        }
+      },
+      {
+        "journey": "23",
+        "name": "Import Data / Group",
+        "source_modes": [
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 42,
+        "actions": 97,
+        "fields": 0,
+        "pieces": 139,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 96,
+          "REVIEW_DEMO_CHROME": 1,
+          "PRODUCT_REQUIREMENT": 25,
+          "RECOVERY_BEHAVIOR": 14,
+          "EXTERNAL_HANDOFF": 3
+        }
+      },
+      {
+        "journey": "24",
+        "name": "Export / Portability",
+        "source_modes": [
+          "STATE_INVENTORY",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 48,
+        "actions": 6,
+        "fields": 0,
+        "pieces": 54,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 6,
+          "PRODUCT_REQUIREMENT": 30,
+          "RECOVERY_BEHAVIOR": 14,
+          "EXTERNAL_HANDOFF": 3,
+          "SYSTEM_PROGRESSION": 1
+        }
+      },
+      {
+        "journey": "25",
+        "name": "Storage / Backup / Recovery",
+        "source_modes": [
+          "STATE_INVENTORY",
+          "DYNAMIC_SOURCE_DEFS",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 71,
+        "actions": 159,
+        "fields": 0,
+        "pieces": 230,
+        "by_classification": {
+          "EXTERNAL_HANDOFF": 10,
+          "NAVIGATION_TRANSITION": 122,
+          "REVIEW_DEMO_CHROME": 33,
+          "PRODUCT_REQUIREMENT": 44,
+          "RECOVERY_BEHAVIOR": 17,
+          "SYSTEM_PROGRESSION": 4
+        }
+      },
+      {
+        "journey": "26",
+        "name": "Group Lifecycle",
+        "source_modes": [
+          "STATE_INVENTORY",
+          "DYNAMIC_SOURCE_DEFS",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 83,
+        "actions": 197,
+        "fields": 1,
+        "pieces": 281,
+        "by_classification": {
+          "DRAFT_FIELD": 1,
+          "NAVIGATION_TRANSITION": 144,
+          "REVIEW_DEMO_CHROME": 53,
+          "PRODUCT_REQUIREMENT": 27,
+          "RECOVERY_BEHAVIOR": 43,
+          "SYSTEM_PROGRESSION": 8,
+          "EXTERNAL_HANDOFF": 5
+        }
+      },
+      {
+        "journey": "27",
+        "name": "Account & Preferences",
+        "source_modes": [
+          "STATE_INVENTORY",
+          "DYNAMIC_SOURCE_DEFS",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 67,
+        "actions": 125,
+        "fields": 1,
+        "pieces": 193,
+        "by_classification": {
+          "DRAFT_FIELD": 1,
+          "REVIEW_DEMO_CHROME": 23,
+          "NAVIGATION_TRANSITION": 102,
+          "PRODUCT_REQUIREMENT": 24,
+          "RECOVERY_BEHAVIOR": 33,
+          "SYSTEM_PROGRESSION": 5,
+          "EXTERNAL_HANDOFF": 5
+        }
+      },
+      {
+        "journey": "28",
+        "name": "Things Go Wrong / Recovery",
+        "source_modes": [
+          "STATE_INVENTORY",
+          "DYNAMIC_SOURCE_DEFS",
+          "STATIC_SURFACE_INVENTORY"
+        ],
+        "states": 38,
+        "actions": 84,
+        "fields": 0,
+        "pieces": 122,
+        "by_classification": {
+          "NAVIGATION_TRANSITION": 75,
+          "REVIEW_DEMO_CHROME": 9,
+          "EXTERNAL_HANDOFF": 6,
+          "RECOVERY_BEHAVIOR": 21,
+          "PRODUCT_REQUIREMENT": 9,
+          "SYSTEM_PROGRESSION": 2
+        }
+      }
+    ]
+  },
+  "semantic_witnesses": {
+    "objects": {
+      "total": 50,
+      "witnessed": 50
+    },
+    "operations": {
+      "total": 49,
+      "witnessed": 49
+    },
+    "laws": {
+      "total": 41,
+      "witnessed": 41,
+      "machine_checkable": 28,
+      "declared_prose_only": 13
+    },
+    "views": {
+      "total": 7,
+      "witnessed": 7
+    },
+    "contexts": {
+      "total": 21,
+      "witnessed": 21
+    },
+    "requirements": {
+      "total": 16,
+      "witnessed": 16
+    },
+    "continuity": {
+      "total": 4,
+      "witnessed": 4
+    }
+  },
+  "operation_witnesses": {
+    "total": 49,
+    "witnessed": 49,
+    "errors": []
+  },
+  "required_states": {
+    "total": 21,
+    "resolved": 21,
+    "triggered": 21,
+    "rows": [
+      {
+        "journey": "08",
+        "requirement": "REQ-J08-STATES",
+        "requirement_state": "active_needs_review",
+        "golden_state": "active",
+        "resolved": true,
+        "triggered": true,
+        "classification": "DERIVED_PROJECTION",
+        "trigger": "derived Attention contains a current review task"
+      },
+      {
+        "journey": "08",
+        "requirement": "REQ-J08-STATES",
+        "requirement_state": "nothing_needs_you",
+        "golden_state": "waiting",
+        "resolved": true,
+        "triggered": true,
+        "classification": "DERIVED_PROJECTION",
+        "trigger": "derived Attention is empty while other people may still have pending work"
+      },
+      {
+        "journey": "08",
+        "requirement": "REQ-J08-STATES",
+        "requirement_state": "new_empty_group",
+        "golden_state": "empty",
+        "resolved": true,
+        "triggered": true,
+        "classification": "DERIVED_PROJECTION",
+        "trigger": "Group has no Expenses and Position is zero"
+      },
+      {
+        "journey": "08",
+        "requirement": "REQ-J08-STATES",
+        "requirement_state": "everyone_square",
+        "golden_state": "square",
+        "resolved": true,
+        "triggered": true,
+        "classification": "DERIVED_PROJECTION",
+        "trigger": "derived Position is zero for all relevant balances and recent settlement/history remains visible"
+      },
+      {
+        "journey": "08",
+        "requirement": "REQ-J08-STATES",
+        "requirement_state": "offline",
+        "golden_state": "offline",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "saved Group projection is shown with explicit stale/offline status"
+      },
+      {
+        "journey": "05",
+        "requirement": "REQ-J05-RECOVERY",
+        "requirement_state": "missing",
+        "golden_state": "missing",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "required participant/payer context is unavailable before save"
+      },
+      {
+        "journey": "05",
+        "requirement": "REQ-J05-RECOVERY",
+        "requirement_state": "duplicate",
+        "golden_state": "duplicate",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "duplicate Expense candidate is detected before creating a second canonical Expense"
+      },
+      {
+        "journey": "05",
+        "requirement": "REQ-J05-RECOVERY",
+        "requirement_state": "offline",
+        "golden_state": "offline",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "connectivity is unavailable before canonical save"
+      },
+      {
+        "journey": "05",
+        "requirement": "REQ-J05-RECOVERY",
+        "requirement_state": "offline_saved",
+        "golden_state": "offline-saved",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "local prototype save succeeds while offline and remains explicitly local"
+      },
+      {
+        "journey": "05",
+        "requirement": "REQ-J05-RECOVERY",
+        "requirement_state": "error",
+        "golden_state": "error",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "save is verified failed and entered details remain available"
+      },
+      {
+        "journey": "05",
+        "requirement": "REQ-J05-RECOVERY",
+        "requirement_state": "locked",
+        "golden_state": "locked",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "LAW-EXP-GUARD-01 blocks the proposed mutation because it changes unresolved settlement dependency"
+      },
+      {
+        "journey": "06",
+        "requirement": "REQ-J06-RECOVERY",
+        "requirement_state": "saving",
+        "golden_state": "saving",
+        "resolved": true,
+        "triggered": true,
+        "classification": "SYSTEM_PROGRESSION",
+        "trigger": "accepted edit/delete command is in progress and duplicate mutation is disabled"
+      },
+      {
+        "journey": "06",
+        "requirement": "REQ-J06-RECOVERY",
+        "requirement_state": "save_error",
+        "golden_state": "save-error",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "mutation is verified not saved and safe retry/review remains possible"
+      },
+      {
+        "journey": "06",
+        "requirement": "REQ-J06-RECOVERY",
+        "requirement_state": "locked",
+        "golden_state": "locked",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "LAW-EXP-GUARD-01 blocks edit/delete because current or proposed state changes unresolved settlement dependency"
+      },
+      {
+        "journey": "06",
+        "requirement": "REQ-J06-RECOVERY",
+        "requirement_state": "no_permission",
+        "golden_state": "no-permission",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "fresh authority no longer permits the requested mutation"
+      },
+      {
+        "journey": "06",
+        "requirement": "REQ-J06-RECOVERY",
+        "requirement_state": "offline_detail",
+        "golden_state": "offline-detail",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "cached Expense detail is readable while offline"
+      },
+      {
+        "journey": "06",
+        "requirement": "REQ-J06-RECOVERY",
+        "requirement_state": "offline_edit",
+        "golden_state": "offline-edit",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "write cannot safely proceed while offline"
+      },
+      {
+        "journey": "06",
+        "requirement": "REQ-J06-RECOVERY",
+        "requirement_state": "offline_saved",
+        "golden_state": "offline-saved",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "local prototype save is explicit and not remote/shared acceptance"
+      },
+      {
+        "journey": "06",
+        "requirement": "REQ-J06-RECOVERY",
+        "requirement_state": "conflict",
+        "golden_state": "conflict",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "reviewed Expense version is stale and current owner truth must refresh before write"
+      },
+      {
+        "journey": "06",
+        "requirement": "REQ-J06-RECOVERY",
+        "requirement_state": "loading",
+        "golden_state": "loading",
+        "resolved": true,
+        "triggered": true,
+        "classification": "SYSTEM_PROGRESSION",
+        "trigger": "current Expense truth is loading; no mutation is implied"
+      },
+      {
+        "journey": "06",
+        "requirement": "REQ-J06-RECOVERY",
+        "requirement_state": "not_found",
+        "golden_state": "not-found",
+        "resolved": true,
+        "triggered": true,
+        "classification": "RECOVERY_BEHAVIOR",
+        "trigger": "target Expense cannot be resolved from current authorized truth"
+      }
+    ],
+    "errors": []
+  },
+  "supersessions": [
+    {
+      "id": "SUP-J08-SETTLING",
+      "journey": "08",
+      "piece_type": "state",
+      "piece_selector": "settling",
+      "golden_impact": "GOLDEN-IMPACT-J08-SETTLEMENT-02",
+      "decision": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
+      "disposition": "POST_GOLDEN_SUPERSEDED",
+      "reason": "Historical blanket Add-disabled settlement state is preserved as evidence but no longer required for ordinary settlement composition."
+    },
+    {
+      "id": "SUP-J05-LOCK-COPY",
+      "journey": "05",
+      "piece_type": "copy",
+      "piece_selector": "locked blanket copy",
+      "golden_impact": "GOLDEN-IMPACT-J05-LOCK-02",
+      "decision": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
+      "disposition": "POST_GOLDEN_SUPERSEDED",
+      "reason": "Historical blanket-lock copy is superseded for ordinary dependency-scoped locking; the locked state itself remains."
+    }
+  ],
+  "errors": []
+}

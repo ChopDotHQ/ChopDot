@@ -109,6 +109,7 @@ Provenance caveat: J05 stylesheet is preview-owned reconstruction; approved Gold
 - **LAW-GROUP-02** — Removal, leave, transfer, rename, archive and delete prerequisites cannot silently rewrite expense attribution, balances, historical ledger facts or other memberships.
 - **LAW-MONEY-01** — Canonical financial conservation uses integer minor units with currency and exponent; cross-partition values never combine silently and display decimals are non-authoritative.
 - **LAW-OP-03** — Back, reload, route changes or time alone never convert unknown/pending state into success, failure, cancellation or receipt.
+- **LAW-POS-SCOPE-01** — Position scope is explicitly participant_pair or group. Settlement dependency/eligibility consumes participant_pair scope only; group scope remains a distinct read projection.
 - **LAW-HIST-01** — Accepted history is append-only/replay-safe; replay rebuilds projections and never repeats external/payment/signing/receipt/closure effects.
 - **LAW-OP-04** — Stale/conflicting reviewed state refreshes current owner truth and requires re-review rather than overwriting it.
 

@@ -724,6 +724,7 @@
       "LAW-GROUP-02",
       "LAW-MONEY-01",
       "LAW-OP-03",
+      "LAW-POS-SCOPE-01",
       "LAW-HIST-01",
       "LAW-OP-04"
     ],
@@ -1425,7 +1426,8 @@
         "J08",
         "J09",
         "J26"
-      ]
+      ],
+      "safety_class": "composition_continuity"
     },
     {
       "id": "group.membership",
@@ -1449,7 +1451,8 @@
         "J09",
         "J26",
         "C1_IDENTITY"
-      ]
+      ],
+      "safety_class": "composition_continuity"
     },
     {
       "id": "group.recent_item",
@@ -1504,7 +1507,8 @@
       "sources": [
         "C1_IDENTITY",
         "POST_J28"
-      ]
+      ],
+      "safety_class": "identity"
     },
     {
       "id": "money.money_v1",
@@ -1535,7 +1539,8 @@
         "C1_README",
         "J11",
         "J12"
-      ]
+      ],
+      "safety_class": "money"
     },
     {
       "id": "notification.delivery",
@@ -1579,7 +1584,8 @@
         "J12",
         "PAYMENT_COMPAT",
         "STORAGE_REPLAY"
-      ]
+      ],
+      "safety_class": "settlement"
     },
     {
       "id": "payment.settlement_scope",
@@ -1604,7 +1610,8 @@
         "PAYMENT_COMPAT",
         "DEC_EXP_LOCK",
         "DEC_EXP_LOCK_V2"
-      ]
+      ],
+      "safety_class": "settlement"
     },
     {
       "id": "position.position",
@@ -1612,10 +1619,10 @@
       "kind": "read_model",
       "domain": "groups_expenses",
       "identity": [
-        "participant_pair_or_group",
+        "position_scope",
         "currency"
       ],
-      "meaning": "Derived financial position showing what is owed/owing with currency separation and source lineage. It is read-only product truth derived from underlying records.",
+      "meaning": "Derived financial position showing what is owed/owing for a typed PositionScope and one currency, with source lineage. It is read-only product truth derived from underlying records.",
       "source_journeys": [
         "02",
         "08",
@@ -1637,7 +1644,31 @@
         "expense.issue",
         "payment.intent",
         "payment.record"
-      ]
+      ],
+      "scope_object": "position.scope",
+      "safety_class": "settlement"
+    },
+    {
+      "id": "position.scope",
+      "name": "PositionScope",
+      "kind": "value_object",
+      "domain": "groups_expenses",
+      "identity": [
+        "scope_kind",
+        "scope_ref"
+      ],
+      "meaning": "Typed scope for Position: either one participant pair or one Group. Currency remains the Position money partition.",
+      "source_journeys": [
+        "08",
+        "10",
+        "11"
+      ],
+      "sources": [
+        "J08",
+        "J10",
+        "J11"
+      ],
+      "safety_class": "settlement"
     }
   ],
   "operation_contracts": [
@@ -1966,7 +1997,8 @@
         "kind": "sum_allocations_equals_expense_total",
         "allocation_object": "expense.allocation",
         "money_partition": "money.money_v1"
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-EXP-02",
@@ -1986,7 +2018,8 @@
         "expense_mutation_owner": "06",
         "review_issue_resolution_owner": "07",
         "owner_correction_cannot_fabricate_reviewer_agreement": true
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-EXP-03",
@@ -2013,7 +2046,8 @@
         "J05",
         "J05_STATE",
         "C1_IDENTITY"
-      ]
+      ],
+      "machine_checkable": true
     },
     {
       "id": "LAW-EXP-GUARD-01",
@@ -2129,7 +2163,8 @@
         "J11",
         "DEC_EXP_LOCK",
         "DEC_EXP_LOCK_V2"
-      ]
+      ],
+      "machine_checkable": true
     },
     {
       "id": "LAW-EXP-HISTORY-01",
@@ -2149,7 +2184,8 @@
         "source_object": "expense.revision",
         "requires_prior_revision": true,
         "read_only": true
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-ISSUE-01",
@@ -2166,7 +2202,8 @@
       "constraint": {
         "kind": "block_dependent_payment_items_only",
         "dependency_key": "disputed_expense_source_lineage"
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-POS-01",
@@ -2184,7 +2221,8 @@
         "direct_mutation": false,
         "currency_partitioned": true,
         "lineage_explainable": true
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-ACT-01",
@@ -2201,7 +2239,8 @@
       "constraint": {
         "kind": "read_only_projection",
         "unread_is_not_unresolved": true
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-EXP-REVIEW-01",
@@ -2234,7 +2273,8 @@
         "J06_DECISION",
         "J07",
         "J07_STATE"
-      ]
+      ],
+      "machine_checkable": true
     },
     {
       "id": "LAW-OP-01",
@@ -2248,7 +2288,19 @@
       "sources": [
         "J28",
         "STORAGE_REPLAY"
-      ]
+      ],
+      "safety_class": "recovery_replay",
+      "constraint": {
+        "kind": "stable_possible_effect_identity",
+        "states": [
+          "pending",
+          "unknown",
+          "partial",
+          "cancel_too_late"
+        ],
+        "same_operation_identity_until_reconciliation": true
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-OP-02",
@@ -2265,7 +2317,13 @@
         "J24",
         "J26",
         "J27"
-      ]
+      ],
+      "safety_class": "recovery_replay",
+      "constraint": {
+        "kind": "unknown_before_replacement_retry",
+        "replacement_retry_requires_proven_no_effect": true
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-PAY-03",
@@ -2286,7 +2344,8 @@
         "kind": "partial_remainder_preserves_dependency",
         "open_remainder_preserves_source_lineage": true,
         "release_lock_only_when_no_open_remainder": true
-      }
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-PAY-04",
@@ -2314,7 +2373,8 @@
       "sources": [
         "J11",
         "DEC_EXP_LOCK_V2"
-      ]
+      ],
+      "machine_checkable": true
     },
     {
       "id": "LAW-GROUP-02",
@@ -2327,7 +2387,19 @@
       "sources": [
         "J09",
         "J26"
-      ]
+      ],
+      "safety_class": "composition_continuity",
+      "constraint": {
+        "kind": "lifecycle_preserves_ledger_truth",
+        "ledger_rewrite_on_lifecycle": false,
+        "protected_facts": [
+          "expense_attribution",
+          "balances",
+          "historical_ledger",
+          "other_memberships"
+        ]
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-MONEY-01",
@@ -2340,7 +2412,19 @@
         "C1_SPEND",
         "C1_README",
         "J11"
-      ]
+      ],
+      "safety_class": "money",
+      "constraint": {
+        "kind": "exact_partitioned_money",
+        "minor_units_integer": true,
+        "partition_keys": [
+          "currency",
+          "exponent"
+        ],
+        "cross_partition_combine": false,
+        "display_decimal_authority": false
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-OP-03",
@@ -2354,7 +2438,45 @@
         "J28",
         "J12",
         "J14"
-      ]
+      ],
+      "safety_class": "recovery_replay",
+      "constraint": {
+        "kind": "navigation_not_evidence",
+        "evidence_from_navigation": false,
+        "prohibited_inference_sources": [
+          "back",
+          "reload",
+          "route_change",
+          "time_alone"
+        ]
+      },
+      "machine_checkable": true
+    },
+    {
+      "id": "LAW-POS-SCOPE-01",
+      "name": "Position scope is typed",
+      "applies_to": [
+        "position.scope",
+        "position.position",
+        "payment.settlement_scope"
+      ],
+      "rule": "Position scope is explicitly participant_pair or group. Settlement dependency/eligibility consumes participant_pair scope only; group scope remains a distinct read projection.",
+      "constraint": {
+        "kind": "typed_position_scope",
+        "allowed_scope_kinds": [
+          "participant_pair",
+          "group"
+        ],
+        "settlement_required_scope_kind": "participant_pair",
+        "currency_partition_on_position": true
+      },
+      "sources": [
+        "J08",
+        "J10",
+        "J11"
+      ],
+      "safety_class": "settlement",
+      "machine_checkable": true
     },
     {
       "id": "LAW-HIST-01",
@@ -2369,7 +2491,15 @@
         "STORAGE_REPLAY",
         "J11",
         "J15"
-      ]
+      ],
+      "safety_class": "recovery_replay",
+      "constraint": {
+        "kind": "side_effect_free_replay",
+        "accepted_history_append_only": true,
+        "replay_external_effects": false,
+        "replay_role": "rebuild_projections"
+      },
+      "machine_checkable": true
     },
     {
       "id": "LAW-OP-04",
@@ -2382,33 +2512,81 @@
         "J28",
         "J26",
         "J27"
-      ]
+      ],
+      "safety_class": "recovery_replay",
+      "constraint": {
+        "kind": "stale_truth_before_write",
+        "stale_write_behavior": "refresh_and_rereview",
+        "silent_overwrite": false
+      },
+      "machine_checkable": true
     }
   ],
   "composition_laws": [
     {
       "id": "COMP-01",
-      "rule": "The same underlying object identity survives adjacent journey handoffs; routes do not create replacement domain objects."
+      "rule": "The same underlying object identity survives adjacent journey handoffs; routes do not create replacement domain objects.",
+      "safety_class": "composition_continuity",
+      "constraint": {
+        "kind": "handoff_identity_preservation",
+        "replacement_domain_object_on_route": false
+      },
+      "machine_checkable": true
     },
     {
       "id": "COMP-02",
-      "rule": "Only an operation owner may mutate its semantic object; projections/read models cannot mutate source truth."
+      "rule": "Only an operation owner may mutate its semantic object; projections/read models cannot mutate source truth.",
+      "safety_class": "composition_continuity",
+      "constraint": {
+        "kind": "single_operation_owner",
+        "projection_may_mutate_source_truth": false
+      },
+      "machine_checkable": true
     },
     {
       "id": "COMP-03",
-      "rule": "Derived views refresh from accepted underlying state; no journey manually overwrites Position, Activity, Insights or history to simulate an outcome."
+      "rule": "Derived views refresh from accepted underlying state; no journey manually overwrites Position, Activity, Insights or history to simulate an outcome.",
+      "safety_class": "composition_continuity",
+      "constraint": {
+        "kind": "derived_view_refresh",
+        "manual_projection_overwrite": false
+      },
+      "machine_checkable": true
     },
     {
       "id": "COMP-04",
-      "rule": "Possible-effect recovery preserves the original operation identity and returns to the owning journey after verified outcome/safe retry/explicit stop."
+      "rule": "Possible-effect recovery preserves the original operation identity and returns to the owning journey after verified outcome/safe retry/explicit stop.",
+      "safety_class": "composition_continuity",
+      "constraint": {
+        "kind": "recovery_identity_preservation",
+        "same_operation_identity": true,
+        "return_after": [
+          "verified_outcome",
+          "safe_retry",
+          "explicit_stop"
+        ]
+      },
+      "machine_checkable": true
     },
     {
       "id": "COMP-05",
-      "rule": "Gate A partial capability coverage is not promoted to full journey integration."
+      "rule": "Gate A partial capability coverage is not promoted to full journey integration.",
+      "safety_class": "composition_continuity",
+      "constraint": {
+        "kind": "partial_coverage_not_promoted",
+        "partial_capability_implies_full_journey": false
+      },
+      "machine_checkable": true
     },
     {
       "id": "COMP-06",
-      "rule": "Approved Goldens define experience projection; the schema references them and does not duplicate or redesign their visual hierarchy/copy."
+      "rule": "Approved Goldens define experience projection; the schema references them and does not duplicate or redesign their visual hierarchy/copy.",
+      "safety_class": "composition_continuity",
+      "constraint": {
+        "kind": "golden_projection_authority",
+        "schema_may_redesign_golden_projection": false
+      },
+      "machine_checkable": true
     }
   ],
   "continuity_contracts": [
@@ -2561,6 +2739,7 @@
       "name": "Position",
       "objects": [
         "position.position",
+        "position.scope",
         "identity.participant",
         "group.group",
         "money.money_v1"
@@ -2571,7 +2750,8 @@
       ],
       "laws": [
         "LAW-POS-01",
-        "LAW-MONEY-01"
+        "LAW-MONEY-01",
+        "LAW-POS-SCOPE-01"
       ]
     },
     {
