@@ -1,12 +1,15 @@
 # ChopDot Product Schema V1
 
-Status: **pre-Gate-B freeze candidate — schema PASS, READY_FOR_HUMAN_AUTHORIZATION**
+Status: **Claude-round-2 hardened candidate — schema checks may PASS while Gate B readiness is BLOCKED**
 
 Current authored schema:
 - `frozen-baseline.json`
 - `semantic-core.json`
 - `composition-graph.json`
 - `gate-b-authority-oracle.json`
+
+Current review note:
+- `SCHEMA_CLAUDE_ROUND2_HARDENING.md`
 
 Recovered approved evidence:
 - `recovered-evidence/j05-v1-approved-candidate.html`
@@ -16,6 +19,4 @@ Generated Gate B construction:
 - `generated/GATE_B_CONSTRUCTION.md`
 - `generated/completeness-report.json`
 
-Verification covers frozen byte pins, 59 tier-4 authority files, the recovered J05 27-state/98-link fingerprint, accepted Gate A exact-allocation behavior, J06 review-reset archive evidence, source-phrase oracle checks, executable allocation/attribution/lock cases, semantic mutation tests, generated-output determinism, and normal repository CI/smoke/e2e/coverage.
-
-`READY_FOR_HUMAN_AUTHORIZATION` means no known schema/authority/product-decision blocker remains for Gate B. It is not automatic implementation or deployment authorization.
+A schema PASS means the model is internally/provenance consistent under the current checks. Gate B readiness is derived separately from authority blockers and unresolved product-decision gaps. The current intended readiness after this pass is **BLOCKED** only by `POLICY-EXPENSE-LOCK-SCOPE` until the human product owner chooses the lock boundary.

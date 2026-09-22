@@ -1,8 +1,8 @@
 {
-  "schema_version": 3,
-  "oracle_id": "gate-b-authority-derived-adversarial-oracle-v3",
+  "schema_version": 4,
+  "oracle_id": "gate-b-authority-derived-adversarial-oracle-v4",
   "authority_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
-  "purpose": "Authority-derived adversarial test oracle. Evidence phrases/archives and recovered-fingerprint facts are verified before schema expectations are asserted. It does not outrank frozen authority.",
+  "purpose": "Authority-derived adversarial oracle. It verifies source evidence and high-risk machine semantics but does not require Gate B to have zero product-decision gaps; readiness is a derived report.",
   "assertions": [
     {
       "id": "ORACLE-J05-RECOVERED-ARTIFACT",
@@ -40,22 +40,29 @@
       }
     },
     {
-      "id": "ORACLE-GROUP-SETTLEMENT-LOCK",
+      "id": "ORACLE-EXPENSE-SETTLEMENT-LOCK",
       "evidence": [
         {
           "path": "prototypes/experience-workbench/journeys/08-group-home/spec.md",
           "git_blob": "2d5acbbd8d97d885d258bfd92ddeb7ed61a8e49d",
           "contains": [
-            "The center expense action remains visible except when settlement has locked expense changes.",
-            "Settlement in progress."
+            "The center expense action remains visible except when settlement has locked expense changes."
           ]
         },
         {
-          "path": "product-schema/recovered-evidence/j05-v1-approved-candidate.html",
-          "git_blob": "e98573abc03a9edc224722f32458a1e4c2612e6e",
+          "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/source-package-v1.1.zip",
+          "git_blob": "e073ea0717e7621c921056d56945c89bc6c0207e",
+          "archive": "zip_html",
           "contains": [
-            "Expenses are locked.",
-            "Settlement is in progress."
+            "Expense locked.",
+            "Details cannot change."
+          ]
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/08-group-home/source/decision-history.md",
+          "git_blob": "a9eff37f0ac514ef214cac2533684da5a4067cdf",
+          "contains": [
+            "later item-scoped contracts must be considered at integration"
           ]
         }
       ],
@@ -64,10 +71,11 @@
           "law": "LAW-EXP-GUARD-01",
           "kind": "effect_guard_required",
           "matches": {
-            "scope": "group"
+            "scope_policy": "REQUIRES_PRODUCT_DECISION"
           }
         },
-        "resolved_interpretation": "RESOLVED-EXPENSE-LOCK-01"
+        "known_gap": "POLICY-EXPENSE-LOCK-SCOPE",
+        "construction_requirement": "REQ-J05-LOCK"
       }
     },
     {
@@ -90,6 +98,15 @@
             "`changed`",
             "`reviewed-again`"
           ]
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/07-review-agree/v1.1-golden-candidate.html.xz",
+          "git_blob": "29c8f9246840ff6c9fc926f147e00547baec9bc7",
+          "archive": "xz_html",
+          "contains": [
+            "You are no longer in the split",
+            "Review again"
+          ]
         }
       ],
       "required": {
@@ -97,12 +114,43 @@
           "law": "LAW-EXP-REVIEW-01",
           "kind": "successful_edit_resets_current_reviews",
           "matches": {
+            "trigger": {
+              "journey": "06",
+              "operation": "expense.edit",
+              "path": "Save changes",
+              "persistence": "accepted"
+            },
+            "affected_reviews": {
+              "basis": "reviewers_current_at_edit_acceptance",
+              "include_removed_participants": true
+            },
             "current_result": "needs_review_again",
             "preserve_prior_review_history": true,
             "owner_edit_cannot_resolve_issue": true
           }
         },
-        "resolved_interpretation": "RESOLVED-EXPENSE-REVIEW-01"
+        "construction_requirement": "REQ-J06-REVIEW-RESET"
+      }
+    },
+    {
+      "id": "ORACLE-REPLY-DOES-NOT-RESOLVE",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/07-review-agree/v1.1-golden-candidate.html.xz",
+          "git_blob": "29c8f9246840ff6c9fc926f147e00547baec9bc7",
+          "archive": "xz_html",
+          "contains": [
+            "The expense stays unchanged."
+          ]
+        }
+      ],
+      "required": {
+        "operation_changes_exact": {
+          "operation": "expense.reply_to_issue",
+          "changes": [
+            "expense.issue"
+          ]
+        }
       }
     },
     {
@@ -195,7 +243,10 @@
         ],
         "law_constraint": {
           "law": "LAW-EXP-03",
-          "kind": "allocation_participant_membership"
+          "kind": "allocation_participant_membership",
+          "matches": {
+            "membership_scope": "expense.group_id"
+          }
         }
       }
     },
@@ -208,18 +259,37 @@
           "contains": [
             "Recent expenses show enough activity"
           ]
+        },
+        {
+          "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/source-package-v1.1.zip",
+          "git_blob": "e073ea0717e7621c921056d56945c89bc6c0207e",
+          "archive": "zip_html",
+          "contains": [
+            "Dinner removed.",
+            "Group balances were updated."
+          ]
         }
       ],
       "required": {
         "view": "view.group_home",
-        "derived_from": [
-          "group.recent_item",
+        "exact_derived_from": [
+          "group.group",
+          "expense.expense",
+          "expense.review",
+          "position.position",
+          "group.membership",
           "activity.attention",
-          "position.position"
+          "group.recent_item"
         ],
-        "must_not_derive_from": [
-          "activity.item"
-        ]
+        "read_model_invalidation": {
+          "read_model": "group.recent_item",
+          "operations": [
+            "expense.create",
+            "expense.edit",
+            "expense.delete"
+          ]
+        },
+        "construction_requirement": "REQ-J08-REFRESH"
       }
     },
     {
@@ -252,17 +322,46 @@
         }
       ],
       "required": {
-        "read_model": "position.position",
-        "must_not_be_changed_by": [
-          "expense.create",
-          "expense.edit",
-          "expense.delete"
-        ],
-        "must_be_invalidated_by": [
-          "expense.create",
-          "expense.edit",
-          "expense.delete"
-        ]
+        "law_constraint": {
+          "law": "LAW-POS-01",
+          "kind": "derived_read_model",
+          "matches": {
+            "direct_mutation": false,
+            "currency_partitioned": true,
+            "lineage_explainable": true
+          }
+        },
+        "read_model": "position.position"
+      }
+    },
+    {
+      "id": "ORACLE-EXPENSE-HISTORY",
+      "evidence": [
+        {
+          "path": "prototypes/experience-workbench/journeys/06-review-correct-expense/source-package-v1.1.zip",
+          "git_blob": "e073ea0717e7621c921056d56945c89bc6c0207e",
+          "archive": "zip_html",
+          "contains": [
+            "Participants",
+            "Your share"
+          ]
+        }
+      ],
+      "required": {
+        "law_constraint": {
+          "law": "LAW-EXP-HISTORY-01",
+          "kind": "requires_prior_accepted_revision",
+          "matches": {
+            "requires_prior_revision": true,
+            "read_only": true
+          }
+        },
+        "object_derived_from": {
+          "object": "expense.change_record",
+          "derived_from": [
+            "expense.revision"
+          ]
+        }
       }
     },
     {
@@ -273,8 +372,7 @@
           "path": "prototypes/integrated-product-preview-v2/money-v1.js",
           "git_blob": "620e8519adfcbc5869a7c60d59e098f906d9d798",
           "contains": [
-            "deterministic remainder assignment independent of participant input order",
-            "].sort()"
+            "deterministic remainder assignment independent of participant input order"
           ]
         },
         {

@@ -1,33 +1,25 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname,join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validateHardening } from './hardening-lib.mjs';
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const read = n => JSON.parse(readFileSync(join(root, 'product-schema', n), 'utf8'));
-const base = { core:read('semantic-core.json'), graph:read('composition-graph.json'), frozen:read('frozen-baseline.json'), oracle:read('gate-b-authority-oracle.json') };
-const clone = x => structuredClone(x);
-const mutations = [
-  ['drop-j05-recovery', x => { x.frozen.authority_recoveries = []; }],
-  ['reopen-j05-blocker', x => { x.frozen.authority_blockers = [{id:'AUTH-J05-GOLDEN-INCOMPLETE',journey:'05'}]; }],
-  ['item-scope-lock', x => { x.core.laws.find(l => l.id === 'LAW-EXP-GUARD-01').constraint.scope = 'item'; }],
-  ['drop-lock-resolution', x => { x.core.resolved_authority_interpretations = x.core.resolved_authority_interpretations.filter(r => r.id !== 'RESOLVED-EXPENSE-LOCK-01'); }],
-  ['no-review-reset', x => { x.core.laws.find(l => l.id === 'LAW-EXP-REVIEW-01').constraint.kind = 'reviews_remain_current'; }],
-  ['drop-review-resolution', x => { x.core.resolved_authority_interpretations = x.core.resolved_authority_interpretations.filter(r => r.id !== 'RESOLVED-EXPENSE-REVIEW-01'); }],
-  ['resolution-owner', x => { x.graph.journey_projections.find(j => j.id === '07').owns_operations = x.graph.journey_projections.find(j => j.id === '07').owns_operations.filter(id => id !== 'expense.resolve_issue'); }],
-  ['invert-attribution-law', x => { x.core.laws.find(l => l.id === 'LAW-EXP-03').constraint.kind = 'sum_only_no_attribution'; }],
-  ['invert-issue-scope', x => { x.core.laws.find(l => l.id === 'LAW-ISSUE-01').constraint.kind = 'block_all_payment_items'; }],
-  ['group-home-global-activity-coupling', x => { const v=x.core.derived_models.find(v => v.id === 'view.group_home'); v.derived_from=v.derived_from.filter(id => id !== 'group.recent_item'); v.derived_from.push('activity.item'); }],
-  ['write-position-directly', x => { x.core.operations.find(o => o.id === 'expense.delete').changes.push('position.position'); }],
-  ['wrong-equal-remainder', x => { x.frozen.accepted_integration.gate_a.inherited_integration_constraints.find(c => c.id === 'GATEA-MONEY-EQUAL-01').constraint.kind='deterministic_equal_allocation_last_id'; }],
-  ['drop-defaults', x => { x.graph.construction_requirements = x.graph.construction_requirements.filter(r => r.id !== 'REQ-J05-DEFAULTS'); }],
-  ['duplicate-gate-scope', x => { x.graph.gates.find(g => g.id === 'B').journeys=['08','05','06','07']; }]
+import { validateHardening,evaluateExpenseContract,allocateEqualByConstraint } from './hardening-lib.mjs';
+const root=join(dirname(fileURLToPath(import.meta.url)),'..'),read=n=>JSON.parse(readFileSync(join(root,'product-schema',n),'utf8')),base={core:read('semantic-core.json'),graph:read('composition-graph.json'),frozen:read('frozen-baseline.json'),oracle:read('gate-b-authority-oracle.json')},clone=x=>structuredClone(x);
+const mutations=[
+ ['review-reset-one-reviewer',x=>x.core.laws.find(l=>l.id==='LAW-EXP-REVIEW-01').constraint.affected_reviews={basis:'issue_raiser_only',include_removed_participants:false}],
+ ['review-reset-before-persistence',x=>x.core.laws.find(l=>l.id==='LAW-EXP-REVIEW-01').constraint.trigger.persistence='submitted'],
+ ['stale-recent-after-delete',x=>x.core.operations.find(o=>o.id==='expense.delete').invalidates=x.core.operations.find(o=>o.id==='expense.delete').invalidates.filter(id=>id!=='group.recent_item')],
+ ['reply-silently-resolves',x=>x.core.operations.find(o=>o.id==='expense.reply_to_issue').changes.push('expense.review')],
+ ['edit-loses-effect-guard',x=>x.core.operations.find(o=>o.id==='expense.edit').guards=[]],
+ ['position-loses-lineage',x=>x.core.laws.find(l=>l.id==='LAW-POS-01').constraint.lineage_explainable=false],
+ ['group-home-second-store',x=>x.core.derived_models.find(v=>v.id==='view.group_home').derived_from.push('activity.item')],
+ ['position-becomes-entity',x=>x.core.objects.find(o=>o.id==='position.position').kind='entity'],
+ ['allocation-cross-group',x=>x.core.laws.find(l=>l.id==='LAW-EXP-03').constraint.membership_scope='any_group'],
+ ['dependent-effect-preserves-review',x=>x.core.operations.find(o=>o.id==='expense.edit').dependent_state_effects[0].effect='preserve all existing reviews unchanged'],
+ ['read-projection-owns-delete',x=>x.graph.journey_projections.find(j=>j.id==='08').owns_operations=['expense.delete']],
+ ['equal-remainder-rule-drifts',x=>x.frozen.accepted_integration.gate_a.inherited_integration_constraints.find(c=>c.id==='GATEA-MONEY-EQUAL-01').constraint.remainder_rule='last-stable-sorted-participant-ids-get-plus-one-minor-unit'],
+ ['settlement-close-writes-position',x=>x.core.operations.find(o=>o.id==='settlement.close').changes.push('position.position')],
+ ['history-loses-prior-revision',x=>x.core.laws.find(l=>l.id==='LAW-EXP-HISTORY-01').constraint.requires_prior_revision=false]
 ];
-const results=[];
-for (const [name, mutate] of mutations) {
-  const x=clone(base); mutate(x);
-  const errors=validateHardening(x.core,x.graph,x.frozen,x.oracle);
-  assert.ok(errors.length>0, 'mutation escaped: ' + name);
-  results.push({name, detected_by:errors.map(e => e.id)});
-}
+const results=[];for(const [name,mutate] of mutations){const x=clone(base);mutate(x);let errors=validateHardening(x.core,x.graph,x.frozen,x.oracle);if(name==='equal-remainder-rule-drifts'){try{allocateEqualByConstraint(x.frozen.accepted_integration.gate_a.inherited_integration_constraints.find(c=>c.id==='GATEA-MONEY-EQUAL-01').constraint,1000,['A','B','C']);}catch(e){errors=[...errors,{id:'ALLOCATOR-CONSTRAINT',msg:String(e)}];}}assert.ok(errors.length>0,'mutation escaped: '+name);results.push({name,detected_by:[...new Set(errors.map(e=>e.id))]});}
+const badEqual={operation:'expense.create',split_method:'equal',total_minor_units:1000,group_participants:['A','B','C'],selected_participants:['A','B','C'],allocations:[{participant_id:'A',minor_units:1},{participant_id:'B',minor_units:1},{participant_id:'C',minor_units:998}]};assert.ok(evaluateExpenseContract(base.core,base.frozen,badEqual).includes('GATEA-MONEY-EQUAL-01'));
 console.log(JSON.stringify({mutations:results.length,detected:results.length,results,result:'PASS'},null,2));

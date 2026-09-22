@@ -430,18 +430,23 @@
       "name": "Expense mutation guard",
       "objects": [
         "expense.mutation_guard",
+        "payment.intent",
+        "payment.settlement_scope",
         "group.group",
         "expense.expense"
       ],
       "preserves": [
-        "current authoritative group settlement-in-progress lock state"
+        "active settlement identity/state",
+        "settlement scope",
+        "target Group/Expense",
+        "selected lock-scope policy once authorized"
       ],
       "laws": [
         "LAW-EXP-GUARD-01",
         "LAW-OP-04"
       ],
       "availability": "resolve_at_effect_time",
-      "note": "Effect-time Group guard. Gate B consumes the observable settlement-in-progress state; Gate C later owns how settlement lifecycle produces that state."
+      "note": "Effect-time guard inputs only. Gate B does not own settlement lifecycle UI; it consumes the guard predicate. Scope remains POLICY-EXPENSE-LOCK-SCOPE."
     }
   ],
   "journey_projections": [
@@ -1401,7 +1406,8 @@
         "REQ-J07-LANGUAGE",
         "REQ-J07-ISSUE-LOOP",
         "REQ-J05-LOCK",
-        "REQ-J06-REVIEW-RESET"
+        "REQ-J06-REVIEW-RESET",
+        "REQ-J08-REFRESH"
       ]
     },
     {
@@ -2116,8 +2122,8 @@
       "journey": "05",
       "kind": "effect_guard",
       "value": {
-        "scope": "group",
-        "locked_when": "settlement_in_progress",
+        "scope": "REQUIRES_PRODUCT_DECISION",
+        "locked_when": "active settlement intersects target under selected scope policy",
         "blocked_operations": [
           "expense.create",
           "expense.edit",
@@ -2129,7 +2135,10 @@
         "J05",
         "J05_STATE",
         "J05_RECOVERED",
-        "J08"
+        "J06",
+        "J06_STATE",
+        "J08",
+        "J08_DECISION"
       ]
     },
     {
@@ -2137,7 +2146,13 @@
       "journey": "06",
       "kind": "dependent_state_transition",
       "value": {
-        "on_successful_persisted_edit": "reset_current_reviews_to_needs_review_again",
+        "trigger": {
+          "path": "Save changes",
+          "persistence": "accepted"
+        },
+        "affected_review_set": "reviewers_current_at_edit_acceptance",
+        "include_participants_removed_by_edit": true,
+        "result": "needs_review_again",
         "preserve_review_history": true,
         "open_issue_requires_j07_resolution": true,
         "owner_edit_cannot_mark_agreed": true
@@ -2147,6 +2162,36 @@
         "J06_STATE",
         "J07",
         "J07_STATE"
+      ]
+    },
+    {
+      "id": "REQ-J08-REFRESH",
+      "journey": "08",
+      "kind": "canonical_refresh",
+      "value": {
+        "after_expense_create": [
+          "position",
+          "group_recent",
+          "attention"
+        ],
+        "after_expense_edit": [
+          "position",
+          "group_recent",
+          "attention",
+          "change_history"
+        ],
+        "after_expense_delete": [
+          "position",
+          "group_recent",
+          "attention",
+          "change_history"
+        ],
+        "deleted_expense_not_present_as_current_recent_expense": true,
+        "no_second_fixture_store": true
+      },
+      "sources": [
+        "J06",
+        "J08"
       ]
     }
   ]
