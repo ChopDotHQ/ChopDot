@@ -20,14 +20,29 @@ export function rowsOfJson(text){
   return Array.isArray(j)?j:(j.rows||j.mappings||j.events||j.items||[]);
 }
 export function parseMarkdownEvents(text,path){
-  const out=[];
+  const out=[],seen=new Set();
+  const push=(event,action,event_cell,source_kind)=>{
+    const k=event+'|'+(action||'')+'|'+source_kind;
+    if(seen.has(k))return;
+    seen.add(k);out.push({event,action:action||null,event_cell:event_cell||null,path,source_kind});
+  };
   for(const line of text.split(/\r?\n/)){
-    if(!line.trim().startsWith('|')||/^\|\s*---/.test(line)||/UI action|Primary UI action/.test(line))continue;
-    const cols=line.split('|').slice(1,-1).map(x=>x.trim());
-    if(cols.length<2)continue;
-    const cell=cols[1].replace(/\x60/g,'');
-    const evs=[...cell.matchAll(/\b[A-Z][A-Za-z0-9]+(?:[A-Z][A-Za-z0-9]+)+\b/g)].map(m=>m[0]);
-    for(const event of evs)out.push({event,action:cols[0],event_cell:cols[1],path});
+    if(line.trim().startsWith('|')&&!/^\|\s*---/.test(line)&&!/UI action|Primary UI action/.test(line)){
+      const cols=line.split('|').slice(1,-1).map(x=>x.trim());
+      if(cols.length>=2){
+        const cell=cols[1].replace(/\x60/g,'');
+        for(const m of cell.matchAll(/\b([A-Z][A-Za-z0-9]+(?:[A-Z][A-Za-z0-9]+)+)\b/g))push(m[1],cols[0],cols[1],'table');
+      }
+    }
+    for(const m of line.matchAll(/\x60([A-Z][A-Za-z0-9]+)\x60/g))push(m[1],null,line,'backtick_prose');
+    for(const m of line.matchAll(/\*\*([A-Z][A-Za-z0-9]+)\*\*/g))push(m[1],null,line,'bold_prose');
+  }
+  return out;
+}
+export function parseModelEvents(text,path){
+  const out=[],seen=new Set();
+  for(const m of text.matchAll(/\bemit\(\s*['"]([A-Z][A-Za-z0-9]+)['"]/g)){
+    if(seen.has(m[1]))continue;seen.add(m[1]);out.push({event:m[1],action:null,event_cell:null,path,source_kind:'model_emit'});
   }
   return out;
 }
@@ -42,16 +57,26 @@ export function parseScreenStates(text){
 export function parseCodedStateInventory(text,journey){
   const out=[];
   for(const line of text.split(/\r?\n/)){
-    if(new RegExp('J'+journey+'-(?:S|B)\\d+','i').test(line)){
-      const bt=[...line.matchAll(/\x60([^\x60]+)\x60/g)].map(m=>norm(m[1]));
+    const coded=new RegExp('J'+journey+'-(?:S|B)\\d+','i').test(line);
+    if(coded){
+      const bt=[...line.matchAll(/\x60([^\x60]+)\x60/g)].map(m=>norm(m[1])).filter(x=>/^[a-z][a-z0-9-]*$/.test(x));
       if(bt.length)out.push(bt[0]);
       else {
         const m=line.match(/J\d+-(?:S|B)\d+\s*[·|-]\s*([a-z0-9][a-z0-9-]+)/i);
         if(m)out.push(norm(m[1]));
       }
-    } else if(['05','06','07'].includes(journey)){
-      for(const m of line.matchAll(/\x60([a-z0-9][a-z0-9-]+)\x60/gi))out.push(norm(m[1]));
+    }else{
+      for(const m of line.matchAll(/\x60([a-z][a-z0-9-]*)\x60/gi))out.push(norm(m[1]));
     }
+  }
+  return uniq(out);
+}
+export function parseExecutableStates(text){
+  const out=[];
+  for(const name of ['STATES','routes']){
+    const re=new RegExp('(?:const|let|var)\\s+'+name+'\\s*=\\s*\\[([\\s\\S]*?)\\]','i');
+    const m=text.match(re);
+    if(m)for(const q of m[1].matchAll(/['"]([a-z0-9][a-z0-9-]+)['"]/gi))out.push(q[1]);
   }
   return uniq(out);
 }
@@ -60,6 +85,7 @@ export function parseDynamicPrototype(text){
   for(const line of text.split(/\r?\n/)){
     let state=null;
     let m=line.match(/^\s*['"]([a-z0-9][a-z0-9-]+)['"]\s*:\s*[SB]\(/i);
+    if(!m)m=line.match(/^\s*['"]([a-z0-9][a-z0-9-]+)['"]\s*:\s*\[/i);
     if(!m)m=line.match(/\badd\(\s*['"]([a-z0-9][a-z0-9-]+)['"]\s*,\s*[SB]\(/i);
     if(m){state=m[1];states.push(state);}
     if(!state)continue;
@@ -125,7 +151,7 @@ export function actionClass(action,binding,stateIds){
   if(target&&stateIds.has(target))return {classification:'NAVIGATION_TRANSITION',schema_refs:[],justification:'Internal transition to another approved state.'};
   if(action.kind==='external_or_route'||(action.href&&!String(action.href).startsWith('#')))return {classification:'EXTERNAL_HANDOFF',schema_refs:[],justification:'Navigation/handoff outside the current journey state graph.'};
   if(action.disabled===true||/^(saving|creating|withdrawing|please wait|loading)/i.test(norm(action.label)))return {classification:'SYSTEM_PROGRESSION',schema_refs:[],justification:'Disabled/progress control rather than a new domain effect.'};
-  return {classification:'PRODUCT_REQUIREMENT',schema_refs:[],justification:'Visible approved control with no standalone canonical domain operation; retained explicitly rather than silently dropped.'};
+  return {classification:'UNJUSTIFIED',schema_refs:[],justification:'Visible control has no verified navigation, handoff, reviewer, recovery, system-progression, or semantic-operation binding.'};
 }
 export function addPiece(map,piece){
   const old=map.get(piece.piece_id);
