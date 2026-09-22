@@ -35,4 +35,13 @@ jobs:
       - run: node product-schema/verify-stage-4.mjs
       - run: node product-schema/derive-ux-diagnostics.mjs
       - run: node product-schema/verify-ux-diagnostics.mjs
-      - run: git diff --exit-code -- product-schema/generated
+      - name: Upload generated schema diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: product-schema-generated
+          path: product-schema/generated
+          if-no-files-found: error
+          retention-days: 7
+      - run: |
+          git diff --exit-code -- product-schema/generated
+          test -z "$(git ls-files --others --exclude-standard product-schema/generated)"
