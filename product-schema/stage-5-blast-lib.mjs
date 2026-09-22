@@ -14,10 +14,17 @@ export function deriveBlastRadius(core,graph,tasks){
   for(const t of tasks.tasks||[])add('task:'+t.id,'tasks');
 
   for(const o of core.operations){
-    for(const id of [o.owner,...(o.changes||[]),...(o.invalidates||[]),...(o.guards||[]),...(o.invalidates_prepared||[])])addEdge(edges,'object:'+id,'operation:'+o.id);
+    const touched=[o.owner,...(o.changes||[]),...(o.invalidates||[]),...(o.guards||[]),...(o.invalidates_prepared||[])];
+    for(const id of touched){
+      addEdge(edges,'object:'+id,'operation:'+o.id);
+      addEdge(edges,'operation:'+o.id,'object:'+id);
+    }
     for(const lid of o.law_refs||[])addEdge(edges,'operation:'+o.id,'law:'+lid);
   }
-  for(const l of core.laws)for(const id of l.applies_to||[])addEdge(edges,'object:'+id,'law:'+l.id);
+  for(const l of core.laws)for(const id of l.applies_to||[]){
+    addEdge(edges,'object:'+id,'law:'+l.id);
+    addEdge(edges,'law:'+l.id,'object:'+id);
+  }
   for(const c of graph.contexts){
     for(const id of c.objects||[])addEdge(edges,'object:'+id,'context:'+c.id);
     for(const lid of c.laws||[])addEdge(edges,'law:'+lid,'context:'+c.id);
