@@ -1,9 +1,9 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "binding_id": "chopdot-domain-event-bindings-v1",
   "authority": "AUTHORED_SCHEMA_BRIDGE",
   "source_registry": "golden-mapping-sources.json",
-  "rule": "Every distinct frozen UI domain_event is explicitly classified. Operation bindings map Golden event vocabulary to canonical semantic operations without forcing navigation/read/demo events into mutations.",
+  "rule": "Union bridge across frozen UI_EVENT_MAPPING.json and UI_TO_DOMAIN_EVENTS.md vocabularies. Every distinct mapped event is explicitly classified; operation_refs are present only when a canonical semantic operation owns the effect/boundary.",
   "classification_vocabulary": [
     "DOMAIN_OPERATION",
     "NAVIGATION_TRANSITION",
@@ -47,6 +47,23 @@
       ],
       "confidence": "high",
       "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "ActivityRefreshRequested",
+      "classification": "RECOVERY_BEHAVIOR",
+      "operation_refs": [
+        "recovery.reconcile"
+      ],
+      "journeys": [
+        "18"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/18-activity-notifications/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
     },
     {
       "domain_event": "AuthorizedRelationshipsRequested",
@@ -121,6 +138,51 @@
       ],
       "confidence": "high",
       "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+    },
+    {
+      "domain_event": "DisplayNameSaved",
+      "classification": "PRODUCT_REQUIREMENT",
+      "operation_refs": [],
+      "journeys": [
+        "01"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/01-enter-chopdot/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "EmailSignInSelected",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [],
+      "journeys": [
+        "01"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/01-enter-chopdot/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "EntryDestinationOpened",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "01"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/01-enter-chopdot/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
     },
     {
       "domain_event": "ExistingPaymentOpened",
@@ -501,6 +563,21 @@
       "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
     },
     {
+      "domain_event": "OwnPaymentMethodsHandoffOpened",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
       "domain_event": "PartialPaymentSelected",
       "classification": "SELECTION_STATE",
       "operation_refs": [],
@@ -607,6 +684,72 @@
       ],
       "confidence": "high",
       "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "PaymentAuthorizationCancelled",
+      "classification": "RECOVERY_BEHAVIOR",
+      "operation_refs": [
+        "settlement.reconcile"
+      ],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "PaymentCancellationRequested",
+      "classification": "RECOVERY_BEHAVIOR",
+      "operation_refs": [
+        "settlement.reconcile"
+      ],
+      "journeys": [
+        "12"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "PaymentCleared",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "PaymentClosed",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [
+        "settlement.close"
+      ],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
     },
     {
       "domain_event": "PaymentDetailsRequested",
@@ -809,6 +952,21 @@
       "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative."
     },
     {
+      "domain_event": "PaymentStarted",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
       "domain_event": "PaymentStatusRefreshRequested",
       "classification": "DOMAIN_OPERATION",
       "operation_refs": [
@@ -841,6 +999,21 @@
       ],
       "confidence": "high",
       "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "PaymentSubmitted",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
     },
     {
       "domain_event": "PersonDetailViewed",
@@ -915,6 +1088,23 @@
       ],
       "confidence": "high",
       "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+    },
+    {
+      "domain_event": "ReceiverConfirmed",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [
+        "settlement.confirm_receipt"
+      ],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
     },
     {
       "domain_event": "ReceiverConfirmedPartial",
@@ -1307,6 +1497,21 @@
       "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
     },
     {
+      "domain_event": "SavedRecordAccepted",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
       "domain_event": "SavedRecordRefreshRequested",
       "classification": "RECOVERY_BEHAVIOR",
       "operation_refs": [],
@@ -1333,6 +1538,195 @@
       ],
       "confidence": "high",
       "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "SavingsContributionConfirmed",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [
+        "savings.contribute"
+      ],
+      "journeys": [
+        "17"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "SavingsContributionMarkedAdded",
+      "classification": "PRODUCT_REQUIREMENT",
+      "operation_refs": [
+        "savings.contribute"
+      ],
+      "journeys": [
+        "17"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "SavingsContributionPrepared",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [
+        "savings.contribute"
+      ],
+      "journeys": [
+        "17"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "SavingsContributionRetryPrepared",
+      "classification": "RECOVERY_BEHAVIOR",
+      "operation_refs": [
+        "savings.contribute",
+        "recovery.safe_retry"
+      ],
+      "journeys": [
+        "17"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "SavingsContributionReturned",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [
+        "savings.contribute"
+      ],
+      "journeys": [
+        "17"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "SavingsContributionSubmitted",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [
+        "savings.contribute"
+      ],
+      "journeys": [
+        "17"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "SavingsOperationStatusRefreshRequested",
+      "classification": "RECOVERY_BEHAVIOR",
+      "operation_refs": [
+        "savings.contribute",
+        "recovery.reconcile"
+      ],
+      "journeys": [
+        "17"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "SavingsWithdrawalApprovalRecorded",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [
+        "savings.withdraw"
+      ],
+      "journeys": [
+        "17"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "SavingsWithdrawalAuthorizationRequested",
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "savings.withdraw"
+      ],
+      "journeys": [
+        "17"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "SavingsWithdrawalConfirmed",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [
+        "savings.withdraw"
+      ],
+      "journeys": [
+        "17"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "SavingsWithdrawalPrepared",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [
+        "savings.withdraw"
+      ],
+      "journeys": [
+        "17"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
     },
     {
       "domain_event": "SettlementExitRequested",
@@ -1425,6 +1819,23 @@
       "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
     },
     {
+      "domain_event": "SettlementScopeResolved",
+      "classification": "SELECTION_STATE",
+      "operation_refs": [
+        "settlement.prepare"
+      ],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
       "domain_event": "SettlementScopeResolvedOrRequestScopeResolved",
       "classification": "EXTERNAL_HANDOFF",
       "operation_refs": [],
@@ -1479,6 +1890,87 @@
       ],
       "confidence": "high",
       "justification": "Read/projection event; does not create canonical domain truth."
+    },
+    {
+      "domain_event": "SignInApprovalCancelled",
+      "classification": "NAVIGATION_TRANSITION",
+      "operation_refs": [],
+      "journeys": [
+        "01"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/01-enter-chopdot/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "SignInApprovalRequested",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [
+        "session.enter"
+      ],
+      "journeys": [
+        "01"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/01-enter-chopdot/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "SignInCodeRequested",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "01"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/01-enter-chopdot/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "SignInCodeVerificationRequested",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [
+        "session.enter"
+      ],
+      "journeys": [
+        "01"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/01-enter-chopdot/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+    },
+    {
+      "domain_event": "SignInStatusChecked",
+      "classification": "RECOVERY_BEHAVIOR",
+      "operation_refs": [
+        "session.enter"
+      ],
+      "journeys": [
+        "01"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/01-enter-chopdot/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
     },
     {
       "domain_event": "SourceSnapshotReviewRestarted",
