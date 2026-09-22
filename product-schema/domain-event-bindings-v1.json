@@ -1,9 +1,9 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "binding_id": "chopdot-domain-event-bindings-v1",
   "authority": "AUTHORED_SCHEMA_BRIDGE",
   "source_registry": "golden-mapping-sources.json",
-  "rule": "Union bridge across frozen UI_EVENT_MAPPING.json and UI_TO_DOMAIN_EVENTS.md vocabularies. Every distinct mapped event is explicitly classified; operation_refs are present only when a canonical semantic operation owns the effect/boundary.",
+  "rule": "Frozen event vocabulary with typed event-to-operation relations. Read/navigation/demo events carry no mutation authority; recovery/provider-result events only query, retry, cancel, claim, or report against canonical owners.",
   "classification_vocabulary": [
     "DOMAIN_OPERATION",
     "NAVIGATION_TRANSITION",
@@ -32,7 +32,8 @@
         "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Reversible selection/review state before an owned effect."
+      "justification": "Reversible selection/review state before an owned effect.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ActivityItemOpened",
@@ -46,14 +47,13 @@
         "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ActivityRefreshRequested",
       "classification": "RECOVERY_BEHAVIOR",
-      "operation_refs": [
-        "recovery.reconcile"
-      ],
+      "operation_refs": [],
       "journeys": [
         "18"
       ],
@@ -63,7 +63,24 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": []
+    },
+    {
+      "domain_event": "AuthorizedPeopleReturnRequested",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Return navigation to authorized people context; no canonical mutation.",
+      "operation_bindings": []
     },
     {
       "domain_event": "AuthorizedRelationshipsRequested",
@@ -77,7 +94,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "CommandOutcomeCheckRequested",
@@ -93,7 +111,13 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "recovery.reconcile",
+          "relation": "queries"
+        }
+      ]
     },
     {
       "domain_event": "CreateRequestRequested",
@@ -109,7 +133,29 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "request.create",
+          "relation": "initiates"
+        }
+      ]
+    },
+    {
+      "domain_event": "DemoPaymentClosed",
+      "classification": "REVIEW_DEMO_CHROME",
+      "operation_refs": [],
+      "journeys": [
+        "12"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Prototype fixture label; never canonical payment authority.",
+      "operation_bindings": []
     },
     {
       "domain_event": "DemoStateRequested",
@@ -123,7 +169,24 @@
         "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Prototype/reviewer control; explicitly not canonical product-domain authority."
+      "justification": "Prototype/reviewer control; explicitly not canonical product-domain authority.",
+      "operation_bindings": []
+    },
+    {
+      "domain_event": "DemoVerifiedResult",
+      "classification": "REVIEW_DEMO_CHROME",
+      "operation_refs": [],
+      "journeys": [
+        "12"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Prototype fixture selector; never canonical payment authority.",
+      "operation_bindings": []
     },
     {
       "domain_event": "DependentIssueReviewRequested",
@@ -137,12 +200,15 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "DisplayNameSaved",
-      "classification": "PRODUCT_REQUIREMENT",
-      "operation_refs": [],
+      "classification": "DOMAIN_OPERATION",
+      "operation_refs": [
+        "preferences.update"
+      ],
       "journeys": [
         "01"
       ],
@@ -152,7 +218,13 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Persisted display/profile preference change after verified session; bound to preferences.update, which remains presentation-only authority.",
+      "operation_bindings": [
+        {
+          "operation": "preferences.update",
+          "relation": "commits"
+        }
+      ]
     },
     {
       "domain_event": "EmailSignInSelected",
@@ -167,7 +239,8 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": []
     },
     {
       "domain_event": "EntryDestinationOpened",
@@ -182,7 +255,8 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ExistingPaymentOpened",
@@ -196,7 +270,8 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ExistingRequestOpened",
@@ -210,7 +285,8 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ExpenseReviewHandoffOpened",
@@ -224,7 +300,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "GroupCapabilitiesViewed",
@@ -238,7 +315,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "GroupMembersViewed",
@@ -252,7 +330,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "InsightsNavigationOnly",
@@ -267,7 +346,8 @@
         "prototypes/experience-workbench/journeys/19-insights/review-v1.1/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "InviteHandoffOpened",
@@ -281,7 +361,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "InviteStatusViewed",
@@ -295,7 +376,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "Journey07HandoffPreviewed",
@@ -309,7 +391,8 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "Journey09ReturnRequested",
@@ -323,7 +406,24 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present.",
+      "operation_bindings": []
+    },
+    {
+      "domain_event": "Journey11HandoffPreviewed",
+      "classification": "EXTERNAL_HANDOFF",
+      "operation_refs": [],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Preview/handoff to settlement owner; no payment execution.",
+      "operation_bindings": []
     },
     {
       "domain_event": "Journey12HandoffPreviewed",
@@ -337,7 +437,8 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "JourneyHandoffReturned",
@@ -351,7 +452,8 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "MemberManagementOpened",
@@ -365,7 +467,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "medium",
-      "justification": "Approved product-state/event meaning that does not correspond to a standalone canonical operation."
+      "justification": "Approved product-state/event meaning that does not correspond to a standalone canonical operation.",
+      "operation_bindings": []
     },
     {
       "domain_event": "MemberRemovalRequested",
@@ -381,14 +484,19 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "membership.remove",
+          "relation": "initiates"
+        }
+      ]
     },
     {
       "domain_event": "MemberRemovalRetryRequested",
       "classification": "DOMAIN_OPERATION",
       "operation_refs": [
-        "membership.remove",
-        "recovery.safe_retry"
+        "membership.remove"
       ],
       "journeys": [
         "09"
@@ -398,7 +506,13 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "membership.remove",
+          "relation": "retries"
+        }
+      ]
     },
     {
       "domain_event": "MemberRemovalReviewed",
@@ -412,7 +526,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Reversible selection/review state before an owned effect."
+      "justification": "Reversible selection/review state before an owned effect.",
+      "operation_bindings": []
     },
     {
       "domain_event": "MemberRemovalStatusRequested",
@@ -428,7 +543,36 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "recovery.reconcile",
+          "relation": "queries"
+        }
+      ]
+    },
+    {
+      "domain_event": "MemberRemoved",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [
+        "membership.remove"
+      ],
+      "journeys": [
+        "09"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/09-manage-people/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Accepted member-removal result; reports membership.remove without initiating another removal.",
+      "operation_bindings": [
+        {
+          "operation": "membership.remove",
+          "relation": "reports_result"
+        }
+      ]
     },
     {
       "domain_event": "NavigationBackRequested",
@@ -442,7 +586,8 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present.",
+      "operation_bindings": []
     },
     {
       "domain_event": "NavigationOnly",
@@ -456,7 +601,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present.",
+      "operation_bindings": []
     },
     {
       "domain_event": "NavigationRequested",
@@ -472,7 +618,8 @@
         "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present.",
+      "operation_bindings": []
     },
     {
       "domain_event": "NavigationReturned",
@@ -486,7 +633,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present.",
+      "operation_bindings": []
     },
     {
       "domain_event": "NoCommand",
@@ -500,7 +648,8 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Approved product-state/event meaning that does not correspond to a standalone canonical operation."
+      "justification": "Approved product-state/event meaning that does not correspond to a standalone canonical operation.",
+      "operation_bindings": []
     },
     {
       "domain_event": "None",
@@ -516,7 +665,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Approved product-state/event meaning that does not correspond to a standalone canonical operation."
+      "justification": "Approved product-state/event meaning that does not correspond to a standalone canonical operation.",
+      "operation_bindings": []
     },
     {
       "domain_event": "NotificationCenterOpened",
@@ -530,7 +680,8 @@
         "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present.",
+      "operation_bindings": []
     },
     {
       "domain_event": "NotificationOpened",
@@ -544,7 +695,8 @@
         "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "NotificationReadAllRequested",
@@ -560,7 +712,13 @@
         "prototypes/experience-workbench/journeys/18-activity-notifications/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "notification.set_read_state",
+          "relation": "commits"
+        }
+      ]
     },
     {
       "domain_event": "OwnPaymentMethodsHandoffOpened",
@@ -575,7 +733,8 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PartialPaymentSelected",
@@ -589,7 +748,8 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Reversible selection/review state before an owned effect."
+      "justification": "Reversible selection/review state before an owned effect.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PayerMarkedSent",
@@ -607,7 +767,13 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "settlement.mark_sent",
+          "relation": "commits"
+        }
+      ]
     },
     {
       "domain_event": "PayerSentClaimPrepared",
@@ -621,7 +787,8 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Reversible selection/review state before an owned effect."
+      "justification": "Reversible selection/review state before an owned effect.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PaymentAmountSelected",
@@ -635,7 +802,8 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Reversible selection/review state before an owned effect."
+      "justification": "Reversible selection/review state before an owned effect.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PaymentAmountSelectionOpened",
@@ -649,7 +817,8 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Reversible selection/review state before an owned effect."
+      "justification": "Reversible selection/review state before an owned effect.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PaymentApprovalCancellationRequested",
@@ -667,7 +836,13 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "wallet.execute_action",
+          "relation": "cancels"
+        }
+      ]
     },
     {
       "domain_event": "PaymentApprovalRequested",
@@ -683,45 +858,17 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "wallet.execute_action",
+          "relation": "initiates"
+        }
+      ]
     },
     {
       "domain_event": "PaymentAuthorizationCancelled",
       "classification": "RECOVERY_BEHAVIOR",
-      "operation_refs": [
-        "settlement.reconcile"
-      ],
-      "journeys": [
-        "11"
-      ],
-      "occurrences": 1,
-      "source_paths": [
-        "prototypes/experience-workbench/journeys/11-settle-up/UI_TO_DOMAIN_EVENTS.md"
-      ],
-      "samples": [],
-      "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
-    },
-    {
-      "domain_event": "PaymentCancellationRequested",
-      "classification": "RECOVERY_BEHAVIOR",
-      "operation_refs": [
-        "settlement.reconcile"
-      ],
-      "journeys": [
-        "12"
-      ],
-      "occurrences": 1,
-      "source_paths": [
-        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_TO_DOMAIN_EVENTS.md"
-      ],
-      "samples": [],
-      "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
-    },
-    {
-      "domain_event": "PaymentCleared",
-      "classification": "SYSTEM_PROGRESSION",
       "operation_refs": [],
       "journeys": [
         "11"
@@ -732,7 +879,47 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": []
+    },
+    {
+      "domain_event": "PaymentCancellationRequested",
+      "classification": "RECOVERY_BEHAVIOR",
+      "operation_refs": [],
+      "journeys": [
+        "12"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/12-complete-settlement/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": []
+    },
+    {
+      "domain_event": "PaymentCleared",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [
+        "settlement.reconcile"
+      ],
+      "journeys": [
+        "11"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/11-settle-up/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Provider/network observation consumed by settlement reconciliation; not receipt or closure authority by itself.",
+      "operation_bindings": [
+        {
+          "operation": "settlement.reconcile",
+          "relation": "reports_result"
+        }
+      ]
     },
     {
       "domain_event": "PaymentClosed",
@@ -749,7 +936,13 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "settlement.close",
+          "relation": "reports_result"
+        }
+      ]
     },
     {
       "domain_event": "PaymentDetailsRequested",
@@ -763,7 +956,8 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PaymentIntentAuthorized",
@@ -779,7 +973,13 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "settlement.authorize",
+          "relation": "commits"
+        }
+      ]
     },
     {
       "domain_event": "PaymentIntentPrepared",
@@ -795,7 +995,13 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "settlement.prepare",
+          "relation": "commits"
+        }
+      ]
     },
     {
       "domain_event": "PaymentIntentReviewCancelled",
@@ -809,7 +1015,8 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PaymentIntentReviewResumed",
@@ -825,7 +1032,8 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
@@ -839,7 +1047,8 @@
         "prototypes/experience-workbench/journeys/20-payment-methods/review-v1/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PaymentMethodSelected",
@@ -853,7 +1062,8 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Reversible selection/review state before an owned effect."
+      "justification": "Reversible selection/review state before an owned effect.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PaymentMethodSelectionOpened",
@@ -869,7 +1079,8 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Reversible selection/review state before an owned effect."
+      "justification": "Reversible selection/review state before an owned effect.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PaymentMethodsHandoffPreviewOpened",
@@ -883,7 +1094,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PaymentQuoteRefreshRequested",
@@ -899,7 +1111,13 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "settlement.prepare",
+          "relation": "queries"
+        }
+      ]
     },
     {
       "domain_event": "PaymentRecoveryRequested",
@@ -917,7 +1135,13 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "settlement.reconcile",
+          "relation": "queries"
+        }
+      ]
     },
     {
       "domain_event": "PaymentRetryRequested",
@@ -935,7 +1159,13 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "recovery.safe_retry",
+          "relation": "retries"
+        }
+      ]
     },
     {
       "domain_event": "PaymentStartBlocked",
@@ -949,7 +1179,8 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative."
+      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PaymentStarted",
@@ -964,7 +1195,8 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PaymentStatusRefreshRequested",
@@ -982,7 +1214,13 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "settlement.reconcile",
+          "relation": "queries"
+        }
+      ]
     },
     {
       "domain_event": "PaymentStatusViewed",
@@ -998,12 +1236,15 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PaymentSubmitted",
       "classification": "SYSTEM_PROGRESSION",
-      "operation_refs": [],
+      "operation_refs": [
+        "settlement.reconcile"
+      ],
       "journeys": [
         "11"
       ],
@@ -1013,7 +1254,13 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Provider/network observation consumed by settlement reconciliation; not receipt or closure authority by itself.",
+      "operation_bindings": [
+        {
+          "operation": "settlement.reconcile",
+          "relation": "reports_result"
+        }
+      ]
     },
     {
       "domain_event": "PersonDetailViewed",
@@ -1027,7 +1274,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PersonScopeSelected",
@@ -1041,7 +1289,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Reversible selection/review state before an owned effect."
+      "justification": "Reversible selection/review state before an owned effect.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PrototypeControlsOpened",
@@ -1057,7 +1306,8 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Prototype/reviewer control; explicitly not canonical product-domain authority."
+      "justification": "Prototype/reviewer control; explicitly not canonical product-domain authority.",
+      "operation_bindings": []
     },
     {
       "domain_event": "PrototypeScenarioControlsOpened",
@@ -1071,7 +1321,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Prototype/reviewer control; explicitly not canonical product-domain authority."
+      "justification": "Prototype/reviewer control; explicitly not canonical product-domain authority.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceiverConfirmationRequested",
@@ -1087,7 +1338,13 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "settlement.confirm_receipt",
+          "relation": "initiates"
+        }
+      ]
     },
     {
       "domain_event": "ReceiverConfirmed",
@@ -1104,7 +1361,13 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "settlement.confirm_receipt",
+          "relation": "reports_result"
+        }
+      ]
     },
     {
       "domain_event": "ReceiverConfirmedPartial",
@@ -1120,7 +1383,13 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "settlement.confirm_receipt",
+          "relation": "reports_result"
+        }
+      ]
     },
     {
       "domain_event": "ReceiverNotYetReported",
@@ -1134,7 +1403,8 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Approved product-state/event meaning that does not correspond to a standalone canonical operation."
+      "justification": "Approved product-state/event meaning that does not correspond to a standalone canonical operation.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceivingDetailsClipboardWriteRequested",
@@ -1148,7 +1418,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceivingDetailsOriginResumed",
@@ -1162,7 +1433,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceivingDetailsRecipientPreviewOpened",
@@ -1176,7 +1448,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceivingDetailsReloadRequested",
@@ -1190,7 +1463,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative."
+      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceivingLinkClipboardWriteRequested",
@@ -1204,7 +1478,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceivingLinkCodeViewed",
@@ -1218,7 +1493,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceivingLinkExternalHandoffCancelled",
@@ -1232,7 +1508,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceivingLinkExternalHandoffFailed",
@@ -1246,7 +1523,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceivingLinkExternalHandoffPreviewOpened",
@@ -1260,7 +1538,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceivingLinkExternalHandoffReturned",
@@ -1274,7 +1553,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceivingMethodSelected",
@@ -1288,7 +1568,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Reversible selection/review state before an owned effect."
+      "justification": "Reversible selection/review state before an owned effect.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceivingShareAudienceReviewed",
@@ -1302,7 +1583,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Reversible selection/review state before an owned effect."
+      "justification": "Reversible selection/review state before an owned effect.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceivingShareAudienceSelectionOpened",
@@ -1316,7 +1598,8 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Reversible selection/review state before an owned effect."
+      "justification": "Reversible selection/review state before an owned effect.",
+      "operation_bindings": []
     },
     {
       "domain_event": "ReceivingShareCommandRetried",
@@ -1332,7 +1615,13 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "recovery.safe_retry",
+          "relation": "retries"
+        }
+      ]
     },
     {
       "domain_event": "ReceivingShareCreateRequested",
@@ -1348,7 +1637,13 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "receiving_share.create",
+          "relation": "initiates"
+        }
+      ]
     },
     {
       "domain_event": "ReceivingShareOutcomeQueryRequested",
@@ -1364,7 +1659,13 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "recovery.reconcile",
+          "relation": "queries"
+        }
+      ]
     },
     {
       "domain_event": "ReceivingShareStopRequested",
@@ -1380,7 +1681,13 @@
         "prototypes/experience-workbench/journeys/14-receive-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "receiving_share.stop",
+          "relation": "initiates"
+        }
+      ]
     },
     {
       "domain_event": "RelatedPeopleViewed",
@@ -1394,7 +1701,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "RequestContextResumed",
@@ -1408,7 +1716,31 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present.",
+      "operation_bindings": []
+    },
+    {
+      "domain_event": "RequestDeliveryRetryRequested",
+      "classification": "RECOVERY_BEHAVIOR",
+      "operation_refs": [
+        "request.deliver"
+      ],
+      "journeys": [
+        "13"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/13-request-money/UI_TO_DOMAIN_EVENTS.md"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Retries delivery of the same request; never creates a second request.",
+      "operation_bindings": [
+        {
+          "operation": "request.deliver",
+          "relation": "retries"
+        }
+      ]
     },
     {
       "domain_event": "RequestDraftNoteChanged",
@@ -1422,7 +1754,8 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Draft-field mutation; not accepted canonical domain truth."
+      "justification": "Draft-field mutation; not accepted canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "RequestDraftReopened",
@@ -1436,7 +1769,8 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Draft-field mutation; not accepted canonical domain truth."
+      "justification": "Draft-field mutation; not accepted canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "RequestReadRetried",
@@ -1450,7 +1784,8 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative."
+      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative.",
+      "operation_bindings": []
     },
     {
       "domain_event": "RequestReviewed",
@@ -1464,7 +1799,8 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Reversible selection/review state before an owned effect."
+      "justification": "Reversible selection/review state before an owned effect.",
+      "operation_bindings": []
     },
     {
       "domain_event": "RequestSourceBreakdownOpened",
@@ -1478,7 +1814,8 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "RetrySameCommandRequested",
@@ -1494,7 +1831,13 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "recovery.safe_retry",
+          "relation": "retries"
+        }
+      ]
     },
     {
       "domain_event": "SavedRecordAccepted",
@@ -1509,7 +1852,8 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SavedRecordRefreshRequested",
@@ -1523,7 +1867,8 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative."
+      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SavedRecordViewed",
@@ -1537,7 +1882,8 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SavingsContributionConfirmed",
@@ -1554,11 +1900,17 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "savings.contribute",
+          "relation": "reports_result"
+        }
+      ]
     },
     {
       "domain_event": "SavingsContributionMarkedAdded",
-      "classification": "PRODUCT_REQUIREMENT",
+      "classification": "DOMAIN_OPERATION",
       "operation_refs": [
         "savings.contribute"
       ],
@@ -1571,7 +1923,13 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "User self-report transition within savings.contribute; not final confirmation.",
+      "operation_bindings": [
+        {
+          "operation": "savings.contribute",
+          "relation": "reports_claim"
+        }
+      ]
     },
     {
       "domain_event": "SavingsContributionPrepared",
@@ -1588,14 +1946,19 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "savings.contribute",
+          "relation": "prepares"
+        }
+      ]
     },
     {
       "domain_event": "SavingsContributionRetryPrepared",
       "classification": "RECOVERY_BEHAVIOR",
       "operation_refs": [
-        "savings.contribute",
-        "recovery.safe_retry"
+        "savings.contribute"
       ],
       "journeys": [
         "17"
@@ -1606,7 +1969,13 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "savings.contribute",
+          "relation": "retries"
+        }
+      ]
     },
     {
       "domain_event": "SavingsContributionReturned",
@@ -1623,7 +1992,13 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "savings.contribute",
+          "relation": "reports_result"
+        }
+      ]
     },
     {
       "domain_event": "SavingsContributionSubmitted",
@@ -1640,14 +2015,19 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "savings.contribute",
+          "relation": "initiates"
+        }
+      ]
     },
     {
       "domain_event": "SavingsOperationStatusRefreshRequested",
       "classification": "RECOVERY_BEHAVIOR",
       "operation_refs": [
-        "savings.contribute",
-        "recovery.reconcile"
+        "savings.contribute"
       ],
       "journeys": [
         "17"
@@ -1658,7 +2038,13 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "savings.contribute",
+          "relation": "queries"
+        }
+      ]
     },
     {
       "domain_event": "SavingsWithdrawalApprovalRecorded",
@@ -1675,7 +2061,13 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "savings.withdraw",
+          "relation": "reports_result"
+        }
+      ]
     },
     {
       "domain_event": "SavingsWithdrawalAuthorizationRequested",
@@ -1692,7 +2084,13 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "savings.withdraw",
+          "relation": "initiates"
+        }
+      ]
     },
     {
       "domain_event": "SavingsWithdrawalConfirmed",
@@ -1709,7 +2107,13 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "savings.withdraw",
+          "relation": "reports_result"
+        }
+      ]
     },
     {
       "domain_event": "SavingsWithdrawalPrepared",
@@ -1726,7 +2130,36 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "savings.withdraw",
+          "relation": "prepares"
+        }
+      ]
+    },
+    {
+      "domain_event": "SessionVerified",
+      "classification": "SYSTEM_PROGRESSION",
+      "operation_refs": [
+        "session.enter"
+      ],
+      "journeys": [
+        "01"
+      ],
+      "occurrences": 1,
+      "source_paths": [
+        "prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs"
+      ],
+      "samples": [],
+      "confidence": "high",
+      "justification": "Provider-backed verified session result for the current sign-in operation.",
+      "operation_bindings": [
+        {
+          "operation": "session.enter",
+          "relation": "reports_result"
+        }
+      ]
     },
     {
       "domain_event": "SettlementExitRequested",
@@ -1742,7 +2175,8 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SettlementFlowResumed",
@@ -1756,7 +2190,8 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present."
+      "justification": "Navigation/state transition; preserves domain truth unless another bound operation is present.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SettlementHistoryOpened",
@@ -1770,7 +2205,8 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SettlementIssueOpened",
@@ -1784,7 +2220,8 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SettlementResultViewed",
@@ -1800,7 +2237,8 @@
         "prototypes/experience-workbench/journeys/12-complete-settlement/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SettlementScopeRefreshed",
@@ -1816,14 +2254,18 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "settlement.prepare",
+          "relation": "queries"
+        }
+      ]
     },
     {
       "domain_event": "SettlementScopeResolved",
       "classification": "SELECTION_STATE",
-      "operation_refs": [
-        "settlement.prepare"
-      ],
+      "operation_refs": [],
       "journeys": [
         "11"
       ],
@@ -1833,7 +2275,8 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SettlementScopeResolvedOrRequestScopeResolved",
@@ -1847,7 +2290,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result."
+      "justification": "Boundary to another journey/system; the handoff itself does not invent the downstream result.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SettlementScopeViewed",
@@ -1861,7 +2305,8 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SharedGroupsViewed",
@@ -1875,7 +2320,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SharedPaymentPreferenceViewed",
@@ -1889,7 +2335,8 @@
         "prototypes/experience-workbench/journeys/09-manage-people/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Read/projection event; does not create canonical domain truth."
+      "justification": "Read/projection event; does not create canonical domain truth.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SignInApprovalCancelled",
@@ -1904,7 +2351,8 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SignInApprovalRequested",
@@ -1921,7 +2369,13 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "session.enter",
+          "relation": "initiates"
+        }
+      ]
     },
     {
       "domain_event": "SignInCodeRequested",
@@ -1936,7 +2390,8 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": []
     },
     {
       "domain_event": "SignInCodeVerificationRequested",
@@ -1953,7 +2408,13 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "session.enter",
+          "relation": "initiates"
+        }
+      ]
     },
     {
       "domain_event": "SignInStatusChecked",
@@ -1970,7 +2431,13 @@
       ],
       "samples": [],
       "confidence": "high",
-      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary."
+      "justification": "Frozen UI_TO_DOMAIN_EVENTS mapping classified into the canonical Stage 5 reconstruction vocabulary.",
+      "operation_bindings": [
+        {
+          "operation": "session.enter",
+          "relation": "queries"
+        }
+      ]
     },
     {
       "domain_event": "SourceSnapshotReviewRestarted",
@@ -1984,7 +2451,8 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative."
+      "justification": "Recovery/read/retry grammar; same-operation truth and safe-retry laws remain authoritative.",
+      "operation_bindings": []
     },
     {
       "domain_event": "WalletConnectionRequested",
@@ -2000,7 +2468,13 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "wallet.connect_switch",
+          "relation": "initiates"
+        }
+      ]
     },
     {
       "domain_event": "WalletSwitchRequested",
@@ -2016,7 +2490,13 @@
         "prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "wallet.connect_switch",
+          "relation": "initiates"
+        }
+      ]
     },
     {
       "domain_event": "WithdrawalReviewOpened",
@@ -2030,7 +2510,8 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Reversible selection/review state before an owned effect."
+      "justification": "Reversible selection/review state before an owned effect.",
+      "operation_bindings": []
     },
     {
       "domain_event": "WithdrawRequestRequested",
@@ -2046,7 +2527,23 @@
         "prototypes/experience-workbench/journeys/13-request-money/UI_EVENT_MAPPING.json"
       ],
       "confidence": "high",
-      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary."
+      "justification": "Bound to the canonical semantic operation(s) that own this approved domain event/boundary.",
+      "operation_bindings": [
+        {
+          "operation": "request.withdraw",
+          "relation": "initiates"
+        }
+      ]
     }
+  ],
+  "operation_relation_vocabulary": [
+    "prepares",
+    "initiates",
+    "commits",
+    "cancels",
+    "queries",
+    "retries",
+    "reports_claim",
+    "reports_result"
   ]
 }
