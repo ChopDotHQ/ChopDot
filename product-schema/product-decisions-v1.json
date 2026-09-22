@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "decision_id": "DEC-EXPENSE-SETTLEMENT-LOCK-01",
+  "status": "approved_human_product_decision",
+  "approved_on": "2026-09-22",
+  "scope_journeys": [
+    "05",
+    "06",
+    "08",
+    "11",
+    "12"
+  ],
+  "supersedes_gap": "POLICY-EXPENSE-LOCK-SCOPE",
+  "decision": {
+    "name": "Dependency-scoped expense locking with explicit whole-group closeout",
+    "default_mode": "dependency_scoped",
+    "modes": {
+      "dependency_scoped": {
+        "description": "An active nonterminal settlement locks only mutations that would change source truth already frozen into that settlement.",
+        "create": "Allow a new unrelated Expense because an exact prepared SettlementScope does not retroactively expand to include new ledger items.",
+        "edit": "Block when the target Expense is in the active SettlementScope source_item_ids; otherwise allow.",
+        "delete": "Block when the target Expense is in the active SettlementScope source_item_ids; otherwise allow."
+      },
+      "group_closeout": {
+        "description": "A user deliberately starts a whole-group closeout. The active scope freezes the relevant Group ledger while that closeout remains nonterminal.",
+        "create": "Block for the closeout Group.",
+        "edit": "Block for Expenses in the closeout Group.",
+        "delete": "Block for Expenses in the closeout Group."
+      }
+    },
+    "unknown_effect_rule": "If execution outcome may have taken effect but is not yet known, keep the relevant active SettlementScope locked until the original PaymentIntent is reconciled.",
+    "exact_scope_rule": "SettlementScope is frozen before authorization. Later unrelated Expenses create new ledger truth; they do not silently change the already-prepared PaymentIntent.",
+    "release_rule": "Release the lock only when the owning PaymentIntent becomes terminal, is explicitly cancelled before effect, or reconciliation establishes a safe no-effect/terminal result.",
+    "explanation_rule": "The product should be able to explain which active settlement causes a mutation to be blocked."
+  },
+  "rationale": [
+    "The historical Goldens establish settlement-related Expense locking but do not settle group-wide versus item-scoped integration behavior.",
+    "Later settlement contracts make source lineage exact and dependency-aware.",
+    "Dependency-scoped locking preserves safety without unnecessarily freezing unrelated group activity.",
+    "An explicit whole-group closeout legitimately broadens the same mechanism instead of creating a second locking system."
+  ],
+  "authority_note": "This record is a new human product decision made after the frozen Golden baseline. It does not claim to have been implied by the historical Goldens."
+}
