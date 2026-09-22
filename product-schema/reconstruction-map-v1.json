@@ -1638,7 +1638,8 @@
       "golden_impact": "GOLDEN-IMPACT-J08-SETTLEMENT-02",
       "decision": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
       "disposition": "POST_GOLDEN_SUPERSEDED",
-      "reason": "Historical blanket Add-disabled settlement state is preserved as evidence but no longer required for ordinary settlement composition."
+      "reason": "Historical blanket Add-disabled settlement state is preserved as evidence but no longer required for ordinary settlement composition.",
+      "impact_state": "settlement_in_progress"
     },
     {
       "id": "SUP-J05-LOCK-COPY",
@@ -1649,7 +1650,8 @@
       "golden_impact": "GOLDEN-IMPACT-J05-LOCK-02",
       "decision": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
       "disposition": "POST_GOLDEN_SUPERSEDED",
-      "reason": "Historical blanket-lock copy is superseded for ordinary dependency-scoped locking; the locked state itself remains."
+      "reason": "Historical blanket-lock copy is superseded for ordinary dependency-scoped locking; the locked state itself remains.",
+      "impact_state": "locked"
     }
   ],
   "control_bindings": [
