@@ -60,7 +60,7 @@ export function validateIndependentSafety(core,graph,reconstruction,authority={}
   check(errors,j17.includes("Prepared, self-reported, submitted, waiting and unknown states do not change Available or goal progress."),"AUTHORITY-EVIDENCE","J17 no-optimistic-money evidence missing");
   check(errors,j28.includes("Reconcile before replacement retry"),"AUTHORITY-EVIDENCE","J28 recovery evidence missing");
   check(errors,j27.includes("Deletion is blocked while the user still owns a group or has unresolved money obligations"),"AUTHORITY-EVIDENCE","J27 deletion evidence missing");
-  check(errors,j25.includes("Secrets / raw receiving details")||j25.includes("Secrets / executable authority"),"AUTHORITY-EVIDENCE","J25 secret-exclusion evidence missing");
+  check(errors,j25.includes("Credentials / signing / raw receiving details")||j25.includes("Credentials','Excluded")||j25.includes("Restore cannot create payment, retry, wallet or signing authority"),"AUTHORITY-EVIDENCE","J25 secret/executable-authority exclusion evidence missing");
 
   const participant=obj(core,"identity.participant");
   check(errors,!!participant&&eq(participant.identity,["group_id","participant_id"]),"ID-PARTICIPANT","Participant identity must be group_id + participant_id");
