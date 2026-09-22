@@ -36,22 +36,36 @@ function attr(tag,name){const m=tag.match(new RegExp(name+"\\s*=\\s*['\"]([^'\"]
 function visible(html=''){return decode(html.replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<svg[\s\S]*?<\/svg>/gi,' ').replace(/<[^>]+>/g,' ')).replace(/\s+/g,' ').trim();}
 function extractScreens(doc){
   const tokens=[...doc.matchAll(/<(section|div|article|main)\b[^>]*>|<\/(section|div|article|main)>/gi)],screens=[];
+  function matchingEnd(i,tagName){
+    let depth=1;
+    for(let k=i+1;k<tokens.length;k++){
+      const openName=(tokens[k][1]||'').toLowerCase(),closeName=(tokens[k][2]||'').toLowerCase();
+      if(openName===tagName)depth++;
+      if(closeName===tagName)depth--;
+      if(depth===0)return tokens[k].index+tokens[k][0].length;
+    }
+    return null;
+  }
   for(let i=0;i<tokens.length;i++){
     const tag=tokens[i][0];if(/^<\//.test(tag))continue;
     const tagName=(tokens[i][1]||'').toLowerCase(),cls=attr(tag,'class')||'',id=attr(tag,'id');
     const classTokens=cls.split(/\s+/).filter(Boolean);
     if(!id||!classTokens.some(x=>x==='screen'||x.endsWith('-screen')))continue;
-    let depth=1,end=null;
-    for(let k=i+1;k<tokens.length;k++){
-      const tk=tokens[k][0],openName=(tokens[k][1]||'').toLowerCase(),closeName=(tokens[k][2]||'').toLowerCase();
-      if(openName===tagName)depth++;
-      if(closeName===tagName)depth--;
-      if(depth===0){end=tokens[k].index+tk.length;break;}
-    }
-    if(end===null)throw new Error('Unclosed screen '+id);
-    screens.push({id,html:doc.slice(tokens[i].index,end)});
+    const end=matchingEnd(i,tagName);if(end===null)throw new Error('Unclosed screen '+id);
+    screens.push({id,html:doc.slice(tokens[i].index,end),surface_model:'state_surface'});
   }
-  return screens;
+  if(screens.length)return screens;
+  for(const wanted of ['app','device']){
+    for(let i=0;i<tokens.length;i++){
+      const tag=tokens[i][0];if(/^<\//.test(tag))continue;
+      const cls=attr(tag,'class')||'',classTokens=cls.split(/\s+/).filter(Boolean);
+      if(!classTokens.includes(wanted))continue;
+      const tagName=(tokens[i][1]||'').toLowerCase(),end=matchingEnd(i,tagName);
+      if(end!==null)return [{id:'artifact-root',html:doc.slice(tokens[i].index,end),surface_model:'single_surface_'+wanted}];
+    }
+  }
+  const body=doc.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i);
+  return [{id:'artifact-root',html:body?body[1]:doc,surface_model:'single_surface_body_fallback'}];
 }
 function parseFields(html){
   const fields=[];
@@ -101,7 +115,7 @@ for(const j of frozen.journeys){
       const fields=parseFields(s.html);
       const actions=parseActions(s.html).map(a=>({...a,semantic_operation:opMap[j.id]?.[a.label]||null}));
       const hm=s.html.match(/<div[^>]*class=["'][^"']*header-title[^"']*["'][^>]*>[\s\S]*?<b[^>]*>([\s\S]*?)<\/b>/i);
-      return {id:s.id,title:hm?visible(hm[1]):null,fields,actions,field_count:fields.length,action_count:actions.length,internal_targets:unique(actions.map(a=>a.target))};
+      return {id:s.id,surface_model:s.surface_model||'state_surface',title:hm?visible(hm[1]):null,fields,actions,field_count:fields.length,action_count:actions.length,internal_targets:unique(actions.map(a=>a.target))};
     });
     if(!states.length){status='unparsed';error='no .screen sections found';}
   }catch(e){status='error';error=e.message;}
@@ -117,7 +131,7 @@ for(const j of frozen.journeys){
       shortest_completion_transition_count:min?.transitions??null,shortest_completion_path:min?.path??null,
       required_inputs_from_schema:requiredInputs,
       estimated_minimum_user_interactions:min?min.transitions+requiredInputs.length:null,
-      step_metric_confidence:j.id==='05'?'verified_required_inputs_plus_derived_transitions':'heuristic_static_prototype_graph'
+      step_metric_confidence:j.id==='05'?'verified_required_inputs_plus_derived_transitions':states.length===1?'single_surface_no_transition_metric':'heuristic_static_prototype_graph'
     }
   });
 }
