@@ -148,7 +148,7 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
     }
 
     const arr=[...pm.values()];
-    const countUnique=xs=>new Set(xs.map(x=>[norm(x.state||''),norm(x.label||x.action||''),normTarget(x.target||x.href||x.to||''),norm(x.domain_event||x.source_event||'')].join('|'))).size;
+    const countUnique=xs=>new Set(xs.map(x=>[norm(x.state||''),norm(x.label||x.action||''),normTarget(x.target||x.href||x.to||'')].join('|'))).size;
     const staticControls=(uj?.states||[]).flatMap(s=>(s.actions||[]).map(a=>({...a,state:(s.id==='artifact-root'&&exemption?exemption.canonical_state:s.id)})));
     const jsonControls=jsonRows.map(x=>({...x.row,state:x.row.screen||x.row.route||x.row.state,domain_event:x.event}));
     const uiActionCount=countUnique(staticControls);
