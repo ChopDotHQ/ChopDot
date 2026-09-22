@@ -2381,15 +2381,18 @@
         "account.preferences"
       ],
       "source_journeys": [
-        "27"
+        "27",
+        "01"
       ],
       "sources": [
-        "J27"
+        "J27",
+        "J01"
       ],
       "rules": [
         "Draft/preview is not persisted preference.",
         "UI preference is not external/system/payment authority.",
-        "Unknown writes reconcile before replacement retry."
+        "Unknown writes reconcile before replacement retry.",
+        "Initial display-name save after verified entry and later profile/preference updates share presentation-only preference authority; neither changes Participant or external identity."
       ]
     },
     {
