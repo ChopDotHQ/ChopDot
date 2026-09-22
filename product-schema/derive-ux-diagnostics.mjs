@@ -32,7 +32,7 @@ function loadArtifact(a){
   throw new Error('Unsupported artifact '+a.kind);
 }
 function decode(s=''){return s.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&nbsp;/g,' ').replace(/&middot;/g,'·').replace(/&rsquo;/g,'’').replace(/&ldquo;|&rdquo;/g,'"');}
-function attr(tag,name){const m=tag.match(new RegExp(name+"\\\\s*=\\\\s*['\\\"]([^'\\\"]*)['\\\"]","i"));return m?decode(m[1]):null;}
+function attr(tag,name){const m=tag.match(new RegExp(name+"\\s*=\\s*['\"]([^'\"]*)['\"]","i"));return m?decode(m[1]):null;}
 function visible(html=''){return decode(html.replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<svg[\s\S]*?<\/svg>/gi,' ').replace(/<[^>]+>/g,' ')).replace(/\s+/g,' ').trim();}
 function extractScreens(doc){
   const tokens=[...doc.matchAll(/<section\b[^>]*>|<\/section>/gi)],screens=[];
