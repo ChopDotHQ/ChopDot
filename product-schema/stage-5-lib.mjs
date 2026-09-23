@@ -6,6 +6,7 @@ import {
 } from './stage-5-source-lib.mjs';
 import { deriveIndependentMutationCoverage,validateIndependentSafety } from './stage-5-safety-lib.mjs';
 import { deriveBlastRadius } from './stage-5-blast-lib.mjs';
+import { validateStage52 } from './stage-5-freeze-lib.mjs';
 import {
   validateEventBindings,applyAndValidateControlBindings,validateOperationWitnesses,
   validateRequiredStates,validateSupersessions,validateOverlayWitnesses,semanticWitnessStats
@@ -197,6 +198,7 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
   };
   const independentSafetyErrors=validateIndependentSafety(core,graph,reconstruction,authority);
   const mutations=deriveIndependentMutationCoverage(core,graph,reconstruction,authority);
+  const stage52=validateStage52(core,graph,reconstruction,bindings,pieces,tasks,registry);
 
   const eventErrorsAll=[...eventErrors];
   const errors=[
@@ -205,7 +207,8 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
     ...unjustified.map(p=>({id:'UNJUSTIFIED-PIECE',piece_id:p.piece_id,journey:p.journey,piece:p.piece})),
     ...pseudoPieces.map(p=>({id:'PSEUDO-PIECE',piece_id:p.piece_id})),
     ...recoveryUngoverned.map(p=>({id:'UNGOVERNED-RECOVERY-PIECE',piece_id:p.piece_id})),
-    ...independentSafetyErrors.map(e=>({id:'INDEPENDENT-SAFETY-'+e.id,...e}))
+    ...independentSafetyErrors.map(e=>({id:'INDEPENDENT-SAFETY-'+e.id,...e})),
+    ...stage52.errors
   ];
 
   const byClass={};for(const p of pieces)byClass[p.classification]=(byClass[p.classification]||0)+1;
@@ -228,6 +231,7 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
     supersessions:{total:(reconstruction.supersessions||[]).length,errors:supersessionErrors},
     extraction:{errors:extractionErrors,source_denominators:sourceDenominators},
     independent_safety:{errors:independentSafetyErrors},
+    stage_5_2:{seals:stage52.seals,metrics:stage52.metrics,errors:stage52.errors},
     errors
   };
 
