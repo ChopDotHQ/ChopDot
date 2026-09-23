@@ -198,7 +198,19 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
   };
   const independentSafetyErrors=validateIndependentSafety(core,graph,reconstruction,authority);
   const mutations=deriveIndependentMutationCoverage(core,graph,reconstruction,authority);
-  const stage52=validateStage52(core,graph,reconstruction,bindings,pieces,tasks,registry);
+  const authoredFreezePaths=[
+    'product-schema/semantic-core.json',
+    'product-schema/composition-graph.json',
+    'product-schema/reconstruction-map-v1.json',
+    'product-schema/domain-event-bindings-v1.json',
+    'product-schema/golden-mapping-sources.json',
+    'product-schema/task-paths-v1.json',
+    'product-schema/hardening-lib.mjs',
+    'product-schema/gate-b-authority-oracle.json',
+    'product-schema/frozen-baseline.json'
+  ];
+  const authoredBlobs=Object.fromEntries(authoredFreezePaths.map(path=>[path,frozenBlob(root,'HEAD',path)]));
+  const stage52=validateStage52(core,graph,reconstruction,bindings,pieces,tasks,registry,authoredBlobs);
 
   const eventErrorsAll=[...eventErrors];
   const errors=[
@@ -231,11 +243,11 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
     supersessions:{total:(reconstruction.supersessions||[]).length,errors:supersessionErrors},
     extraction:{errors:extractionErrors,source_denominators:sourceDenominators},
     independent_safety:{errors:independentSafetyErrors},
-    stage_5_2:{seals:stage52.seals,metrics:stage52.metrics,errors:stage52.errors},
+    stage_5_2:{seals:stage52.seals,authored_blobs:stage52.authored_blobs,metrics:stage52.metrics,errors:stage52.errors},
     errors
   };
 
   const blast=deriveBlastRadius(core,graph,tasks,pieces);
-  const adversarial=deriveStage52AdversarialCoverage(core,graph,reconstruction,bindings,pieces,tasks,registry);
+  const adversarial=deriveStage52AdversarialCoverage(core,graph,reconstruction,bindings,pieces,tasks,registry,authoredBlobs);
   return {coverage,mutations,adversarial,blast,pieces};
 }
