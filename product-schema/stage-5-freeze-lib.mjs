@@ -241,6 +241,8 @@ export function validateStage52(core,graph,reconstruction,bindings,pieces,tasks,
 
   const failureLike=/(failed|failure|error|unknown|rejected|disconnected|declined|denied|offline|locked|conflict|stale|expired|cancelled|canceled|blocked|not-found|mismatch|recipient-says-no|insufficient|reversal|reversed|retry|reconcil)/i;
   for(const p of pieces.filter(x=>x.piece_type==="state"&&failureLike.test(String(x.state||"")))){
+    const explicitBoundary=/handoff|boundary/i.test(String(p.state||""))&&p.classification==="EXTERNAL_HANDOFF";
+    if(explicitBoundary)continue;
     if(!["RECOVERY_BEHAVIOR","SYSTEM_PROGRESSION","POST_GOLDEN_SUPERSEDED"].includes(p.classification)){
       errors.push({id:"FAILURE-STATE-MISCLASSIFIED",piece_id:p.piece_id,classification:p.classification});
     }
