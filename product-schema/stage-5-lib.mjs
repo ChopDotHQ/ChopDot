@@ -248,6 +248,6 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
   };
 
   const blast=deriveBlastRadius(core,graph,tasks,pieces);
-  const adversarial=deriveStage52AdversarialCoverage(core,graph,reconstruction,bindings,pieces,tasks,registry,authoredBlobs,authority);
+  const adversarial=deriveStage52AdversarialCoverage(core,graph,reconstruction,bindings,pieces,tasks,registry,authoredBlobs,authority,eventSet);
   return {coverage,mutations,adversarial,blast,pieces};
 }
