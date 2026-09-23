@@ -766,7 +766,8 @@
           "action": {
             "label_exact": "Withdraw request",
             "target": "review"
-          }
+          },
+          "semantic_operation": "expense.withdraw_issue"
         }
       ],
       "completion_state": "review",
@@ -802,7 +803,8 @@
           "action": {
             "label_exact": "Send reply",
             "target": "reply-sent"
-          }
+          },
+          "semantic_operation": "expense.reply_to_issue"
         }
       ],
       "completion_state": "reply-sent",
