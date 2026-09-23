@@ -317,25 +317,56 @@ export function buildStage52AdversarialCases(core,graph,reconstruction,bindings)
     {name:"wrong-alias-existing-state",mutate:x=>{x.reconstruction.state_name_aliases["06"].conflict="loading";}},
     {name:"reuse-impact-on-live-state",mutate:x=>x.reconstruction.supersessions[0].piece_id="J08/state/active"},
     {name:"collapse-c1-overlay",mutate:x=>{for(const w of x.reconstruction.overlay_witnesses||[])w.schema_refs=["view.group_home"];}},
-    {name:"close-drops-position-scope",mutate:x=>{const o=x.core.operations.find(o=>o.id==="settlement.close");o.reads=o.reads.filter(v=>v!=="position.scope");}}
+    {name:"close-drops-position-scope",mutate:x=>{const o=x.core.operations.find(o=>o.id==="settlement.close");o.reads=o.reads.filter(v=>v!=="position.scope");}},
+    {name:"pay02-applies-to-empty",mutate:x=>{x.core.laws.find(l=>l.id==="LAW-PAY-02").applies_to=[];}},
+    {name:"pay02-add-equivalence-bypass",mutate:x=>{x.core.laws.find(l=>l.id==="LAW-PAY-02").constraint.treat_as_equivalent=[["sent","confirmed"]];}},
+    {name:"confirm-receipt-allows-payer",mutate:x=>{x.core.operations.find(o=>o.id==="settlement.confirm_receipt").rules.push("Payer may confirm receipt for the receiver.");}},
+    {name:"invent-sent-implies-received-law",mutate:x=>{
+      x.core.laws.push({id:"LAW-PAY-AUTO-RECEIPT",name:"Auto receipt",applies_to:["payment.intent"],rule:"Sent implies received after 7 days.",sources:["J12"]});
+      x.core.operations.find(o=>o.id==="settlement.mark_sent").law_refs.push("LAW-PAY-AUTO-RECEIPT");
+    }},
+    {name:"extra-j12-settlement-context-without-scope",mutate:x=>{
+      x.graph.contexts.push({id:"ctx.settlement.loose",name:"Loose settlement",objects:["payment.intent"],preserves:["payment_id"],laws:["LAW-PAY-02"]});
+      const j=x.graph.journey_projections.find(j=>j.id==="12");j.entry_contexts_any=["ctx.settlement.loose"];
+    }},
+    {name:"conflict-trigger-view-only-governor",mutate:x=>{
+      const t=x.reconstruction.required_state_triggers.find(t=>t.journey==="06"&&t.requirement_state==="conflict");
+      t.governed_by=["view.group_home"];
+    }},
+    {name:"navigation-back-closes-payment",mutate:x=>{
+      const b=x.bindings.bindings.find(b=>b.domain_event==="NavigationBackRequested")||x.bindings.bindings.find(b=>b.classification==="NAVIGATION_TRANSITION");
+      b.classification="DOMAIN_OPERATION";b.operation_refs=["settlement.close"];b.operation_bindings=[{operation:"settlement.close",relation:"commits"}];
+    }},
+    {name:"hardening-executable-blob-drift",mutate:x=>{x.authoredBlobs["product-schema/hardening-lib.mjs"]="0000000000000000000000000000000000000000";}},
+    {name:"gate-b-oracle-blob-drift",mutate:x=>{x.authoredBlobs["product-schema/gate-b-authority-oracle.json"]="0000000000000000000000000000000000000000";}},
+    {name:"task-contract-blob-drift",mutate:x=>{x.authoredBlobs["product-schema/task-paths-v1.json"]="0000000000000000000000000000000000000000";}}
   ];
 }
 
 
 export function deriveStage52AdversarialCoverage(core,graph,reconstruction,bindings,pieces,tasks,registry,authoredBlobs={}){
   const cases=buildStage52AdversarialCases(core,graph,reconstruction,bindings),results=[];
+  const sealIds=new Set(["FREEZE-SEAL-DRIFT","AUTHORED-BLOB-DRIFT","AUTHORED-BLOB-UNDECLARED"]);
   for(const tc of cases){
-    const x={core:clone(core),graph:clone(graph),reconstruction:clone(reconstruction),bindings:clone(bindings)};
+    const x={core:clone(core),graph:clone(graph),reconstruction:clone(reconstruction),bindings:clone(bindings),authoredBlobs:clone(authoredBlobs)};
     tc.mutate(x);
-    const v=validateStage52(x.core,x.graph,x.reconstruction,x.bindings,pieces,tasks,registry,authoredBlobs);
-    results.push({name:tc.name,detected:v.errors.length>0,detected_by:[...new Set(v.errors.map(e=>e.id))]});
+    const v=validateStage52(x.core,x.graph,x.reconstruction,x.bindings,pieces,tasks,registry,x.authoredBlobs);
+    const ids=[...new Set(v.errors.map(e=>e.id))],semantic=ids.filter(id=>!sealIds.has(id));
+    results.push({
+      name:tc.name,
+      detected:v.errors.length>0,
+      detected_by:ids,
+      semantic_detection:semantic.length>0,
+      semantic_detected_by:semantic,
+      detection_mode:semantic.length?(ids.some(id=>sealIds.has(id))?"semantic_plus_freeze_seal":"semantic_only"):(ids.length?"freeze_seal_only":"escaped")
+    });
   }
-  const detected=results.filter(x=>x.detected).length;
+  const detected=results.filter(x=>x.detected).length,semanticDetected=results.filter(x=>x.semantic_detection).length,sealOnly=results.filter(x=>x.detection_mode==="freeze_seal_only").length;
   return {
-    schema_version:1,
+    schema_version:2,
     generated_view:"stage-5-2-adversarial-closure-coverage",
-    detector:"semantic closure checks plus independent freeze seals; reported separately from the 58-case safety-invariant mutation score",
-    total:{applicable:results.length,detected,score:results.length?Number((100*detected/results.length).toFixed(2)):null},
+    detector:"semantic closure checks and explicit V1 freeze seals are reported separately; seal-only detection is not claimed as independent semantic proof",
+    total:{applicable:results.length,detected,semantic_detected:semanticDetected,freeze_seal_only:sealOnly,score:results.length?Number((100*detected/results.length).toFixed(2)):null,semantic_score:results.length?Number((100*semanticDetected/results.length).toFixed(2)):null},
     results
   };
 }
