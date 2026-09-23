@@ -33,8 +33,13 @@ export function deriveBlastRadius(core,graph,tasks,pieces=[]){
     for(const id of readSet)edge("object:"+id,"operation:"+o.id,"object_read_by_operation");
     for(const lid of o.law_refs||[])edge("law:"+lid,"operation:"+o.id,"law_governs_operation");
     for(const id of uniq([...(o.changes||[]),...(o.invalidates||[]),...(o.invalidates_prepared||[])])){
+      edge("operation:"+o.id,"object:"+id,"operation_writes_or_invalidates_object");
       for(const vid of viewConsumers.get(id)||[])edge("operation:"+o.id,"view:"+vid,"operation_affects_view");
     }
+  }
+
+  for(const l of core.laws){
+    for(const id of l.applies_to||[])edge("law:"+l.id,"object:"+id,"law_constrains_object");
   }
 
   for(const c of graph.contexts){
@@ -101,7 +106,7 @@ export function deriveBlastRadius(core,graph,tasks,pieces=[]){
   return {
     schema_version:2,
     generated_view:"blast-radius",
-    model:"directed dependency-to-consumer graph; writes affect derived views but laws/objects do not bridge back into each other",
+    model:"directed dependency-to-consumer graph; laws propagate into constrained objects, operations propagate through writes/invalidations, and objects propagate into consumers/derived views",
     edge_count:[...edges.values()].reduce((n,s)=>n+s.size,0),
     relation_counts:relationCounts,
     node_count:nodes.size,
