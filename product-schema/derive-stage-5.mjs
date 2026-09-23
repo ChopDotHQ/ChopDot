@@ -21,10 +21,11 @@ mkdirSync(out,{recursive:true});
 writeFileSync(join(out,'reconstruction-coverage.json'),JSON.stringify(x.coverage,null,2)+'\n');
 writeFileSync(join(out,'reconstruction-pieces.json'),JSON.stringify({schema_version:1,generated_view:'reconstruction-pieces',pieces:x.pieces},null,2)+'\n');
 writeFileSync(join(out,'mutation-coverage.json'),JSON.stringify(x.mutations,null,2)+'\n');
+writeFileSync(join(out,'adversarial-closure-coverage.json'),JSON.stringify(x.adversarial,null,2)+'\n');
 writeFileSync(join(out,'blast-radius.json'),JSON.stringify(x.blast,null,2)+'\n');
 
-const c=x.coverage,m=x.mutations,b=x.blast;
-const closure=c.status==='PASS'&&m.baseline_errors.length===0&&m.total.applicable>0&&m.total.detected===m.total.applicable&&m.total.score===100?'PASS':'FAIL';
+const c=x.coverage,m=x.mutations,a=x.adversarial,b=x.blast;
+const closure=c.status==='PASS'&&m.baseline_errors.length===0&&m.total.applicable>0&&m.total.detected===m.total.applicable&&m.total.score===100&&a.total.applicable>0&&a.total.detected===a.total.applicable&&a.total.score===100?'PASS':'FAIL';
 const lines=[
 '# Product Schema V1 — Reconstruction Closure','',
 '**Primary schema closure status: '+closure+'. Gate-specific packets are downstream consumers, not the closure target.**','',
@@ -36,8 +37,12 @@ const lines=[
 '  - states: **'+c.golden_pieces.states+'**',
 '  - actions: **'+c.golden_pieces.actions+'**',
 '  - fields: **'+c.golden_pieces.fields+'**',
-'- Justified/classified pieces: **'+c.golden_pieces.classified+' / '+c.golden_pieces.total+'**',
+'- Authority-accounted/classified pieces: **'+c.golden_pieces.classified+' / '+c.golden_pieces.total+'**',
 '- Unjustified pieces: **'+c.golden_pieces.unjustified_unmapped+'**',
+'- Authority-only PRODUCT_REQUIREMENT states: **'+(c.stage_5_2?.metrics?.authority_only_product_requirement_states??0)+'**',
+'- Draft fields without semantic refs: **'+(c.stage_5_2?.metrics?.draft_fields_without_semantic_ref??0)+'**',
+'- Duplicate control evidence instances: **'+(c.stage_5_2?.metrics?.duplicate_control_instances??0)+'**',
+'- Conflicting duplicate domain operations: **'+(c.stage_5_2?.metrics?.duplicate_control_conflicts??0)+'**',
 '- Pseudo-state pieces: **'+c.golden_pieces.pseudo_pieces+'**',
 '- Ungoverned recovery/system pieces: **'+c.golden_pieces.ungoverned_recovery+'**','',
 '## Schema → Product soundness','',
@@ -49,7 +54,8 @@ const lines=[
 '- Construction requirements witnessed: **'+c.semantic_witnesses.requirements.witnessed+' / '+c.semantic_witnesses.requirements.total+'**',
 '- Continuity contracts witnessed: **'+c.semantic_witnesses.continuity.witnessed+' / '+c.semantic_witnesses.continuity.total+'**',
 '- Required overlay/decision source families decomposed: **'+(c.overlays.required-c.overlays.errors.length)+' / '+c.overlays.required+'**','',
-'## Required-state reconstructibility','',
+'## Construction-required state reconstructibility','',
+'- Scope: **'+((c.stage_5_2?.metrics?.required_state_scope||[]).join(', ')||'none')+'**',
 '- Required states resolved: **'+c.required_states.resolved+' / '+c.required_states.total+'**',
 '- Required states with governed trigger meaning: **'+c.required_states.triggered+' / '+c.required_states.total+'**','',
 '## Independent safety mutation coverage','',
@@ -58,6 +64,10 @@ const lines=[
 '| Safety class | Detected | Applicable | Score |',
 '|---|---:|---:|---:|',
 ...Object.entries(m.domains).map(([k,v])=>'| '+k+' | '+v.detected+' | '+v.applicable+' | '+v.score+'% |'),'',
+'## Stage 5.2 adversarial closure regression coverage','',
+'- Detector: '+a.detector,
+'- Adversarial regression cases detected: **'+a.total.detected+' / '+a.total.applicable+' ('+a.total.score+'%)**',
+'- Freeze seals: **'+Object.entries(c.stage_5_2?.seals||{}).map(([k,v])=>k+'='+v).join(', ')+'**','',
 '## Blast-radius probes','',
 '| Change | Direct tier | Direct journeys | Direct tasks | Transitive tier | Transitive journeys | Transitive tasks |',
 '|---|---|---:|---:|---|---:|---:|',
@@ -78,6 +88,7 @@ console.log(JSON.stringify({
   required_states:c.required_states.resolved+'/'+c.required_states.total,
   events:c.event_vocabulary.bound_events+'/'+c.event_vocabulary.distinct_events,
   independent_mutation_score:m.total.score,
+  adversarial_closure_score:a.total.score,
   closure_status:closure,
   error_count:c.errors.length,
   errors:c.errors.slice(0,80),
