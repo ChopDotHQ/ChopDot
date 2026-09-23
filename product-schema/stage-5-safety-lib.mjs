@@ -109,7 +109,8 @@ export function validateIndependentSafety(core,graph,reconstruction,authority={}
   check(errors,!!pos&&eq(pos.identity,["scope_kind","scope_ref"])&&eq(pos.allowed_scope_kinds,["participant_pair","group"]),"POSITION-SCOPE","PositionScope must be typed participant_pair/group");
   const position=obj(core,"position.position");
   check(errors,position?.scope_object==="position.scope"&&Array.isArray(position.references)&&position.references.some(x=>x.field==="position_scope"&&x.object==="position.scope"&&x.required===true),"POSITION-REFERENCE","Position must carry typed PositionScope reference");
-  const posl=law(core,"LAW-POS-SCOPE-01")?.constraint||{};
+  const posLaw=law(core,"LAW-POS-SCOPE-01"),posl=posLaw?.constraint||{};
+  check(errors,eq(sorted(posLaw?.applies_to||[]),["payment.settlement_scope","position.position","position.scope"]),"POSITION-SCOPE-APPLIES","typed PositionScope law must govern scope, Position and SettlementScope");
   check(errors,eq(posl.allowed_scope_kinds,["participant_pair","group"])&&posl.settlement_required_scope_kind==="participant_pair","POSITION-SETTLEMENT","settlement must consume participant-pair PositionScope");
   const prepare=op(core,"settlement.prepare");
   check(errors,has(prepare?.law_refs,"LAW-POS-SCOPE-01")&&["position.scope","position.position","payment.settlement_scope"].every(x=>has(prepare?.reads,x)),"POSITION-PREPARE","settlement.prepare must read typed pair scope");
@@ -120,7 +121,9 @@ export function validateIndependentSafety(core,graph,reconstruction,authority={}
 
   const pay1=law(core,"LAW-PAY-01")?.constraint||{};
   check(errors,pay1.frozen_before_authorization===true&&pay1.exact_source_lineage===true&&pay1.one_currency===true&&pay1.one_payer_recipient_pair===true&&pay1.retroactive_expansion===false,"SETTLEMENT-SCOPE","settlement scope weakened");
-  const pay2=law(core,"LAW-PAY-02")?.constraint||{};
+  const pay2Law=law(core,"LAW-PAY-02"),pay2=pay2Law?.constraint||{};
+  check(errors,eq(sorted(pay2Law?.applies_to||[]),["payment.intent","payment.record"]),"SETTLEMENT-LIFECYCLE-SCOPE","payment lifecycle law must govern intent and record");
+  check(errors,eq(sorted(Object.keys(pay2)),["kind","distinct_states","payer_sent_confirms_receipt","partial_equals_closed","unknown_equals_failed"].sort()),"SETTLEMENT-LIFECYCLE-SHAPE","payment lifecycle constraint gained/lost unreviewed semantics");
   check(errors,pay2.payer_sent_confirms_receipt===false&&pay2.partial_equals_closed===false&&pay2.unknown_equals_failed===false&&["sent","submitted","received","confirmed","closed","unknown","partial","reversed"].every(x=>has(pay2.distinct_states,x)),"SETTLEMENT-LIFECYCLE","payment lifecycle collapsed");
   const pay3=law(core,"LAW-PAY-03")?.constraint||{};
   check(errors,pay3.open_remainder_preserves_source_lineage===true&&pay3.release_lock_only_when_no_open_remainder===true,"SETTLEMENT-PARTIAL","partial remainder semantics weakened");
