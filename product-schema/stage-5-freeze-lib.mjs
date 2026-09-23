@@ -265,9 +265,9 @@ export function validateStage52(core,graph,reconstruction,bindings,pieces,tasks,
     duplicateCount+=arr.length-1;
     const classes=new Set(arr.map(x=>x.classification));
     const domainOps=new Set(arr.flatMap(x=>x.classification==="DOMAIN_OPERATION"?(x.schema_refs||[]):[]));
-    if(domainOps.size>1){conflictCount++;errors.push({id:"DUPLICATE-CONTROL-MULTI-OPERATION",pieces:arr.map(x=>x.piece_id),operations:[...domainOps]});}
-    else if(classes.size>1&&![...classes].every(x=>["DOMAIN_OPERATION","NAVIGATION_TRANSITION","PRODUCT_REQUIREMENT"].includes(x))){
-      conflictCount++;errors.push({id:"DUPLICATE-CONTROL-CLASSIFICATION-CONFLICT",pieces:arr.map(x=>x.piece_id),classifications:[...classes]});
+    if(domainOps.size>1){
+      conflictCount++;
+      errors.push({id:"DUPLICATE-CONTROL-MULTI-OPERATION",pieces:arr.map(x=>x.piece_id),operations:[...domainOps]});
     }
   }
 
