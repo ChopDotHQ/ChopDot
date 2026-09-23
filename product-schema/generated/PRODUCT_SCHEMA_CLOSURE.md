@@ -61,8 +61,8 @@
 ## Stage 5.2 adversarial closure regression coverage
 
 - Detector: semantic closure checks and explicit V1 freeze seals are reported separately; seal-only detection is not claimed as independent semantic proof
-- Adversarial regression cases detected: **22 / 22 (100%)**
-- Independently semantic detections: **18 / 22 (81.82%)**
+- Adversarial regression cases detected: **27 / 27 (100%)**
+- Independently semantic detections: **23 / 27 (85.19%)**
 - Freeze-seal-only detections: **4**
 - Structural freeze seals: **safety_subgraph=cb7f5c7f42fcf2d8, semantic_inventory=efab713b1a9fabe8, closure_mapping=9aa481923e471537, event_semantics=c53b7e69301f2137, mapping_registry=8951ac0340a69257**
 - Authored/executable V1 blobs sealed: **9 / 9**

@@ -3,12 +3,12 @@
   "generated_view": "stage-5-2-adversarial-closure-coverage",
   "detector": "semantic closure checks and explicit V1 freeze seals are reported separately; seal-only detection is not claimed as independent semantic proof",
   "total": {
-    "applicable": 22,
-    "detected": 22,
-    "semantic_detected": 18,
+    "applicable": 27,
+    "detected": 27,
+    "semantic_detected": 23,
     "freeze_seal_only": 4,
     "score": 100,
-    "semantic_score": 81.82
+    "semantic_score": 85.19
   },
   "results": [
     {
@@ -255,11 +255,14 @@
       "name": "navigation-back-closes-payment",
       "detected": true,
       "detected_by": [
-        "FREEZE-SEAL-DRIFT"
+        "FREEZE-SEAL-DRIFT",
+        "EVENT-NAVIGATION-CANNOT-MUTATE"
       ],
-      "semantic_detection": false,
-      "semantic_detected_by": [],
-      "detection_mode": "freeze_seal_only"
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "EVENT-NAVIGATION-CANNOT-MUTATE"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
     },
     {
       "name": "hardening-executable-blob-drift",
@@ -286,6 +289,70 @@
       "detected": true,
       "detected_by": [
         "AUTHORED-BLOB-DRIFT"
+      ],
+      "semantic_detection": false,
+      "semantic_detected_by": [],
+      "detection_mode": "freeze_seal_only"
+    },
+    {
+      "name": "position-scope-law-applies-to-empty",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "SAFETY-LAW-CLOSURE",
+        "POSITION-SCOPE-APPLIES"
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "SAFETY-LAW-CLOSURE",
+        "POSITION-SCOPE-APPLIES"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
+    },
+    {
+      "name": "authorize-group-position-scope",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "CRITICAL-OPERATION-DRIFT"
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "CRITICAL-OPERATION-DRIFT"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
+    },
+    {
+      "name": "ordinary-operation-witness-swapped-to-schema-source",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "WITNESS-SCHEMA-SOURCE-NONCONTRACT"
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "WITNESS-SCHEMA-SOURCE-NONCONTRACT"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
+    },
+    {
+      "name": "system-derived-witness-weakened-to-one-phrase",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "WITNESS-SYSTEM-DERIVED-WEAK"
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "WITNESS-SYSTEM-DERIVED-WEAK"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
+    },
+    {
+      "name": "invent-source-grounded-object-and-law",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT"
       ],
       "semantic_detection": false,
       "semantic_detected_by": [],
