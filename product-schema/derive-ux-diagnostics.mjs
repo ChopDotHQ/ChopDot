@@ -101,7 +101,13 @@ function shortest(start,targets,states){
 const opMap={
   '05':{'Add expense':'expense.create'},
   '06':{'Save changes':'expense.edit','Delete expense':'expense.delete','Delete':'expense.delete'},
-  '07':{"Looks right":'expense.review_agree',"Something's off":'expense.raise_issue','Withdraw':'expense.withdraw_issue','Reply':'expense.reply_to_issue','Still off':'expense.resolve_issue'}
+  '07':{"Looks right":'expense.review_agree',"Something's off":'expense.raise_issue','Still off':'expense.resolve_issue'}
+};
+const opMapByState={
+  '07':{
+    'withdraw':{'Withdraw request':'expense.withdraw_issue'},
+    'reply':{'Send reply':'expense.reply_to_issue'}
+  }
 };
 const requiredInputsByJourney={};
 for(const r of graph.construction_requirements||[])if(r.kind==='defaults'&&Array.isArray(r.value?.required_user_input))requiredInputsByJourney[r.journey]=r.value.required_user_input;
@@ -113,7 +119,7 @@ for(const j of frozen.journeys){
     const doc=loadArtifact(artifact),raw=extractScreens(doc);
     states=raw.map(s=>{
       const fields=parseFields(s.html);
-      const actions=parseActions(s.html).map(a=>({...a,semantic_operation:opMap[j.id]?.[a.label]||null}));
+      const actions=parseActions(s.html).map(a=>({...a,semantic_operation:opMapByState[j.id]?.[s.id]?.[a.label]||opMap[j.id]?.[a.label]||null}));
       const hm=s.html.match(/<div[^>]*class=["'][^"']*header-title[^"']*["'][^>]*>[\s\S]*?<b[^>]*>([\s\S]*?)<\/b>/i);
       return {id:s.id,surface_model:s.surface_model||'state_surface',title:hm?visible(hm[1]):null,fields,actions,field_count:fields.length,action_count:actions.length,internal_targets:unique(actions.map(a=>a.target))};
     });
