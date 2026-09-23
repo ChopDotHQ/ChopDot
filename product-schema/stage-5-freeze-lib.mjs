@@ -303,3 +303,22 @@ export function buildStage52AdversarialCases(core,graph,reconstruction,bindings)
     {name:"close-drops-position-scope",mutate:x=>{const o=x.core.operations.find(o=>o.id==="settlement.close");o.reads=o.reads.filter(v=>v!=="position.scope");}}
   ];
 }
+
+
+export function deriveStage52AdversarialCoverage(core,graph,reconstruction,bindings,pieces,tasks,registry){
+  const cases=buildStage52AdversarialCases(core,graph,reconstruction,bindings),results=[];
+  for(const tc of cases){
+    const x={core:clone(core),graph:clone(graph),reconstruction:clone(reconstruction),bindings:clone(bindings)};
+    tc.mutate(x);
+    const v=validateStage52(x.core,x.graph,x.reconstruction,x.bindings,pieces,tasks,registry);
+    results.push({name:tc.name,detected:v.errors.length>0,detected_by:[...new Set(v.errors.map(e=>e.id))]});
+  }
+  const detected=results.filter(x=>x.detected).length;
+  return {
+    schema_version:1,
+    generated_view:"stage-5-2-adversarial-closure-coverage",
+    detector:"semantic closure checks plus independent freeze seals; reported separately from the 58-case safety-invariant mutation score",
+    total:{applicable:results.length,detected,score:results.length?Number((100*detected/results.length).toFixed(2)):null},
+    results
+  };
+}
