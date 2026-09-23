@@ -159,7 +159,7 @@ export function rawFields(text){
   return [...map.values()];
 }
 function recoveryState(id){
-  return /(error|fail|unknown|offline|locked|conflict|stale|expired|cancel|reconcil|retry|blocked|missing|duplicate|reversed|not-found|unavailable|denied|mismatch)/i.test(id);
+  return /(error|fail|unknown|offline|locked|conflict|stale|expired|cancel|reconcil|retry|blocked|missing|duplicate|reversed|not-found|unavailable|denied|declined|rejected|disconnected|insufficient|recipient-says-no|mismatch)/i.test(id);
 }
 function progressState(id){
   return /(loading|saving|creating|applying|deleting|withdrawing|submitting|pending|checking|preparing|connecting|switching|archiving|unarchiving|leaving|requesting|syncing|refreshing|retrying)$/i.test(id);
