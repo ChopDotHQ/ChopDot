@@ -6,7 +6,7 @@ import {
 } from './stage-5-source-lib.mjs';
 import { deriveIndependentMutationCoverage,validateIndependentSafety } from './stage-5-safety-lib.mjs';
 import { deriveBlastRadius } from './stage-5-blast-lib.mjs';
-import { validateStage52 } from './stage-5-freeze-lib.mjs';
+import { validateStage52,deriveStage52AdversarialCoverage } from './stage-5-freeze-lib.mjs';
 import {
   validateEventBindings,applyAndValidateControlBindings,validateOperationWitnesses,
   validateRequiredStates,validateSupersessions,validateOverlayWitnesses,semanticWitnessStats
@@ -236,5 +236,6 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
   };
 
   const blast=deriveBlastRadius(core,graph,tasks,pieces);
-  return {coverage,mutations,blast,pieces};
+  const adversarial=deriveStage52AdversarialCoverage(core,graph,reconstruction,bindings,pieces,tasks,registry);
+  return {coverage,mutations,adversarial,blast,pieces};
 }
