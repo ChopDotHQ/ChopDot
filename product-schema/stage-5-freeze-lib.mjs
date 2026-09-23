@@ -1,3 +1,4 @@
+import { validateIndependentSafety } from './stage-5-safety-lib.mjs';
 const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const sorted=a=>[...(a||[])].sort();
 const has=(a,x)=>Array.isArray(a)&&a.includes(x);
@@ -197,6 +198,17 @@ export function validateStage52(core,graph,reconstruction,bindings,pieces,tasks,
     if(!o||!eq(projectOp(o,expected),expected))errors.push({id:"CRITICAL-OPERATION-DRIFT",operation:id});
   }
 
+  for(const jid of ["11","12"]){
+    const j=(graph.journey_projections||[]).find(x=>x.id===jid);
+    for(const cid of j?.entry_contexts_any||[]){
+      const c=(graph.contexts||[]).find(x=>x.id===cid);
+      const settlementBearing=!!c&&((c.objects||[]).includes("payment.intent")||(c.objects||[]).includes("payment.settlement_scope"));
+      if(settlementBearing&&(!has(c.objects,"position.scope")||!has(c.laws,"LAW-POS-SCOPE-01"))){
+        errors.push({id:"SETTLEMENT-CONTEXT-SCOPE-HOLE",journey:jid,context:cid});
+      }
+    }
+  }
+
   for(const [event,expected] of Object.entries(CRITICAL_EVENTS)){
     const b=(bindings.bindings||[]).find(x=>x.domain_event===event);
     if(!b){errors.push({id:"CRITICAL-EVENT-MISSING",event});continue;}
@@ -344,14 +356,15 @@ export function buildStage52AdversarialCases(core,graph,reconstruction,bindings)
 }
 
 
-export function deriveStage52AdversarialCoverage(core,graph,reconstruction,bindings,pieces,tasks,registry,authoredBlobs={}){
+export function deriveStage52AdversarialCoverage(core,graph,reconstruction,bindings,pieces,tasks,registry,authoredBlobs={},authority={}){
   const cases=buildStage52AdversarialCases(core,graph,reconstruction,bindings),results=[];
   const sealIds=new Set(["FREEZE-SEAL-DRIFT","AUTHORED-BLOB-DRIFT","AUTHORED-BLOB-UNDECLARED"]);
   for(const tc of cases){
     const x={core:clone(core),graph:clone(graph),reconstruction:clone(reconstruction),bindings:clone(bindings),authoredBlobs:clone(authoredBlobs)};
     tc.mutate(x);
     const v=validateStage52(x.core,x.graph,x.reconstruction,x.bindings,pieces,tasks,registry,x.authoredBlobs);
-    const ids=[...new Set(v.errors.map(e=>e.id))],semantic=ids.filter(id=>!sealIds.has(id));
+    const independent=validateIndependentSafety(x.core,x.graph,x.reconstruction,authority).map(e=>({id:"INDEPENDENT-SAFETY-"+e.id,...e}));
+    const ids=[...new Set([...v.errors,...independent].map(e=>e.id))],semantic=ids.filter(id=>!sealIds.has(id));
     results.push({
       name:tc.name,
       detected:v.errors.length>0,
