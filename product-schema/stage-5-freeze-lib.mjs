@@ -1,4 +1,5 @@
 import { validateIndependentSafety } from './stage-5-safety-lib.mjs';
+import { validateEventBindings } from './stage-5-validation-lib.mjs';
 const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const sorted=a=>[...(a||[])].sort();
 const has=(a,x)=>Array.isArray(a)&&a.includes(x);
@@ -356,7 +357,7 @@ export function buildStage52AdversarialCases(core,graph,reconstruction,bindings)
 }
 
 
-export function deriveStage52AdversarialCoverage(core,graph,reconstruction,bindings,pieces,tasks,registry,authoredBlobs={},authority={}){
+export function deriveStage52AdversarialCoverage(core,graph,reconstruction,bindings,pieces,tasks,registry,authoredBlobs={},authority={},eventSet=new Set()){
   const cases=buildStage52AdversarialCases(core,graph,reconstruction,bindings),results=[];
   const sealIds=new Set(["FREEZE-SEAL-DRIFT","AUTHORED-BLOB-DRIFT","AUTHORED-BLOB-UNDECLARED"]);
   for(const tc of cases){
@@ -364,7 +365,8 @@ export function deriveStage52AdversarialCoverage(core,graph,reconstruction,bindi
     tc.mutate(x);
     const v=validateStage52(x.core,x.graph,x.reconstruction,x.bindings,pieces,tasks,registry,x.authoredBlobs);
     const independent=validateIndependentSafety(x.core,x.graph,x.reconstruction,authority).map(e=>({id:"INDEPENDENT-SAFETY-"+e.id,...e}));
-    const ids=[...new Set([...v.errors,...independent].map(e=>e.id))],semantic=ids.filter(id=>!sealIds.has(id));
+    const eventErrors=validateEventBindings(x.core,x.bindings,eventSet);
+    const ids=[...new Set([...v.errors,...independent,...eventErrors].map(e=>e.id))],semantic=ids.filter(id=>!sealIds.has(id));
     results.push({
       name:tc.name,
       detected:v.errors.length>0,
