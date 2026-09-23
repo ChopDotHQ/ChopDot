@@ -34,6 +34,9 @@ export function validateEventBindings(core,bindings,eventSet){
     if(b.classification==="DOMAIN_OPERATION"){
       if(!rels.length)errors.push({id:"EVENT-DOMAIN-WITHOUT-OPERATION",event:b.domain_event});
       if(rels.some(r=>!["initiates","commits","reports_claim"].includes(r.relation)))errors.push({id:"EVENT-DOMAIN-BAD-RELATION",event:b.domain_event});
+      if(/Navigation|HandoffReturned|OriginResumed|ContextResumed|FlowResumed|ExitRequested|BackRequested/i.test(b.domain_event)){
+        errors.push({id:"EVENT-NAVIGATION-CANNOT-MUTATE",event:b.domain_event});
+      }
     }
     if(["NAVIGATION_TRANSITION","DERIVED_PROJECTION","REVIEW_DEMO_CHROME","PRESENTATION_ONLY","DRAFT_FIELD"].includes(b.classification)&&rels.length){
       errors.push({id:"EVENT-NONMUTATION-HAS-OPERATION",event:b.domain_event,classification:b.classification});
