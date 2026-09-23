@@ -446,7 +446,9 @@
         "withdraw",
         "review"
       ],
-      "semantic_operations": [],
+      "semantic_operations": [
+        "expense.withdraw_issue"
+      ],
       "source_refs": [
         "J07 state inventory withdraw"
       ],

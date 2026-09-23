@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "generated_view": "stage-5-2-adversarial-closure-coverage",
+  "detector": "semantic closure checks plus independent freeze seals; reported separately from the 58-case safety-invariant mutation score",
+  "total": {
+    "applicable": 12,
+    "detected": 12,
+    "score": 100
+  },
+  "results": [
+    {
+      "name": "invent-untagged-force-close",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "SAFETY-WRITER-CLOSURE",
+        "OPERATION-WITNESS-MISSING"
+      ]
+    },
+    {
+      "name": "mark-sent-writes-record",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "CRITICAL-OPERATION-DRIFT"
+      ]
+    },
+    {
+      "name": "mark-sent-drops-pay02",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "CRITICAL-OPERATION-DRIFT"
+      ]
+    },
+    {
+      "name": "link-account-rewrites-participant",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "CRITICAL-OPERATION-DRIFT"
+      ]
+    },
+    {
+      "name": "wallet-widens-at-signing",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "CRITICAL-OPERATION-DRIFT"
+      ]
+    },
+    {
+      "name": "payer-marked-sent-navigation",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "CRITICAL-EVENT-DRIFT"
+      ]
+    },
+    {
+      "name": "extra-trigger-reclassifies-state",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "REQUIRED-STATE-EXTRA-TRIGGER"
+      ]
+    },
+    {
+      "name": "wrong-task-witness",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "WITNESS-TASK-DOES-NOT-PROVE-OPERATION"
+      ]
+    },
+    {
+      "name": "wrong-alias-existing-state",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "REQUIRED-STATE-ALIAS-MANIFEST-DRIFT"
+      ]
+    },
+    {
+      "name": "reuse-impact-on-live-state",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "SUPERSESSION-MANIFEST-DRIFT"
+      ]
+    },
+    {
+      "name": "collapse-c1-overlay",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "OVERLAY-WITNESS-DRIFT"
+      ]
+    },
+    {
+      "name": "close-drops-position-scope",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "CRITICAL-OPERATION-DRIFT"
+      ]
+    }
+  ]
+}

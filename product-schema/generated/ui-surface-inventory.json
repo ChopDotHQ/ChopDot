@@ -4613,7 +4613,7 @@
               "href": "#review",
               "target": "review",
               "kind": "state_transition",
-              "semantic_operation": null
+              "semantic_operation": "expense.withdraw_issue"
             },
             {
               "element": "a",
@@ -4659,7 +4659,7 @@
               "href": "#reply",
               "target": "reply",
               "kind": "state_transition",
-              "semantic_operation": "expense.reply_to_issue"
+              "semantic_operation": null
             }
           ],
           "field_count": 0,
@@ -4792,7 +4792,7 @@
               "href": "#reply-sent",
               "target": "reply-sent",
               "kind": "state_transition",
-              "semantic_operation": null
+              "semantic_operation": "expense.reply_to_issue"
             },
             {
               "element": "a",
@@ -5826,7 +5826,7 @@
         "action_instances": 158,
         "unique_action_labels": 39,
         "unique_field_labels": 0,
-        "semantic_action_mappings": 12,
+        "semantic_action_mappings": 13,
         "non_screen_hash_controls": 0,
         "entry_state": "review",
         "completion_candidates": [

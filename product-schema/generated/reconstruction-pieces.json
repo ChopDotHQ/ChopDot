@@ -120,14 +120,20 @@
       "state": "approval-declined",
       "piece": "approval-declined",
       "piece_type": "state",
-      "classification": "PRODUCT_REQUIREMENT",
-      "schema_refs": [],
+      "classification": "RECOVERY_BEHAVIOR",
+      "schema_refs": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-OP-04",
+        "LAW-ID-01"
+      ],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html",
         "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_INVENTORY.md",
         "prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs"
       ],
-      "justification": "Approved product state required by the Golden/state mapping.",
+      "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
       "mapping_confidence": "high"
     },
     {
@@ -9211,12 +9217,14 @@
       "state": "withdraw",
       "piece": "Withdraw request",
       "piece_type": "visible_action",
-      "classification": "NAVIGATION_TRANSITION",
-      "schema_refs": [],
+      "classification": "DOMAIN_OPERATION",
+      "schema_refs": [
+        "expense.withdraw_issue"
+      ],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/07-review-agree/v1.1-golden-candidate.html.xz"
       ],
-      "justification": "Internal transition to another approved state.",
+      "justification": "Explicit semantic_operation mapping already present in the diagnostic/task substrate.",
       "mapping_confidence": "derived",
       "domain_event": null,
       "target": "review",
@@ -9279,14 +9287,12 @@
       "state": "owner-issue",
       "piece": "Reply",
       "piece_type": "visible_action",
-      "classification": "DOMAIN_OPERATION",
-      "schema_refs": [
-        "expense.reply_to_issue"
-      ],
+      "classification": "NAVIGATION_TRANSITION",
+      "schema_refs": [],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/07-review-agree/v1.1-golden-candidate.html.xz"
       ],
-      "justification": "Explicit semantic_operation mapping already present in the diagnostic/task substrate.",
+      "justification": "Internal transition to another approved state.",
       "mapping_confidence": "derived",
       "domain_event": null,
       "target": "reply",
@@ -9419,12 +9425,14 @@
       "state": "reply",
       "piece": "Send reply",
       "piece_type": "visible_action",
-      "classification": "NAVIGATION_TRANSITION",
-      "schema_refs": [],
+      "classification": "DOMAIN_OPERATION",
+      "schema_refs": [
+        "expense.reply_to_issue"
+      ],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/07-review-agree/v1.1-golden-candidate.html.xz"
       ],
-      "justification": "Internal transition to another approved state.",
+      "justification": "Explicit semantic_operation mapping already present in the diagnostic/task substrate.",
       "mapping_confidence": "derived",
       "domain_event": null,
       "target": "reply-sent",
@@ -17505,14 +17513,22 @@
       "state": "insufficient",
       "piece": "insufficient",
       "piece_type": "state",
-      "classification": "PRODUCT_REQUIREMENT",
-      "schema_refs": [],
+      "classification": "RECOVERY_BEHAVIOR",
+      "schema_refs": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-PAY-01",
+        "LAW-PAY-02",
+        "LAW-PAY-03",
+        "LAW-PAY-04"
+      ],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/11-settle-up/v1.1-golden-candidate.html",
         "prototypes/experience-workbench/journeys/11-settle-up/STATE_INVENTORY.md",
         "prototypes/experience-workbench/journeys/11-settle-up/SCREEN_STATE_MAPPING.json"
       ],
-      "justification": "Approved product state required by the Golden/state mapping.",
+      "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
       "mapping_confidence": "high"
     },
     {
@@ -18417,14 +18433,22 @@
       "state": "wallet-rejected",
       "piece": "wallet-rejected",
       "piece_type": "state",
-      "classification": "PRODUCT_REQUIREMENT",
-      "schema_refs": [],
+      "classification": "RECOVERY_BEHAVIOR",
+      "schema_refs": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-PAY-01",
+        "LAW-PAY-02",
+        "LAW-PAY-03",
+        "LAW-PAY-04"
+      ],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/11-settle-up/v1.1-golden-candidate.html",
         "prototypes/experience-workbench/journeys/11-settle-up/STATE_INVENTORY.md",
         "prototypes/experience-workbench/journeys/11-settle-up/SCREEN_STATE_MAPPING.json"
       ],
-      "justification": "Approved product state required by the Golden/state mapping.",
+      "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
       "mapping_confidence": "high"
     },
     {
@@ -23992,14 +24016,21 @@
       "state": "recipient-says-no",
       "piece": "recipient-says-no",
       "piece_type": "state",
-      "classification": "PRODUCT_REQUIREMENT",
-      "schema_refs": [],
+      "classification": "RECOVERY_BEHAVIOR",
+      "schema_refs": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-PAY-02",
+        "LAW-PAY-03",
+        "LAW-PAY-04"
+      ],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/12-complete-settlement/v1.1-continuity-candidate.html",
         "prototypes/experience-workbench/journeys/12-complete-settlement/STATE_INVENTORY.md",
         "prototypes/experience-workbench/journeys/12-complete-settlement/SCREEN_STATE_MAPPING.json"
       ],
-      "justification": "Approved product state required by the Golden/state mapping.",
+      "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
       "mapping_confidence": "high"
     },
     {
@@ -24283,14 +24314,21 @@
       "state": "wallet-disconnected",
       "piece": "wallet-disconnected",
       "piece_type": "state",
-      "classification": "PRODUCT_REQUIREMENT",
-      "schema_refs": [],
+      "classification": "RECOVERY_BEHAVIOR",
+      "schema_refs": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-PAY-02",
+        "LAW-PAY-03",
+        "LAW-PAY-04"
+      ],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/12-complete-settlement/v1.1-continuity-candidate.html",
         "prototypes/experience-workbench/journeys/12-complete-settlement/STATE_INVENTORY.md",
         "prototypes/experience-workbench/journeys/12-complete-settlement/SCREEN_STATE_MAPPING.json"
       ],
-      "justification": "Approved product state required by the Golden/state mapping.",
+      "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
       "mapping_confidence": "high"
     },
     {
@@ -24354,14 +24392,21 @@
       "state": "wallet-rejected",
       "piece": "wallet-rejected",
       "piece_type": "state",
-      "classification": "PRODUCT_REQUIREMENT",
-      "schema_refs": [],
+      "classification": "RECOVERY_BEHAVIOR",
+      "schema_refs": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-PAY-02",
+        "LAW-PAY-03",
+        "LAW-PAY-04"
+      ],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/12-complete-settlement/v1.1-continuity-candidate.html",
         "prototypes/experience-workbench/journeys/12-complete-settlement/STATE_INVENTORY.md",
         "prototypes/experience-workbench/journeys/12-complete-settlement/SCREEN_STATE_MAPPING.json"
       ],
-      "justification": "Approved product state required by the Golden/state mapping.",
+      "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
       "mapping_confidence": "high"
     },
     {
@@ -41527,14 +41572,16 @@
       "state": "insufficient",
       "piece": "insufficient",
       "piece_type": "state",
-      "classification": "PRODUCT_REQUIREMENT",
-      "schema_refs": [],
+      "classification": "RECOVERY_BEHAVIOR",
+      "schema_refs": [
+        "LAW-OP-03"
+      ],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/19-insights/review-v1.1/v1.1-candidate.html",
         "prototypes/experience-workbench/journeys/19-insights/review-v1.1/SCREEN_STATE_MAPPING.json",
         "prototypes/experience-workbench/journeys/19-insights/source/model.cjs"
       ],
-      "justification": "Approved product state required by the Golden/state mapping.",
+      "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
       "mapping_confidence": "high"
     },
     {
@@ -52470,13 +52517,18 @@
       "state": "connect-rejected",
       "piece": "connect-rejected",
       "piece_type": "state",
-      "classification": "PRODUCT_REQUIREMENT",
-      "schema_refs": [],
+      "classification": "RECOVERY_BEHAVIOR",
+      "schema_refs": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-WALLET-01"
+      ],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html",
         "prototypes/experience-workbench/journeys/21-wallet-crypto/STATE_INVENTORY.md"
       ],
-      "justification": "Approved product state required by the Golden/state mapping.",
+      "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
       "mapping_confidence": "high"
     },
     {
@@ -52590,13 +52642,18 @@
       "state": "insufficient-asset",
       "piece": "insufficient-asset",
       "piece_type": "state",
-      "classification": "PRODUCT_REQUIREMENT",
-      "schema_refs": [],
+      "classification": "RECOVERY_BEHAVIOR",
+      "schema_refs": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-WALLET-01"
+      ],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html",
         "prototypes/experience-workbench/journeys/21-wallet-crypto/STATE_INVENTORY.md"
       ],
-      "justification": "Approved product state required by the Golden/state mapping.",
+      "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
       "mapping_confidence": "high"
     },
     {
@@ -52605,13 +52662,18 @@
       "state": "insufficient-fee",
       "piece": "insufficient-fee",
       "piece_type": "state",
-      "classification": "PRODUCT_REQUIREMENT",
-      "schema_refs": [],
+      "classification": "RECOVERY_BEHAVIOR",
+      "schema_refs": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-WALLET-01"
+      ],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html",
         "prototypes/experience-workbench/journeys/21-wallet-crypto/STATE_INVENTORY.md"
       ],
-      "justification": "Approved product state required by the Golden/state mapping.",
+      "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
       "mapping_confidence": "high"
     },
     {
@@ -52775,13 +52837,18 @@
       "state": "signature-rejected",
       "piece": "signature-rejected",
       "piece_type": "state",
-      "classification": "PRODUCT_REQUIREMENT",
-      "schema_refs": [],
+      "classification": "RECOVERY_BEHAVIOR",
+      "schema_refs": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-WALLET-01"
+      ],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html",
         "prototypes/experience-workbench/journeys/21-wallet-crypto/STATE_INVENTORY.md"
       ],
-      "justification": "Approved product state required by the Golden/state mapping.",
+      "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
       "mapping_confidence": "high"
     },
     {
@@ -53040,13 +53107,18 @@
       "state": "switch-rejected",
       "piece": "switch-rejected",
       "piece_type": "state",
-      "classification": "PRODUCT_REQUIREMENT",
-      "schema_refs": [],
+      "classification": "RECOVERY_BEHAVIOR",
+      "schema_refs": [
+        "LAW-OP-01",
+        "LAW-OP-02",
+        "LAW-OP-03",
+        "LAW-WALLET-01"
+      ],
       "authority_refs": [
         "prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html",
         "prototypes/experience-workbench/journeys/21-wallet-crypto/STATE_INVENTORY.md"
       ],
-      "justification": "Approved product state required by the Golden/state mapping.",
+      "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
       "mapping_confidence": "high"
     },
     {

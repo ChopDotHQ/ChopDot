@@ -31,12 +31,12 @@
     "pseudo_pieces": 0,
     "ungoverned_recovery": 0,
     "by_classification": {
-      "PRODUCT_REQUIREMENT": 680,
-      "RECOVERY_BEHAVIOR": 296,
+      "PRODUCT_REQUIREMENT": 668,
+      "RECOVERY_BEHAVIOR": 308,
       "REVIEW_DEMO_CHROME": 424,
-      "NAVIGATION_TRANSITION": 2598,
+      "NAVIGATION_TRANSITION": 2597,
       "EXTERNAL_HANDOFF": 136,
-      "DOMAIN_OPERATION": 95,
+      "DOMAIN_OPERATION": 96,
       "DRAFT_FIELD": 38,
       "SYSTEM_PROGRESSION": 57,
       "DERIVED_PROJECTION": 69,
@@ -52,8 +52,8 @@
         "fields": 6,
         "pieces": 61,
         "by_classification": {
-          "PRODUCT_REQUIREMENT": 20,
-          "RECOVERY_BEHAVIOR": 7,
+          "PRODUCT_REQUIREMENT": 19,
+          "RECOVERY_BEHAVIOR": 8,
           "REVIEW_DEMO_CHROME": 5,
           "NAVIGATION_TRANSITION": 18,
           "EXTERNAL_HANDOFF": 3,
@@ -276,8 +276,8 @@
           "EXTERNAL_HANDOFF": 1,
           "RECOVERY_BEHAVIOR": 10,
           "SYSTEM_PROGRESSION": 1,
-          "NAVIGATION_TRANSITION": 135,
-          "DOMAIN_OPERATION": 12
+          "NAVIGATION_TRANSITION": 134,
+          "DOMAIN_OPERATION": 13
         },
         "denominator": {
           "journey": "07",
@@ -423,9 +423,9 @@
         "fields": 3,
         "pieces": 352,
         "by_classification": {
-          "PRODUCT_REQUIREMENT": 72,
+          "PRODUCT_REQUIREMENT": 70,
           "EXTERNAL_HANDOFF": 13,
-          "RECOVERY_BEHAVIOR": 8,
+          "RECOVERY_BEHAVIOR": 10,
           "NAVIGATION_TRANSITION": 228,
           "DOMAIN_OPERATION": 28,
           "DRAFT_FIELD": 3
@@ -460,9 +460,9 @@
         "fields": 0,
         "pieces": 235,
         "by_classification": {
-          "PRODUCT_REQUIREMENT": 51,
+          "PRODUCT_REQUIREMENT": 48,
           "EXTERNAL_HANDOFF": 4,
-          "RECOVERY_BEHAVIOR": 10,
+          "RECOVERY_BEHAVIOR": 13,
           "SYSTEM_PROGRESSION": 2,
           "NAVIGATION_TRANSITION": 162,
           "DOMAIN_OPERATION": 6
@@ -729,8 +729,8 @@
         "fields": 0,
         "pieces": 198,
         "by_classification": {
-          "PRODUCT_REQUIREMENT": 22,
-          "RECOVERY_BEHAVIOR": 2,
+          "PRODUCT_REQUIREMENT": 21,
+          "RECOVERY_BEHAVIOR": 3,
           "EXTERNAL_HANDOFF": 2,
           "SYSTEM_PROGRESSION": 1,
           "NAVIGATION_TRANSITION": 112,
@@ -805,8 +805,8 @@
         "fields": 0,
         "pieces": 145,
         "by_classification": {
-          "PRODUCT_REQUIREMENT": 19,
-          "RECOVERY_BEHAVIOR": 12,
+          "PRODUCT_REQUIREMENT": 14,
+          "RECOVERY_BEHAVIOR": 17,
           "SYSTEM_PROGRESSION": 5,
           "EXTERNAL_HANDOFF": 11,
           "NAVIGATION_TRANSITION": 57,
@@ -2048,6 +2048,27 @@
     ]
   },
   "independent_safety": {
+    "errors": []
+  },
+  "stage_5_2": {
+    "seals": {
+      "safety_subgraph": "cb7f5c7f42fcf2d8",
+      "semantic_inventory": "efab713b1a9fabe8",
+      "closure_mapping": "9aa481923e471537",
+      "event_semantics": "c53b7e69301f2137",
+      "mapping_registry": "8951ac0340a69257"
+    },
+    "metrics": {
+      "authority_only_product_requirement_states": 667,
+      "draft_fields_without_semantic_ref": 35,
+      "duplicate_control_instances": 59,
+      "duplicate_control_conflicts": 0,
+      "required_state_scope": [
+        "05",
+        "06",
+        "08"
+      ]
+    },
     "errors": []
   },
   "errors": []
