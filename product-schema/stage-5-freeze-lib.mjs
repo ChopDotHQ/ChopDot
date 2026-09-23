@@ -24,6 +24,17 @@ const EXPECTED_HASHES={
   event_semantics:"c53b7e69301f2137",
   mapping_registry:"8951ac0340a69257"
 };
+const EXPECTED_AUTHORED_BLOBS={
+  "product-schema/semantic-core.json":"5820481119313bdd1fb63afb48ecc519a0b54fd0",
+  "product-schema/composition-graph.json":"7b3bb328ee8b5cd9e1012e19c642a7b3e7d8c45a",
+  "product-schema/reconstruction-map-v1.json":"a1e6cffda152f23358223b0087941c177048a0e9",
+  "product-schema/domain-event-bindings-v1.json":"a50f93396e190d1150385874fdc01a85ae3a1baf",
+  "product-schema/golden-mapping-sources.json":"d35e8440f64c99200c3cff8be393acb82526ff98",
+  "product-schema/task-paths-v1.json":"17e7917e5b52046709c18a3c7c0de373072a4b8b",
+  "product-schema/hardening-lib.mjs":"b7e8a6deddc0979da3355ad30677c1c6d4b8d453",
+  "product-schema/gate-b-authority-oracle.json":"808a733788ccb15cf81a74706400ef3a4066618d",
+  "product-schema/frozen-baseline.json":"bbf6a999e3ff3b7765cdbfac75db86851012f04f"
+};
 const EXPECTED_WRITERS=[
   "account.delete","expense.create","expense.delete","expense.edit","expense.raise_issue","expense.resolve_issue",
   "expense.review_agree","expense.withdraw_issue","group.create","group.delete","group.join","group.leave",
@@ -166,9 +177,14 @@ export function deriveFreezeSeals(core,graph,reconstruction,bindings,registry){
   };
 }
 
-export function validateStage52(core,graph,reconstruction,bindings,pieces,tasks,registry){
+export function validateStage52(core,graph,reconstruction,bindings,pieces,tasks,registry,authoredBlobs={}){
   const errors=[],seals=deriveFreezeSeals(core,graph,reconstruction,bindings,registry);
   for(const [k,v] of Object.entries(EXPECTED_HASHES))if(seals[k]!==v)errors.push({id:"FREEZE-SEAL-DRIFT",seal:k,expected:v,actual:seals[k]});
+  for(const [path,expected] of Object.entries(EXPECTED_AUTHORED_BLOBS)){
+    const actual=authoredBlobs[path];
+    if(actual!==expected)errors.push({id:"AUTHORED-BLOB-DRIFT",path,expected,actual:actual||null});
+  }
+  for(const path of Object.keys(authoredBlobs))if(!EXPECTED_AUTHORED_BLOBS[path])errors.push({id:"AUTHORED-BLOB-UNDECLARED",path});
 
   const safetyObjects=new Set(core.objects.filter(x=>x.safety_class).map(x=>x.id));
   const writers=core.operations.filter(o=>[...(o.changes||[]),...(o.invalidates||[]),...(o.invalidates_prepared||[])].some(x=>safetyObjects.has(x))).map(x=>x.id).sort();
@@ -277,6 +293,7 @@ export function validateStage52(core,graph,reconstruction,bindings,pieces,tasks,
   const draftFields=pieces.filter(p=>p.piece_type==="field"&&p.classification==="DRAFT_FIELD");
   return {
     errors,seals,
+    authored_blobs:{expected:EXPECTED_AUTHORED_BLOBS,actual:authoredBlobs,matched:Object.entries(EXPECTED_AUTHORED_BLOBS).filter(([p,v])=>authoredBlobs[p]===v).length,total:Object.keys(EXPECTED_AUTHORED_BLOBS).length},
     metrics:{
       authority_only_product_requirement_states:productRequirementStates.length,
       draft_fields_without_semantic_ref:draftFields.filter(x=>!(x.schema_refs||[]).length).length,
