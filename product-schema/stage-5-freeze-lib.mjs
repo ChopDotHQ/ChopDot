@@ -322,12 +322,12 @@ export function buildStage52AdversarialCases(core,graph,reconstruction,bindings)
 }
 
 
-export function deriveStage52AdversarialCoverage(core,graph,reconstruction,bindings,pieces,tasks,registry){
+export function deriveStage52AdversarialCoverage(core,graph,reconstruction,bindings,pieces,tasks,registry,authoredBlobs={}){
   const cases=buildStage52AdversarialCases(core,graph,reconstruction,bindings),results=[];
   for(const tc of cases){
     const x={core:clone(core),graph:clone(graph),reconstruction:clone(reconstruction),bindings:clone(bindings)};
     tc.mutate(x);
-    const v=validateStage52(x.core,x.graph,x.reconstruction,x.bindings,pieces,tasks,registry);
+    const v=validateStage52(x.core,x.graph,x.reconstruction,x.bindings,pieces,tasks,registry,authoredBlobs);
     results.push({name:tc.name,detected:v.errors.length>0,detected_by:[...new Set(v.errors.map(e=>e.id))]});
   }
   const detected=results.filter(x=>x.detected).length;
