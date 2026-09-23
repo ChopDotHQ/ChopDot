@@ -352,7 +352,25 @@ export function buildStage52AdversarialCases(core,graph,reconstruction,bindings)
     }},
     {name:"hardening-executable-blob-drift",mutate:x=>{x.authoredBlobs["product-schema/hardening-lib.mjs"]="0000000000000000000000000000000000000000";}},
     {name:"gate-b-oracle-blob-drift",mutate:x=>{x.authoredBlobs["product-schema/gate-b-authority-oracle.json"]="0000000000000000000000000000000000000000";}},
-    {name:"task-contract-blob-drift",mutate:x=>{x.authoredBlobs["product-schema/task-paths-v1.json"]="0000000000000000000000000000000000000000";}}
+    {name:"task-contract-blob-drift",mutate:x=>{x.authoredBlobs["product-schema/task-paths-v1.json"]="0000000000000000000000000000000000000000";}},
+    {name:"position-scope-law-applies-to-empty",mutate:x=>{x.core.laws.find(l=>l.id==="LAW-POS-SCOPE-01").applies_to=[];}},
+    {name:"authorize-group-position-scope",mutate:x=>{
+      const o=x.core.operations.find(o=>o.id==="settlement.authorize");
+      o.reads=["payment.intent","payment.settlement_scope","wallet.session","position.scope"];
+      o.rules.push("Authorization may use a group PositionScope.");
+    }},
+    {name:"ordinary-operation-witness-swapped-to-schema-source",mutate:x=>{
+      const w=x.reconstruction.operation_witnesses.find(w=>w.schema_ref==="settlement.close");
+      w.evidence={schema_source:"C1_SPEND",reason:"generic source mention"};
+    }},
+    {name:"system-derived-witness-weakened-to-one-phrase",mutate:x=>{
+      const w=x.reconstruction.operation_witnesses.find(w=>w.schema_ref==="request.deliver");
+      w.evidence={path:"prototypes/experience-workbench/journeys/13-request-money/source/model.cjs",contains:"function deliver"};
+    }},
+    {name:"invent-source-grounded-object-and-law",mutate:x=>{
+      x.core.objects.push({id:"invented.shadow",name:"Invented Shadow",kind:"canonical",identity:["id"],sources:["J12"],source_journeys:["12"]});
+      x.core.laws.push({id:"LAW-INVENTED-SHADOW",name:"Invented shadow law",applies_to:["invented.shadow"],rule:"Invented semantics with a valid source key.",sources:["J12"]});
+    }}
   ];
 }
 
