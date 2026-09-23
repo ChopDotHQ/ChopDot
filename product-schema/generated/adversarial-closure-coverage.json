@@ -1,11 +1,14 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "generated_view": "stage-5-2-adversarial-closure-coverage",
-  "detector": "semantic closure checks plus independent freeze seals; reported separately from the 58-case safety-invariant mutation score",
+  "detector": "semantic closure checks and explicit V1 freeze seals are reported separately; seal-only detection is not claimed as independent semantic proof",
   "total": {
-    "applicable": 12,
-    "detected": 12,
-    "score": 100
+    "applicable": 22,
+    "detected": 22,
+    "semantic_detected": 18,
+    "freeze_seal_only": 4,
+    "score": 100,
+    "semantic_score": 81.82
   },
   "results": [
     {
@@ -15,7 +18,13 @@
         "FREEZE-SEAL-DRIFT",
         "SAFETY-WRITER-CLOSURE",
         "OPERATION-WITNESS-MISSING"
-      ]
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "SAFETY-WRITER-CLOSURE",
+        "OPERATION-WITNESS-MISSING"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
     },
     {
       "name": "mark-sent-writes-record",
@@ -23,7 +32,12 @@
       "detected_by": [
         "FREEZE-SEAL-DRIFT",
         "CRITICAL-OPERATION-DRIFT"
-      ]
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "CRITICAL-OPERATION-DRIFT"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
     },
     {
       "name": "mark-sent-drops-pay02",
@@ -31,7 +45,12 @@
       "detected_by": [
         "FREEZE-SEAL-DRIFT",
         "CRITICAL-OPERATION-DRIFT"
-      ]
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "CRITICAL-OPERATION-DRIFT"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
     },
     {
       "name": "link-account-rewrites-participant",
@@ -39,7 +58,12 @@
       "detected_by": [
         "FREEZE-SEAL-DRIFT",
         "CRITICAL-OPERATION-DRIFT"
-      ]
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "CRITICAL-OPERATION-DRIFT"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
     },
     {
       "name": "wallet-widens-at-signing",
@@ -47,7 +71,12 @@
       "detected_by": [
         "FREEZE-SEAL-DRIFT",
         "CRITICAL-OPERATION-DRIFT"
-      ]
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "CRITICAL-OPERATION-DRIFT"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
     },
     {
       "name": "payer-marked-sent-navigation",
@@ -55,7 +84,12 @@
       "detected_by": [
         "FREEZE-SEAL-DRIFT",
         "CRITICAL-EVENT-DRIFT"
-      ]
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "CRITICAL-EVENT-DRIFT"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
     },
     {
       "name": "extra-trigger-reclassifies-state",
@@ -63,7 +97,12 @@
       "detected_by": [
         "FREEZE-SEAL-DRIFT",
         "REQUIRED-STATE-EXTRA-TRIGGER"
-      ]
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "REQUIRED-STATE-EXTRA-TRIGGER"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
     },
     {
       "name": "wrong-task-witness",
@@ -71,7 +110,12 @@
       "detected_by": [
         "FREEZE-SEAL-DRIFT",
         "WITNESS-TASK-DOES-NOT-PROVE-OPERATION"
-      ]
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "WITNESS-TASK-DOES-NOT-PROVE-OPERATION"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
     },
     {
       "name": "wrong-alias-existing-state",
@@ -79,7 +123,12 @@
       "detected_by": [
         "FREEZE-SEAL-DRIFT",
         "REQUIRED-STATE-ALIAS-MANIFEST-DRIFT"
-      ]
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "REQUIRED-STATE-ALIAS-MANIFEST-DRIFT"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
     },
     {
       "name": "reuse-impact-on-live-state",
@@ -87,7 +136,12 @@
       "detected_by": [
         "FREEZE-SEAL-DRIFT",
         "SUPERSESSION-MANIFEST-DRIFT"
-      ]
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "SUPERSESSION-MANIFEST-DRIFT"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
     },
     {
       "name": "collapse-c1-overlay",
@@ -95,7 +149,12 @@
       "detected_by": [
         "FREEZE-SEAL-DRIFT",
         "OVERLAY-WITNESS-DRIFT"
-      ]
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "OVERLAY-WITNESS-DRIFT"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
     },
     {
       "name": "close-drops-position-scope",
@@ -103,7 +162,134 @@
       "detected_by": [
         "FREEZE-SEAL-DRIFT",
         "CRITICAL-OPERATION-DRIFT"
-      ]
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "CRITICAL-OPERATION-DRIFT"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
+    },
+    {
+      "name": "pay02-applies-to-empty",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "SAFETY-LAW-CLOSURE",
+        "SETTLEMENT-LIFECYCLE-SCOPE"
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "SAFETY-LAW-CLOSURE",
+        "SETTLEMENT-LIFECYCLE-SCOPE"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
+    },
+    {
+      "name": "pay02-add-equivalence-bypass",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "SETTLEMENT-LIFECYCLE-SHAPE"
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "SETTLEMENT-LIFECYCLE-SHAPE"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
+    },
+    {
+      "name": "confirm-receipt-allows-payer",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "CRITICAL-OPERATION-DRIFT"
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "CRITICAL-OPERATION-DRIFT"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
+    },
+    {
+      "name": "invent-sent-implies-received-law",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "SAFETY-LAW-CLOSURE",
+        "CRITICAL-OPERATION-DRIFT"
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "SAFETY-LAW-CLOSURE",
+        "CRITICAL-OPERATION-DRIFT"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
+    },
+    {
+      "name": "extra-j12-settlement-context-without-scope",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "SETTLEMENT-CONTEXT-SCOPE-HOLE"
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "SETTLEMENT-CONTEXT-SCOPE-HOLE"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
+    },
+    {
+      "name": "conflict-trigger-view-only-governor",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT",
+        "RECOVERY-TRIGGER-NONLAW-GOVERNOR"
+      ],
+      "semantic_detection": true,
+      "semantic_detected_by": [
+        "RECOVERY-TRIGGER-NONLAW-GOVERNOR"
+      ],
+      "detection_mode": "semantic_plus_freeze_seal"
+    },
+    {
+      "name": "navigation-back-closes-payment",
+      "detected": true,
+      "detected_by": [
+        "FREEZE-SEAL-DRIFT"
+      ],
+      "semantic_detection": false,
+      "semantic_detected_by": [],
+      "detection_mode": "freeze_seal_only"
+    },
+    {
+      "name": "hardening-executable-blob-drift",
+      "detected": true,
+      "detected_by": [
+        "AUTHORED-BLOB-DRIFT"
+      ],
+      "semantic_detection": false,
+      "semantic_detected_by": [],
+      "detection_mode": "freeze_seal_only"
+    },
+    {
+      "name": "gate-b-oracle-blob-drift",
+      "detected": true,
+      "detected_by": [
+        "AUTHORED-BLOB-DRIFT"
+      ],
+      "semantic_detection": false,
+      "semantic_detected_by": [],
+      "detection_mode": "freeze_seal_only"
+    },
+    {
+      "name": "task-contract-blob-drift",
+      "detected": true,
+      "detected_by": [
+        "AUTHORED-BLOB-DRIFT"
+      ],
+      "semantic_detection": false,
+      "semantic_detected_by": [],
+      "detection_mode": "freeze_seal_only"
     }
   ]
 }

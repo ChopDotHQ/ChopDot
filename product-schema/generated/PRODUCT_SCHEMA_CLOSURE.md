@@ -60,25 +60,30 @@
 
 ## Stage 5.2 adversarial closure regression coverage
 
-- Detector: semantic closure checks plus independent freeze seals; reported separately from the 58-case safety-invariant mutation score
-- Adversarial regression cases detected: **12 / 12 (100%)**
-- Freeze seals: **safety_subgraph=cb7f5c7f42fcf2d8, semantic_inventory=efab713b1a9fabe8, closure_mapping=9aa481923e471537, event_semantics=c53b7e69301f2137, mapping_registry=8951ac0340a69257**
+- Detector: semantic closure checks and explicit V1 freeze seals are reported separately; seal-only detection is not claimed as independent semantic proof
+- Adversarial regression cases detected: **22 / 22 (100%)**
+- Independently semantic detections: **18 / 22 (81.82%)**
+- Freeze-seal-only detections: **4**
+- Structural freeze seals: **safety_subgraph=cb7f5c7f42fcf2d8, semantic_inventory=efab713b1a9fabe8, closure_mapping=9aa481923e471537, event_semantics=c53b7e69301f2137, mapping_registry=8951ac0340a69257**
+- Authored/executable V1 blobs sealed: **9 / 9**
 
 ## Blast-radius probes
 
-| Change | Direct tier | Direct journeys | Direct tasks | Transitive tier | Transitive journeys | Transitive tasks |
+Model: **bounded causal dependency graph: semantic dependencies propagate; write/invalidation effects propagate only from origin operations; reached consumer operations are not assumed to execute; certified tasks are linked only by their semantic_operation**
+
+| Change | Direct tier | Direct journeys | Direct tasks | Bounded downstream tier | Bounded journeys | Bounded semantic tasks |
 |---|---|---:|---:|---|---:|---:|
-| Equal split semantics | LOW | 0 | 0 | CRITICAL | 27 | 32 |
-| Participant identity | HIGH | 0 | 0 | CRITICAL | 27 | 32 |
-| Settlement eligibility | MODERATE | 4 | 0 | CRITICAL | 27 | 32 |
-| Expense edit rules | LOW | 1 | 0 | CRITICAL | 27 | 32 |
-| Review reset behavior | MODERATE | 4 | 0 | CRITICAL | 27 | 32 |
-| Restore semantics | LOW | 1 | 0 | CRITICAL | 27 | 32 |
+| Equal split semantics | LOW | 0 | 0 | CRITICAL | 13 | 7 |
+| Participant identity | HIGH | 0 | 0 | CRITICAL | 27 | 8 |
+| Settlement eligibility | MODERATE | 4 | 0 | CRITICAL | 13 | 12 |
+| Expense edit rules | LOW | 1 | 1 | CRITICAL | 12 | 11 |
+| Review reset behavior | MODERATE | 4 | 0 | HIGH | 7 | 11 |
+| Restore semantics | LOW | 1 | 0 | CRITICAL | 17 | 8 |
 | Payment destination | LOW | 0 | 0 | MODERATE | 2 | 0 |
-| Group lifecycle | HIGH | 0 | 0 | CRITICAL | 27 | 32 |
+| Group lifecycle | HIGH | 0 | 0 | CRITICAL | 17 | 6 |
 | SpendIntent | NEGLIGIBLE | 0 | 0 | NEGLIGIBLE | 0 | 0 |
-| Settlement mutation guard | MODERATE | 4 | 0 | CRITICAL | 27 | 32 |
-| Typed PositionScope | LOW | 0 | 0 | CRITICAL | 27 | 32 |
+| Settlement mutation guard | MODERATE | 4 | 0 | CRITICAL | 13 | 8 |
+| Typed PositionScope | LOW | 0 | 0 | HIGH | 9 | 0 |
 | Low-semantic presentation/navigation control | NEGLIGIBLE | 1 | 0 | NEGLIGIBLE | 1 | 0 |
 
 ## Closure errors
