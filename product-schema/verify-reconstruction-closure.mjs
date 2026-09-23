@@ -42,9 +42,12 @@ assert.equal(x.coverage.supersessions.errors.length,0);
 assert.equal(x.coverage.extraction.errors.length,0);
 assert.equal(x.coverage.independent_safety.errors.length,0);
 assert.equal(x.coverage.stage_5_2.errors.length,0);
+assert.equal(x.coverage.stage_5_2.authored_blobs.matched,x.coverage.stage_5_2.authored_blobs.total);
 assert.ok(x.adversarial.total.applicable>0);
 assert.equal(x.adversarial.total.detected,x.adversarial.total.applicable);
 assert.equal(x.adversarial.total.score,100);
+assert.ok(x.adversarial.total.semantic_detected>0);
+assert.equal(x.adversarial.total.semantic_detected+x.adversarial.total.freeze_seal_only,x.adversarial.total.applicable);
 
 for(const [kind,s] of Object.entries(x.coverage.semantic_witnesses))if(s.witnessed!==undefined)assert.equal(s.witnessed,s.total,'semantic witness gap '+kind);
 for(const d of x.coverage.extraction.source_denominators)assert.ok(d.final_states>=d.declared_state_minimum,'state denominator underflow J'+d.journey);
@@ -63,12 +66,19 @@ for(const id of ['ctx.settlement','ctx.expense_guard']){const c=graph.contexts.f
 const participant=x.blast.probes.find(p=>p.id==='participant_identity');
 const spend=x.blast.probes.find(p=>p.id==='spend_intent');
 const guard=x.blast.probes.find(p=>p.id==='settlement_guard');
+const edit=x.blast.probes.find(p=>p.id==='expense_edit');
 const restore=x.blast.probes.find(p=>p.id==='restore_semantics');
+const group=x.blast.probes.find(p=>p.id==='group_lifecycle');
 const presentation=x.blast.probes.find(p=>p.id==='presentation_control');
-assert.ok(participant&&spend&&guard&&restore);
+assert.ok(participant&&spend&&guard&&edit&&restore&&group);
 assert.ok(participant.transitive.weighted_score>spend.transitive.weighted_score,'blast radius must keep Participant above fenced SpendIntent');
 if(presentation)assert.ok(participant.transitive.weighted_score>presentation.transitive.weighted_score,'presentation control must rank below Participant identity');
 assert.ok(guard.transitive.nodes.includes('journey:11')&&guard.transitive.nodes.includes('journey:12'),'settlement guard blast must reach settlement journeys through constrained payment objects');
-assert.ok(restore.transitive.counts.journeys>=restore.direct.counts.journeys,'restore transitive blast must not shrink below direct impact');
+assert.ok(guard.transitive.counts.journeys<participant.transitive.counts.journeys,'settlement guard must not expand to the same product-wide footprint as Participant identity');
+assert.ok(edit.transitive.counts.journeys<participant.transitive.counts.journeys,'expense edit must not expand to the same product-wide footprint as Participant identity');
+assert.ok(restore.transitive.counts.journeys<participant.transitive.counts.journeys,'restore may be broad but must remain below identity-wide impact');
+assert.ok(group.transitive.counts.journeys<participant.transitive.counts.journeys,'group lifecycle must remain below identity-wide impact');
+assert.ok(restore.transitive.counts.journeys>=restore.direct.counts.journeys,'restore bounded downstream impact must not shrink below direct impact');
+assert.ok(guard.transitive.counts.tasks<(tasks.tasks||[]).length,'guard blast must not blanket-assign every certified task in impacted journeys');
 
-console.log(JSON.stringify({stage:5,reconstruction:'PASS',sources:x.coverage.source_pins.total,events:x.coverage.event_vocabulary.distinct_events,pieces:x.coverage.golden_pieces.total,operations:core.operations.length,construction_required_states:x.coverage.required_states.total,independent_mutations:x.mutations.total.detected+'/'+x.mutations.total.applicable,adversarial_closure:x.adversarial.total.detected+'/'+x.adversarial.total.applicable,blast_participant:participant.transitive.weighted_score,blast_spend:spend.transitive.weighted_score,result:'PASS'},null,2));
+console.log(JSON.stringify({stage:5,reconstruction:'PASS',sources:x.coverage.source_pins.total,events:x.coverage.event_vocabulary.distinct_events,pieces:x.coverage.golden_pieces.total,operations:core.operations.length,construction_required_states:x.coverage.required_states.total,independent_mutations:x.mutations.total.detected+'/'+x.mutations.total.applicable,adversarial_closure:x.adversarial.total.detected+'/'+x.adversarial.total.applicable,adversarial_semantic:x.adversarial.total.semantic_detected+'/'+x.adversarial.total.applicable,adversarial_seal_only:x.adversarial.total.freeze_seal_only,blast_participant:participant.transitive.weighted_score,blast_spend:spend.transitive.weighted_score,result:'PASS'},null,2));
