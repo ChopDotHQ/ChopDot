@@ -3,15 +3,15 @@
   "generation": "schema-v1-codex-completion-20260926-01",
   "phase": "PRODUCT_SCHEMA_V1_FINALIZATION",
   "operating_mode": "CODEX_LED_COMPLETION",
-  "status": "CODEX_IMPLEMENTING",
+  "status": "WAITING_HOSTED_CHECKS",
   "coordination_issue": 50,
   "state_owner": "codex-completion-owner",
   "configured_by": "chatgpt-operator-on-user-instruction",
   "authority": "User: Can we just have codex keep working and just once and for all just finish the Job",
   "schema_branch": "research/product-schema-v1",
   "initial_candidate_head": "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46",
-  "candidate_head": "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46",
-  "candidate_tree": "a5d02c43d8665097269e556e38ae09016c60f887",
+  "candidate_head": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "candidate_tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
   "product_authority_branch": "ux/experience-workbench",
   "product_authority_head": "4ba456e6595330e4ca8e21366e0d827f17e10881",
   "previous_state": {
@@ -43,9 +43,9 @@
   "codex_dispatch_status": "ACTIVE_EXISTING_SESSION",
   "builder_lease": "ops/chatgpt-work-factory-v1:docs/BUILDER_LEASE.json",
   "last_observed_lease": {
-    "status": "completed",
+    "status": "waiting_hosted_checks",
     "holder": null,
-    "git_blob": "ff85162b7d7e44415dcb06a417efbc8c5adaf37d"
+    "git_blob": "a2b93ff2852e31a69d213673da65acb6d70a19fd"
   },
   "repair_authorization": {
     "owner": "codex-completion-owner",
@@ -73,14 +73,14 @@
     "repaired_local_chain_reported": "PASS without seal-constant changes",
     "status": "REPORTED_PATCH_READY_FOR_REVIEW; use actual existing Codex artifacts before accepting these claims"
   },
-  "reviewer_receipt": null,
-  "security_receipt": null,
+  "reviewer_receipt": "separate reconstruction reviewer CLEAR_FOR_FREEZE_RECOMMENDATION; exact tree confirmed for published SHA",
+  "security_receipt": "separate security reviewer CLEAR_FOR_FREEZE_RECOMMENDATION; exact tree confirmed for published SHA",
   "final_local_evidence": null,
   "final_hosted_evidence": null,
   "human_freeze_approval": null,
   "freeze_record": null,
   "next_owner": "codex-completion-owner",
-  "next_action": "Resolve separate reviews; finish guide, exact-candidate local and hosted checks",
+  "next_action": "Finish hosted Cypress and publish final exact-version evidence; four other acceptance workflows succeeded",
   "completion_boundary": "Engineering work and bounded independent reviews may be coordinated within Codex using actually available reviewers. Self-review must not be represented as independent. Existing independent reconstruction/security acceptance and final exact-head human freeze approval remain; absence is reported once as a concrete blocker rather than an hourly wait loop.",
   "acceptance_workflows": [
     "Product Schema V1",
@@ -106,9 +106,9 @@
   ],
   "no_idle_rule": "Reuse completed work; proceed through all authorized engineering steps without per-edit confirmation or archive relays. Pause only for a genuine unavailable capability, unresolved product decision, competing live writer or final exact-head acceptance. Preserve a concrete resumable checkpoint on session limits.",
   "local_candidate": {
-    "sha": "8a99f7c65306cdb0dd915d40c42405d7c48b6301",
-    "tree": "cc3ca2af38f1c340fe51ae33252a656c246b0669",
-    "status": "integrated; separate read-only reviews active"
+    "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+    "status": "published; exact-SHA full local chain and 25-case matrix PASS"
   },
   "artifact_intake": {
     "archive_sha256": "8f9b4dc64414b8947fab5f1c2eed8fd72b8c27d73c194c76bc76fd33f4e64c68",
