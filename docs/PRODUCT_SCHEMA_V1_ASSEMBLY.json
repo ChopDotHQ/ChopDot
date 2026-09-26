@@ -2,7 +2,7 @@
   "schema_version": 1,
   "generation": "schema-v1-finalize-20260926-01",
   "phase": "PRODUCT_SCHEMA_V1_FINALIZATION",
-  "status": "REVIEW_REQUIRED",
+  "status": "REVIEW_PENDING",
   "coordination_issue": 50,
   "state_owner": "schema-supervisor",
   "schema_branch": "research/product-schema-v1",
@@ -21,24 +21,83 @@
   "workflow_evidence": {
     "initial_product_schema_run": 35859291674,
     "requires_same_head_recheck": true,
-    "ci_is_not_independent_review": true
+    "ci_is_not_independent_review": true,
+    "initial_product_schema_run_attempt": 2,
+    "initial_product_schema_job": 108465754362,
+    "initial_product_schema_conclusion": "success",
+    "initial_product_schema_artifact": 10913795217,
+    "initial_product_schema_artifact_digest": "sha256:7a7553a121d047c92e75b50ade9b23084c4167863cc09cb40590b09c9fa023a2"
   },
   "roles": {
-    "schema_builder": {"automation_id": "6aa2d91db2ac8191b810ad770b5bedd1", "minute": 15},
-    "schema_reviewer": {"automation_id": "6aa2d925780481919872270c2a39369b", "minute": 35},
-    "schema_security": {"automation_id": "6aa7bf45969c8191b3939a2de0813595", "minute": 45},
-    "schema_supervisor": {"automation_id": "6aa7aedbf3288191a45ecab70d12ed3a", "minute": 55}
+    "schema_builder": {
+      "automation_id": "6aa2d91db2ac8191b810ad770b5bedd1",
+      "minute": 15
+    },
+    "schema_reviewer": {
+      "automation_id": "6aa2d925780481919872270c2a39369b",
+      "minute": 35
+    },
+    "schema_security": {
+      "automation_id": "6aa7bf45969c8191b3939a2de0813595",
+      "minute": 45
+    },
+    "schema_supervisor": {
+      "automation_id": "6aa7aedbf3288191a45ecab70d12ed3a",
+      "minute": 55
+    }
   },
   "approval_boundary": "Restart authorizes final review and demonstrated schema-only repairs. Exact final freeze requires a later human approval of the reviewed head. Old J26-J28 standing approval is not applicable.",
   "candidate_write_boundary": "One Builder only, after exact-head REPAIR_AUTHORIZED and successful CAS lease; product-schema/** and narrowly necessary schema-only test tooling only. Keep canonical CI strict/read-only.",
   "review_evidence_boundary": "Reviewer/Security candidate worktrees are throwaway and read-only to the canonical branch. Durable evidence may be written to each role's own docs/schema-v1-evidence/<head>/<role>/ paths on ops/chatgpt-work-factory-v1 and issue #50.",
   "builder_lease": "ops/chatgpt-work-factory-v1:docs/BUILDER_LEASE.json",
-  "forbidden": ["canonical Golden or C1 changes", "Gate A or Gate B implementation", "production integration", "new product decisions without approval", "protected merge", "force push", "deployment", "funds or signing", "secrets", "private competitive material"],
+  "forbidden": [
+    "canonical Golden or C1 changes",
+    "Gate A or Gate B implementation",
+    "production integration",
+    "new product decisions without approval",
+    "protected merge",
+    "force push",
+    "deployment",
+    "funds or signing",
+    "secrets",
+    "private competitive material"
+  ],
   "gate_b_authorized": false,
   "production_implementation_authorized": false,
   "product_integrator_enabled": false,
-  "notify_on": ["human decision needed", "material blocker", "two-cycle stall", "exact-head freeze approval ready", "approved freeze verified"],
+  "notify_on": [
+    "human decision needed",
+    "material blocker",
+    "two-cycle stall",
+    "exact-head freeze approval ready",
+    "approved freeze verified"
+  ],
   "idle_behavior": "silent no-op; resume existing checkpoint, do not repeat unchanged reviews",
   "completion_behavior": "Pause Reviewer/Security/Builder at approval handoff or human-only blocker. Supervisor remains a silent approval watcher. Disable all schema roles on verified completion or mandate revocation.",
-  "next_owner": "schema-reviewer + schema-security"
+  "next_owner": "schema-reviewer + schema-security",
+  "reviewer_checkpoint": {
+    "evidence_path": "docs/schema-v1-evidence/bc7473c8eebd1511b9a92fe3c1e25e2670c29b46/reviewer/checkpoint.txt",
+    "summary": "Source-grounded invented nodes are currently seal-only, not semantically detected.",
+    "final_verdict_pending": true
+  },
+  "security_evidence": {
+    "evidence_path": "docs/schema-v1-evidence/bc7473c8eebd1511b9a92fe3c1e25e2670c29b46/security/SEC-SCHEMA-001-result.json",
+    "finding_id": "SEC-SCHEMA-001",
+    "severity": "HIGH",
+    "verdict": "REVISE",
+    "tested_head": "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46",
+    "tested_tree": "a5d02c43d8665097269e556e38ae09016c60f887",
+    "baseline_workflow_run": 35859291674,
+    "baseline_workflow_attempt": 2,
+    "baseline_workflow_job": 108465754362,
+    "baseline_workflow_conclusion": "success",
+    "limitation": "Full regenerated mutant workflow was not executed in the Security review environment; this is semantic-verifier evidence, not a full workflow execution claim."
+  },
+  "coordination": {
+    "candidate_ref_revalidated_unchanged": true,
+    "product_authority_ref_revalidated_unchanged": true,
+    "candidate_mutation_authorized": false,
+    "reason": "Security has a demonstrated HIGH finding and Reviewer has a resumable partial checkpoint; wait for the independent Reviewer final receipt and Security issue receipt before consolidating one coherent repair authorization.",
+    "reviewer_automation_reenabled": true
+  }
 }
