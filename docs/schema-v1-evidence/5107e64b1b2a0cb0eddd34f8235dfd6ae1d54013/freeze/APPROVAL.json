@@ -1,0 +1,13 @@
+{
+  "record_version": 1,
+  "type": "EXACT_HUMAN_FREEZE_APPROVAL",
+  "approved": true,
+  "approved_at": "2026-09-27T00:10:41+02:00",
+  "source": "Explicit user instruction in the existing ChopDot completion session",
+  "verbatim": "I approve freezing Product Schema V1 at exactly:\n\nSHA:\n5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013\n\nTree:\nce5b82d008dfa2f48e714607e30fdb6839b8305c\n\nThis approval includes the documented V1 limitations in the completion\npackage and product-schema/V1_USAGE_GUIDE.md.\n\nRecord this exact approval in issue #50 and the assembly state.\nFinalize the immutable V1 baseline record and tag without changing\nthe reviewed tree. Verify the tag resolves to this exact commit and\ntree; never move or overwrite an existing conflicting tag.\n\nKeep the evidence and approval record outside the reviewed candidate\nso finalization does not change the approved bytes.\n\nThen mark this schema-finalization workstream COMPLETE and return\nthe final baseline/tag, evidence location and usage-guide location.\n\nThis does not authorize new schema architecture, changes to frozen\nGoldens/C1, a protected merge, deployment, Gate B or production work.\nDo not restart the scheduled assembly line.",
+  "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+  "documented_limitations_accepted": true,
+  "issue_comment_id": 5850349640,
+  "issue_url": "https://github.com/ChopDotHQ/ChopDot/issues/50#issuecomment-5850349640"
+}
