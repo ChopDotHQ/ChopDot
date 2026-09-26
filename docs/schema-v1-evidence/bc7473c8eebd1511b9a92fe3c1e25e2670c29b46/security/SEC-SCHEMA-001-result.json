@@ -38,5 +38,21 @@
     "adversarial_semantic": "23/27",
     "adversarial_seal_only": 4
   },
-  "verdict": "REVISE"
+  "verdict": "REVISE",
+  "baseline_workflow_same_head_recheck": {
+    "run_id": 35859291674,
+    "run_attempt": 2,
+    "job_id": 108465754362,
+    "completed_at": "2026-09-26T18:55:43Z",
+    "conclusion": "success",
+    "head": "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46",
+    "tree": "a5d02c43d8665097269e556e38ae09016c60f887",
+    "reconstruction": "PASS",
+    "independent_mutations": "58/58",
+    "adversarial_closure": "27/27",
+    "adversarial_semantic": "23/27",
+    "adversarial_seal_only": 4,
+    "mechanical_detected": "58/58",
+    "generated_outputs_pinned": true
+  }
 }
