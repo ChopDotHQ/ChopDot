@@ -3,7 +3,7 @@
   "generation": "schema-v1-codex-completion-20260926-01",
   "phase": "PRODUCT_SCHEMA_V1_FINALIZATION",
   "operating_mode": "CODEX_LED_COMPLETION",
-  "status": "CODEX_HANDOFF_READY",
+  "status": "CODEX_IMPLEMENTING",
   "coordination_issue": 50,
   "state_owner": "codex-completion-owner",
   "configured_by": "chatgpt-operator-on-user-instruction",
@@ -22,20 +22,40 @@
     "note": "Complete previous evidence, pending reviews and workflow results are retained at this immutable ops ref. They are not completed by the ownership transfer."
   },
   "scheduled_roles": {
-    "schema_builder": {"automation_id": "6aa2d91db2ac8191b810ad770b5bedd1", "enabled": false},
-    "schema_reviewer": {"automation_id": "6aa2d925780481919872270c2a39369b", "enabled": false},
-    "schema_security": {"automation_id": "6aa7bf45969c8191b3939a2de0813595", "enabled": false},
-    "schema_supervisor": {"automation_id": "6aa7aedbf3288191a45ecab70d12ed3a", "enabled": false}
+    "schema_builder": {
+      "automation_id": "6aa2d91db2ac8191b810ad770b5bedd1",
+      "enabled": false
+    },
+    "schema_reviewer": {
+      "automation_id": "6aa2d925780481919872270c2a39369b",
+      "enabled": false
+    },
+    "schema_security": {
+      "automation_id": "6aa7bf45969c8191b3939a2de0813595",
+      "enabled": false
+    },
+    "schema_supervisor": {
+      "automation_id": "6aa7aedbf3288191a45ecab70d12ed3a",
+      "enabled": false
+    }
   },
   "schedule_pause_verified": "All four automation updates returned SUCCESS with is_enabled=false and hold-only prompts. This is not a claim that any already-running invocation was forcibly terminated.",
-  "codex_dispatch_status": "NOT_DISPATCHED_BY_CHATGPT; user continues the existing Codex session with the completion prompt",
+  "codex_dispatch_status": "ACTIVE_EXISTING_SESSION",
   "builder_lease": "ops/chatgpt-work-factory-v1:docs/BUILDER_LEASE.json",
-  "last_observed_lease": {"status": "completed", "holder": null, "git_blob": "ff85162b7d7e44415dcb06a417efbc8c5adaf37d"},
+  "last_observed_lease": {
+    "status": "completed",
+    "holder": null,
+    "git_blob": "ff85162b7d7e44415dcb06a417efbc8c5adaf37d"
+  },
   "repair_authorization": {
     "owner": "codex-completion-owner",
     "base_sha": "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46",
     "scope": "Integrate the existing SEC-SCHEMA-001 semantic-verifier repair and tests; resolve concrete related in-scope blockers; finish bounded review, deterministic regeneration, hosted CI and the exact-version delivery packet.",
-    "allowed_paths": ["product-schema/**", "directly necessary schema-only verification tooling and evidence", "this workstream's ops coordination and issue #50"],
+    "allowed_paths": [
+      "product-schema/**",
+      "directly necessary schema-only verification tooling and evidence",
+      "this workstream's ops coordination and issue #50"
+    ],
     "ref_update": "fast-forward only on research/product-schema-v1 after fresh head/lease validation; no protected merge",
     "per_step_supervisor_approval_required": false,
     "independent_acceptance_not_waived": true,
@@ -59,13 +79,40 @@
   "final_hosted_evidence": null,
   "human_freeze_approval": null,
   "freeze_record": null,
-  "next_owner": "existing user-operated Codex session",
-  "next_action": "Reuse the local tested patch and reproducible archive; validate current base and lease, integrate, review the actual diff, execute same-head local/hosted verification and deliver one exact-head final approval packet. Do not wait for paused scheduled roles.",
+  "next_owner": "codex-completion-owner",
+  "next_action": "Resolve separate reviews; finish guide, exact-candidate local and hosted checks",
   "completion_boundary": "Engineering work and bounded independent reviews may be coordinated within Codex using actually available reviewers. Self-review must not be represented as independent. Existing independent reconstruction/security acceptance and final exact-head human freeze approval remain; absence is reported once as a concrete blocker rather than an hourly wait loop.",
-  "acceptance_workflows": ["Product Schema V1", "CI", "Coverage", "Smoke (Targeted)", "E2E Cypress"],
+  "acceptance_workflows": [
+    "Product Schema V1",
+    "CI",
+    "Coverage",
+    "Smoke (Targeted)",
+    "E2E Cypress"
+  ],
   "gate_b_authorized": false,
   "production_implementation_authorized": false,
   "product_integrator_enabled": false,
-  "forbidden": ["canonical Golden/C1/product-authority edits", "new product behavior or architecture stages", "Gate A/B or production implementation", "protected merge", "force push", "deployment", "funds or signing", "secrets", "new paid services", "final freeze/tag without exact approval"],
-  "no_idle_rule": "Reuse completed work; proceed through all authorized engineering steps without per-edit confirmation or archive relays. Pause only for a genuine unavailable capability, unresolved product decision, competing live writer or final exact-head acceptance. Preserve a concrete resumable checkpoint on session limits."
+  "forbidden": [
+    "canonical Golden/C1/product-authority edits",
+    "new product behavior or architecture stages",
+    "Gate A/B or production implementation",
+    "protected merge",
+    "force push",
+    "deployment",
+    "funds or signing",
+    "secrets",
+    "new paid services",
+    "final freeze/tag without exact approval"
+  ],
+  "no_idle_rule": "Reuse completed work; proceed through all authorized engineering steps without per-edit confirmation or archive relays. Pause only for a genuine unavailable capability, unresolved product decision, competing live writer or final exact-head acceptance. Preserve a concrete resumable checkpoint on session limits.",
+  "local_candidate": {
+    "sha": "8a99f7c65306cdb0dd915d40c42405d7c48b6301",
+    "tree": "cc3ca2af38f1c340fe51ae33252a656c246b0669",
+    "status": "integrated; separate read-only reviews active"
+  },
+  "artifact_intake": {
+    "archive_sha256": "8f9b4dc64414b8947fab5f1c2eed8fd72b8c27d73c194c76bc76fd33f4e64c68",
+    "patch_sha256": "0a85052444e72da41d161fd6f521cfd8601f4a0232969fa0178c0375c319b28d",
+    "verified": true
+  }
 }
