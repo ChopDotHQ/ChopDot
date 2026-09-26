@@ -1,0 +1,13 @@
+# Finding dispositions — Product Schema V1 completion
+
+Final published candidate: `5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013`, tree `ce5b82d008dfa2f48e714607e30fdb6839b8305c`.
+
+| Finding | Disposition | Evidence and boundary |
+|---|---|---|
+| SEC-SCHEMA-001 | Resolved in schema verification | Settlement obligations follow actual operation/context consumption, including renamed/alternate carriers; seven preservation terms and governing laws checked semantically. Original 21 attacks and four controls retained. No seal constants changed. |
+| TEST-SUPPORT-001 | Execution evidence completed | Original archive and hashes verified/reused. Complete 25-case original baseline and repair runs retained; fresh complete matrix on final successor separately recorded. Initial invalid evidence-import attempt is excluded. |
+| REV-SCHEMA-SEMANTIC-GROUNDING-01 | Retained, explicitly bounded V1 limitation | Object/law source membership is authority accounting, not universal semantic entailment. Independent reconstructed invented-object/law experiment confirms semantic acceptance but immutable inventory/authored-seal rejection. The exact existing inventory is independently reviewed; adding new definitions needs source review. README, generated closure wording and usage guide now state this limitation. No unsupported semantic-PASS claim. |
+| REV-SCHEMA-TRUSTED-DETECTOR-BOUNDARY-02 | Dispositioned by immutable-version independent review | Candidate-owned validators do not prove their own correctness. Separate reviewers compared actual detector diffs against immutable earlier commits and reviewed the final SHA/tree. All authored seal constants and pinned authored input bytes remain unchanged. No recursive self-sealing or baseline refresh was substituted for review. Future detector changes require new independent review. |
+| REV-SCHEMA-WITNESS-RELATION-03 | Resolved with tested neighboring bypasses | Removed global source-text synthesis: control evidence needs a parsed state-local tuple. request.deliver requires its approved SYSTEM_DERIVED role and source-code queue/deliver relationship. Type demotion and switching/combining evidence routes cannot bypass the check. Fifteen witness regression assertions plus separate full-chain reviewer cases. |
+
+Only the named final receipts bind clearance to this candidate. Earlier receipts and interim f939277 results are preserved as history and are not silently applied to the final SHA. The remaining four shipped closure cases protected only by seals stay explicitly reported; finite tests are not universal reconstruction proof. Human freeze approval is still required.

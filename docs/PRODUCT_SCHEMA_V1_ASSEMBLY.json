@@ -3,7 +3,7 @@
   "generation": "schema-v1-codex-completion-20260926-01",
   "phase": "PRODUCT_SCHEMA_V1_FINALIZATION",
   "operating_mode": "CODEX_LED_COMPLETION",
-  "status": "WAITING_HOSTED_CHECKS",
+  "status": "ENGINEERING_COMPLETE_AWAITING_EXACT_FREEZE_APPROVAL",
   "coordination_issue": 50,
   "state_owner": "codex-completion-owner",
   "configured_by": "chatgpt-operator-on-user-instruction",
@@ -43,9 +43,8 @@
   "codex_dispatch_status": "ACTIVE_EXISTING_SESSION",
   "builder_lease": "ops/chatgpt-work-factory-v1:docs/BUILDER_LEASE.json",
   "last_observed_lease": {
-    "status": "waiting_hosted_checks",
-    "holder": null,
-    "git_blob": "a2b93ff2852e31a69d213673da65acb6d70a19fd"
+    "status": "completed",
+    "holder": null
   },
   "repair_authorization": {
     "owner": "codex-completion-owner",
@@ -73,14 +72,108 @@
     "repaired_local_chain_reported": "PASS without seal-constant changes",
     "status": "REPORTED_PATCH_READY_FOR_REVIEW; use actual existing Codex artifacts before accepting these claims"
   },
-  "reviewer_receipt": "separate reconstruction reviewer CLEAR_FOR_FREEZE_RECOMMENDATION; exact tree confirmed for published SHA",
-  "security_receipt": "separate security reviewer CLEAR_FOR_FREEZE_RECOMMENDATION; exact tree confirmed for published SHA",
-  "final_local_evidence": null,
-  "final_hosted_evidence": null,
+  "reviewer_receipt": {
+    "path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/reconstruction-review-PUBLICATION-RECEIPT.json",
+    "verdict": "CLEAR_FOR_FREEZE_RECOMMENDATION",
+    "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c"
+  },
+  "security_receipt": {
+    "path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/security-review-PUBLICATION-RECEIPT.json",
+    "verdict": "CLEAR_FOR_FREEZE_RECOMMENDATION",
+    "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c"
+  },
+  "final_local_evidence": {
+    "path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/results.json",
+    "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "attacks": 21,
+    "semantic_rejections": 21,
+    "valid_controls": 4,
+    "full_chain_escapes": 0,
+    "unchanged_full_chain": "PASS",
+    "deterministic_regeneration": "PASS",
+    "regressions": 41,
+    "authority_unchanged": true,
+    "seals_unchanged": true
+  },
+  "final_hosted_evidence": {
+    "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "all_required_workflows_success": true,
+    "runs": [
+      {
+        "id": 36274285283,
+        "name": "E2E Cypress",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285283",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:57:28Z"
+      },
+      {
+        "id": 36274285053,
+        "name": "Product Schema V1",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285053",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:50:34Z"
+      },
+      {
+        "id": 36274285522,
+        "name": "Coverage",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285522",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:51:51Z"
+      },
+      {
+        "id": 36274285321,
+        "name": "Smoke (Targeted)",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285321",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:50:33Z"
+      },
+      {
+        "id": 36274285336,
+        "name": "CI",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285336",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:52:17Z"
+      }
+    ],
+    "scope": {
+      "schema": "Full workflow chain and deterministic-output check passed",
+      "CI": "275 tests / 27 files passed; current Fast CI Suite",
+      "Coverage": "275 tests / 27 files passed; coverage artifact uploaded",
+      "Smoke": "Detect Smoke Scope passed, core_changed=false and guest_changed=false; Core and Guest jobs skipped by unchanged path filters",
+      "Cypress": "186 tests passed; minimum 175 check passed"
+    }
+  },
   "human_freeze_approval": null,
   "freeze_record": null,
-  "next_owner": "codex-completion-owner",
-  "next_action": "Finish hosted Cypress and publish final exact-version evidence; four other acceptance workflows succeeded",
+  "next_owner": "human-exact-version-approval",
+  "next_action": "Approve or reject the identified final SHA/tree for bounded V1 freeze; no tag/freeze has been performed.",
   "completion_boundary": "Engineering work and bounded independent reviews may be coordinated within Codex using actually available reviewers. Self-review must not be represented as independent. Existing independent reconstruction/security acceptance and final exact-head human freeze approval remain; absence is reported once as a concrete blocker rather than an hourly wait loop.",
   "acceptance_workflows": [
     "Product Schema V1",
@@ -108,11 +201,14 @@
   "local_candidate": {
     "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
     "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
-    "status": "published; exact-SHA full local chain and 25-case matrix PASS"
+    "status": "published; engineering and required reviews complete"
   },
   "artifact_intake": {
     "archive_sha256": "8f9b4dc64414b8947fab5f1c2eed8fd72b8c27d73c194c76bc76fd33f4e64c68",
     "patch_sha256": "0a85052444e72da41d161fd6f521cfd8601f4a0232969fa0178c0375c319b28d",
     "verified": true
-  }
+  },
+  "finding_dispositions": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/DISPOSITIONS.md",
+  "usage_guide": "research/product-schema-v1:product-schema/V1_USAGE_GUIDE.md",
+  "proposed_freeze_candidate": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/FREEZE-CANDIDATE.json"
 }

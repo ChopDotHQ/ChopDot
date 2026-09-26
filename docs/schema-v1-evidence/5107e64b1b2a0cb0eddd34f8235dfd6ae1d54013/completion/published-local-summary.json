@@ -1,0 +1,17 @@
+{
+  "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+  "status": "PASS",
+  "local_workflow_commands_per_case": 15,
+  "generators_before_chain_per_case": 4,
+  "cases": 25,
+  "attacks_semantically_rejected": 21,
+  "attack_seal_only": 0,
+  "attack_full_chain_escapes": 0,
+  "valid_controls_semantically_accepted": 4,
+  "changed_controls_seal_rejected": 3,
+  "unchanged_candidate_full_chain": "PASS",
+  "clean_regeneration": "PASS",
+  "all_final_deterministic_checks": "PASS",
+  "details": "published-matrix-5107e64b/results.json"
+}

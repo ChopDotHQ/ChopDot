@@ -1,0 +1,225 @@
+{
+  "schema_version": 1,
+  "status": "ENGINEERING_COMPLETE_AWAITING_EXACT_FREEZE_APPROVAL",
+  "candidate": {
+    "base_sha": "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46",
+    "base_tree": "a5d02c43d8665097269e556e38ae09016c60f887",
+    "candidate_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "candidate_tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+    "product_authority": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+    "changed_paths": [
+      "product-schema/README.md",
+      "product-schema/V1_USAGE_GUIDE.md",
+      "product-schema/derive-stage-5.mjs",
+      "product-schema/generated/PRODUCT_SCHEMA_CLOSURE.md",
+      "product-schema/generated/adversarial-closure-coverage.json",
+      "product-schema/generated/mutation-coverage.json",
+      "product-schema/settlement-consumption-regression.mjs",
+      "product-schema/stage-5-lib.mjs",
+      "product-schema/stage-5-safety-lib.mjs",
+      "product-schema/stage-5-validation-lib.mjs",
+      "product-schema/verify-reconstruction-closure.mjs",
+      "product-schema/witness-relation-regression.mjs"
+    ],
+    "product_authority_worktree_diff": "",
+    "workflow_changed": false,
+    "freeze_lib_unchanged": true,
+    "authored_files_unchanged": true,
+    "original_archive_sha256": "8f9b4dc64414b8947fab5f1c2eed8fd72b8c27d73c194c76bc76fd33f4e64c68",
+    "prepublication_sha": "8d9064e50037c79624a6e94ced83416e5f2efc5b",
+    "publication_method": "GitHub connected API create blobs/tree/commit then update_ref force=false; same reviewed tree, direct parent original base"
+  },
+  "local": {
+    "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+    "status": "PASS",
+    "local_workflow_commands_per_case": 15,
+    "generators_before_chain_per_case": 4,
+    "cases": 25,
+    "attacks_semantically_rejected": 21,
+    "attack_seal_only": 0,
+    "attack_full_chain_escapes": 0,
+    "valid_controls_semantically_accepted": 4,
+    "changed_controls_seal_rejected": 3,
+    "unchanged_candidate_full_chain": "PASS",
+    "clean_regeneration": "PASS",
+    "all_final_deterministic_checks": "PASS",
+    "details": "published-matrix-5107e64b/results.json"
+  },
+  "reviews": {
+    "security": {
+      "role": "separate_security_reviewer",
+      "verdict": "CLEAR_FOR_FREEZE_RECOMMENDATION",
+      "candidate_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+      "candidate_tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+      "prior_reviewed_sha": "8d9064e50037c79624a6e94ced83416e5f2efc5b",
+      "adoption_basis": "independently verified exact tree equality and empty git diff; unchanged frozen baseline and seal detector blobs",
+      "newly_executed_scope": "Git equality, clean checkout and frozen-pin verification only",
+      "reused_test_evidence": "FINAL-RECEIPT.md/json and final-8d9064-checks.json retain original execution SHA",
+      "product_authority": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "blocking_findings": [],
+      "human_freeze_approval": false
+    },
+    "reconstruction": {
+      "role": "separate_reconstruction_reviewer",
+      "verdict": "CLEAR_FOR_FREEZE_RECOMMENDATION",
+      "publication_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+      "reviewed_sha": "8d9064e50037c79624a6e94ced83416e5f2efc5b",
+      "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+      "same_tree": true,
+      "authority_sha": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "github_commit_read": "confirmed through connected GitHub fetch_commit",
+      "commands": [
+        {
+          "command": [
+            "git",
+            "rev-parse",
+            "8d9064e50037c79624a6e94ced83416e5f2efc5b^{tree}"
+          ],
+          "exit_code": 0,
+          "output": "ce5b82d008dfa2f48e714607e30fdb6839b8305c\n"
+        },
+        {
+          "command": [
+            "git",
+            "rev-parse",
+            "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013^{tree}"
+          ],
+          "exit_code": 0,
+          "output": "ce5b82d008dfa2f48e714607e30fdb6839b8305c\n"
+        },
+        {
+          "command": [
+            "git",
+            "rev-parse",
+            "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013^"
+          ],
+          "exit_code": 0,
+          "output": "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46\n"
+        },
+        {
+          "command": [
+            "git",
+            "diff",
+            "--exit-code",
+            "8d9064e50037c79624a6e94ced83416e5f2efc5b",
+            "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013"
+          ],
+          "exit_code": 0,
+          "output": ""
+        },
+        {
+          "command": [
+            "git",
+            "diff",
+            "--exit-code",
+            "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46",
+            "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+            "--",
+            "prototypes/experience-workbench",
+            "product-schema/stage-5-freeze-lib.mjs"
+          ],
+          "exit_code": 0,
+          "output": ""
+        },
+        {
+          "command": [
+            "git",
+            "rev-parse",
+            "4ba456e6595330e4ca8e21366e0d827f17e10881^{tree}"
+          ],
+          "exit_code": 0,
+          "output": "cb424dafedff066fed433e106eb4468bec985d98\n"
+        }
+      ],
+      "evidence_reused": "All FINAL-RECEIPT.md content-level findings, six reviewer full-chain clone outcomes, code/source review and guide checks on identical tree. Publication commit metadata differs; this reviewer did not re-run those six clones at publication SHA. Completion owner reruns final matrix and obtains actual hosted results for publication SHA.",
+      "hosted_checks_claimed": false,
+      "freeze_approval_claimed": false
+    }
+  },
+  "findings": {
+    "SEC-SCHEMA-001": "resolved_semantically",
+    "TEST-SUPPORT-001": "execution_completed",
+    "REV-SCHEMA-SEMANTIC-GROUNDING-01": "retained_disclosed_V1_limit_seal_only",
+    "REV-SCHEMA-TRUSTED-DETECTOR-BOUNDARY-02": "independent_immutable_diff_review_completed",
+    "REV-SCHEMA-WITNESS-RELATION-03": "resolved_with_regressions"
+  },
+  "human_freeze_approval": null,
+  "tag_created": false,
+  "runtime_changed": false,
+  "gate_b_authorized": false,
+  "hosted": {
+    "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "all_required_workflows_success": true,
+    "runs": [
+      {
+        "id": 36274285283,
+        "name": "E2E Cypress",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285283",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:57:28Z"
+      },
+      {
+        "id": 36274285053,
+        "name": "Product Schema V1",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285053",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:50:34Z"
+      },
+      {
+        "id": 36274285522,
+        "name": "Coverage",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285522",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:51:51Z"
+      },
+      {
+        "id": 36274285321,
+        "name": "Smoke (Targeted)",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285321",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:50:33Z"
+      },
+      {
+        "id": 36274285336,
+        "name": "CI",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285336",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:52:17Z"
+      }
+    ],
+    "scope": {
+      "schema": "Full workflow chain and deterministic-output check passed",
+      "CI": "275 tests / 27 files passed; current Fast CI Suite",
+      "Coverage": "275 tests / 27 files passed; coverage artifact uploaded",
+      "Smoke": "Detect Smoke Scope passed, core_changed=false and guest_changed=false; Core and Guest jobs skipped by unchanged path filters",
+      "Cypress": "186 tests passed; minimum 175 check passed"
+    }
+  },
+  "remaining_action": "Human exact-version freeze approval only"
+}

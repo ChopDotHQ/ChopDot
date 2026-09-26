@@ -39,3 +39,9 @@ One final exact-head approval handoff remains before an irreversible/public free
 No Golden/C1 or other frozen product-authority changes; no Gate A/B implementation, new journeys, provider/rail selection, Product Integrator activation, production/runtime changes, protected merges, force push, deployments, secrets, spending/signing or new paid services. No automatic resumption of the scheduled assembly line. Preserve the frozen product source `ux/experience-workbench@4ba456e6595330e4ca8e21366e0d827f17e10881` and its approved overlays/decisions.
 
 This handoff is execution authority and a coordination change—not evidence that Codex has already applied the patch, passed hosted CI, completed independent review or frozen V1.
+
+## Completion receipt — 2026-09-26
+
+Codex completed the authorized engineering sequence for `5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013` / tree `ce5b82d008dfa2f48e714607e30fdb6839b8305c`. The original archive and patch were hash-verified and reused; both separate read-only reviewers cleared the resulting exact tree. The published-SHA full local chain and 25-case matrix passed their required control/detection expectations; all five required hosted workflows succeeded. Targeted Smoke's path filter ran, with Core/Guest suites skipped for unchanged paths; Cypress executed 186 tests. See `docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/REPORT.md` and assembly state for exact receipts and retained limitations.
+
+The writer lease is completed with no holder. Scheduled roles remain paused. Next owner is the user for exact-version freeze approval; no freeze/tag, protected merge, Gate B or production action has been performed. Status: **ENGINEERING_COMPLETE_AWAITING_EXACT_FREEZE_APPROVAL**.

@@ -1,7 +1,7 @@
 {
   "version": 3,
   "role": "product-schema-v1-completion",
-  "status": "waiting_hosted_checks",
+  "status": "completed",
   "holder": null,
   "branch": "research/product-schema-v1",
   "candidate_head": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
@@ -15,5 +15,6 @@
     "status": "completed",
     "holder": null
   },
-  "note": "Non-forced successor published; writer released while exact-version hosted checks/evidence finish. No freeze or tag authorized."
+  "note": "Engineering, separate reviews and all five exact-version hosted workflows complete. Holder released. Next owner: human exact-version freeze approval. No tag, freeze, merge or deployment performed.",
+  "completed_at": "2026-09-26T21:59:44.149Z"
 }

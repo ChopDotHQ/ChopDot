@@ -1,0 +1,13 @@
+ product-schema/README.md                           |   4 +-
+ product-schema/V1_USAGE_GUIDE.md                   | 130 +++++++++++++++++++++
+ product-schema/derive-stage-5.mjs                  |   2 +-
+ product-schema/generated/PRODUCT_SCHEMA_CLOSURE.md |   2 +-
+ .../generated/adversarial-closure-coverage.json    |  10 +-
+ product-schema/generated/mutation-coverage.json    |   1 +
+ .../settlement-consumption-regression.mjs          |  45 +++++++
+ product-schema/stage-5-lib.mjs                     |   7 +-
+ product-schema/stage-5-safety-lib.mjs              |  54 ++++++++-
+ product-schema/stage-5-validation-lib.mjs          |  31 ++++-
+ product-schema/verify-reconstruction-closure.mjs   |   6 +
+ product-schema/witness-relation-regression.mjs     |  38 ++++++
+ 12 files changed, 312 insertions(+), 18 deletions(-)
