@@ -2,6 +2,8 @@
 
 Status: **evidence-backed reconstruction-closure freeze candidate**
 
+Practical entry point: [Product Schema V1 usage guide](V1_USAGE_GUIDE.md). Final acceptance remains tied to an independently reviewed exact SHA, hosted checks and explicit human approval.
+
 The primary artifact is the **composable ChopDot Product Schema**. Its purpose is to let ChopDot be decomposed, understood, changed with analyzable impact, and recomposed without silently losing or inventing approved product meaning. Gate-specific construction packets are downstream derived views; they are not the schema's authority or organizing purpose.
 
 ## Authority target
@@ -76,4 +78,4 @@ The previously hardened settlement contract remains load-bearing:
 
 Generated outputs are pinned and the Product Schema workflow runs in **strict read-only mode**. A change must regenerate deterministically and pass the reconstruction, independent mutation, provenance, semantic, UX/task and earlier Stage 1–4 checks before the branch is green.
 
-A green Gate packet alone is not Product Schema completeness. The freeze criterion is the round trip: **nothing approved lost, nothing unapproved invented, every semantic effect legitimately witnessed, and critical changes independently detectable.**
+A green Gate packet alone is not Product Schema completeness. The round-trip target is to account for approved behavior, reject unsupported additions, witness semantic effects and detect critical changes. The current finite checks are evidence toward that target, not universal proof: 667 authority-only states, 35 draft fields without semantic refs and four seal-only closure cases remain disclosed. Object/law source membership alone does not prove semantic entailment; immutable inventory seals and separate source/detector review remain necessary. See the usage guide for the trusted-code boundary and exact coverage scope.

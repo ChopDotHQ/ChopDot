@@ -230,11 +230,17 @@
       "detected": true,
       "detected_by": [
         "FREEZE-SEAL-DRIFT",
-        "SETTLEMENT-CONTEXT-SCOPE-HOLE"
+        "SETTLEMENT-CONTEXT-SCOPE-HOLE",
+        "SETTLEMENT-CONSUMER-OBJECT",
+        "SETTLEMENT-CONSUMER-LAW",
+        "SETTLEMENT-CONSUMER-PRESERVATION"
       ],
       "semantic_detection": true,
       "semantic_detected_by": [
-        "SETTLEMENT-CONTEXT-SCOPE-HOLE"
+        "SETTLEMENT-CONTEXT-SCOPE-HOLE",
+        "SETTLEMENT-CONSUMER-OBJECT",
+        "SETTLEMENT-CONSUMER-LAW",
+        "SETTLEMENT-CONSUMER-PRESERVATION"
       ],
       "detection_mode": "semantic_plus_freeze_seal"
     },

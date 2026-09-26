@@ -4,6 +4,8 @@ import { execFileSync } from 'node:child_process';
 import { dirname,join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deriveStage5 } from './stage-5-lib.mjs';
+import { runSettlementConsumptionRegressions } from './settlement-consumption-regression.mjs';
+import { runWitnessRelationRegressions } from './witness-relation-regression.mjs';
 
 const root=join(dirname(fileURLToPath(import.meta.url)),'..');
 const read=n=>JSON.parse(readFileSync(join(root,'product-schema',n),'utf8'));
@@ -82,3 +84,7 @@ assert.ok(restore.transitive.counts.journeys>=restore.direct.counts.journeys,'re
 assert.ok(guard.transitive.counts.tasks<(tasks.tasks||[]).length,'guard blast must not blanket-assign every certified task in impacted journeys');
 
 console.log(JSON.stringify({stage:5,reconstruction:'PASS',sources:x.coverage.source_pins.total,events:x.coverage.event_vocabulary.distinct_events,pieces:x.coverage.golden_pieces.total,operations:core.operations.length,construction_required_states:x.coverage.required_states.total,independent_mutations:x.mutations.total.detected+'/'+x.mutations.total.applicable,adversarial_closure:x.adversarial.total.detected+'/'+x.adversarial.total.applicable,adversarial_semantic:x.adversarial.total.semantic_detected+'/'+x.adversarial.total.applicable,adversarial_seal_only:x.adversarial.total.freeze_seal_only,blast_participant:participant.transitive.weighted_score,blast_spend:spend.transitive.weighted_score,result:'PASS'},null,2));
+
+console.log(JSON.stringify({settlement_consumption_regressions:runSettlementConsumptionRegressions(core,graph)}));
+
+console.log(JSON.stringify({witness_relation_regressions:runWitnessRelationRegressions(core,graph,reconstruction,x.pieces,bindings,tasks,path=>execFileSync('git',['show',registry.product_authority_commit+':'+path],{cwd:root,encoding:'utf8'}))}));

@@ -32,8 +32,60 @@ function allSafetyNodes(core,graph){
   return out;
 }
 
-export function validateIndependentSafety(core,graph,reconstruction,authority={}){
+// SEC-SCHEMA-001: obligations of an actual settlement carrier, not its context ID.
+// Frozen J11 spec: exact persisted scope + idempotent retry. Frozen J12 spec:
+// Entry; Partial payment; One payment context through every exit; Unknown timeout
+// is not failure. J15/J28 preserve accepted history and the original operation.
+// These are the existing composition-graph preserves vocabulary, not new fields.
+export function validateSettlementConsumption(core,graph){
   const errors=[];
+  const requiredLaws=["LAW-PAY-01","LAW-PAY-02","LAW-PAY-03","LAW-OP-01","LAW-OP-02","LAW-POS-SCOPE-01"];
+  const requiredPreserves=["payment_id/idempotency","payer","recipient","one currency","exact amount","source groups/items","accepted result"];
+  const contexts=new Map((graph.contexts||[]).map(c=>[c.id,c]));
+  const operations=new Map((core.operations||[]).map(o=>[o.id,o]));
+  const checked=new Set();
+  const carriesPayment=c=>!!c&&["payment.intent","payment.settlement_scope","payment.record"].some(id=>has(c.objects,id));
+  function requireCarrier(cid,journey){
+    const c=contexts.get(cid);
+    if(checked.has(cid))return;
+    checked.add(cid);
+    for(const object of ["payment.intent","payment.settlement_scope","position.scope"])
+      check(errors,has(c?.objects,object),"SETTLEMENT-CONSUMER-OBJECT","settlement consumer missing required object",{context:cid,journey,object});
+    for(const law of requiredLaws)
+      check(errors,has(c?.laws,law),"SETTLEMENT-CONSUMER-LAW","settlement consumer missing governing law",{context:cid,journey,law});
+    for(const preservation of requiredPreserves)
+      check(errors,has(c?.preserves,preservation),"SETTLEMENT-CONSUMER-PRESERVATION","settlement consumer lost preserved meaning",{context:cid,journey,preservation});
+  }
+  for(const j of graph.journey_projections||[]){
+    const ops=uniq([...(j.owns_operations||[]),...(j.participates_operations||[])])
+      .map(id=>operations.get(id)).filter(o=>o&&(o.owner==="payment.intent"||(o.changes||[]).includes("payment.intent")));
+    const used=uniq([...(j.entry_contexts_any||[]),...(j.ambient_contexts_required||[]),...(j.effect_contexts_required||[]),...(j.emits_contexts||[])]);
+    // A guard may inspect unresolved intent/scope without carrying a payment lifecycle.
+    // Require the full contract when a settlement operation consumes it, or when a
+    // context carries the payment record (including read-only history handoffs).
+    for(const cid of used){
+      const c=contexts.get(cid);
+      if((ops.length&&carriesPayment(c))||has(c?.objects,"payment.record"))requireCarrier(cid,j.id);
+    }
+    if(!ops.length)continue;
+    const prepares=ops.some(o=>has(o.changes,"payment.intent")&&!has(o.reads,"payment.intent"));
+    if(prepares){
+      check(errors,(j.emits_contexts||[]).some(cid=>carriesPayment(contexts.get(cid))),"SETTLEMENT-CONSUMER-HANDOFF","preparation must hand off a settlement carrier",{journey:j.id});
+    }else{
+      // Completion/reconciliation cannot use an empty/renamed non-payment context
+      // to avoid inspection. An effect-time carrier can satisfy all entry routes.
+      const effect=(j.effect_contexts_required||[]).filter(cid=>carriesPayment(contexts.get(cid)));
+      if(!effect.length){
+        check(errors,(j.entry_contexts_any||[]).length>0,"SETTLEMENT-CONSUMER-ENTRY","existing-payment operation needs a carrier",{journey:j.id});
+        for(const cid of j.entry_contexts_any||[])requireCarrier(cid,j.id);
+      }
+    }
+  }
+  return errors;
+}
+
+export function validateIndependentSafety(core,graph,reconstruction,authority={}){
+  const errors=validateSettlementConsumption(core,graph);
   const manifest=reconstruction.safety_class_manifest||{};
   for(const [domain,expected] of Object.entries(REQUIRED_MANIFEST)){
     check(errors,eq(sorted(manifest[domain]),sorted(expected)),"SAFETY-MANIFEST","wrong declared safety manifest",{domain});

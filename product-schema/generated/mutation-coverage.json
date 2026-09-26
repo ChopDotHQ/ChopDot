@@ -339,6 +339,7 @@
       "domain": "settlement",
       "detected": true,
       "detected_by": [
+        "SETTLEMENT-CONSUMER-OBJECT",
         "POSITION-CONTEXT"
       ]
     },

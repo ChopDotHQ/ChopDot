@@ -78,7 +78,7 @@ const lines=[
 ...b.probes.map(p=>'| '+p.label+' | '+p.direct.tier+' | '+p.direct.counts.journeys+' | '+p.direct.counts.tasks+' | '+p.transitive.tier+' | '+p.transitive.counts.journeys+' | '+p.transitive.counts.tasks+' |'),'',
 '## Closure errors','',...(c.errors.length?c.errors.map(e=>'- '+e.id+': '+JSON.stringify(e)):['- None']),'',
 '## Freeze criterion','',
-closure==='PASS'?'**Reconstruction closure is independently machine-checkable and currently PASS. Product Schema V1 is a freeze candidate, subject only to final external adversarial confirmation.**':'**Do not freeze Product Schema V1 while reconstruction closure is failing.**',''
+closure==='PASS'?'**The shipped reconstruction checks currently PASS. Coverage includes authority-accounted inventory and freeze-seal checks; it is not universal semantic or executable reconstruction proof. Product Schema V1 remains a candidate requiring separate exact-version review, hosted checks and human freeze approval.**':'**Do not freeze Product Schema V1 while reconstruction closure is failing.**',''
 ];
 writeFileSync(join(out,'PRODUCT_SCHEMA_CLOSURE.md'),lines.join('\n'));
 

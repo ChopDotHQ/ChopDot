@@ -55,18 +55,15 @@ export function validateEventBindings(core,bindings,eventSet){
   return errors;
 }
 
-export function applyAndValidateControlBindings(core,reconstruction,pieces,sourceControlExists){
+export function applyAndValidateControlBindings(core,reconstruction,pieces){
   const errors=[],ops=new Set(core.operations.map(x=>x.id)),byTuple=new Map();
-  const byId=new Map(pieces.map(p=>[p.piece_id,p]));
   for(const b of reconstruction.control_bindings||[]){
     if(!ops.has(b.operation)){errors.push({id:"CONTROL-UNKNOWN-OPERATION",binding:b.id,operation:b.operation});continue;}
     const tuple=[b.journey,b.state,b.label_exact,b.target||""].join("|");
     const prior=byTuple.get(tuple);if(prior&&prior!==b.operation)errors.push({id:"CONTROL-MULTI-OPERATION",binding:b.id,operations:[prior,b.operation]});else byTuple.set(tuple,b.operation);
     let piece=pieces.find(p=>p.journey===b.journey&&p.state===b.state&&p.piece_type==="visible_action"&&norm(p.piece)===norm(b.label_exact)&&(b.target===undefined||norm(p.target)===norm(b.target)));
-    if(!piece&&sourceControlExists(b)){
-      piece={piece_id:"J"+b.journey+"/"+b.state+"/action/"+b.id.toLowerCase(),journey:b.journey,state:b.state,piece:b.label_exact,piece_type:"visible_action",classification:"DOMAIN_OPERATION",schema_refs:[b.operation],authority_refs:[b.evidence_path||"frozen-prototype-source"],justification:"Explicit source-recovered operation control binding.",mapping_confidence:"authored_exact_control",target:b.target||null,operation_relation:b.relation};
-      pieces.push(piece);byId.set(piece.piece_id,piece);
-    }
+    // Only a parsed state-local label/target tuple can prove a control. File-wide
+    // occurrences cannot synthesize a DOMAIN_OPERATION on another screen.
     if(!piece){errors.push({id:"CONTROL-NOT-FOUND",binding:b.id,journey:b.journey,state:b.state,label:b.label_exact});continue;}
     piece.classification="DOMAIN_OPERATION";
     piece.schema_refs=uniq([...(piece.schema_refs||[]),b.operation]);
@@ -82,6 +79,11 @@ export function validateOperationWitnesses(core,graph,reconstruction,pieces,bind
     const o=ops.get(w.schema_ref);if(!o){errors.push({id:"WITNESS-UNKNOWN-OPERATION",schema_ref:w.schema_ref});continue;}
     seen.set(w.schema_ref,(seen.get(w.schema_ref)||0)+1);
     const e=w.evidence||{};
+    // The approved delivery role cannot opt out by changing its own witness type
+    // or switching to a weaker evidence route.
+    if(w.schema_ref==='request.deliver'&&(!eq(w.witness_types,["SYSTEM_DERIVED"])||!e.path||
+       ['control_binding_id','domain_event','task_ref','schema_source'].some(k=>Object.hasOwn(e,k))))
+      errors.push({id:"WITNESS-PATH-OPERATION-RELATION",schema_ref:w.schema_ref,reason:"approved delivery witness role/evidence route changed"});
     if(!Object.keys(e).length){errors.push({id:"WITNESS-MISSING-EVIDENCE",schema_ref:w.schema_ref});continue;}
     if(e.control_binding_id){
       const b=controlById.get(e.control_binding_id);
@@ -101,6 +103,23 @@ export function validateOperationWitnesses(core,graph,reconstruction,pieces,bind
       const text=readEvidence(e.path);
       if(e.contains&&!text.includes(e.contains))errors.push({id:"WITNESS-PHRASE-MISSING",schema_ref:w.schema_ref,path:e.path,contains:e.contains});
       if(e.also_contains&&!text.includes(e.also_contains))errors.push({id:"WITNESS-PHRASE-MISSING",schema_ref:w.schema_ref,path:e.path,contains:e.also_contains});
+      // V1 has one source-code SYSTEM_DERIVED witness. Prove the frozen
+      // queued-request -> deliver-function relationship, not arbitrary text.
+      if(w.schema_ref==='request.deliver'||(w.witness_types||[]).includes("SYSTEM_DERIVED")){
+        const block=name=>{
+          const start=text.indexOf('function '+name+'(');
+          if(start<0)return '';
+          const next=text.indexOf('\nfunction ',start+1);
+          return text.slice(start,next<0?text.length:next);
+        };
+        const accept=block('accept'),deliver=block('deliver');
+        const expectedPath=core.sources.J13.path.replace(/spec\.md$/,'source/model.cjs');
+        const proves=w.schema_ref==='request.deliver'&&w.journey==='13'&&e.path===expectedPath&&
+          /delivery\s*:\s*['"]queued['"]/.test(e.contains||'')&&accept.includes(e.contains)&&
+          /function\s+deliver\s*\(/.test(e.also_contains||'')&&deliver.includes(e.also_contains)&&
+          deliver.includes('s.requests.find(x=>x.id===id)')&&deliver.includes('r.delivery=result');
+        if(!proves)errors.push({id:"WITNESS-PATH-OPERATION-RELATION",schema_ref:w.schema_ref,path:e.path});
+      }
     }else if(e.schema_source){
       const source=core.sources[e.schema_source];
       if(!source)errors.push({id:"WITNESS-SCHEMA-SOURCE-MISSING",schema_ref:w.schema_ref,source:e.schema_source});

@@ -164,12 +164,7 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
 
   for(const p of reconstruction.authored_pieces||[])pieces.push({...p,authority_refs:uniq([p.authority_ref]),mapping_confidence:'authored_exact_piece'});
 
-  const sourceControlExists=b=>{
-    const info=protoByJourney.get(b.journey);if(!info)return false;
-    const text=b.evidence_path?readProduct(b.evidence_path):info.text;
-    return stateSetByJourney.get(b.journey)?.has(b.state)&&text.includes(b.label_exact)&&(b.target===undefined||text.includes(b.target));
-  };
-  const controlErrors=applyAndValidateControlBindings(core,reconstruction,pieces,sourceControlExists);
+  const controlErrors=applyAndValidateControlBindings(core,reconstruction,pieces);
 
   for(const p of pieces){
     if(['RECOVERY_BEHAVIOR','SYSTEM_PROGRESSION'].includes(p.classification)&&!(p.schema_refs||[]).length)p.schema_refs=governance(p.journey,p.classification);

@@ -92,4 +92,4 @@ Model: **bounded causal dependency graph: semantic dependencies propagate; write
 
 ## Freeze criterion
 
-**Reconstruction closure is independently machine-checkable and currently PASS. Product Schema V1 is a freeze candidate, subject only to final external adversarial confirmation.**
+**The shipped reconstruction checks currently PASS. Coverage includes authority-accounted inventory and freeze-seal checks; it is not universal semantic or executable reconstruction proof. Product Schema V1 remains a candidate requiring separate exact-version review, hosted checks and human freeze approval.**
