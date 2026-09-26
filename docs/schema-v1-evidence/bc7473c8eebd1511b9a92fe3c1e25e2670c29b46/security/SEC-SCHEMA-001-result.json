@@ -1,0 +1,58 @@
+{
+  "candidate_head": "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46",
+  "candidate_tree": "a5d02c43d8665097269e556e38ae09016c60f887",
+  "product_source": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "finding": "SEC-SCHEMA-001",
+  "severity": "HIGH",
+  "baseline": {
+    "validateHardening_errors": 0,
+    "validateIndependentSafety_errors": 0
+  },
+  "escaped_mutations": [
+    "remove LAW-PAY-01 from ctx.settlement.laws",
+    "remove LAW-PAY-02 from ctx.settlement.laws",
+    "remove LAW-PAY-03 from ctx.settlement.laws",
+    "remove LAW-OP-01 from ctx.settlement.laws",
+    "remove LAW-OP-02 from ctx.settlement.laws",
+    "remove all five above, leaving LAW-POS-SCOPE-01",
+    "remove each ctx.settlement preservation edge: payment_id/idempotency, payer, recipient, one currency, exact amount, source groups/items, accepted result",
+    "repurpose existing ctx.group as J12 settlement-bearing context with PositionScope but without PAY/OP laws"
+  ],
+  "observed_for_each_escape": {
+    "validateHardening_errors": 0,
+    "validateIndependentSafety_errors": 0,
+    "semantic_freeze_seals_changed": false
+  },
+  "positive_control": {
+    "mutation": "remove LAW-POS-SCOPE-01 from ctx.settlement.laws",
+    "validateIndependentSafety_error": "POSITION-CONTEXT"
+  },
+  "structural_detection": "Any committed composition-graph edit changes its authored blob and is structurally detectable by Stage 5.2 AUTHORED-BLOB-DRIFT. That is not semantic proof.",
+  "full_regenerated_mutant_workflow": "NOT_EXECUTED: no disposable full checkout/workflow-dispatch runtime was available in this review environment.",
+  "baseline_workflow": {
+    "run_id": 35859291674,
+    "head": "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46",
+    "conclusion": "success",
+    "independent_mutations": "58/58",
+    "adversarial_closure": "27/27",
+    "adversarial_semantic": "23/27",
+    "adversarial_seal_only": 4
+  },
+  "verdict": "REVISE",
+  "baseline_workflow_same_head_recheck": {
+    "run_id": 35859291674,
+    "run_attempt": 2,
+    "job_id": 108465754362,
+    "completed_at": "2026-09-26T18:55:43Z",
+    "conclusion": "success",
+    "head": "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46",
+    "tree": "a5d02c43d8665097269e556e38ae09016c60f887",
+    "reconstruction": "PASS",
+    "independent_mutations": "58/58",
+    "adversarial_closure": "27/27",
+    "adversarial_semantic": "23/27",
+    "adversarial_seal_only": 4,
+    "mechanical_detected": "58/58",
+    "generated_outputs_pinned": true
+  }
+}

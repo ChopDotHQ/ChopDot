@@ -1,0 +1,1 @@
+Reviewer checkpoint for bc7473c8eebd1511b9a92fe3c1e25e2670c29b46. Source-grounded invented nodes are currently seal-only, not semantically detected.
