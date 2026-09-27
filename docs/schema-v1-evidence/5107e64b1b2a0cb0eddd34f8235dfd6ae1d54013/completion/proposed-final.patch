@@ -1,0 +1,476 @@
+diff --git a/product-schema/README.md b/product-schema/README.md
+index 6eedbd73..1408a4ac 100644
+--- a/product-schema/README.md
++++ b/product-schema/README.md
+@@ -2,6 +2,8 @@
+ 
+ Status: **evidence-backed reconstruction-closure freeze candidate**
+ 
++Practical entry point: [Product Schema V1 usage guide](V1_USAGE_GUIDE.md). Final acceptance remains tied to an independently reviewed exact SHA, hosted checks and explicit human approval.
++
+ The primary artifact is the **composable ChopDot Product Schema**. Its purpose is to let ChopDot be decomposed, understood, changed with analyzable impact, and recomposed without silently losing or inventing approved product meaning. Gate-specific construction packets are downstream derived views; they are not the schema's authority or organizing purpose.
+ 
+ ## Authority target
+@@ -76,4 +78,4 @@ The previously hardened settlement contract remains load-bearing:
+ 
+ Generated outputs are pinned and the Product Schema workflow runs in **strict read-only mode**. A change must regenerate deterministically and pass the reconstruction, independent mutation, provenance, semantic, UX/task and earlier Stage 1–4 checks before the branch is green.
+ 
+-A green Gate packet alone is not Product Schema completeness. The freeze criterion is the round trip: **nothing approved lost, nothing unapproved invented, every semantic effect legitimately witnessed, and critical changes independently detectable.**
++A green Gate packet alone is not Product Schema completeness. The round-trip target is to account for approved behavior, reject unsupported additions, witness semantic effects and detect critical changes. The current finite checks are evidence toward that target, not universal proof: 667 authority-only states, 35 draft fields without semantic refs and four seal-only closure cases remain disclosed. Object/law source membership alone does not prove semantic entailment; immutable inventory seals and separate source/detector review remain necessary. See the usage guide for the trusted-code boundary and exact coverage scope.
+diff --git a/product-schema/V1_USAGE_GUIDE.md b/product-schema/V1_USAGE_GUIDE.md
+new file mode 100644
+index 00000000..34733a62
+--- /dev/null
++++ b/product-schema/V1_USAGE_GUIDE.md
+@@ -0,0 +1,130 @@
++# Product Schema V1 — practical usage guide
++
++V1 is a source-bound model of the approved product, with executable checks for specific safety, composition and reconstruction contracts. It is not a payment backend, a complete UI generator or permission to implement Gate B. The approval packet identifies the exact schema commit; product authority remains `4ba456e6595330e4ca8e21366e0d827f17e10881` plus the explicitly pinned approved decisions/overlays.
++
++## Start with the question
++
++| Need | Read first | Follow through |
++|---|---|---|
++| Find a visible screen/control/field | `generated/ui-surface-inventory.json` | `generated/reconstruction-pieces.json`, then its frozen `authority_refs` |
++| Understand an effect | `semantic-core.json` operations | owner, reads, changes, invalidates, laws, sources |
++| Explain how journeys share meaning | `composition-graph.json` | journey entry/effect/emitted contexts, ownership, continuity, composition units |
++| Follow a user task | `task-paths-v1.json` | `generated/certified-task-metrics.json` and `generated/TASK_FRICTION.md` |
++| Assess change impact | `generated/blast-radius.json` | direct dependencies versus bounded downstream consumers |
++| Understand verification and limits | `generated/PRODUCT_SCHEMA_CLOSURE.md` | `generated/reconstruction-coverage.json`, mutation/closure coverage reports |
++
++Paths in this guide are relative to `product-schema/` unless otherwise stated. Run commands from the repository root. Examples use Python 3 for read-only JSON queries; schema verification uses Node 22 and Git history, without app dependency installation.
++
++## Locate a screen or control precisely
++
++Do not search only by a repeated label such as Continue or Back. Use journey + state + control label + target, then preserve the resulting `piece_id` in the change/review record.
++
++```bash
++python3 - <<'PY'
++import json
++pieces=json.load(open('product-schema/generated/reconstruction-pieces.json'))['pieces']
++for p in pieces:
++    if p['journey']=='17' and p.get('state')=='withdraw-review':
++        print(json.dumps(p,indent=2))
++PY
++```
++
++This finds J17's withdrawal review and its `Confirm withdrawal` control. The bound control references `savings.withdraw`, relation `initiates`, and the frozen prototype. A control may instead be navigation, selection/draft, recovery, system progression or presentation/demo chrome. These classes are meaningful; a click does not automatically imply a domain write.
++
++For the raw surface including fields:
++
++```bash
++python3 - <<'PY'
++import json
++x=json.load(open('product-schema/generated/ui-surface-inventory.json'))
++j=next(j for j in x['journeys'] if j['journey']=='17')
++print('Frozen artifact:',j['artifact'])
++print(json.dumps([s for s in j['states'] if s['id']=='withdraw-review'],indent=2))
++PY
++```
++
++A dynamic prototype can have richer extraction in `reconstruction-pieces.json` than in the basic surface inventory. If either view lacks a field or binding, read the frozen source; do not invent an operation. Empty `schema_refs` on a product requirement means authority-accounted, not an executable semantic implementation.
++
++## Trace operation, law and ownership
++
++```bash
++python3 - <<'PY'
++import json
++r='product-schema/'
++core=json.load(open(r+'semantic-core.json'))
++graph=json.load(open(r+'composition-graph.json'))
++op=next(o for o in core['operations'] if o['id']=='settlement.close')
++print('OPERATION',json.dumps(op,indent=2))
++objects={op['owner'],*op.get('reads',[]),*op.get('changes',[])}
++print('LAWS APPLYING TO ITS OBJECTS',json.dumps([
++    l for l in core['laws'] if objects.intersection(l.get('applies_to',[]))
++],indent=2))
++for j in graph['journey_projections']:
++    if op['id'] in j['owns_operations']+j['participates_operations']:
++        print('JOURNEY',json.dumps(j,indent=2))
++        ids=set(j['entry_contexts_any']+j['ambient_contexts_required']+
++                j['effect_contexts_required']+j['emits_contexts'])
++        print('CONTEXTS',json.dumps([c for c in graph['contexts'] if c['id'] in ids],indent=2))
++PY
++```
++
++Operation `law_refs` alone is not the complete governing contract. Also inspect laws applying to its objects, context laws and composition-unit laws. The query provides related laws; inspect their applicability rather than assuming each applies in every route. Ownership and participation are different: recovery can coordinate an operation without owning the underlying result. Reads do not imply writes; invalidating Position means recomputing a projection, not directly overwriting money truth.
++
++To inspect actual approval evidence, resolve an operation/law's `sources` keys in `semantic-core.json.sources`. Read its declared `commit`, or the frozen product-authority commit when omitted, with `git show COMMIT:path`. Do not substitute today's working copy for the declared frozen source. Approved later decisions carry their own immutable commits.
++
++## Inspect dependencies and task paths
++
++```bash
++python3 - <<'PY'
++import json
++r='product-schema/'
++b=json.load(open(r+'generated/blast-radius.json'))
++print(b['model'])
++print(json.dumps(next(p for p in b['probes'] if p['id']=='settlement_guard'),indent=2))
++t=json.load(open(r+'task-paths-v1.json'))
++print(json.dumps(next(t for t in t['tasks'] if t['id']=='TASK-J05-COMMON-EQUAL'),indent=2))
++m=json.load(open(r+'generated/certified-task-metrics.json'))
++print(json.dumps(next(t for t in m['tasks'] if t['id']=='TASK-J05-COMMON-EQUAL'),indent=2))
++PY
++```
++
++`direct` is the first dependency neighborhood. `transitive` is a bounded possible downstream impact set. An operation reached as a consumer is **not assumed to execute**; write/invalidation propagation is limited to an origin operation. Task impact follows actual semantic-operation links, not every task in an affected journey. A CRITICAL tier is a modelled review footprint, not proof that all those screens change.
++
++The equal-expense task distinguishes two required inputs, one submit action, and the entry handoff. Metrics are certified-path counts, not observed user timing. There are 31 certified tasks across six journeys and one semantic-only task; these are not exhaustive task coverage for all 28 journeys. `journey-path-metrics.json` contains inferred topology metrics with explicit confidence; do not substitute these for certified task evidence.
++
++## Make a bounded change
++
++1. Record the exact starting SHA/tree, relevant piece/task IDs, owning operation and frozen source. State whether the proposal preserves approved meaning or needs a new product decision.
++2. Trace affected objects, contexts, laws, operation owners and direct/downstream consumers. Include normal and recovery paths. For settlement, retain the same payment identity, payer, recipient, currency, exact amount, source lineage and accepted result across actual carriers; an alternate context ID does not remove obligations.
++3. Edit authored schema/verification only in an isolated branch or worktree. Keep immutable product authority intact. Update tests for the demonstrated defect and retain valid controls. Do not hand-edit generated JSON or broaden scope into Gate B/runtime.
++4. Regenerate with the four existing commands, in order:
++
++```bash
++node product-schema/derive-stage-4.mjs
++node product-schema/derive-ux-diagnostics.mjs
++node product-schema/derive-task-metrics.mjs
++node product-schema/derive-stage-5.mjs
++```
++
++5. Inspect the diff, then run **all current `run:` commands from `.github/workflows/product-schema-v1.yml`**, including its Gate A evidence fetch, semantic checks, batteries, reconstruction/mechanical checks and deterministic-output block. The workflow is authoritative; generators returning exit 0 alone do not prove closure PASS. The completion package contains the runnable exact-version matrix and command logs.
++6. A composition/source change can correctly fail `AUTHORED-BLOB-DRIFT` even if semantically valid. Do not reset hashes to make it pass. Explain changed meaning/bytes and obtain the separately authorized independent review/baseline process. This V1 repair changes detectors and derived diagnostics without altering seal constants.
++7. Keep trusted detector changes visible as a separate review concern. Hashes in candidate-owned validators are integrity checks, not independent proof of the validator itself. Compare the detector diff against an immutable reviewed base; acceptance applies only to the reviewed exact tree and same-SHA hosted checks.
++
++For inspection without affecting a normal checkout, create a new temporary detached worktree or use the package's disposable-clone harness. Never run `git reset --hard` or `git clean` against someone else's work to reproduce the evidence.
++
++## What the checks establish—and what they do not
++
++Machine checks cover pinned sources, reference and route consistency, named semantic/safety obligations, operation/control witnesses, required-state scope, deterministic generation and finite mutation regressions. See per-case semantic versus seal-only outcomes: an authored-hash rejection is not a proof of product meaning. A valid-control seal rejection is not automatically a semantic false positive.
++
++Retained V1 limits:
++
++- 4,418 pieces are authority-accounted/classified; this does not mean all are executable reconstruction mappings.
++- 667 `PRODUCT_REQUIREMENT` states remain authority-only.
++- 35 draft fields lack semantic references.
++- 59 duplicate control-evidence instances are retained, with zero conflicting operation assignments; duplicates are not new behavior.
++- Construction-required state verification is 21/21 for J05/J06/J08 only.
++- Object/law source membership is source grounding, not universal entailment of arbitrary proposed definitions. Exact inventory seals and independent source review remain necessary for such changes.
++- Contract-only, coordinated, external-precondition and future-only capabilities remain distinct from user-facing implemented features. Generated Gate B construction material is a downstream packet, not authorization or evidence of Gate B implementation.
++- Local verification, separate review and hosted CI are separate evidence. Smoke's path-filtered jobs may be skipped; a green workflow must be described with its actual job scope.
++
++The completion packet supplies the final exact SHA, findings/dispositions, separate review receipts, local matrix and hosted run IDs. Final human freeze approval is a distinct step; this guide grants none.
+diff --git a/product-schema/derive-stage-5.mjs b/product-schema/derive-stage-5.mjs
+index fc73958c..987a29dd 100644
+--- a/product-schema/derive-stage-5.mjs
++++ b/product-schema/derive-stage-5.mjs
+@@ -78,7 +78,7 @@ const lines=[
+ ...b.probes.map(p=>'| '+p.label+' | '+p.direct.tier+' | '+p.direct.counts.journeys+' | '+p.direct.counts.tasks+' | '+p.transitive.tier+' | '+p.transitive.counts.journeys+' | '+p.transitive.counts.tasks+' |'),'',
+ '## Closure errors','',...(c.errors.length?c.errors.map(e=>'- '+e.id+': '+JSON.stringify(e)):['- None']),'',
+ '## Freeze criterion','',
+-closure==='PASS'?'**Reconstruction closure is independently machine-checkable and currently PASS. Product Schema V1 is a freeze candidate, subject only to final external adversarial confirmation.**':'**Do not freeze Product Schema V1 while reconstruction closure is failing.**',''
++closure==='PASS'?'**The shipped reconstruction checks currently PASS. Coverage includes authority-accounted inventory and freeze-seal checks; it is not universal semantic or executable reconstruction proof. Product Schema V1 remains a candidate requiring separate exact-version review, hosted checks and human freeze approval.**':'**Do not freeze Product Schema V1 while reconstruction closure is failing.**',''
+ ];
+ writeFileSync(join(out,'PRODUCT_SCHEMA_CLOSURE.md'),lines.join('\n'));
+ 
+diff --git a/product-schema/generated/PRODUCT_SCHEMA_CLOSURE.md b/product-schema/generated/PRODUCT_SCHEMA_CLOSURE.md
+index 4a4086d9..cd1388d0 100644
+--- a/product-schema/generated/PRODUCT_SCHEMA_CLOSURE.md
++++ b/product-schema/generated/PRODUCT_SCHEMA_CLOSURE.md
+@@ -92,4 +92,4 @@ Model: **bounded causal dependency graph: semantic dependencies propagate; write
+ 
+ ## Freeze criterion
+ 
+-**Reconstruction closure is independently machine-checkable and currently PASS. Product Schema V1 is a freeze candidate, subject only to final external adversarial confirmation.**
++**The shipped reconstruction checks currently PASS. Coverage includes authority-accounted inventory and freeze-seal checks; it is not universal semantic or executable reconstruction proof. Product Schema V1 remains a candidate requiring separate exact-version review, hosted checks and human freeze approval.**
+diff --git a/product-schema/generated/adversarial-closure-coverage.json b/product-schema/generated/adversarial-closure-coverage.json
+index 9b6461c9..816a6d76 100644
+--- a/product-schema/generated/adversarial-closure-coverage.json
++++ b/product-schema/generated/adversarial-closure-coverage.json
+@@ -230,11 +230,17 @@
+       "detected": true,
+       "detected_by": [
+         "FREEZE-SEAL-DRIFT",
+-        "SETTLEMENT-CONTEXT-SCOPE-HOLE"
++        "SETTLEMENT-CONTEXT-SCOPE-HOLE",
++        "SETTLEMENT-CONSUMER-OBJECT",
++        "SETTLEMENT-CONSUMER-LAW",
++        "SETTLEMENT-CONSUMER-PRESERVATION"
+       ],
+       "semantic_detection": true,
+       "semantic_detected_by": [
+-        "SETTLEMENT-CONTEXT-SCOPE-HOLE"
++        "SETTLEMENT-CONTEXT-SCOPE-HOLE",
++        "SETTLEMENT-CONSUMER-OBJECT",
++        "SETTLEMENT-CONSUMER-LAW",
++        "SETTLEMENT-CONSUMER-PRESERVATION"
+       ],
+       "detection_mode": "semantic_plus_freeze_seal"
+     },
+diff --git a/product-schema/generated/mutation-coverage.json b/product-schema/generated/mutation-coverage.json
+index e8167c00..54882f43 100644
+--- a/product-schema/generated/mutation-coverage.json
++++ b/product-schema/generated/mutation-coverage.json
+@@ -339,6 +339,7 @@
+       "domain": "settlement",
+       "detected": true,
+       "detected_by": [
++        "SETTLEMENT-CONSUMER-OBJECT",
+         "POSITION-CONTEXT"
+       ]
+     },
+diff --git a/product-schema/settlement-consumption-regression.mjs b/product-schema/settlement-consumption-regression.mjs
+new file mode 100644
+index 00000000..e25623fd
+--- /dev/null
++++ b/product-schema/settlement-consumption-regression.mjs
+@@ -0,0 +1,45 @@
++import assert from 'node:assert/strict';
++import { validateSettlementConsumption } from './stage-5-safety-lib.mjs';
++
++// Only semantic errors count as detection here; no hash/seal detector is invoked.
++export function runSettlementConsumptionRegressions(core,graph){
++  const clone=()=>structuredClone(graph);
++  const settlement=g=>g.contexts.find(c=>c.id==='ctx.settlement');
++  const laws=['LAW-PAY-01','LAW-PAY-02','LAW-PAY-03','LAW-OP-01','LAW-OP-02','LAW-POS-SCOPE-01'];
++  const preserves=['payment_id/idempotency','payer','recipient','one currency','exact amount','source groups/items','accepted result'];
++  let count=0;
++  function rejects(change,id,field,value){
++    const g=clone();change(g);
++    const errors=validateSettlementConsumption(core,g);
++    assert.ok(errors.some(e=>e.id===id&&(!field||e[field]===value)),`missing ${id}: ${JSON.stringify(errors)}`);count++;
++  }
++  function accepts(change){const g=clone();change(g);assert.deepEqual(validateSettlementConsumption(core,g),[]);count++;}
++  function alternate(g,kind){
++    const source=settlement(g);
++    const c=kind==='group'?g.contexts.find(c=>c.id==='ctx.group'):structuredClone(source);
++    if(kind!=='group'){c.id='ctx.regression_handoff';c.name='Handoff';g.contexts.push(c);}
++    else{c.objects=[...new Set([...c.objects,...source.objects])];c.preserves=[...new Set([...c.preserves,...source.preserves])];}
++    for(const j of g.journey_projections){
++      if(j.emits_contexts.includes('ctx.settlement')&&!j.emits_contexts.includes(c.id))j.emits_contexts.push(c.id);
++      if(j.id==='12')j.entry_contexts_any=[c.id];
++    }
++    return c;
++  }
++  accepts(()=>{});
++  for(const law of laws)rejects(g=>{settlement(g).laws=settlement(g).laws.filter(x=>x!==law);},'SETTLEMENT-CONSUMER-LAW','law',law);
++  rejects(g=>{settlement(g).laws=['LAW-POS-SCOPE-01'];},'SETTLEMENT-CONSUMER-LAW');
++  for(const preservation of preserves)rejects(g=>{settlement(g).preserves=settlement(g).preserves.filter(x=>x!==preservation);},'SETTLEMENT-CONSUMER-PRESERVATION','preservation',preservation);
++  rejects(g=>{settlement(g).preserves=['payer','recipient','one currency'];},'SETTLEMENT-CONSUMER-PRESERVATION');
++  rejects(g=>{settlement(g).laws=settlement(g).laws.map(x=>x==='LAW-PAY-01'?'LAW-MONEY-01':x);},'SETTLEMENT-CONSUMER-LAW','law','LAW-PAY-01');
++  for(const [from,to] of [['exact amount','approximate amount'],['accepted result','unverified result']])
++    rejects(g=>{settlement(g).preserves=settlement(g).preserves.map(x=>x===from?to:x);},'SETTLEMENT-CONSUMER-PRESERVATION','preservation',from);
++  for(const kind of ['group','opaque'])rejects(g=>{alternate(g,kind).laws=['LAW-POS-SCOPE-01'];},'SETTLEMENT-CONSUMER-LAW');
++  rejects(g=>{const c=alternate(g,'opaque');c.objects=[];c.laws=[];c.preserves=[];},'SETTLEMENT-CONSUMER-OBJECT');
++  accepts(g=>{alternate(g,'opaque');});
++  accepts(g=>{settlement(g).laws.reverse();settlement(g).preserves.reverse();});
++  accepts(g=>{g.contexts.find(c=>c.id==='ctx.entry').preserves.reverse();});
++  // Normal group, wallet, recovery and expense guard contexts have no newly
++  // imposed full-payment contract. A preparation journey can start from Position.
++  accepts(g=>{g.journey_projections.find(j=>j.id==='11').entry_contexts_any=['ctx.position','ctx.group'];});
++  return {cases:count,result:'PASS'};
++}
+diff --git a/product-schema/stage-5-lib.mjs b/product-schema/stage-5-lib.mjs
+index ed7e3758..f4df92ee 100644
+--- a/product-schema/stage-5-lib.mjs
++++ b/product-schema/stage-5-lib.mjs
+@@ -164,12 +164,7 @@ export function deriveStage5({root,core,graph,frozen,registry,bindings,reconstru
+ 
+   for(const p of reconstruction.authored_pieces||[])pieces.push({...p,authority_refs:uniq([p.authority_ref]),mapping_confidence:'authored_exact_piece'});
+ 
+-  const sourceControlExists=b=>{
+-    const info=protoByJourney.get(b.journey);if(!info)return false;
+-    const text=b.evidence_path?readProduct(b.evidence_path):info.text;
+-    return stateSetByJourney.get(b.journey)?.has(b.state)&&text.includes(b.label_exact)&&(b.target===undefined||text.includes(b.target));
+-  };
+-  const controlErrors=applyAndValidateControlBindings(core,reconstruction,pieces,sourceControlExists);
++  const controlErrors=applyAndValidateControlBindings(core,reconstruction,pieces);
+ 
+   for(const p of pieces){
+     if(['RECOVERY_BEHAVIOR','SYSTEM_PROGRESSION'].includes(p.classification)&&!(p.schema_refs||[]).length)p.schema_refs=governance(p.journey,p.classification);
+diff --git a/product-schema/stage-5-safety-lib.mjs b/product-schema/stage-5-safety-lib.mjs
+index 28b88641..0e539f1b 100644
+--- a/product-schema/stage-5-safety-lib.mjs
++++ b/product-schema/stage-5-safety-lib.mjs
+@@ -32,8 +32,60 @@ function allSafetyNodes(core,graph){
+   return out;
+ }
+ 
+-export function validateIndependentSafety(core,graph,reconstruction,authority={}){
++// SEC-SCHEMA-001: obligations of an actual settlement carrier, not its context ID.
++// Frozen J11 spec: exact persisted scope + idempotent retry. Frozen J12 spec:
++// Entry; Partial payment; One payment context through every exit; Unknown timeout
++// is not failure. J15/J28 preserve accepted history and the original operation.
++// These are the existing composition-graph preserves vocabulary, not new fields.
++export function validateSettlementConsumption(core,graph){
+   const errors=[];
++  const requiredLaws=["LAW-PAY-01","LAW-PAY-02","LAW-PAY-03","LAW-OP-01","LAW-OP-02","LAW-POS-SCOPE-01"];
++  const requiredPreserves=["payment_id/idempotency","payer","recipient","one currency","exact amount","source groups/items","accepted result"];
++  const contexts=new Map((graph.contexts||[]).map(c=>[c.id,c]));
++  const operations=new Map((core.operations||[]).map(o=>[o.id,o]));
++  const checked=new Set();
++  const carriesPayment=c=>!!c&&["payment.intent","payment.settlement_scope","payment.record"].some(id=>has(c.objects,id));
++  function requireCarrier(cid,journey){
++    const c=contexts.get(cid);
++    if(checked.has(cid))return;
++    checked.add(cid);
++    for(const object of ["payment.intent","payment.settlement_scope","position.scope"])
++      check(errors,has(c?.objects,object),"SETTLEMENT-CONSUMER-OBJECT","settlement consumer missing required object",{context:cid,journey,object});
++    for(const law of requiredLaws)
++      check(errors,has(c?.laws,law),"SETTLEMENT-CONSUMER-LAW","settlement consumer missing governing law",{context:cid,journey,law});
++    for(const preservation of requiredPreserves)
++      check(errors,has(c?.preserves,preservation),"SETTLEMENT-CONSUMER-PRESERVATION","settlement consumer lost preserved meaning",{context:cid,journey,preservation});
++  }
++  for(const j of graph.journey_projections||[]){
++    const ops=uniq([...(j.owns_operations||[]),...(j.participates_operations||[])])
++      .map(id=>operations.get(id)).filter(o=>o&&(o.owner==="payment.intent"||(o.changes||[]).includes("payment.intent")));
++    const used=uniq([...(j.entry_contexts_any||[]),...(j.ambient_contexts_required||[]),...(j.effect_contexts_required||[]),...(j.emits_contexts||[])]);
++    // A guard may inspect unresolved intent/scope without carrying a payment lifecycle.
++    // Require the full contract when a settlement operation consumes it, or when a
++    // context carries the payment record (including read-only history handoffs).
++    for(const cid of used){
++      const c=contexts.get(cid);
++      if((ops.length&&carriesPayment(c))||has(c?.objects,"payment.record"))requireCarrier(cid,j.id);
++    }
++    if(!ops.length)continue;
++    const prepares=ops.some(o=>has(o.changes,"payment.intent")&&!has(o.reads,"payment.intent"));
++    if(prepares){
++      check(errors,(j.emits_contexts||[]).some(cid=>carriesPayment(contexts.get(cid))),"SETTLEMENT-CONSUMER-HANDOFF","preparation must hand off a settlement carrier",{journey:j.id});
++    }else{
++      // Completion/reconciliation cannot use an empty/renamed non-payment context
++      // to avoid inspection. An effect-time carrier can satisfy all entry routes.
++      const effect=(j.effect_contexts_required||[]).filter(cid=>carriesPayment(contexts.get(cid)));
++      if(!effect.length){
++        check(errors,(j.entry_contexts_any||[]).length>0,"SETTLEMENT-CONSUMER-ENTRY","existing-payment operation needs a carrier",{journey:j.id});
++        for(const cid of j.entry_contexts_any||[])requireCarrier(cid,j.id);
++      }
++    }
++  }
++  return errors;
++}
++
++export function validateIndependentSafety(core,graph,reconstruction,authority={}){
++  const errors=validateSettlementConsumption(core,graph);
+   const manifest=reconstruction.safety_class_manifest||{};
+   for(const [domain,expected] of Object.entries(REQUIRED_MANIFEST)){
+     check(errors,eq(sorted(manifest[domain]),sorted(expected)),"SAFETY-MANIFEST","wrong declared safety manifest",{domain});
+diff --git a/product-schema/stage-5-validation-lib.mjs b/product-schema/stage-5-validation-lib.mjs
+index e734ea9b..86ae9dca 100644
+--- a/product-schema/stage-5-validation-lib.mjs
++++ b/product-schema/stage-5-validation-lib.mjs
+@@ -55,18 +55,15 @@ export function validateEventBindings(core,bindings,eventSet){
+   return errors;
+ }
+ 
+-export function applyAndValidateControlBindings(core,reconstruction,pieces,sourceControlExists){
++export function applyAndValidateControlBindings(core,reconstruction,pieces){
+   const errors=[],ops=new Set(core.operations.map(x=>x.id)),byTuple=new Map();
+-  const byId=new Map(pieces.map(p=>[p.piece_id,p]));
+   for(const b of reconstruction.control_bindings||[]){
+     if(!ops.has(b.operation)){errors.push({id:"CONTROL-UNKNOWN-OPERATION",binding:b.id,operation:b.operation});continue;}
+     const tuple=[b.journey,b.state,b.label_exact,b.target||""].join("|");
+     const prior=byTuple.get(tuple);if(prior&&prior!==b.operation)errors.push({id:"CONTROL-MULTI-OPERATION",binding:b.id,operations:[prior,b.operation]});else byTuple.set(tuple,b.operation);
+     let piece=pieces.find(p=>p.journey===b.journey&&p.state===b.state&&p.piece_type==="visible_action"&&norm(p.piece)===norm(b.label_exact)&&(b.target===undefined||norm(p.target)===norm(b.target)));
+-    if(!piece&&sourceControlExists(b)){
+-      piece={piece_id:"J"+b.journey+"/"+b.state+"/action/"+b.id.toLowerCase(),journey:b.journey,state:b.state,piece:b.label_exact,piece_type:"visible_action",classification:"DOMAIN_OPERATION",schema_refs:[b.operation],authority_refs:[b.evidence_path||"frozen-prototype-source"],justification:"Explicit source-recovered operation control binding.",mapping_confidence:"authored_exact_control",target:b.target||null,operation_relation:b.relation};
+-      pieces.push(piece);byId.set(piece.piece_id,piece);
+-    }
++    // Only a parsed state-local label/target tuple can prove a control. File-wide
++    // occurrences cannot synthesize a DOMAIN_OPERATION on another screen.
+     if(!piece){errors.push({id:"CONTROL-NOT-FOUND",binding:b.id,journey:b.journey,state:b.state,label:b.label_exact});continue;}
+     piece.classification="DOMAIN_OPERATION";
+     piece.schema_refs=uniq([...(piece.schema_refs||[]),b.operation]);
+@@ -82,6 +79,11 @@ export function validateOperationWitnesses(core,graph,reconstruction,pieces,bind
+     const o=ops.get(w.schema_ref);if(!o){errors.push({id:"WITNESS-UNKNOWN-OPERATION",schema_ref:w.schema_ref});continue;}
+     seen.set(w.schema_ref,(seen.get(w.schema_ref)||0)+1);
+     const e=w.evidence||{};
++    // The approved delivery role cannot opt out by changing its own witness type
++    // or switching to a weaker evidence route.
++    if(w.schema_ref==='request.deliver'&&(!eq(w.witness_types,["SYSTEM_DERIVED"])||!e.path||
++       ['control_binding_id','domain_event','task_ref','schema_source'].some(k=>Object.hasOwn(e,k))))
++      errors.push({id:"WITNESS-PATH-OPERATION-RELATION",schema_ref:w.schema_ref,reason:"approved delivery witness role/evidence route changed"});
+     if(!Object.keys(e).length){errors.push({id:"WITNESS-MISSING-EVIDENCE",schema_ref:w.schema_ref});continue;}
+     if(e.control_binding_id){
+       const b=controlById.get(e.control_binding_id);
+@@ -101,6 +103,23 @@ export function validateOperationWitnesses(core,graph,reconstruction,pieces,bind
+       const text=readEvidence(e.path);
+       if(e.contains&&!text.includes(e.contains))errors.push({id:"WITNESS-PHRASE-MISSING",schema_ref:w.schema_ref,path:e.path,contains:e.contains});
+       if(e.also_contains&&!text.includes(e.also_contains))errors.push({id:"WITNESS-PHRASE-MISSING",schema_ref:w.schema_ref,path:e.path,contains:e.also_contains});
++      // V1 has one source-code SYSTEM_DERIVED witness. Prove the frozen
++      // queued-request -> deliver-function relationship, not arbitrary text.
++      if(w.schema_ref==='request.deliver'||(w.witness_types||[]).includes("SYSTEM_DERIVED")){
++        const block=name=>{
++          const start=text.indexOf('function '+name+'(');
++          if(start<0)return '';
++          const next=text.indexOf('\nfunction ',start+1);
++          return text.slice(start,next<0?text.length:next);
++        };
++        const accept=block('accept'),deliver=block('deliver');
++        const expectedPath=core.sources.J13.path.replace(/spec\.md$/,'source/model.cjs');
++        const proves=w.schema_ref==='request.deliver'&&w.journey==='13'&&e.path===expectedPath&&
++          /delivery\s*:\s*['"]queued['"]/.test(e.contains||'')&&accept.includes(e.contains)&&
++          /function\s+deliver\s*\(/.test(e.also_contains||'')&&deliver.includes(e.also_contains)&&
++          deliver.includes('s.requests.find(x=>x.id===id)')&&deliver.includes('r.delivery=result');
++        if(!proves)errors.push({id:"WITNESS-PATH-OPERATION-RELATION",schema_ref:w.schema_ref,path:e.path});
++      }
+     }else if(e.schema_source){
+       const source=core.sources[e.schema_source];
+       if(!source)errors.push({id:"WITNESS-SCHEMA-SOURCE-MISSING",schema_ref:w.schema_ref,source:e.schema_source});
+diff --git a/product-schema/verify-reconstruction-closure.mjs b/product-schema/verify-reconstruction-closure.mjs
+index 9e73f179..22fd1dd8 100644
+--- a/product-schema/verify-reconstruction-closure.mjs
++++ b/product-schema/verify-reconstruction-closure.mjs
+@@ -4,6 +4,8 @@ import { execFileSync } from 'node:child_process';
+ import { dirname,join } from 'node:path';
+ import { fileURLToPath } from 'node:url';
+ import { deriveStage5 } from './stage-5-lib.mjs';
++import { runSettlementConsumptionRegressions } from './settlement-consumption-regression.mjs';
++import { runWitnessRelationRegressions } from './witness-relation-regression.mjs';
+ 
+ const root=join(dirname(fileURLToPath(import.meta.url)),'..');
+ const read=n=>JSON.parse(readFileSync(join(root,'product-schema',n),'utf8'));
+@@ -82,3 +84,7 @@ assert.ok(restore.transitive.counts.journeys>=restore.direct.counts.journeys,'re
+ assert.ok(guard.transitive.counts.tasks<(tasks.tasks||[]).length,'guard blast must not blanket-assign every certified task in impacted journeys');
+ 
+ console.log(JSON.stringify({stage:5,reconstruction:'PASS',sources:x.coverage.source_pins.total,events:x.coverage.event_vocabulary.distinct_events,pieces:x.coverage.golden_pieces.total,operations:core.operations.length,construction_required_states:x.coverage.required_states.total,independent_mutations:x.mutations.total.detected+'/'+x.mutations.total.applicable,adversarial_closure:x.adversarial.total.detected+'/'+x.adversarial.total.applicable,adversarial_semantic:x.adversarial.total.semantic_detected+'/'+x.adversarial.total.applicable,adversarial_seal_only:x.adversarial.total.freeze_seal_only,blast_participant:participant.transitive.weighted_score,blast_spend:spend.transitive.weighted_score,result:'PASS'},null,2));
++
++console.log(JSON.stringify({settlement_consumption_regressions:runSettlementConsumptionRegressions(core,graph)}));
++
++console.log(JSON.stringify({witness_relation_regressions:runWitnessRelationRegressions(core,graph,reconstruction,x.pieces,bindings,tasks,path=>execFileSync('git',['show',registry.product_authority_commit+':'+path],{cwd:root,encoding:'utf8'}))}));
+diff --git a/product-schema/witness-relation-regression.mjs b/product-schema/witness-relation-regression.mjs
+new file mode 100644
+index 00000000..7e455224
+--- /dev/null
++++ b/product-schema/witness-relation-regression.mjs
+@@ -0,0 +1,38 @@
++import assert from 'node:assert/strict';
++import { applyAndValidateControlBindings,validateOperationWitnesses } from './stage-5-validation-lib.mjs';
++
++export function runWitnessRelationRegressions(core,graph,reconstruction,pieces,bindings,tasks,readEvidence){
++  let cases=0;
++  const controlErrors=r=>applyAndValidateControlBindings(core,r,structuredClone(pieces));
++  const witnessErrors=r=>validateOperationWitnesses(core,graph,r,pieces,bindings,tasks,readEvidence);
++  assert.deepEqual(controlErrors(structuredClone(reconstruction)),[]);cases++;
++  assert.deepEqual(witnessErrors(structuredClone(reconstruction)),[]);cases++;
++  for(const state of ['withdraw-review','add-sent']){
++    const r=structuredClone(reconstruction);
++    r.control_bindings.find(b=>b.id==='CTRL-J17-CONTRIBUTE').state=state;
++    assert.ok(controlErrors(r).some(e=>e.id==='CONTROL-NOT-FOUND'&&e.binding==='CTRL-J17-CONTRIBUTE'));cases++;
++  }
++  const variants=[
++    {contains:'function rawSource(s)',also_contains:'function allowed(s)'},
++    {contains:"delivery:'queued'",also_contains:'function allowed(s)'},
++    {contains:'function rawSource(s)',also_contains:'function deliver(s,id,result)'},
++    {contains:'function deliver(s,id,result)',also_contains:"delivery:'queued'"}
++  ];
++  for(const evidence of variants){
++    const r=structuredClone(reconstruction);
++    Object.assign(r.operation_witnesses.find(w=>w.schema_ref==='request.deliver').evidence,evidence);
++    assert.ok(witnessErrors(r).some(e=>e.id==='WITNESS-PATH-OPERATION-RELATION'&&e.schema_ref==='request.deliver'));cases++;
++  }
++  for(const witness_types of [[],['AUTHORITY_ACCOUNTED'],['CONTRACT_ONLY']]){
++    const r=structuredClone(reconstruction),w=r.operation_witnesses.find(w=>w.schema_ref==='request.deliver');
++    w.witness_types=witness_types;w.evidence.contains='function rawSource(s)';w.evidence.also_contains='function allowed(s)';
++    assert.ok(witnessErrors(r).some(e=>e.id==='WITNESS-PATH-OPERATION-RELATION'));cases++;
++  }
++  for(const evidence of [{schema_source:'J13'},{task_ref:'TASK-J05-COMMON-EQUAL'},{domain_event:'RequestDeliveryRetryRequested'},
++    {control_binding_id:'CTRL-J17-CONTRIBUTE'}]){
++    const r=structuredClone(reconstruction),w=r.operation_witnesses.find(w=>w.schema_ref==='request.deliver');
++    w.evidence=evidence;
++    assert.ok(witnessErrors(r).some(e=>e.id==='WITNESS-PATH-OPERATION-RELATION'));cases++;
++  }
++  return {cases,result:'PASS'};
++}

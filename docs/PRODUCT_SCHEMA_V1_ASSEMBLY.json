@@ -1,0 +1,238 @@
+{
+  "schema_version": 2,
+  "generation": "schema-v1-codex-completion-20260926-01",
+  "phase": "PRODUCT_SCHEMA_V1_FINALIZATION",
+  "operating_mode": "CODEX_LED_COMPLETION",
+  "status": "COMPLETE",
+  "coordination_issue": 50,
+  "state_owner": "codex-completion-owner",
+  "configured_by": "chatgpt-operator-on-user-instruction",
+  "authority": "User: Can we just have codex keep working and just once and for all just finish the Job",
+  "schema_branch": "research/product-schema-v1",
+  "initial_candidate_head": "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46",
+  "candidate_head": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "candidate_tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+  "product_authority_branch": "ux/experience-workbench",
+  "product_authority_head": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "previous_state": {
+    "ref": "7a4a21e8de72a8ff0ef6a49511e89625aa154417",
+    "path": "docs/PRODUCT_SCHEMA_V1_ASSEMBLY.json",
+    "git_blob": "cc42f5e20e46061a9cee0e4d9430d4297b4763fc",
+    "status": "REVIEW_PENDING",
+    "note": "Complete previous evidence, pending reviews and workflow results are retained at this immutable ops ref. They are not completed by the ownership transfer."
+  },
+  "scheduled_roles": {
+    "schema_builder": {
+      "automation_id": "6aa2d91db2ac8191b810ad770b5bedd1",
+      "enabled": false
+    },
+    "schema_reviewer": {
+      "automation_id": "6aa2d925780481919872270c2a39369b",
+      "enabled": false
+    },
+    "schema_security": {
+      "automation_id": "6aa7bf45969c8191b3939a2de0813595",
+      "enabled": false
+    },
+    "schema_supervisor": {
+      "automation_id": "6aa7aedbf3288191a45ecab70d12ed3a",
+      "enabled": false
+    }
+  },
+  "schedule_pause_verified": "All four automation updates returned SUCCESS with is_enabled=false and hold-only prompts. This is not a claim that any already-running invocation was forcibly terminated.",
+  "codex_dispatch_status": "COMPLETE",
+  "builder_lease": "ops/chatgpt-work-factory-v1:docs/BUILDER_LEASE.json",
+  "last_observed_lease": {
+    "status": "completed",
+    "holder": null
+  },
+  "repair_authorization": {
+    "owner": "codex-completion-owner",
+    "base_sha": "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46",
+    "scope": "Integrate the existing SEC-SCHEMA-001 semantic-verifier repair and tests; resolve concrete related in-scope blockers; finish bounded review, deterministic regeneration, hosted CI and the exact-version delivery packet.",
+    "allowed_paths": [
+      "product-schema/**",
+      "directly necessary schema-only verification tooling and evidence",
+      "this workstream's ops coordination and issue #50"
+    ],
+    "ref_update": "fast-forward only on research/product-schema-v1 after fresh head/lease validation; no protected merge",
+    "per_step_supervisor_approval_required": false,
+    "independent_acceptance_not_waived": true,
+    "strict_read_only_ci_required": true
+  },
+  "reported_codex_result": {
+    "provenance": "User-pasted Codex summary, not Claude; artifact not independently inspected by this operator",
+    "attacks": 21,
+    "valid_controls": 4,
+    "cases_per_phase": 25,
+    "baseline_full_chain_escapes_reported": 0,
+    "baseline_semantic_escapes_reported": 20,
+    "repaired_semantic_rejections_reported": 21,
+    "added_regression_assertions_reported": 26,
+    "repaired_local_chain_reported": "PASS without seal-constant changes",
+    "status": "REPORTED_PATCH_READY_FOR_REVIEW; use actual existing Codex artifacts before accepting these claims"
+  },
+  "reviewer_receipt": {
+    "path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/reconstruction-review-PUBLICATION-RECEIPT.json",
+    "verdict": "CLEAR_FOR_FREEZE_RECOMMENDATION",
+    "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c"
+  },
+  "security_receipt": {
+    "path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/security-review-PUBLICATION-RECEIPT.json",
+    "verdict": "CLEAR_FOR_FREEZE_RECOMMENDATION",
+    "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c"
+  },
+  "final_local_evidence": {
+    "path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/results.json",
+    "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "attacks": 21,
+    "semantic_rejections": 21,
+    "valid_controls": 4,
+    "full_chain_escapes": 0,
+    "unchanged_full_chain": "PASS",
+    "deterministic_regeneration": "PASS",
+    "regressions": 41,
+    "authority_unchanged": true,
+    "seals_unchanged": true
+  },
+  "final_hosted_evidence": {
+    "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "all_required_workflows_success": true,
+    "runs": [
+      {
+        "id": 36274285283,
+        "name": "E2E Cypress",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285283",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:57:28Z"
+      },
+      {
+        "id": 36274285053,
+        "name": "Product Schema V1",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285053",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:50:34Z"
+      },
+      {
+        "id": 36274285522,
+        "name": "Coverage",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285522",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:51:51Z"
+      },
+      {
+        "id": 36274285321,
+        "name": "Smoke (Targeted)",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285321",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:50:33Z"
+      },
+      {
+        "id": 36274285336,
+        "name": "CI",
+        "head_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "event": "push",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/ChopDotHQ/ChopDot/actions/runs/36274285336",
+        "created_at": "2026-09-26T21:50:19Z",
+        "updated_at": "2026-09-26T21:52:17Z"
+      }
+    ],
+    "scope": {
+      "schema": "Full workflow chain and deterministic-output check passed",
+      "CI": "275 tests / 27 files passed; current Fast CI Suite",
+      "Coverage": "275 tests / 27 files passed; coverage artifact uploaded",
+      "Smoke": "Detect Smoke Scope passed, core_changed=false and guest_changed=false; Core and Guest jobs skipped by unchanged path filters",
+      "Cypress": "186 tests passed; minimum 175 check passed"
+    }
+  },
+  "human_freeze_approval": {
+    "record_version": 1,
+    "type": "EXACT_HUMAN_FREEZE_APPROVAL",
+    "approved": true,
+    "approved_at": "2026-09-27T00:10:41+02:00",
+    "source": "Explicit user instruction in the existing ChopDot completion session",
+    "verbatim": "I approve freezing Product Schema V1 at exactly:\n\nSHA:\n5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013\n\nTree:\nce5b82d008dfa2f48e714607e30fdb6839b8305c\n\nThis approval includes the documented V1 limitations in the completion\npackage and product-schema/V1_USAGE_GUIDE.md.\n\nRecord this exact approval in issue #50 and the assembly state.\nFinalize the immutable V1 baseline record and tag without changing\nthe reviewed tree. Verify the tag resolves to this exact commit and\ntree; never move or overwrite an existing conflicting tag.\n\nKeep the evidence and approval record outside the reviewed candidate\nso finalization does not change the approved bytes.\n\nThen mark this schema-finalization workstream COMPLETE and return\nthe final baseline/tag, evidence location and usage-guide location.\n\nThis does not authorize new schema architecture, changes to frozen\nGoldens/C1, a protected merge, deployment, Gate B or production work.\nDo not restart the scheduled assembly line.",
+    "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+    "documented_limitations_accepted": true,
+    "issue_comment_id": 5850349640,
+    "issue_url": "https://github.com/ChopDotHQ/ChopDot/issues/50#issuecomment-5850349640"
+  },
+  "freeze_record": {
+    "path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/freeze/BASELINE.json",
+    "status": "COMPLETE",
+    "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+    "tag": "product-schema-v1",
+    "tag_verified": true,
+    "verification_path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/freeze/TAG-VERIFICATION.json",
+    "final_baseline_path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/freeze/FINAL-BASELINE.json"
+  },
+  "next_owner": null,
+  "next_action": "None. Product Schema V1 finalization complete; scheduled assembly remains paused.",
+  "completion_boundary": "Engineering work and bounded independent reviews may be coordinated within Codex using actually available reviewers. Self-review must not be represented as independent. Existing independent reconstruction/security acceptance and final exact-head human freeze approval remain; absence is reported once as a concrete blocker rather than an hourly wait loop.",
+  "acceptance_workflows": [
+    "Product Schema V1",
+    "CI",
+    "Coverage",
+    "Smoke (Targeted)",
+    "E2E Cypress"
+  ],
+  "gate_b_authorized": false,
+  "production_implementation_authorized": false,
+  "product_integrator_enabled": false,
+  "forbidden": [
+    "canonical Golden/C1/product-authority edits",
+    "new product behavior or architecture stages",
+    "Gate A/B or production implementation",
+    "protected merge",
+    "force push",
+    "deployment",
+    "funds or signing",
+    "secrets",
+    "new paid services",
+    "final freeze/tag without exact approval"
+  ],
+  "no_idle_rule": "Reuse completed work; proceed through all authorized engineering steps without per-edit confirmation or archive relays. Pause only for a genuine unavailable capability, unresolved product decision, competing live writer or final exact-head acceptance. Preserve a concrete resumable checkpoint on session limits.",
+  "local_candidate": {
+    "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+    "status": "published; engineering and required reviews complete"
+  },
+  "artifact_intake": {
+    "archive_sha256": "8f9b4dc64414b8947fab5f1c2eed8fd72b8c27d73c194c76bc76fd33f4e64c68",
+    "patch_sha256": "0a85052444e72da41d161fd6f521cfd8601f4a0232969fa0178c0375c319b28d",
+    "verified": true
+  },
+  "finding_dispositions": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/DISPOSITIONS.md",
+  "usage_guide": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013:product-schema/V1_USAGE_GUIDE.md",
+  "proposed_freeze_candidate": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/FREEZE-CANDIDATE.json",
+  "blocker": null,
+  "browser_fallback_authorized": true,
+  "completed_at": "2026-09-27T18:56:22.438Z"
+}

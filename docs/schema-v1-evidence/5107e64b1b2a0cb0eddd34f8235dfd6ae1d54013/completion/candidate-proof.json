@@ -1,0 +1,28 @@
+{
+  "base_sha": "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46",
+  "base_tree": "a5d02c43d8665097269e556e38ae09016c60f887",
+  "candidate_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "candidate_tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+  "product_authority": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "changed_paths": [
+    "product-schema/README.md",
+    "product-schema/V1_USAGE_GUIDE.md",
+    "product-schema/derive-stage-5.mjs",
+    "product-schema/generated/PRODUCT_SCHEMA_CLOSURE.md",
+    "product-schema/generated/adversarial-closure-coverage.json",
+    "product-schema/generated/mutation-coverage.json",
+    "product-schema/settlement-consumption-regression.mjs",
+    "product-schema/stage-5-lib.mjs",
+    "product-schema/stage-5-safety-lib.mjs",
+    "product-schema/stage-5-validation-lib.mjs",
+    "product-schema/verify-reconstruction-closure.mjs",
+    "product-schema/witness-relation-regression.mjs"
+  ],
+  "product_authority_worktree_diff": "",
+  "workflow_changed": false,
+  "freeze_lib_unchanged": true,
+  "authored_files_unchanged": true,
+  "original_archive_sha256": "8f9b4dc64414b8947fab5f1c2eed8fd72b8c27d73c194c76bc76fd33f4e64c68",
+  "prepublication_sha": "8d9064e50037c79624a6e94ced83416e5f2efc5b",
+  "publication_method": "GitHub connected API create blobs/tree/commit then update_ref force=false; same reviewed tree, direct parent original base"
+}

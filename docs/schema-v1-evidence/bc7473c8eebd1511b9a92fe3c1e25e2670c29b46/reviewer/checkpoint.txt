@@ -1,0 +1,20 @@
+Product Schema V1 Reviewer checkpoint — exact head bc7473c8eebd1511b9a92fe3c1e25e2670c29b46, tree a5d02c43d8665097269e556e38ae09016c60f887.
+
+Verdict: BLOCKED pending the mandated disposable full-chain co-mutation/regeneration run.
+
+Executed exact-head baseline: workflow 35859291674 attempt 2, job 108465754362, success; 4,418 pieces; 49/49 operation witnesses; 21/21 construction-required states; 141/141 events; 58/58 independent mutations; adversarial 27/27 = 23 semantic + 4 freeze-seal-only. Artifact 10913795217, digest sha256:7a7553a121d047c92e75b50ade9b23084c4167863cc09cb40590b09c9fa023a2.
+
+Findings:
+REV-SCHEMA-SEMANTIC-GROUNDING-01 — sourceGrounded() counts an object/law as witnessed when its source key or journey merely exists. The shipped invent-source-grounded-object-and-law case is detected only by FREEZE-SEAL-DRIFT, not semantically.
+REV-SCHEMA-TRUSTED-DETECTOR-BOUNDARY-02 — EXPECTED_HASHES and EXPECTED_AUTHORED_BLOBS are candidate-owned in stage-5-freeze-lib.mjs, while stage-5-freeze-lib.mjs and stage-5-validation-lib.mjs are not among the nine pinned authored blobs. Freeze seals protect the exact baseline but are not independent proof after a legitimate candidate refreshes local expectations.
+REV-SCHEMA-WITNESS-RELATION-03 — fresh reconstructed adjacent checks found (a) a J17 control binding can use an existing state plus label/target strings located in a different state because sourceControlExists checks file-global occurrence, then synthesize a DOMAIN_OPERATION piece; and (b) the J13 request.deliver SYSTEM_DERIVED path witness accepts two unrelated long phrases from the correct file because current checks prove occurrence/length, not operation relation. These are reconstructed cases, not recovered historical originals.
+
+Representative reconstruction of J09, J17, J25-J28 found no separate blocker. J25's old definition-stage seed docs are stale supporting text, but the same frozen authority has the later Golden registry and exact review evidence binding the approved prototype and 71/71 reachability. Blast radius correctly distinguishes direct from bounded downstream effects and does not assume reached operations execute.
+
+Honest V1 limits preserved: 667 authority-only PRODUCT_REQUIREMENT states; 35 draft fields without semantic refs; 59 duplicate controls with 0 conflicts; construction-required coverage limited to J05/J06/J08.
+
+Full co-mutated regenerate + entire shipped workflow for the fresh reviewer mutants: NOT EXECUTED. This runtime has exact GitHub source/actions/artifacts but no disposable writable exact-head checkout; local git network resolution failed. Operator #50 comment 5849697277 assigns Builder TEST-SUPPORT-001 for that execution support. Reviewer must inspect it when available.
+
+Smallest repair family after execution evidence: authority-relational semantic grounding; state-local structured control proof; operation-relational path witnesses; trusted detector/expectation boundary outside same-candidate self-approval; and regressions proving wrong semantics fail semantically after expectations/generated outputs are refreshed.
+
+No candidate mutation, freeze approval, Golden/C1 change, Gate B, production action, protected merge, deployment, spend/sign, or secret handling was performed.

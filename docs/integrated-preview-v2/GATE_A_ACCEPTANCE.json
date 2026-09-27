@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "gate": "A",
+  "status": "accepted-materialized-verified",
+  "gate_a_closed": true,
+  "repository": "ChopDotHQ/ChopDot",
+  "accepted_source": {
+    "branch": "review/golden-faithful-v2-gate-a",
+    "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+    "tree": "01691d4fe04dcce9499e11ae26d481eb2a7890c6"
+  },
+  "human_approval": {
+    "approved_by": "Devinson",
+    "source": "Explicit current ChatGPT user message; verbatim relay in issue 38",
+    "text": "APPROVE Gate A preview successor 8548313791e4ef7b436ee742cd18c1fa48d74eeb / tree 01691d4fe04dcce9499e11ae26d481eb2a7890c6 exactly as reviewed in #38 5753182108 and security-cleared in #43 5753215631 for bounded Gate A acceptance/materialization and resulting-state verification only.",
+    "approval_comment_id": 5757908657,
+    "supervisor_request_comment_id": 5753221362,
+    "standing_approval_used": false
+  },
+  "independent_dispositions": {
+    "builder_request_comment_id": 5753100923,
+    "reviewer": {
+      "issue": 38,
+      "comment_id": 5753182108,
+      "classification": "GOLDEN-READY / CONTRACT-READY"
+    },
+    "security": {
+      "issue": 43,
+      "comment_id": 5753215631,
+      "classification": "CLEAR"
+    }
+  },
+  "materialization": {
+    "kind": "accepted-reference-to-existing-immutable-product-tree",
+    "authority_record_branch": "ops/chatgpt-work-factory-v1",
+    "authority_record_path": "docs/integrated-preview-v2/GATE_A_ACCEPTANCE.json",
+    "product_bytes_changed": false,
+    "review_branch_moved": false,
+    "canonical_ux_branch_moved": false,
+    "new_product_ref_created": false,
+    "deployment_requested": false,
+    "note": "Acceptance metadata adopts the existing exact reviewed tree. It is not a new runtime candidate, a copied product tree, a branch-protection rule, or production authorization."
+  },
+  "evidence": {
+    "source_commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+    "preview_workflow_run": 35540924708,
+    "artifact_id": 10614985795,
+    "artifact_size_bytes": 995902,
+    "artifact_sha256": "49bffb9bfb04f0eb12262f6171194d67133cf844bf6c646b9e410083acbd8157",
+    "workflow_runs": {
+      "preview": 35540924708,
+      "ci": 35540924687,
+      "coverage": 35540924705,
+      "smoke": 35540924688,
+      "e2e_cypress": 35540924686
+    },
+    "workflow_conclusion": "success",
+    "browser_reports": {
+      "task_continuity": 116,
+      "exact_allocation": 84,
+      "range_recovery_layout": 60
+    },
+    "browser_assertions": 260,
+    "additional_source_checks": 6,
+    "paths": 10,
+    "original_pngs": 34,
+    "recorded_errors": 0,
+    "viewports": [
+      "393x852",
+      "430x890"
+    ],
+    "served_root": "gate-a-dist",
+    "evidence_rehashed_at": "2026-09-21T08:57:05Z",
+    "new_browser_run_for_acceptance": false
+  },
+  "preserved_canonical": {
+    "branch": "ux/experience-workbench",
+    "commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+    "tree": "cb424dafedff066fed433e106eb4468bec985d98",
+    "golden_count": 28,
+    "phase_c1_resulting_state": "approved-materialized-verified",
+    "approved_generated_j01_sha256": "97f3da489c78cb842c354390b2e354397a6a6c3843228ec9928efebaf21089e8"
+  },
+  "accepted_scope": "Bounded guest-first preview: entry and Home; one local group with name-only people; common equal-split expense; exact MoneyV1 allocations and range; draft Back/reopen/reload; local save/retry; demonstration account conversion and continuity; literal labels.",
+  "scope_exclusions": [
+    "J08 group reopening and full Gate B core expense loop",
+    "Full J05 alternate split/date/receipt surfaces",
+    "Outbound shared invitations",
+    "Production storage, real authentication and financial execution"
+  ],
+  "provenance_caveat": "J05 stylesheet is preview-owned reconstruction; approved Golden HTML is unchanged.",
+  "later_security_adjudication": {
+    "issue43_comments": [
+      5756671940,
+      5756838638
+    ],
+    "landing_layer": "ADAPTER / PLATFORM BOUNDARY",
+    "gate_a_reopened": false,
+    "note": "Production substrate/host-permission requirements remain additive; the independent records do not identify a Gate A runtime or product-contract defect."
+  },
+  "authority_limits": {
+    "gate_b_authorized": false,
+    "production_start_authorized": false,
+    "product_integrator_enabled": false,
+    "execution_mode_selected": false,
+    "journey_29_created": false,
+    "protected_merge_authorized": false,
+    "deployment_authorized": false,
+    "real_identity_or_payment_authorized": false
+  },
+  "resulting_state_verification": {
+    "status": "pass",
+    "verified_at": "2026-09-21T09:00:38Z",
+    "materialized_record_source_commit": "6d228e10b23781654f5cbee797c8a017a67e8af2",
+    "materialized_record_source_blob": "97d59c04a10ce5bba2e4d7b85bb0b8b17fc2c83f",
+    "method": "Live GitHub readback and exact reference/tree checks, original artifact hash and packaged-source/report validation. Authority-only adoption of the existing reviewed product tree; no new browser execution or runtime candidate.",
+    "checks": {
+      "verbatim_human_approval_matches_supervisor_request": true,
+      "committed_record_matches_prepared_git_blob": true,
+      "accepted_commit_and_tree_match_reviewed_package": true,
+      "review_branch_unchanged_after_materialization": true,
+      "canonical_ux_branch_and_c1_gate_unchanged": true,
+      "original_artifact_hash_and_packaged_source_match": true,
+      "all_three_browser_reports_pass": true,
+      "all_five_exact_source_workflows_success": true,
+      "newer_platform_findings_do_not_reopen_gate_a": true,
+      "no_later_substantive_contradiction_or_competing_transition_found": true,
+      "materialization_diff_is_acceptance_metadata_only": true
+    },
+    "existing_preview_deployment": "dpl_BKy5EnNBs3zhXQjoTunfED5EYZzz",
+    "existing_preview_source_commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+    "next_stage": "Gate B remains separately unauthorized by this approval."
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "role": "separate_reconstruction_reviewer",
+  "verdict": "CLEAR_FOR_FREEZE_RECOMMENDATION",
+  "publication_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "reviewed_sha": "8d9064e50037c79624a6e94ced83416e5f2efc5b",
+  "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+  "same_tree": true,
+  "authority_sha": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "github_commit_read": "confirmed through connected GitHub fetch_commit",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "8d9064e50037c79624a6e94ced83416e5f2efc5b^{tree}"
+      ],
+      "exit_code": 0,
+      "output": "ce5b82d008dfa2f48e714607e30fdb6839b8305c\n"
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013^{tree}"
+      ],
+      "exit_code": 0,
+      "output": "ce5b82d008dfa2f48e714607e30fdb6839b8305c\n"
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013^"
+      ],
+      "exit_code": 0,
+      "output": "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46\n"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "8d9064e50037c79624a6e94ced83416e5f2efc5b",
+        "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "bc7473c8eebd1511b9a92fe3c1e25e2670c29b46",
+        "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "--",
+        "prototypes/experience-workbench",
+        "product-schema/stage-5-freeze-lib.mjs"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "4ba456e6595330e4ca8e21366e0d827f17e10881^{tree}"
+      ],
+      "exit_code": 0,
+      "output": "cb424dafedff066fed433e106eb4468bec985d98\n"
+    }
+  ],
+  "evidence_reused": "All FINAL-RECEIPT.md content-level findings, six reviewer full-chain clone outcomes, code/source review and guide checks on identical tree. Publication commit metadata differs; this reviewer did not re-run those six clones at publication SHA. Completion owner reruns final matrix and obtains actual hosted results for publication SHA.",
+  "hosted_checks_claimed": false,
+  "freeze_approval_claimed": false
+}

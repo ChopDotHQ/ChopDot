@@ -1,0 +1,21 @@
+{
+  "version": 3,
+  "role": "product-schema-v1-completion",
+  "status": "completed",
+  "holder": null,
+  "branch": "research/product-schema-v1",
+  "candidate_head": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "claimed_at": "2026-09-26T21:33:00Z",
+  "expires_at": null,
+  "authority": "CODEX_LED_COMPLETION: issue #50 and user instruction 2026-09-26T23:32:05+02:00",
+  "scope": "Schema repair, read-only independent reviews, verification, usage documentation, forward successor; no freeze/tag or production changes",
+  "previous_lease": {
+    "ref": "6d3bc1a06a3876dd5e488b16525b1d544cb08a20",
+    "git_blob": "ff85162b7d7e44415dcb06a417efbc8c5adaf37d",
+    "status": "completed",
+    "holder": null
+  },
+  "note": "Engineering and exact-version freeze finalization COMPLETE. product-schema-v1 verified at approved SHA/tree; no writer held; candidate unchanged; no production or schedule action.",
+  "completed_at": "2026-09-26T21:59:44.149Z",
+  "finalization_completed_at": "2026-09-27T18:56:22.438Z"
+}
