@@ -1,0 +1,55 @@
+{
+  "record_version": 1,
+  "status": "COMPLETE",
+  "verified_at": "2026-09-27T18:56:22.438Z",
+  "repository": "ChopDotHQ/ChopDot",
+  "tag": "product-schema-v1",
+  "tag_ref": "refs/tags/product-schema-v1",
+  "tag_type": "lightweight",
+  "commit": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+  "exact_approved_commit": true,
+  "exact_approved_tree": true,
+  "tag_existed_before_creation": false,
+  "existing_tag_moved_or_overwritten": false,
+  "verification_method": "GitHub REST git/ref/tags/product-schema-v1 and git/commits/<resolved-sha>; separate connector read after browser creation",
+  "ref_response": {
+    "ref": "refs/tags/product-schema-v1",
+    "node_id": "REF_kwDOP9-hW7tyZWZzL3RhZ3MvcHJvZHVjdC1zY2hlbWEtdjE",
+    "url": "https://api.github.com/repos/ChopDotHQ/ChopDot/git/refs/tags/product-schema-v1",
+    "object": {
+      "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+      "type": "commit",
+      "url": "https://api.github.com/repos/ChopDotHQ/ChopDot/git/commits/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013"
+    }
+  },
+  "commit_tree_response": {
+    "sha": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+    "url": "https://api.github.com/repos/ChopDotHQ/ChopDot/git/trees/ce5b82d008dfa2f48e714607e30fdb6839b8305c"
+  },
+  "release": {
+    "id": 397770225,
+    "url": "https://github.com/ChopDotHQ/ChopDot/releases/tag/product-schema-v1",
+    "prerelease": true,
+    "github_immutable_release": false,
+    "note": "Non-production baseline record; GitHub release immutability was not enabled. Immutable identity is the content-addressed commit/tree and append-only ops record. Never move this tag."
+  },
+  "approval": {
+    "ops_commit": "d90bde4f4749f8a647484b61eeef23205a0f178d",
+    "path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/freeze/APPROVAL.json",
+    "issue_comment_id": 5850349640,
+    "documented_limitations_accepted": true
+  },
+  "baseline_identity_record": {
+    "ops_commit": "d90bde4f4749f8a647484b61eeef23205a0f178d",
+    "path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/freeze/BASELINE.json",
+    "preserved": true
+  },
+  "evidence": {
+    "ops_commit": "b452b9373c3a4e2ddc2846ff178438f1666e5c57",
+    "path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/"
+  },
+  "candidate_bytes_changed": false,
+  "schedules_restarted": false,
+  "production_action": false
+}

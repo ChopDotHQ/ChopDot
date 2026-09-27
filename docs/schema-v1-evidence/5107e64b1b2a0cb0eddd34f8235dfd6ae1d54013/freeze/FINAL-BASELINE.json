@@ -1,0 +1,33 @@
+{
+  "record_version": 1,
+  "status": "COMPLETE",
+  "finalized_at": "2026-09-27T18:56:22.438Z",
+  "repository": "ChopDotHQ/ChopDot",
+  "tag": "product-schema-v1",
+  "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+  "authority_sha": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "approval": {
+    "ops_commit": "d90bde4f4749f8a647484b61eeef23205a0f178d",
+    "path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/freeze/APPROVAL.json",
+    "issue_comment_id": 5850349640,
+    "documented_limitations_accepted": true
+  },
+  "verification_path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/freeze/TAG-VERIFICATION.json",
+  "prior_identity_record": {
+    "ops_commit": "d90bde4f4749f8a647484b61eeef23205a0f178d",
+    "path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/freeze/BASELINE.json",
+    "preserved": true
+  },
+  "evidence": {
+    "ops_commit": "b452b9373c3a4e2ddc2846ff178438f1666e5c57",
+    "path": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/"
+  },
+  "usage_guide": {
+    "ref": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "path": "product-schema/V1_USAGE_GUIDE.md"
+  },
+  "policy": "Append-only baseline identity. Never move or overwrite product-schema-v1. Future work requires a distinct version and authorization.",
+  "limitations_accepted": true,
+  "scope": "Product Schema V1 only; no protected merge, deployment, Gate B or production work."
+}
