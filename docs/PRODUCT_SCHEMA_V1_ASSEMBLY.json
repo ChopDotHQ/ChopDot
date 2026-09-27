@@ -190,7 +190,7 @@
     "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c"
   },
   "next_owner": "codex-completion-owner",
-  "next_action": "Create previously absent refs/tags/product-schema-v1 at exactly the approved commit using a tag-capable authorized connection; verify peeled commit and tree; then mark workstream COMPLETE.",
+  "next_action": "Restore tag-capable browser/session; create absent product-schema-v1 tag at approved SHA, verify exact commit/tree, append tag verification outside candidate, then mark COMPLETE.",
   "completion_boundary": "Engineering work and bounded independent reviews may be coordinated within Codex using actually available reviewers. Self-review must not be represented as independent. Existing independent reconstruction/security acceptance and final exact-head human freeze approval remain; absence is reported once as a concrete blocker rather than an hourly wait loop.",
   "acceptance_workflows": [
     "Product Schema V1",
@@ -228,5 +228,6 @@
   "finding_dispositions": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/DISPOSITIONS.md",
   "usage_guide": "research/product-schema-v1:product-schema/V1_USAGE_GUIDE.md",
   "proposed_freeze_candidate": "docs/schema-v1-evidence/5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013/completion/FREEZE-CANDIDATE.json",
-  "blocker": "Connected GitHub tools expose branch writes but no tag creation; direct Git push failed without HTTPS credentials. Browser fallback requires user permission under the browser tool's instructions."
+  "blocker": "User approved browser fallback. Browser repository-open attempt was interrupted; execution environment subsequently reported environment_offline (409). Connected GitHub read confirms refs/tags/product-schema-v1 absent and approved candidate unchanged. Tag-capable browser/session must be restored; no additional user freeze or fallback approval needed.",
+  "browser_fallback_authorized": true
 }
