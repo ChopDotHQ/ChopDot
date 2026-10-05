@@ -471,21 +471,26 @@ try {
     await page
       .getByRole("link", { name: "View balances", exact: true })
       .click();
-    await wait("settle-handoff");
+    await wait("group-select");
     check(
-      `${label}: balances remains bounded handoff`,
-      (await page.locator("#app").innerText()).includes("outside Gate B"),
+      `${label}: balances opens integrated settlement in the same group`,
+      new URLSearchParams(new URL(page.url()).hash.slice(1)).get('group'),
+      'g',
     );
+    check(`${label}: reading balances creates no payment`, (await state()).gateC?.payments || [], []);
     await page
-      .getByRole("link", { name: "Back to group", exact: true })
+      .getByRole("link", { name: "Open Group Home", exact: true })
       .click();
     await wait("active");
     await page.locator('[href="#settle-handoff"]').click();
-    await wait("settle-handoff");
+    await wait("group-select");
     check(
-      `${label}: no settlement execution`,
-      (await page.locator("#app").innerText()).includes("No settlement"),
+      `${label}: opening Settle creates no payment or execution`,
+      (await state()).gateC?.payments || [], [],
     );
+    check(`${label}: settle retains source group`, new URLSearchParams(new URL(page.url()).hash.slice(1)).get('group'), 'g');
+    await page.getByRole("link", {name:"Open Group Home",exact:true}).click();
+    await wait("active");
     await go("detail", "missing-expense");
     await wait("not-found");
     await page.reload();

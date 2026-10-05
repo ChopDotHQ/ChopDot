@@ -1,0 +1,158 @@
+{
+  "verdict": "PRECISE_SOURCE_DECISION_GAP_CONFIRMED",
+  "authority_sha": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "schema_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "accepted_gate_b_sha": "28775726dc06b1823e231d50b4d84080a07530fb",
+  "candidate_at_start": "28775726dc06b1823e231d50b4d84080a07530fb with recovered Gate C files uncommitted",
+  "scope": "Read-only approved-source investigation of J10/J11/J12 partial net settlement group attribution and required gates/recovery. Not implementation review/acceptance.",
+  "conclusion": "Examined approved sources define exact pair-level partial remainder and preserve lineage, and require recomputing affected group balances. They do not specify allocation of confirmed net settlement amounts across contributing source groups/items, including opposing credits.",
+  "decision_gap": {
+    "id": "GC-SOURCE-PARTIAL-ATTRIBUTION-01",
+    "example_minor_units": {
+      "initial_pair_group_contributions": {
+        "Apartment": 7430,
+        "Ski Trip": -2000
+      },
+      "net_owed": 5430,
+      "confirmed": 2000,
+      "pair_remainder": 3430
+    },
+    "not_defined": [
+      "Which debit source group/item receives each confirmed minor unit.",
+      "Whether/when offsetting credit lineage is applied or extinguished during a partial net payment.",
+      "Order/proportion/rounding of application and corresponding per-group/item residuals.",
+      "Exact recorded attribution to restore for reversal and consume in later settlement scopes."
+    ],
+    "not_a_solution": "FIFO, proportional signed allocation, first-group debit or upfront offset cancellation would be new policy choices, not consequences of the cited source."
+  },
+  "sources": [
+    {
+      "id": "J10-NETTING",
+      "path": "prototypes/experience-workbench/journeys/10-overall-position/spec.md",
+      "lines": "53-66",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "supports": "same pair/currency offset; Apartment74.30 minus SkiTrip20.00; visible group-level offsets"
+    },
+    {
+      "id": "J11-PARTIAL",
+      "path": "prototypes/experience-workbench/journeys/11-settle-up/spec.md",
+      "lines": "103-143",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "supports": "exact partial close, source lineage, same-pair/currency eligible multi-group scope, partial amount/remainder/items display and maximum eligible amount"
+    },
+    {
+      "id": "J12-RESULT",
+      "path": "prototypes/experience-workbench/journeys/12-complete-settlement/spec.md",
+      "lines": "49-78",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "supports": "54.30 minus20.00 equals34.30; source lineage; recompute affected groups; Saved record"
+    },
+    {
+      "id": "J12-DEMO-MODEL",
+      "path": "prototypes/experience-workbench/journeys/12-complete-settlement/source/continuity-model.cjs",
+      "lines": "4-17,35-38",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "supports": "multi-group source arrays but only aggregate original-settled balance; no group residual allocation"
+    },
+    {
+      "id": "J12-RETURN",
+      "path": "prototypes/experience-workbench/journeys/12-complete-settlement/RETURN_CONTEXT_MAPPING.json",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "supports": "payment context and pair-level resulting amounts only"
+    },
+    {
+      "id": "SCHEMA-PAY-03",
+      "path": "product-schema/semantic-core.json",
+      "lines": "3273-3289",
+      "ref": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+      "supports": "partial remainder source lineage and dependency preservation, no allocation policy"
+    },
+    {
+      "id": "LOCK-02",
+      "path": "product-schema/product-decisions-v2.json",
+      "lines": "17-35",
+      "ref": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+      "supports": "current/proposed economic dependency guard; issues invalidate prepared intents; partial remainder retains dependency"
+    }
+  ],
+  "checklist": [
+    {
+      "id": "GC-SOURCE-01",
+      "area": "J10 position",
+      "obligation": "Derived read model; People default, Groups secondary; show net and gross owed/owing, same-pair same-currency offsets and explainable groups/items; separate currency partitions and explicitly optional estimates, never use estimate as payment instruction.",
+      "authority": "J10 spec primary view/netting/currency/readiness"
+    },
+    {
+      "id": "GC-SOURCE-02",
+      "area": "J11 scope and preparation",
+      "obligation": "Resolve and preserve exact payer/recipient, one currency/asset, source groups/items, selected method, expiry and stable payment/idempotency identity before final review/authorization. J11 prepares/requests authorization; opening a method does not complete.",
+      "authority": "J11 spec contract1\u20135, scope/amount rules; schema ctx.settlement"
+    },
+    {
+      "id": "GC-SOURCE-03",
+      "area": "Eligibility and effect boundary",
+      "obligation": "Positive selected amount cannot exceed current eligible scope. Revalidate balance change/dispute before execution; disputed sources block only dependent items. Later unrelated expenses must not silently mutate frozen prepared lineage.",
+      "authority": "J11 spec/GIVEN_WHEN_THEN; DEC-EXPENSE-SETTLEMENT-LOCK-02; settlement.prepare"
+    },
+    {
+      "id": "GC-SOURCE-04",
+      "area": "External/manual authority",
+      "obligation": "Payer sent claim gives Sent/Waiting only. Canonical recipient separately confirms exact received amount; Not yet leaves open. Do not derive recipient authority from refresh/navigation or workshop persona role controls.",
+      "authority": "J12 spec core external/manual and STATE_AND_AUTHORITY"
+    },
+    {
+      "id": "GC-SOURCE-05",
+      "area": "Wallet authority",
+      "obligation": "Approval request is not authorization. Explicitly labelled simulated verified result may advance the prototype; exact payer/recipient/amount/asset/currency/method/source/expiry/payment/idempotency matching governs receipt/closure. No actual provider/funds/secrets.",
+      "authority": "J11 compatibility closeout; J12 wallet path and prototype boundary"
+    },
+    {
+      "id": "GC-SOURCE-06",
+      "area": "Typed progress and result",
+      "obligation": "Keep sent, waiting, received and complete visibly/semantically distinct. Only accepted exact result closes a payment item; recompute position, do not edit display totals. Partial closes confirmed amount only, shows remaining amount and preserved lineage; no replacement retry for open partial.",
+      "authority": "J12 spec partial/result; LAW-PAY-01/02/03 and LAW-OP-01"
+    },
+    {
+      "id": "GC-SOURCE-07",
+      "area": "Unknown and retry",
+      "obligation": "Timeout/disconnect/missing callback means unknown; reconcile existing identity. Retry/method change requires trusted scope-matched nonexecution and consumes eligibility once. Repeated clicks/reconnect/replay never repeat effects or create replacement identity.",
+      "authority": "J12 V1.1 continuity, STATE_AND_AUTHORITY, GIVEN_WHEN_THEN C06\u2013C08; LAW-OP-01"
+    },
+    {
+      "id": "GC-SOURCE-08",
+      "area": "Continuity",
+      "obligation": "Every Back/Done/position/history/record/review handoff retains payment identity, person, method, original currency, source lineage and latest accepted result. Reads/refresh are pure and cannot reset to TWINT/default fixture or switch viewer identity.",
+      "authority": "J12 RETURN_CONTEXT_MAPPING, spec one payment context, C01\u2013C10"
+    },
+    {
+      "id": "GC-SOURCE-09",
+      "area": "Post-start dispute and reversal",
+      "obligation": "Post-start disputed dependency prevents dependent closure while independent payments remain usable; verified reversal reopens only exact affected item and recomputes read models. Do not unlock unresolved or partial-dependent expense mutations without authoritative safe release.",
+      "authority": "J12 failure/recovery; LOCK-02"
+    },
+    {
+      "id": "GC-SOURCE-10",
+      "area": "Saved record and replay",
+      "obligation": "Keep human-readable record distinct from durable accepted event. Preserve amount/currency/payer/recipient/method/source groups/items/timestamps/confirmation reference. Delayed record retrieval never undoes or repeats settlement. Replay reconstructs accepted state without execution.",
+      "authority": "J11 storage/replay closeout; J12 Saved record and C09"
+    },
+    {
+      "id": "GC-SOURCE-11",
+      "area": "Recovery and bounded exits",
+      "obligation": "Approved surfaces include offline/loading, no method/request details, balance changed/already in progress, wallet approval rejected/expired/disconnected/unknown/recovering, known no-effect failed/expired/cancelled, receiver not yet/amount different, issue after send and record unavailable. Make unsupported future methods/requests/history support explicit bounded handoffs, not false success.",
+      "authority": "J11/J12 inventories and manifest screen IDs; J12 prototype boundary"
+    },
+    {
+      "id": "GC-SOURCE-12",
+      "area": "Local prototype disclosure",
+      "obligation": "One canonical browser-local state can demonstrate these rules; fixture provider/receiver actions must be labelled. Browser state is not backend authorization, production durable storage, ordinary authenticated API or real payment finality. Keep implementation terms outside normal product UI.",
+      "authority": "J12 prototype boundary; J11 visible UI rules"
+    }
+  ],
+  "precedence_notes": [
+    "J11 old GIVEN_WHEN_THEN timeout/retry wording is qualified by later J12 V1.1 strict recovery-until-proven-nonexecution contract and schema LAW-OP-01.",
+    "J12 DECISIONS external-equivalent-provider wording is broader than updated J12 spec; external/manual methods require canonical recipient, wallet exact-match exception does not allow payer self-confirmation."
+  ],
+  "verification": "19 source records independently verified byte-for-byte against frozen git objects, including all3copied Gate C Goldens; source-hashes.json.",
+  "limitation": "No claim that every historical conversation was searched. Absence is bounded to examined frozen specs, authority/GWT records, approved reducer/UI, copied Goldens, schema laws/context and approved decision documents. No candidate code changed."
+}

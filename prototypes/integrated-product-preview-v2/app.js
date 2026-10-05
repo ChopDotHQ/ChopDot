@@ -247,6 +247,18 @@ function addLocalHomeCss(doc) {
   doc.head.appendChild(style);
 }
 
+function openGateC(hash = '#page=position') {
+  stopMonitor(); currentJourney = 'GATE_B'; currentFlow = 'gate-c-local'; showFrame();
+  frame.src = `./gate-c/index.html${params.has('fixtures') ? '?fixtures=1' : ''}${hash.startsWith('#') ? hash : '#page=position'}`;
+}
+window.addEventListener('message', event => {
+  if(event.origin!==location.origin || event.source!==frame.contentWindow) return;
+  if(event.data?.type==='chopdot-gate-c-route') {
+    const url=new URL(location.href);url.searchParams.set('gateC',event.data.hash);history.replaceState(null,'',url);
+  } else if(event.data?.type==='chopdot-gate-c-exit') {
+    const url=new URL(location.href);url.searchParams.delete('gateC');history.replaceState(null,'',url);
+  }
+});
 function openGateB() {
   stopMonitor();
   currentJourney = 'GATE_B';
@@ -300,7 +312,7 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
       <div class="local-actions"><button class="local-action primary guest-start-group" type="button">${svg(ICONS.plus)} Start a group</button></div>
     `;
   } else {
-    const expenseCount = state.expenses.filter(expense => !expense.deleted).length;
+    const expenseCount = state.expenses.filter(expense => !expense.deleted && (!state.gateC || expense.groupId === state.group.id)).length;
     const noun = expenseCount === 1 ? 'expense' : 'expenses';
     const peopleCount = 1 + state.people.length;
     content.innerHTML = `
@@ -1036,7 +1048,8 @@ window.ChopDotPreviewV2 = Object.freeze({
   openHome: () => openHome(lastEntryState, 'account'),
 });
 
-if (params.has('gateB') && loadGuestState().group) openGateB();
+if (params.has('gateC')) openGateC(params.get('gateC'));
+else if (params.has('gateB') && loadGuestState().group) openGateB();
 else if (entryMode === 'invite') openInvite('account');
 else if (entryMode === 'guest-invite') openInvite('guest');
 else showFrontDoor();

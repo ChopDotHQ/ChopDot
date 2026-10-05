@@ -14,8 +14,10 @@ import {
   allocationFor,
   REASONS,
   DomainError,
+  savedDraft,
 } from "./model.js";
 import { formatPreviewMoney, moneyFromMinorUnits } from "../money-v1.js";
+import { pairs as settlementPairs } from "../gate-c/ledger.js";
 
 const app = document.querySelector("#app");
 const core = await fetch("./contract/semantic-core.json").then((r) => {
@@ -138,7 +140,7 @@ function persistDraft() {
   repo.saveDraft(actor, draft);
 }
 function draftFor(id) {
-  const saved = state.gateB.drafts[actor];
+  const saved = savedDraft(state,actor);
   if (saved && (!id || saved.id === id)) return structuredClone(saved);
   const e = state.expenses.find((e) => e.id === id && !e.deleted);
   if (id && !e)
@@ -148,8 +150,8 @@ function draftFor(id) {
 function openEditor(e) {
   draft = e
     ? draftFor(e.id)
-    : state.gateB.drafts[actor]?.baseRevision === null
-      ? structuredClone(state.gateB.drafts[actor])
+    : savedDraft(state,actor)?.baseRevision === null
+      ? structuredClone(savedDraft(state,actor))
       : newDraft(state, actor);
   persistDraft();
   nav("editor", draft.id);
@@ -251,7 +253,7 @@ function group() {
     })),
   ];
   const balances = position(state, actor),
-    units = BigInt(balances[`${state.group.currency}:2`] || "0");
+    units = BigInt(balances[`${state.group.currency}:${state.group.exponent ?? 2}`] || "0");
   text(
     ".hero",
     !expenses.length
@@ -310,7 +312,7 @@ function group() {
   text(
     ".position-value",
     money(
-      moneyFromMinorUnits(units < 0n ? -units : units, state.group.currency),
+      moneyFromMinorUnits(units < 0n ? -units : units, state.group.currency, state.group.exponent ?? 2),
     ),
   );
   $(".position-value").classList.toggle("positive", units > 0n);
@@ -325,6 +327,11 @@ function group() {
         pairs[e.payerId] =
           (pairs[e.payerId] || 0n) - BigInt(a.amount.minorUnits);
     }
+  }
+  if (state.gateC) {
+    for (const id of Object.keys(pairs)) delete pairs[id];
+    for (const p of settlementPairs(state, actor, state.group.id))
+      if(p.currency===state.group.currency && p.exponent===(state.group.exponent??2)) pairs[p.other]=-BigInt(p.minor);
   }
   const involved = Object.keys(pairs).filter((id) => pairs[id] !== 0n);
   text(".position-side b", involved.map(name).join(" + "));
@@ -389,11 +396,17 @@ function group() {
     '[href="#settle-handoff"] span',
     `${involved.length} ${involved.length === 1 ? "balance" : "balances"} open`,
   );
+  action('[href="#settle-handoff"],[href="#balances-handoff"]', () => {
+    location.href = `../gate-c/index.html${fixtureMode ? '?fixtures=1' : ''}#${new URLSearchParams({page:'group',group:state.group.id})}`;
+  });
+  action('[href="#global-people"]', () => {
+    location.href = `../gate-c/index.html${fixtureMode ? '?fixtures=1' : ''}#page=position`;
+  });
   action('[href="#add-handoff"]', () => openEditor());
   action('[href="#expenses-handoff"]', () => {
     $(".card.list").scrollIntoView({ block: "start" });
   });
-  action('[href="#members-handoff"], [href="#global-people"]', () =>
+  action('[href="#members-handoff"]', () =>
     nav("people", ""),
   );
   action('[href="#home-handoff"]', () => {
@@ -443,7 +456,7 @@ function editor() {
     draft.method === "equal" ? "Split equally" : `Split by ${draft.method}`;
   let summary = "";
   try {
-    summary = ` · ${splitSummary(allocationFor(draft, state.group.currency))}`;
+    summary = ` · ${splitSummary(allocationFor(draft, state.group.currency, state.group.exponent ?? 2))}`;
   } catch {}
   rows[1].querySelector(".row-sub").textContent =
     `${draft.participantIds.length} people${summary}`;
@@ -507,7 +520,7 @@ function split() {
   list.replaceChildren();
   let snapshot;
   try {
-    snapshot = allocationFor(draft, state.group.currency);
+    snapshot = allocationFor(draft, state.group.currency, state.group.exponent ?? 2);
   } catch {}
   for (const p of participants(state)) {
     const row = template.cloneNode(true),
@@ -601,7 +614,7 @@ function customSplit(kind) {
   $(".text-link")?.remove();
   let snapshot;
   try {
-    snapshot = allocationFor(draft, state.group.currency);
+    snapshot = allocationFor(draft, state.group.currency, state.group.exponent ?? 2);
   } catch {}
   for (const id of [...draft.participantIds].sort()) {
     const row = template.cloneNode(true);
@@ -629,7 +642,7 @@ function customSplit(kind) {
       (kind === "exact" ? draft.exact : draft.shares)[id] = field.value;
       try {
         persistDraft();
-        const a = allocationFor(draft, state.group.currency);
+        const a = allocationFor(draft, state.group.currency, state.group.exponent ?? 2);
         text(".sum b", money(a.total));
         for (const display of card.querySelectorAll("[data-share-id]"))
           display.textContent = money(
@@ -654,7 +667,7 @@ function customSplit(kind) {
     snapshot ? money(snapshot.total) : "Amounts must add to total",
   );
   action(".app-footer a", () => {
-    allocationFor(draft, state.group.currency);
+    allocationFor(draft, state.group.currency, state.group.exponent ?? 2);
     persistDraft();
     backEditor();
   });
@@ -744,7 +757,7 @@ async function saveExpense(allowDuplicate = false) {
   persistDraft();
   const editing = draft.baseRevision !== null;
   try {
-    allocationFor(draft, state.group.currency);
+    allocationFor(draft, state.group.currency, state.group.exponent ?? 2);
     if (!draft.description.trim())
       throw new DomainError("MISSING", "Add a description.");
   } catch (e) {
@@ -1535,7 +1548,7 @@ function recovery() {
       (e) =>
         e.description.toLowerCase() === draft.description.toLowerCase() &&
         e.money.minorUnits ===
-          allocationFor(draft, state.group.currency).total.minorUnits &&
+          allocationFor(draft, state.group.currency, state.group.exponent ?? 2).total.minorUnits &&
         e.payerId === draft.payerId &&
         e.date === draft.date,
     );

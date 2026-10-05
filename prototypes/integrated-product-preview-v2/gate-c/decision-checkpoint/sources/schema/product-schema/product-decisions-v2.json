@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "decision_id": "DEC-EXPENSE-SETTLEMENT-LOCK-02",
+  "status": "approved_human_product_decision",
+  "approved_on": "2026-09-22",
+  "clarifies": "DEC-EXPENSE-SETTLEMENT-LOCK-01",
+  "scope_journeys": [
+    "05",
+    "06",
+    "07",
+    "08",
+    "11",
+    "12"
+  ],
+  "decision": {
+    "name": "Economic-dependency settlement guard and Gate B Golden impact",
+    "ordinary_mode": "dependency_scoped_economic_guard",
+    "dependency_rule": "Block an Expense create/edit/delete when the current state or proposed post-state would change financial truth on which any unresolved settlement depends.",
+    "dependency_dimensions": [
+      "frozen source-item lineage",
+      "payer/recipient pair",
+      "currency partition",
+      "current eligible balance",
+      "dispute eligibility",
+      "open partial remainder"
+    ],
+    "create": "Allow only when the proposed new Expense is economically independent of every unresolved settlement dependency.",
+    "edit": "Allow only when both the current Expense state and proposed post-state are economically independent of every unresolved settlement dependency.",
+    "delete": "Allow only when the current Expense state is economically independent of every unresolved settlement dependency.",
+    "dispute_rule": "Raising an issue remains allowed, but any prepared PaymentIntent depending on that Expense becomes invalid for execution and must be re-resolved.",
+    "fail_closed_rule": "For guarded mutations, unresolved settlement input is treated as locked unless the caller supplies authoritative evidence that the relevant scope is safely terminal or no-effect.",
+    "unknown_effect_precedence": "unknown_effect takes precedence over a terminal label until reconciliation establishes authoritative terminal/no-effect truth.",
+    "partial_rule": "A partial close does not release source dependency while an open remainder still references that lineage.",
+    "explanation_rule": "A blocked mutation must identify the settlement/dependency that caused the block.",
+    "closeout_rule": "Whole-group closeout remains an approved future semantic mode, but it is outside Gate B until a dedicated user path is separately approved."
+  },
+  "golden_impact": [
+    {
+      "journey": "05",
+      "state": "locked",
+      "disposition": "retained_and_rescoped",
+      "rule": "The approved locked recovery state remains reachable in Gate B when an attempted Expense mutation is blocked because it would change an unresolved settlement dependency."
+    },
+    {
+      "journey": "08",
+      "state": "settlement_in_progress",
+      "disposition": "not_a_gate_b_required_state_after_this_decision",
+      "rule": "The historical blanket-unavailable Add Expense behavior is superseded for ordinary settlements. Preserve it as historical Golden evidence and revisit it when a dedicated whole-group closeout surface is designed."
+    }
+  ],
+  "gate_b_boundary": {
+    "closeout_surface": "semantic_only_no_approved_surface",
+    "closeout_context_in_gate_b": false,
+    "group_closeout_operation_required_for_gate_b": false,
+    "ordinary_settlement_guard_required_for_gate_b": true
+  },
+  "rationale": [
+    "The user-approved principle is to lock whatever could invalidate an active settlement, no more and no less.",
+    "Frozen J11 states that the amount cannot exceed the current eligible balance, disputed source items are ineligible, and partial remainder preserves source lineage.",
+    "A source-id-only test is therefore insufficient: an otherwise unrelated mutation can become economically dependent through payer/participant/currency changes or eligible-balance drift.",
+    "Gate B should not invent a whole-group closeout control that has no approved Golden surface."
+  ],
+  "authority_note": "This clarification is a new human product decision made after the frozen Golden baseline and after DEC-EXPENSE-SETTLEMENT-LOCK-01. It records the approved integration interpretation and its impact on historical J05/J08 settlement-lock states."
+}

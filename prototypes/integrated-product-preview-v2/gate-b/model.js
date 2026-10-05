@@ -6,6 +6,7 @@ import {
   moneyToDecimal,
 } from "../money-v1.js";
 import { evaluateExpenseMutationGuard } from "./contract/hardening-lib.mjs";
+import { balances as settlementBalances, guardCanonicalPayments } from "../gate-c/ledger.js";
 
 export const STORAGE_KEY = "chopdot.preview-v2.guest";
 export const REASONS = [
@@ -30,7 +31,9 @@ export const participants = (s) => [
   { id: "self", name: "You" },
   ...(s.people || []),
 ];
-export const activeExpenses = (s) => s.expenses.filter((e) => !e.deleted);
+export const activeExpenses = (s) => s.expenses.filter((e) => !e.deleted && (!s.gateC || e.groupId === s.group?.id));
+export const draftKey = (s, actor) => s.gateC ? JSON.stringify([actor, s.group?.id]) : actor;
+export const savedDraft = (s, actor) => s.gateB.drafts[draftKey(s, actor)];
 export function upgrade(input) {
   const s = clone(input || {});
   s.people ||= [];
@@ -43,6 +46,11 @@ export function upgrade(input) {
     drafts: {},
     environment: { offline: false, settlements: [] },
   };
+  if(s.gateC && s.gateB.draftStorageVersion !== 2){
+    s.gateB.drafts=Object.fromEntries(Object.entries(s.gateB.drafts).map(([actor,d])=>[
+      JSON.stringify([actor,d.groupId||s.group?.id]),{...d,groupId:d.groupId||s.group?.id}
+    ]));s.gateB.draftStorageVersion=2;
+  }
   for (const e of s.expenses) {
     e.ownerId ||= "self";
     e.revision ||= 1;
@@ -62,11 +70,11 @@ export function upgrade(input) {
   }
   return s;
 }
-export function allocationFor(d, currency) {
+export function allocationFor(d, currency, exponent = 2) {
   const ids = [...new Set(d.participantIds)].sort();
   if (!ids.length || ids.length !== d.participantIds.length)
     fail("MISSING", "Choose at least one distinct participant.");
-  const total = moneyFromPreviewDecimal(d.amountText, currency);
+  const total = moneyFromPreviewDecimal(d.amountText, currency, exponent);
   if (BigInt(total.minorUnits) <= 0n)
     fail("MISSING", "Enter an amount greater than zero.");
   let allocations;
@@ -76,6 +84,7 @@ export function allocationFor(d, currency) {
       amount: moneyFromPreviewDecimal(
         d.exact?.[participantId] || "0",
         currency,
+        exponent,
       ),
     }));
   } else if (d.method === "shares") {
@@ -97,7 +106,7 @@ export function allocationFor(d, currency) {
     }
     allocations = ids.map((participantId, i) => ({
       participantId,
-      amount: moneyFromMinorUnits(amounts[i], currency),
+      amount: moneyFromMinorUnits(amounts[i], currency, exponent),
     }));
   } else if (d.method === "equal")
     allocations = allocateMoneyEvenly(total, ids);
@@ -114,6 +123,7 @@ export function newDraft(s, actor = "self", id = crypto.randomUUID()) {
   if (!s.group) fail("MISSING", "Create a group first.");
   return {
     id,
+    groupId: s.group.id,
     operationId: crypto.randomUUID(),
     baseRevision: null,
     amountText: "",
@@ -130,6 +140,7 @@ export function newDraft(s, actor = "self", id = crypto.randomUUID()) {
 export function editDraft(e) {
   return {
     id: e.id,
+    groupId: e.groupId,
     operationId: crypto.randomUUID(),
     baseRevision: e.revision,
     amountText: moneyToDecimal(e.money),
@@ -149,6 +160,8 @@ export function editDraft(e) {
   };
 }
 function proposal(s, d, actor, current) {
+  if ((current && current.groupId !== s.group.id) || (d.groupId && d.groupId !== s.group.id))
+    fail("GROUP", "Return to the original group before saving this expense.");
   const people = new Set(participants(s).map((p) => p.id));
   if (
     !people.has(actor) ||
@@ -170,7 +183,7 @@ function proposal(s, d, actor, current) {
       d.receipt.data.length > 1500000)
   )
     fail("RECEIPT", "Choose a PNG, JPEG or WebP image smaller than 1 MB.");
-  const allocation = allocationFor(d, s.group.currency);
+  const allocation = allocationFor(d, s.group.currency, s.group.exponent ?? 2);
   return {
     ...(current || {}),
     id: d.id,
@@ -193,6 +206,7 @@ function proposal(s, d, actor, current) {
   };
 }
 export function position(s, actor) {
+  if (s.gateC) return settlementBalances(s, actor, s.group?.id);
   const balances = {};
   for (const e of activeExpenses(s)) {
     const key = `${e.money.currency}:${e.money.exponent}`;
@@ -264,6 +278,7 @@ function dependencySnapshot(expenses, p) {
   };
 }
 export function guardMutation(s, current, proposed, core, now) {
+  guardCanonicalPayments(s, current, proposed);
   const env = s.gateB.environment;
   if (!Array.isArray(env.settlements))
     fail("GUARD", "Settlement dependency evidence is unavailable.");
@@ -461,7 +476,7 @@ export function transition(
   });
   s.gateB.operations[operationId] = { fingerprint, expenseId: next.id };
   s.gateB.sequence++;
-  if (type === "create" || type === "edit") delete s.gateB.drafts[actor];
+  if (type === "create" || type === "edit") delete s.gateB.drafts[draftKey(s,actor)];
   return s;
 }
 export function repository(storage, core, assertWriter = () => {}) {
@@ -475,7 +490,7 @@ export function repository(storage, core, assertWriter = () => {}) {
     read,
     saveDraft(actor, draft) {
       const s = read();
-      s.gateB.drafts[actor] = clone(draft);
+      s.gateB.drafts[draftKey(s,actor)] = clone(draft);
       return write(s);
     },
     commit(command) {
