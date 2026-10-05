@@ -1,3 +1,4 @@
+import {assertLocalSession} from '../session-guard.js';
 import { allGroups, people, resolveScope, makePlan, lowerReceiptPlan, sources, unresolved, fail } from './ledger.js';
 import { moneyFromMinorUnits } from '../money-v1.js';
 import { upgrade as upgradeExpenses } from '../gate-b/model.js';
@@ -35,6 +36,7 @@ function assertExclusive(s,p) {
 }
 export function transition(input, c, authority = 'user', now = new Date().toISOString()) {
   const s = upgrade(input), g = s.gateC;
+  assertLocalSession(s);
   if (!c.operationId) fail('OPERATION', 'An operation identity is required.');
   const fp = fingerprint({ command: c, authority });
   if (g.operations[c.operationId]) {

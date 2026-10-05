@@ -1,3 +1,4 @@
+import {routeLocalSession} from '../session-guard.js';
 import {
   requirePrototypeWriter,
   assertPrototypeWriter,
@@ -1775,6 +1776,7 @@ async function render({ focusKey } = {}) {
   const generation = ++renderGeneration;
   try {
     state = repo.read();
+    if(!routeLocalSession(state))return;
     if (!state.group) {
       app.replaceChildren(
         element(
@@ -1878,6 +1880,15 @@ async function render({ focusKey } = {}) {
         );
       expenseRoutes[route.page](e);
     } else group();
+    action('[href="#global-activity"]',()=>{location.href=`../gate-d/index.html${fixtureMode?'?fixtures=1':''}#page=activity`;});
+    action('[href="#global-you"]',()=>{location.href=`../gate-d/index.html${fixtureMode?'?fixtures=1':''}#page=account-overview`;});
+    if(['locked','duplicate','save_error','conflict'].includes(route.page)){
+      const recoveryLink=element('a','gb-recovery-link','Shared recovery');recoveryLink.href='#';recoveryLink.dataset.bound='true';recoveryLink.onclick=event=>{event.preventDefault();location.href=`../gate-d/index.html${fixtureMode?'?fixtures=1':''}#${new URLSearchParams({page:'recovery',owner:'expense',id:route.id||'',returnPage:route.page,operation:draft?.operationId||'',reason:route.page==='conflict'?'CONFLICT':route.page==='duplicate'?'DUPLICATE':'SAVE'})}`;};$('.app-content').append(recoveryLink);
+    }
+    if(sessionStorage.getItem('chopdot.gate-d.return')&&route.page==='detail'){
+      const back=element('a','gb-recovery-link','Back to Activity');back.href=`../gate-d/index.html${fixtureMode?'?fixtures=1':''}#page=${sessionStorage.getItem('chopdot.gate-d.return')==='notifications'?'notifications':'activity'}`;back.dataset.bound='true';$('.app-content').append(back);
+    }
+    if(parent!==window)parent.postMessage({type:'chopdot-gate-b-route',hash:location.hash||'#page=group'},location.origin);
     // Every remaining Golden-only link becomes an explicit boundary, never a static fixture outcome.
     for (const a of $$("a:not([data-bound])")) {
       a.onclick = (ev) => {

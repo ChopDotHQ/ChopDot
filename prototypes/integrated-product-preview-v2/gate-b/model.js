@@ -1,3 +1,4 @@
+import {assertLocalSession} from '../session-guard.js';
 import {
   moneyFromPreviewDecimal,
   moneyFromMinorUnits,
@@ -329,6 +330,7 @@ export function transition(
 ) {
   const s = upgrade(input),
     { actor, type, id, operationId } = command;
+  assertLocalSession(s);
   if (!participants(s).some((p) => p.id === actor))
     fail("PERMISSION", "This person is not in the group.");
   if (!operationId) fail("OPERATION", "An operation identity is required.");

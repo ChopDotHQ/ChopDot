@@ -1,0 +1,1276 @@
+{
+  "recovery-entry": {
+    "code": "J28-S01",
+    "eyebrow": "Shared recovery",
+    "title": "Something went wrong",
+    "lead": "Choose the failure pattern that matches what is actually known. Recovery never guesses the domain result.",
+    "facts": [
+      [
+        "Caller context",
+        "Preserved"
+      ],
+      [
+        "Replacement retry",
+        "Blocked unless proven safe"
+      ]
+    ],
+    "notice": "This is a deterministic recovery fixture. The owning journey/system still decides the real result.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Refresh current truth",
+        "to": "checking-current-truth",
+        "kind": "accent"
+      },
+      {
+        "label": "Offline before action",
+        "to": "offline-before-action",
+        "kind": "ghost"
+      },
+      {
+        "label": "Known read failure",
+        "to": "read-failed",
+        "kind": "ghost"
+      },
+      {
+        "label": "State changed elsewhere",
+        "to": "stale-detected",
+        "kind": "ghost"
+      },
+      {
+        "label": "Operation still pending",
+        "to": "operation-pending",
+        "kind": "ghost"
+      },
+      {
+        "label": "Result unknown",
+        "to": "result-unknown",
+        "kind": "ghost"
+      },
+      {
+        "label": "Partial outcome",
+        "to": "partial-result",
+        "kind": "ghost"
+      },
+      {
+        "label": "Cancel an operation",
+        "to": "cancel-review",
+        "kind": "ghost"
+      },
+      {
+        "label": "Duplicate attempt",
+        "to": "duplicate-detected",
+        "kind": "ghost"
+      },
+      {
+        "label": "Cannot proceed safely",
+        "to": "blocked-stop",
+        "kind": "ghost"
+      },
+      {
+        "label": "Original journey owner",
+        "to": "caller-owner-boundary",
+        "kind": "link"
+      },
+      {
+        "label": "Provider / network owner",
+        "to": "provider-system-boundary",
+        "kind": "link"
+      },
+      {
+        "label": "Auth / session owner",
+        "to": "auth-session-boundary",
+        "kind": "link"
+      },
+      {
+        "label": "Payment / wallet owner",
+        "to": "payment-wallet-boundary",
+        "kind": "link"
+      },
+      {
+        "label": "Storage / portability owner",
+        "to": "storage-portability-boundary",
+        "kind": "link"
+      }
+    ],
+    "status": "",
+    "back": "caller-owner-boundary"
+  },
+  "checking-current-truth": {
+    "code": "J28-S02",
+    "eyebrow": "Refreshing truth",
+    "title": "Checking the current state",
+    "lead": "Read current owner truth before deciding whether any recovery action is valid.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Read-only refresh"
+      ]
+    ],
+    "notice": "No mutation starts during this check.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Truth refreshed",
+        "to": "recovered-summary",
+        "kind": "accent"
+      },
+      {
+        "label": "Demo: stale version",
+        "to": "stale-detected",
+        "kind": "ghost"
+      }
+    ],
+    "status": "progress",
+    "back": "recovery-entry"
+  },
+  "offline-before-action": {
+    "code": "J28-S03",
+    "eyebrow": "Offline before effect",
+    "title": "Nothing has started",
+    "lead": "The app is offline before the requested operation begins.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "No effect started"
+      ]
+    ],
+    "notice": "Because no effect began, reconnecting may safely refresh without reconciliation.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Reconnect",
+        "to": "reconnecting",
+        "kind": "accent"
+      },
+      {
+        "label": "Stop safely",
+        "to": "blocked-stop",
+        "kind": "ghost"
+      }
+    ],
+    "status": "warn",
+    "back": "recovery-entry"
+  },
+  "reconnecting": {
+    "code": "J28-S04",
+    "eyebrow": "Reconnecting",
+    "title": "Restoring read access",
+    "lead": "Reconnect first, then refresh owner truth.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "No mutation"
+      ]
+    ],
+    "notice": "Reconnect is not an execution retry.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Connected · refresh truth",
+        "to": "checking-current-truth",
+        "kind": "accent"
+      }
+    ],
+    "status": "progress",
+    "back": "recovery-entry"
+  },
+  "read-failed": {
+    "code": "J28-S05",
+    "eyebrow": "Read failed before effect",
+    "title": "No operation was started",
+    "lead": "The read failed before any effect began.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Known pre-effect failure"
+      ]
+    ],
+    "notice": "Retry reloads owner truth only.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Retry loading truth",
+        "to": "checking-current-truth",
+        "kind": "accent"
+      },
+      {
+        "label": "Stop safely",
+        "to": "blocked-stop",
+        "kind": "ghost"
+      }
+    ],
+    "status": "danger",
+    "back": "recovery-entry"
+  },
+  "stale-detected": {
+    "code": "J28-S06",
+    "eyebrow": "Stale state",
+    "title": "This review is out of date",
+    "lead": "The state changed after it was reviewed.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Stale review"
+      ]
+    ],
+    "notice": "Do not replay the old action against newer truth.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Refresh owner truth",
+        "to": "refreshing-owner-truth",
+        "kind": "accent"
+      },
+      {
+        "label": "Stop safely",
+        "to": "conflict-stop",
+        "kind": "ghost"
+      }
+    ],
+    "status": "warn",
+    "back": "recovery-entry"
+  },
+  "refreshing-owner-truth": {
+    "code": "J28-S07",
+    "eyebrow": "Refreshing conflict",
+    "title": "Getting the newer state",
+    "lead": "Fetch the latest owner truth before any new decision.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Refreshing"
+      ]
+    ],
+    "notice": "The old review remains invalid.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Show current truth",
+        "to": "conflict-current",
+        "kind": "accent"
+      }
+    ],
+    "status": "progress",
+    "back": "recovery-entry"
+  },
+  "conflict-current": {
+    "code": "J28-S08",
+    "eyebrow": "Conflict resolved to current truth",
+    "title": "Use the newer state",
+    "lead": "The old action was not replayed. Current owner truth is preserved.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Newer owner truth loaded"
+      ],
+      [
+        "Old reviewed action",
+        "Not applied"
+      ]
+    ],
+    "notice": "A fresh product decision belongs to the owning journey.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Return with current truth",
+        "to": "recovered-summary",
+        "kind": "accent"
+      },
+      {
+        "label": "Stop here",
+        "to": "conflict-stop",
+        "kind": "ghost"
+      }
+    ],
+    "status": "",
+    "back": "recovery-entry"
+  },
+  "conflict-stop": {
+    "code": "J28-S09",
+    "eyebrow": "Stopped safely",
+    "title": "Newer truth preserved",
+    "lead": "Recovery stops without replaying the stale action.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Stopped · no replay"
+      ]
+    ],
+    "notice": "Resume later by refreshing owner truth first.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Recovery summary",
+        "to": "recovered-summary",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "recovery-entry"
+  },
+  "operation-pending": {
+    "code": "J28-S10",
+    "eyebrow": "Operation pending",
+    "title": "Wait or reconcile this operation",
+    "lead": "The owner still reports the original operation as pending.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Pending"
+      ]
+    ],
+    "notice": "A replacement retry is blocked while the original operation may still complete.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check same operation",
+        "to": "reconcile-checking",
+        "kind": "accent"
+      },
+      {
+        "label": "Stop without guessing",
+        "to": "blocked-stop",
+        "kind": "ghost"
+      }
+    ],
+    "status": "warn",
+    "back": "recovery-entry"
+  },
+  "result-unknown": {
+    "code": "J28-S11",
+    "eyebrow": "Result unknown",
+    "title": "Do not guess what happened",
+    "lead": "The effect may have started, but success or failure is not proven.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Unknown result"
+      ]
+    ],
+    "notice": "Keep this operation reference. Do not create a replacement yet.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check same operation",
+        "to": "reconcile-checking",
+        "kind": "accent"
+      },
+      {
+        "label": "Stop without guessing",
+        "to": "blocked-stop",
+        "kind": "ghost"
+      },
+      {
+        "label": "Provider context",
+        "to": "provider-system-boundary",
+        "kind": "link"
+      }
+    ],
+    "status": "warn",
+    "back": "recovery-entry"
+  },
+  "reconcile-checking": {
+    "code": "J28-S12",
+    "eyebrow": "Same-operation reconciliation",
+    "title": "Checking OP-28-DEMO",
+    "lead": "Ask the owner for the status of this exact operation/context.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Reconciling same operation"
+      ]
+    ],
+    "notice": "This check cannot create a second effect.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: still pending",
+        "to": "reconcile-pending",
+        "kind": "ghost"
+      },
+      {
+        "label": "Demo: succeeded",
+        "to": "reconcile-success",
+        "kind": "accent"
+      },
+      {
+        "label": "Demo: failed",
+        "to": "reconcile-failed",
+        "kind": "ghost"
+      },
+      {
+        "label": "Demo: no operation exists",
+        "to": "reconcile-not-found",
+        "kind": "ghost"
+      },
+      {
+        "label": "Provider unavailable",
+        "to": "provider-system-boundary",
+        "kind": "link"
+      }
+    ],
+    "status": "progress",
+    "back": "recovery-entry"
+  },
+  "reconcile-pending": {
+    "code": "J28-S13",
+    "eyebrow": "Reconciliation result",
+    "title": "Original operation still pending",
+    "lead": "The owner found the same operation and it is not final yet.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Pending confirmed"
+      ]
+    ],
+    "notice": "Keep waiting or check this same operation later. Replacement retry stays blocked.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check again",
+        "to": "reconcile-checking",
+        "kind": "accent"
+      },
+      {
+        "label": "Stop without guessing",
+        "to": "blocked-stop",
+        "kind": "ghost"
+      }
+    ],
+    "status": "warn",
+    "back": "recovery-entry"
+  },
+  "reconcile-success": {
+    "code": "J28-S14",
+    "eyebrow": "Reconciliation result",
+    "title": "Original operation succeeded",
+    "lead": "The owner verified success for the same operation.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Verified success"
+      ]
+    ],
+    "notice": "J28 returns the verified fact; the owning journey renders its domain result.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Recovery summary",
+        "to": "recovered-summary",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "recovery-entry"
+  },
+  "reconcile-failed": {
+    "code": "J28-S15",
+    "eyebrow": "Reconciliation result",
+    "title": "Original operation failed",
+    "lead": "The owner verified failure for the same operation.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Verified failure"
+      ]
+    ],
+    "notice": "Any future retry belongs to the owner contract; J28 does not auto-replay it.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Recovery summary",
+        "to": "recovered-summary",
+        "kind": "accent"
+      },
+      {
+        "label": "Return to owner",
+        "to": "owner-return-boundary",
+        "kind": "ghost"
+      }
+    ],
+    "status": "danger",
+    "back": "recovery-entry"
+  },
+  "reconcile-not-found": {
+    "code": "J28-S16",
+    "eyebrow": "Reconciliation result",
+    "title": "No effect was found",
+    "lead": "The owner verified that the original operation/effect does not exist.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "No effect proved"
+      ]
+    ],
+    "notice": "Only now may a replacement retry be reviewed explicitly.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Review safe retry",
+        "to": "safe-retry-review",
+        "kind": "accent"
+      },
+      {
+        "label": "Stop safely",
+        "to": "blocked-stop",
+        "kind": "ghost"
+      }
+    ],
+    "status": "success",
+    "back": "recovery-entry"
+  },
+  "safe-retry-review": {
+    "code": "J28-S17",
+    "eyebrow": "Safe retry · review",
+    "title": "Start one replacement attempt?",
+    "lead": "Reconciliation proved no prior effect. Review the replacement before starting it.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Replacement eligible"
+      ],
+      [
+        "Previous effect",
+        "Proven absent"
+      ]
+    ],
+    "notice": "This creates one new replacement operation in the fixture only.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Start replacement",
+        "to": "retrying",
+        "kind": "accent"
+      },
+      {
+        "label": "Cancel retry",
+        "to": "blocked-stop",
+        "kind": "ghost"
+      }
+    ],
+    "status": "",
+    "back": "recovery-entry"
+  },
+  "retrying": {
+    "code": "J28-S18",
+    "eyebrow": "Safe retry",
+    "title": "Replacement in progress",
+    "lead": "One explicit replacement operation is now in progress.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Replacement running"
+      ],
+      [
+        "Retry count",
+        "1"
+      ]
+    ],
+    "notice": "Do not start another replacement while this one is unresolved.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: replacement verified",
+        "to": "retry-success",
+        "kind": "accent"
+      }
+    ],
+    "status": "progress",
+    "back": "recovery-entry"
+  },
+  "retry-success": {
+    "code": "J28-S19",
+    "eyebrow": "Safe retry verified",
+    "title": "Replacement succeeded",
+    "lead": "The fixture verified the replacement outcome.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Replacement verified"
+      ],
+      [
+        "Retry count",
+        "1"
+      ]
+    ],
+    "notice": "Production success still belongs to the owning journey/system.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Recovery summary",
+        "to": "recovered-summary",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "recovery-entry"
+  },
+  "partial-result": {
+    "code": "J28-S20",
+    "eyebrow": "Partial outcome",
+    "title": "Some truth is known, some is not",
+    "lead": "A required part is verified while another remains unresolved.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Partial"
+      ],
+      [
+        "Verified piece",
+        "Recorded"
+      ],
+      [
+        "Unresolved piece",
+        "Needs reconciliation"
+      ]
+    ],
+    "notice": "Do not call the whole operation successful and do not replay it.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Reconcile remaining part",
+        "to": "partial-reconcile",
+        "kind": "accent"
+      },
+      {
+        "label": "Stop with partial truth",
+        "to": "partial-stop",
+        "kind": "ghost"
+      }
+    ],
+    "status": "warn",
+    "back": "recovery-entry"
+  },
+  "partial-reconcile": {
+    "code": "J28-S21",
+    "eyebrow": "Partial reconciliation",
+    "title": "Checking the unresolved remainder",
+    "lead": "Reconcile the same operation/context for the missing piece.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Partial · reconciling"
+      ]
+    ],
+    "notice": "No replacement retry is available while any possible effect remains unresolved.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: remainder verified",
+        "to": "partial-resolved",
+        "kind": "accent"
+      },
+      {
+        "label": "Stop with partial truth",
+        "to": "partial-stop",
+        "kind": "ghost"
+      }
+    ],
+    "status": "progress",
+    "back": "recovery-entry"
+  },
+  "partial-resolved": {
+    "code": "J28-S22",
+    "eyebrow": "Partial recovery complete",
+    "title": "Remaining truth verified",
+    "lead": "The unresolved remainder is now verified.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Resolved"
+      ]
+    ],
+    "notice": "Return the complete verified context to the owner.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Recovery summary",
+        "to": "recovered-summary",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "recovery-entry"
+  },
+  "partial-stop": {
+    "code": "J28-S23",
+    "eyebrow": "Stopped with partial truth",
+    "title": "Known and unresolved pieces preserved",
+    "lead": "Recovery stops without collapsing the partial outcome.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Partial · stopped"
+      ],
+      [
+        "Verified piece",
+        "Preserved"
+      ],
+      [
+        "Unresolved piece",
+        "Preserved"
+      ]
+    ],
+    "notice": "Resume later by reconciling this same operation/context.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Support context",
+        "to": "support-context",
+        "kind": "accent"
+      }
+    ],
+    "status": "warn",
+    "back": "recovery-entry"
+  },
+  "cancel-review": {
+    "code": "J28-S24",
+    "eyebrow": "Cancellation · review",
+    "title": "Request cancellation?",
+    "lead": "A cancellation request is not proof that the operation has been cancelled.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Active / cancellable fixture"
+      ]
+    ],
+    "notice": "If the request is too late or uncertain, reconcile the original operation.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Request cancellation",
+        "to": "cancel-pending",
+        "kind": "accent"
+      },
+      {
+        "label": "Keep operation",
+        "to": "operation-pending",
+        "kind": "ghost"
+      }
+    ],
+    "status": "",
+    "back": "recovery-entry"
+  },
+  "cancel-pending": {
+    "code": "J28-S25",
+    "eyebrow": "Cancellation requested",
+    "title": "Waiting for cancellation result",
+    "lead": "The cancellation request was sent, but the original operation remains unresolved.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Cancel pending"
+      ]
+    ],
+    "notice": "Do not show “cancelled” until the owner verifies it.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Demo: cancelled",
+        "to": "cancelled-verified",
+        "kind": "accent"
+      },
+      {
+        "label": "Demo: too late",
+        "to": "cancel-too-late",
+        "kind": "ghost"
+      },
+      {
+        "label": "Stop without guessing",
+        "to": "blocked-stop",
+        "kind": "ghost"
+      }
+    ],
+    "status": "warn",
+    "back": "recovery-entry"
+  },
+  "cancelled-verified": {
+    "code": "J28-S26",
+    "eyebrow": "Cancellation verified",
+    "title": "Operation cancelled",
+    "lead": "The owner verified cancellation before the effect became final.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Verified cancelled"
+      ]
+    ],
+    "notice": "This is a recovery result, not a fabricated domain success.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Recovery summary",
+        "to": "recovered-summary",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "recovery-entry"
+  },
+  "cancel-too-late": {
+    "code": "J28-S27",
+    "eyebrow": "Cancellation not confirmed",
+    "title": "Check the original operation",
+    "lead": "The cancellation request was too late or cannot be trusted as the final result.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Original outcome unresolved"
+      ]
+    ],
+    "notice": "Reconcile the original operation; do not assume cancelled.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Reconcile original operation",
+        "to": "reconcile-checking",
+        "kind": "accent"
+      }
+    ],
+    "status": "warn",
+    "back": "recovery-entry"
+  },
+  "duplicate-detected": {
+    "code": "J28-S28",
+    "eyebrow": "Duplicate detected",
+    "title": "This operation already exists",
+    "lead": "The same operation/request was already created.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Duplicate / existing operation"
+      ]
+    ],
+    "notice": "Open or reconcile the existing operation instead of creating a second effect.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Open existing operation",
+        "to": "existing-result",
+        "kind": "accent"
+      }
+    ],
+    "status": "warn",
+    "back": "recovery-entry"
+  },
+  "existing-result": {
+    "code": "J28-S29",
+    "eyebrow": "Existing operation",
+    "title": "Use the existing result",
+    "lead": "The fixture opened the existing operation/context without creating another.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Existing operation"
+      ],
+      [
+        "Second effect",
+        "Not created"
+      ]
+    ],
+    "notice": "If unresolved, reconcile this same operation.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Check existing operation",
+        "to": "reconcile-checking",
+        "kind": "accent"
+      },
+      {
+        "label": "Existing result already final",
+        "to": "recovered-summary",
+        "kind": "ghost"
+      }
+    ],
+    "status": "",
+    "back": "recovery-entry"
+  },
+  "blocked-stop": {
+    "code": "J28-S30",
+    "eyebrow": "Safe stop",
+    "title": "No further action taken",
+    "lead": "Recovery cannot proceed safely with the current evidence.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Stopped without guessing"
+      ]
+    ],
+    "notice": "The last verified facts and operation reference are preserved.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "View support context",
+        "to": "support-context",
+        "kind": "accent"
+      },
+      {
+        "label": "Start over from current truth",
+        "to": "recovery-entry",
+        "kind": "ghost"
+      }
+    ],
+    "status": "warn",
+    "back": "recovery-entry"
+  },
+  "support-context": {
+    "code": "J28-S31",
+    "eyebrow": "Support context",
+    "title": "Share only non-secret recovery details",
+    "lead": "Use the operation reference and recovery state without exposing credentials or sensitive payloads.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Support-ready context"
+      ],
+      [
+        "Secrets / keys",
+        "Excluded"
+      ],
+      [
+        "Sensitive payloads",
+        "Excluded"
+      ]
+    ],
+    "notice": "Support context does not authorize a retry or external action.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Back to recovery",
+        "to": "recovery-entry",
+        "kind": "accent"
+      },
+      {
+        "label": "Original journey owner",
+        "to": "caller-owner-boundary",
+        "kind": "ghost"
+      }
+    ],
+    "status": "",
+    "back": "recovery-entry"
+  },
+  "recovered-summary": {
+    "code": "J28-S32",
+    "eyebrow": "Recovery summary",
+    "title": "Verified truth is ready to return",
+    "lead": "The shared recovery layer has a safe outcome or safe next step.",
+    "facts": [
+      [
+        "Operation reference",
+        "OP-28-DEMO"
+      ],
+      [
+        "Current recovery truth",
+        "Recovery complete"
+      ],
+      [
+        "Domain result owner",
+        "Original journey/system"
+      ]
+    ],
+    "notice": "Returning does not manufacture the owner journey’s success screen.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Return to owning journey",
+        "to": "owner-return-boundary",
+        "kind": "accent"
+      },
+      {
+        "label": "Start new fixture recovery case",
+        "to": "recovery-entry",
+        "kind": "ghost"
+      }
+    ],
+    "status": "success",
+    "back": "recovery-entry"
+  },
+  "caller-owner-boundary": {
+    "code": "J28-B01",
+    "eyebrow": "Owner boundary",
+    "title": "Original journey owns the domain result",
+    "lead": "J28 carries recovery context, but the caller owns balances, groups, expenses, requests, settlement, account or other domain truth.",
+    "facts": [
+      [
+        "Boundary type",
+        "ChopDot journey owner"
+      ],
+      [
+        "J28 authority",
+        "Recovery grammar only"
+      ]
+    ],
+    "notice": "No prior Golden is redesigned here.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Back to recovery",
+        "to": "recovery-entry",
+        "kind": "accent"
+      }
+    ],
+    "status": "",
+    "back": "recovery-entry"
+  },
+  "provider-system-boundary": {
+    "code": "J28-B02",
+    "eyebrow": "System boundary",
+    "title": "Provider / network owner",
+    "lead": "Availability, acceptance, finality and provider-side truth must be read from the real owner.",
+    "facts": [
+      [
+        "Boundary type",
+        "Provider / network"
+      ],
+      [
+        "J28 effect",
+        "None"
+      ]
+    ],
+    "notice": "J28 cannot infer provider success or failure from a UI timeout.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Back to same-operation check",
+        "to": "reconcile-checking",
+        "kind": "accent"
+      },
+      {
+        "label": "Back to recovery",
+        "to": "recovery-entry",
+        "kind": "ghost"
+      }
+    ],
+    "status": "",
+    "back": "recovery-entry"
+  },
+  "auth-session-boundary": {
+    "code": "J28-B03",
+    "eyebrow": "Owner boundary",
+    "title": "Authentication / session owner",
+    "lead": "Reauthentication and session restoration remain outside J28.",
+    "facts": [
+      [
+        "Boundary type",
+        "Auth / session"
+      ],
+      [
+        "J28 effect",
+        "No sign-in"
+      ]
+    ],
+    "notice": "Recovery may preserve context but cannot create a signed-in session.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Back to recovery",
+        "to": "recovery-entry",
+        "kind": "accent"
+      }
+    ],
+    "status": "",
+    "back": "recovery-entry"
+  },
+  "payment-wallet-boundary": {
+    "code": "J28-B04",
+    "eyebrow": "Owner boundary",
+    "title": "Payment / wallet / signing owner",
+    "lead": "Payment authorization, wallet signing, settlement and chain effects remain with their owners.",
+    "facts": [
+      [
+        "Boundary type",
+        "Payment / wallet"
+      ],
+      [
+        "J28 effect",
+        "No signing or settlement"
+      ]
+    ],
+    "notice": "Recovery explains uncertainty; it does not authorize or submit value movement.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Back to recovery",
+        "to": "recovery-entry",
+        "kind": "accent"
+      }
+    ],
+    "status": "",
+    "back": "recovery-entry"
+  },
+  "storage-portability-boundary": {
+    "code": "J28-B05",
+    "eyebrow": "Owner boundary",
+    "title": "Storage / import / export owner",
+    "lead": "Persistence, portability, remote files and erasure claims remain with J23–J25 or the external storage owner.",
+    "facts": [
+      [
+        "Boundary type",
+        "Storage / portability"
+      ],
+      [
+        "J28 effect",
+        "No remote write or erase"
+      ]
+    ],
+    "notice": "J28 can reconcile context but cannot claim external persistence or deletion.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Back to recovery",
+        "to": "recovery-entry",
+        "kind": "accent"
+      }
+    ],
+    "status": "",
+    "back": "recovery-entry"
+  },
+  "owner-return-boundary": {
+    "code": "J28-B06",
+    "eyebrow": "Owner return",
+    "title": "Return verified recovery context",
+    "lead": "The owning journey receives the verified fact or safe next step and renders its own domain UI.",
+    "facts": [
+      [
+        "Boundary type",
+        "Return handoff"
+      ],
+      [
+        "J28 claim",
+        "No domain success screen"
+      ]
+    ],
+    "notice": "This is the end of J28 authority.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Start new fixture recovery case",
+        "to": "recovery-entry",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "recovery-entry"
+  }
+}

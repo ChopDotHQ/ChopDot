@@ -1,0 +1,103 @@
+{
+  "authority": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "schema": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "base": "86993a3c3aca715b44bbdc235d9691ee26404a92",
+  "files": [
+    {
+      "source": "prototypes/experience-workbench/journeys/18-activity-notifications/v1.1-continuity-candidate.html",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "goldens/j18.html",
+      "sha256": "d42b518c14fe7c57b2df56c0e92f0ad63424b9971f294ac10df647a0e2cab08e"
+    },
+    {
+      "source": "prototypes/experience-workbench/journeys/18-activity-notifications/spec.md",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "authority/j18-spec.md",
+      "sha256": "3591bccf4f9c34ce8d9ee9941fc6bfe5b351cdbb03defcdd479ef934e76d8c3d"
+    },
+    {
+      "source": "prototypes/experience-workbench/journeys/18-activity-notifications/STATE_INVENTORY.md",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "authority/j18-STATE_INVENTORY.md",
+      "sha256": "4d74ae35d3ee6765bd8dc6fdc00589a08c844092ee989c4dc2462035db51ecd8"
+    },
+    {
+      "source": "prototypes/experience-workbench/journeys/18-activity-notifications/EDGE_CASES.md",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "authority/j18-EDGE_CASES.md",
+      "sha256": "eb757a1c5f3ae89dc59f52b8629defd5f3c95f5cd6e4ea3d6f5b1f6a1e109b49"
+    },
+    {
+      "source": "prototypes/experience-workbench/journeys/27-account-preferences/v1-candidate.html",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "goldens/j27.html",
+      "sha256": "64b730ee19a8713826868af6ca4b39b33d0c48c128b2fce2e90c7beec1dfa560"
+    },
+    {
+      "source": "prototypes/experience-workbench/journeys/27-account-preferences/spec.md",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "authority/j27-spec.md",
+      "sha256": "86542d4876bdaa5a714c02ae08cd95e8eb3fa556296422c21f867b1445b1e408"
+    },
+    {
+      "source": "prototypes/experience-workbench/journeys/27-account-preferences/STATE_INVENTORY.md",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "authority/j27-STATE_INVENTORY.md",
+      "sha256": "bd5bb45862556c25197960f8abd602864de1a0ba39b7cf9d98bd04ea698438a9"
+    },
+    {
+      "source": "prototypes/experience-workbench/journeys/27-account-preferences/EDGE_CASES.md",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "authority/j27-EDGE_CASES.md",
+      "sha256": "3f2e08e1698587dc5399db0d401fd573ff48557ae93b9833ec8d88ca524eb8d2"
+    },
+    {
+      "source": "prototypes/experience-workbench/journeys/27-account-preferences/phase-c1-consumer-contract.md",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "authority/j27-phase-c1-consumer-contract.md",
+      "sha256": "9ae79ec024d4f99558271f9f23a1a05d45f2569d6f82a1a8317735f1afabb89c"
+    },
+    {
+      "source": "prototypes/experience-workbench/journeys/28-failure-recovery/v1-candidate.html",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "goldens/j28.html",
+      "sha256": "7ef254016da0755860fd0ede62840e7668d40406fdac850aad8c5e0ac4d12dfc"
+    },
+    {
+      "source": "prototypes/experience-workbench/journeys/28-failure-recovery/spec.md",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "authority/j28-spec.md",
+      "sha256": "428cbb05a0f4248cbadd86cd23748e90bd1c1533b9084f414cf6169b95ca029b"
+    },
+    {
+      "source": "prototypes/experience-workbench/journeys/28-failure-recovery/STATE_INVENTORY.md",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "authority/j28-STATE_INVENTORY.md",
+      "sha256": "b1df7229727669a7730fd38d5a0a324ebe6b37694b8f5bd9240e53b4b41bf2f0"
+    },
+    {
+      "source": "prototypes/experience-workbench/journeys/28-failure-recovery/EDGE_CASES.md",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "authority/j28-EDGE_CASES.md",
+      "sha256": "b0c574598fd71a9ca5d6c67db253532dfc45f9bcb953ac19958463463097d400"
+    },
+    {
+      "source": "prototypes/experience-workbench/registry/approvals/18-v1.1.json",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "authority/approval-18-v1.1.json",
+      "sha256": "76c750ce64b11b254cee6bfc7f9adff70e43adbfe9465ca0bb8b89ea97bc35a0"
+    },
+    {
+      "source": "prototypes/experience-workbench/registry/approvals/27-v1.json",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "authority/approval-27-v1.json",
+      "sha256": "ac9ae5e071810a985724c4d9f734cc0f834804379261498a27e5c22d140afdcc"
+    },
+    {
+      "source": "prototypes/experience-workbench/registry/approvals/28-v1.json",
+      "ref": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "file": "authority/approval-28-v1.json",
+      "sha256": "8e9837b1538fdb9290ce6a54f7474782eb2394d809c49a245d078b4f7a1b2170"
+    }
+  ]
+}

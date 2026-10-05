@@ -1,0 +1,2174 @@
+{
+  "account-entry": {
+    "code": "J27-S01",
+    "eyebrow": "You · account",
+    "title": "Your account",
+    "lead": "Refresh current account and session truth before changing anything.",
+    "facts": [
+      [
+        "Display name",
+        "Devinson"
+      ],
+      [
+        "Session",
+        "Signed in"
+      ],
+      [
+        "Saved appearance",
+        "System"
+      ]
+    ],
+    "notice": "Cached facts can be shown, but writes require fresh account/session truth.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Open account settings",
+        "to": "account-loading",
+        "kind": "accent"
+      },
+      {
+        "label": "Demo: offline",
+        "to": "account-offline",
+        "kind": "ghost"
+      },
+      {
+        "label": "Demo: load failed",
+        "to": "account-load-failed",
+        "kind": "link"
+      }
+    ],
+    "status": "",
+    "back": "you-home-boundary"
+  },
+  "account-loading": {
+    "code": "J27-S02",
+    "eyebrow": "Checking account truth",
+    "title": "Loading account",
+    "lead": "Current profile, preference version and session status are being refreshed.",
+    "facts": [
+      [
+        "Mutation",
+        "None"
+      ],
+      [
+        "Cached state",
+        "Not authority"
+      ]
+    ],
+    "notice": "Wait for fresh truth before editing.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Loaded",
+        "to": "account-overview",
+        "kind": "accent"
+      }
+    ],
+    "status": "progress",
+    "back": "you-home-boundary"
+  },
+  "account-offline": {
+    "code": "J27-S03",
+    "eyebrow": "Offline",
+    "title": "Saved account view is read-only",
+    "lead": "Last-known preferences remain understandable, but account writes are unavailable.",
+    "facts": [
+      [
+        "Saved name",
+        "Devinson"
+      ],
+      [
+        "Saved theme",
+        "System"
+      ],
+      [
+        "Writes",
+        "Unavailable offline"
+      ]
+    ],
+    "notice": "Reconnect and refresh before changing profile, preferences, session, or deletion state.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Reconnect and refresh",
+        "to": "account-loading",
+        "kind": "accent"
+      },
+      {
+        "label": "Return to You",
+        "to": "you-home-boundary",
+        "kind": "ghost"
+      }
+    ],
+    "status": "warn",
+    "back": "you-home-boundary"
+  },
+  "account-load-failed": {
+    "code": "J27-S04",
+    "eyebrow": "Could not refresh",
+    "title": "Account truth is not current",
+    "lead": "The read failed before any account operation began.",
+    "facts": [
+      [
+        "Account write",
+        "None"
+      ],
+      [
+        "Cached state",
+        "Not used as authority"
+      ]
+    ],
+    "notice": "Retry only reloads current truth.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Retry loading",
+        "to": "account-loading",
+        "kind": "accent"
+      },
+      {
+        "label": "Return to You",
+        "to": "you-home-boundary",
+        "kind": "ghost"
+      }
+    ],
+    "status": "danger",
+    "back": "you-home-boundary"
+  },
+  "account-overview": {
+    "code": "J27-S05",
+    "eyebrow": "You · signed in",
+    "title": "Account & preferences",
+    "lead": "Manage your profile and app preferences without changing money, group, wallet, or chain truth.",
+    "facts": [
+      [
+        "Display name",
+        "Devinson"
+      ],
+      [
+        "Notifications",
+        "Activity on"
+      ],
+      [
+        "Appearance",
+        "System"
+      ],
+      [
+        "Session",
+        "This device active"
+      ]
+    ],
+    "notice": "Account settings cannot manufacture identity-provider, wallet, payment, group-owner, or signing authority.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Profile",
+        "to": "profile-overview",
+        "kind": "primary"
+      },
+      {
+        "label": "Notifications",
+        "to": "notifications-overview",
+        "kind": "ghost"
+      },
+      {
+        "label": "Appearance",
+        "to": "appearance-overview",
+        "kind": "ghost"
+      },
+      {
+        "label": "Security",
+        "to": "security-overview",
+        "kind": "ghost"
+      },
+      {
+        "label": "Delete account",
+        "to": "deletion-entry",
+        "kind": "danger"
+      }
+    ],
+    "status": "",
+    "back": "you-home-boundary"
+  },
+  "profile-overview": {
+    "code": "J27-S06",
+    "eyebrow": "Profile",
+    "title": "Display identity",
+    "lead": "Your ChopDot display name is presentation, not cryptographic identity.",
+    "facts": [
+      [
+        "Display name",
+        "Devinson"
+      ],
+      [
+        "Account identity",
+        "Unchanged by display name"
+      ],
+      [
+        "History attribution",
+        "Preserved"
+      ]
+    ],
+    "notice": "Changing this name does not change wallets, personhood, groups, balances, or prior history.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Edit display name",
+        "to": "profile-edit",
+        "kind": "accent"
+      },
+      {
+        "label": "Back to account",
+        "to": "account-overview",
+        "kind": "ghost"
+      }
+    ],
+    "status": "",
+    "back": "account-overview"
+  },
+  "profile-edit": {
+    "code": "J27-S07",
+    "eyebrow": "Profile · draft",
+    "title": "Edit display name",
+    "lead": "Prepare a reversible draft before saving.",
+    "facts": [
+      [
+        "Saved name",
+        "Devinson"
+      ],
+      [
+        "Draft",
+        "Dev Peña"
+      ]
+    ],
+    "notice": "Draft text is not persisted truth.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Review Dev Peña",
+        "to": "profile-review",
+        "kind": "accent"
+      },
+      {
+        "label": "Demo: invalid name",
+        "to": "profile-invalid",
+        "kind": "ghost"
+      },
+      {
+        "label": "Cancel",
+        "to": "profile-cancelled",
+        "kind": "link"
+      }
+    ],
+    "status": "",
+    "back": "account-overview"
+  },
+  "profile-invalid": {
+    "code": "J27-S08",
+    "eyebrow": "Profile · validation",
+    "title": "That name cannot be saved",
+    "lead": "The draft is blank, too long, or otherwise invalid before any write begins.",
+    "facts": [
+      [
+        "Write started",
+        "No"
+      ],
+      [
+        "Saved name",
+        "Devinson"
+      ]
+    ],
+    "notice": "Fix the draft; no profile mutation occurred.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Edit draft",
+        "to": "profile-edit",
+        "kind": "accent"
+      }
+    ],
+    "status": "danger",
+    "back": "account-overview"
+  },
+  "profile-review": {
+    "code": "J27-S09",
+    "eyebrow": "Profile · review",
+    "title": "Save Dev Peña?",
+    "lead": "Review the exact display-only change.",
+    "facts": [
+      [
+        "Current",
+        "Devinson"
+      ],
+      [
+        "New",
+        "Dev Peña"
+      ],
+      [
+        "Wallet / account id",
+        "Unchanged"
+      ],
+      [
+        "History",
+        "Unchanged"
+      ]
+    ],
+    "notice": "The save is version-checked. A newer profile version will not be overwritten silently.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Save display name",
+        "to": "profile-saving",
+        "kind": "accent"
+      },
+      {
+        "label": "Demo: stale version",
+        "to": "profile-conflict",
+        "kind": "ghost"
+      },
+      {
+        "label": "Cancel",
+        "to": "profile-cancelled",
+        "kind": "link"
+      }
+    ],
+    "status": "",
+    "back": "account-overview"
+  },
+  "profile-saving": {
+    "code": "J27-S10",
+    "eyebrow": "Profile · saving",
+    "title": "Saving display name",
+    "lead": "One version-bound profile operation is in progress.",
+    "facts": [
+      [
+        "Operation",
+        "PROFILE-27-A"
+      ],
+      [
+        "Replacement retry",
+        "Blocked while pending"
+      ]
+    ],
+    "notice": "Do not start a second save while this operation is unresolved.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: saved",
+        "to": "profile-saved",
+        "kind": "accent"
+      },
+      {
+        "label": "Demo: known failure",
+        "to": "profile-failed",
+        "kind": "ghost"
+      },
+      {
+        "label": "Demo: result unknown",
+        "to": "profile-unknown",
+        "kind": "ghost"
+      }
+    ],
+    "status": "progress",
+    "back": "account-overview"
+  },
+  "profile-saved": {
+    "code": "J27-S11",
+    "eyebrow": "Profile · verified",
+    "title": "Display name saved",
+    "lead": "The fixture now treats Dev Peña as the current display name.",
+    "facts": [
+      [
+        "Display name",
+        "Dev Peña"
+      ],
+      [
+        "Account identity",
+        "Unchanged"
+      ],
+      [
+        "Money / groups",
+        "Unchanged"
+      ]
+    ],
+    "notice": "Verified profile save only; no external identity-provider claim.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Back to profile",
+        "to": "profile-overview",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "account-overview"
+  },
+  "profile-conflict": {
+    "code": "J27-S12",
+    "eyebrow": "Profile · conflict",
+    "title": "Profile changed elsewhere",
+    "lead": "The reviewed version is stale and was not overwritten.",
+    "facts": [
+      [
+        "Write",
+        "Not applied"
+      ],
+      [
+        "Current truth",
+        "Refresh required"
+      ]
+    ],
+    "notice": "Refresh current profile truth before reviewing a new change.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Refresh profile",
+        "to": "profile-overview",
+        "kind": "accent"
+      }
+    ],
+    "status": "warn",
+    "back": "account-overview"
+  },
+  "profile-failed": {
+    "code": "J27-S13",
+    "eyebrow": "Profile · failed",
+    "title": "Display name was not saved",
+    "lead": "The operation failed with a known no-effect result.",
+    "facts": [
+      [
+        "Saved name",
+        "Devinson"
+      ],
+      [
+        "Effect",
+        "None"
+      ]
+    ],
+    "notice": "A fresh retry is safe because no effect occurred.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Try again",
+        "to": "profile-review",
+        "kind": "accent"
+      }
+    ],
+    "status": "danger",
+    "back": "account-overview"
+  },
+  "profile-unknown": {
+    "code": "J27-S14",
+    "eyebrow": "Profile · result unknown",
+    "title": "Still checking the save",
+    "lead": "The request may have reached persistence, so ChopDot will not start a replacement save.",
+    "facts": [
+      [
+        "Operation",
+        "PROFILE-27-A"
+      ],
+      [
+        "Replacement retry",
+        "Blocked"
+      ]
+    ],
+    "notice": "Reconcile this same operation identity first.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check this save",
+        "to": "profile-reconciling",
+        "kind": "accent"
+      }
+    ],
+    "status": "warn",
+    "back": "account-overview"
+  },
+  "profile-reconciling": {
+    "code": "J27-S15",
+    "eyebrow": "Profile · reconciliation",
+    "title": "Checking PROFILE-27-A",
+    "lead": "Current profile truth is being compared with the existing operation.",
+    "facts": [
+      [
+        "New operation",
+        "No"
+      ],
+      [
+        "Possible result",
+        "Saved / no effect / still unknown"
+      ]
+    ],
+    "notice": "Reconciliation never creates a second profile write.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Found saved",
+        "to": "profile-saved",
+        "kind": "accent"
+      },
+      {
+        "label": "Proved no effect",
+        "to": "profile-no-effect-retry",
+        "kind": "ghost"
+      },
+      {
+        "label": "Still unknown",
+        "to": "profile-unknown",
+        "kind": "link"
+      }
+    ],
+    "status": "progress",
+    "back": "account-overview"
+  },
+  "profile-no-effect-retry": {
+    "code": "J27-S16",
+    "eyebrow": "Profile · safe retry",
+    "title": "No profile effect found",
+    "lead": "Reconciliation proved PROFILE-27-A did not change the profile.",
+    "facts": [
+      [
+        "Saved name",
+        "Devinson"
+      ],
+      [
+        "Fresh retry",
+        "Allowed"
+      ]
+    ],
+    "notice": "A new save can now be reviewed deliberately.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Review retry",
+        "to": "profile-review",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "account-overview"
+  },
+  "profile-cancelled": {
+    "code": "J27-S17",
+    "eyebrow": "Profile · cancelled",
+    "title": "Display-name edit cancelled",
+    "lead": "The draft was abandoned before a write began.",
+    "facts": [
+      [
+        "Saved name",
+        "Devinson"
+      ],
+      [
+        "Write",
+        "None"
+      ]
+    ],
+    "notice": "Cancellation does not change current profile truth.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Back to profile",
+        "to": "profile-overview",
+        "kind": "accent"
+      }
+    ],
+    "status": "neutral",
+    "back": "account-overview"
+  },
+  "notifications-overview": {
+    "code": "J27-S18",
+    "eyebrow": "Notifications",
+    "title": "Notification preferences",
+    "lead": "Choose what ChopDot should try to notify you about; OS permission remains separate.",
+    "facts": [
+      [
+        "Activity updates",
+        "On"
+      ],
+      [
+        "Reminders",
+        "On"
+      ],
+      [
+        "OS push permission",
+        "Not granted in fixture"
+      ]
+    ],
+    "notice": "An app preference cannot grant device notification permission.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Edit notifications",
+        "to": "notifications-edit",
+        "kind": "accent"
+      },
+      {
+        "label": "Back to account",
+        "to": "account-overview",
+        "kind": "ghost"
+      }
+    ],
+    "status": "",
+    "back": "account-overview"
+  },
+  "notifications-edit": {
+    "code": "J27-S19",
+    "eyebrow": "Notifications · draft",
+    "title": "Edit preferences",
+    "lead": "Draft: activity on, reminders off, push on.",
+    "facts": [
+      [
+        "Saved activity",
+        "On"
+      ],
+      [
+        "Draft reminders",
+        "Off"
+      ],
+      [
+        "Draft push preference",
+        "On"
+      ]
+    ],
+    "notice": "Draft preferences are not effective until saved.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Review changes",
+        "to": "notifications-review",
+        "kind": "accent"
+      },
+      {
+        "label": "Cancel",
+        "to": "notifications-cancelled",
+        "kind": "link"
+      }
+    ],
+    "status": "",
+    "back": "account-overview"
+  },
+  "notifications-review": {
+    "code": "J27-S20",
+    "eyebrow": "Notifications · review",
+    "title": "Save notification changes?",
+    "lead": "The app preference can be saved even when OS push permission is absent.",
+    "facts": [
+      [
+        "Activity",
+        "On"
+      ],
+      [
+        "Reminders",
+        "Off"
+      ],
+      [
+        "Push preference",
+        "On"
+      ],
+      [
+        "OS permission",
+        "Separate"
+      ]
+    ],
+    "notice": "After save, effective push still depends on the system-owned permission.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Save preferences",
+        "to": "notifications-saving",
+        "kind": "accent"
+      },
+      {
+        "label": "Demo: stale version",
+        "to": "notifications-conflict",
+        "kind": "ghost"
+      },
+      {
+        "label": "Cancel",
+        "to": "notifications-cancelled",
+        "kind": "link"
+      }
+    ],
+    "status": "",
+    "back": "account-overview"
+  },
+  "notifications-saving": {
+    "code": "J27-S21",
+    "eyebrow": "Notifications · saving",
+    "title": "Saving preferences",
+    "lead": "One version-bound preference operation is in progress.",
+    "facts": [
+      [
+        "Operation",
+        "NOTIFY-27-A"
+      ],
+      [
+        "Replacement retry",
+        "Blocked"
+      ]
+    ],
+    "notice": "Do not duplicate the save while the result is pending.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: saved",
+        "to": "notifications-saved",
+        "kind": "accent"
+      },
+      {
+        "label": "Demo: failed",
+        "to": "notifications-failed",
+        "kind": "ghost"
+      },
+      {
+        "label": "Demo: unknown",
+        "to": "notifications-unknown",
+        "kind": "ghost"
+      }
+    ],
+    "status": "progress",
+    "back": "account-overview"
+  },
+  "notifications-saved": {
+    "code": "J27-S22",
+    "eyebrow": "Notifications · verified",
+    "title": "Preferences saved",
+    "lead": "ChopDot preference is saved; effective push is still unavailable until OS permission exists.",
+    "facts": [
+      [
+        "Activity",
+        "On"
+      ],
+      [
+        "Reminders",
+        "Off"
+      ],
+      [
+        "Push preference",
+        "On"
+      ],
+      [
+        "Effective push",
+        "Permission needed"
+      ]
+    ],
+    "notice": "Saved app preference is not the same thing as system permission or delivery proof.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Review system permission",
+        "to": "notifications-permission-needed",
+        "kind": "accent"
+      },
+      {
+        "label": "Back to notifications",
+        "to": "notifications-overview",
+        "kind": "ghost"
+      }
+    ],
+    "status": "success",
+    "back": "account-overview"
+  },
+  "notifications-permission-needed": {
+    "code": "J27-S23",
+    "eyebrow": "Notifications · system boundary",
+    "title": "Device permission is needed",
+    "lead": "Push preference is on, but the operating system still controls permission.",
+    "facts": [
+      [
+        "App preference",
+        "On"
+      ],
+      [
+        "OS permission",
+        "Not granted"
+      ],
+      [
+        "Effective push",
+        "Off"
+      ]
+    ],
+    "notice": "Open system settings to grant or deny permission. Journey 27 cannot grant it.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Open system notification settings",
+        "to": "notification-system-boundary",
+        "kind": "accent"
+      },
+      {
+        "label": "Not now",
+        "to": "notifications-overview",
+        "kind": "ghost"
+      }
+    ],
+    "status": "warn",
+    "back": "account-overview"
+  },
+  "notifications-permission-denied": {
+    "code": "J27-S24",
+    "eyebrow": "Notifications · permission denied",
+    "title": "Push stays unavailable",
+    "lead": "The system-owned permission was denied or remains off.",
+    "facts": [
+      [
+        "App preference",
+        "On"
+      ],
+      [
+        "OS permission",
+        "Denied"
+      ],
+      [
+        "Effective push",
+        "Off"
+      ]
+    ],
+    "notice": "The app preference remains distinct; no delivery is claimed.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Back to notifications",
+        "to": "notifications-overview",
+        "kind": "accent"
+      }
+    ],
+    "status": "warn",
+    "back": "account-overview"
+  },
+  "notifications-conflict": {
+    "code": "J27-S25",
+    "eyebrow": "Notifications · conflict",
+    "title": "Preferences changed elsewhere",
+    "lead": "The reviewed version is stale and was not overwritten.",
+    "facts": [
+      [
+        "Write",
+        "Not applied"
+      ],
+      [
+        "Current truth",
+        "Refresh required"
+      ]
+    ],
+    "notice": "Refresh before a new review.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Refresh preferences",
+        "to": "notifications-overview",
+        "kind": "accent"
+      }
+    ],
+    "status": "warn",
+    "back": "account-overview"
+  },
+  "notifications-failed": {
+    "code": "J27-S26",
+    "eyebrow": "Notifications · failed",
+    "title": "Preferences were not saved",
+    "lead": "The save failed with known no effect.",
+    "facts": [
+      [
+        "Saved activity",
+        "On"
+      ],
+      [
+        "Saved reminders",
+        "On"
+      ]
+    ],
+    "notice": "A fresh retry is safe.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Try again",
+        "to": "notifications-review",
+        "kind": "accent"
+      }
+    ],
+    "status": "danger",
+    "back": "account-overview"
+  },
+  "notifications-unknown": {
+    "code": "J27-S27",
+    "eyebrow": "Notifications · result unknown",
+    "title": "Still checking the save",
+    "lead": "The preference write may have happened, so replacement retry is blocked.",
+    "facts": [
+      [
+        "Operation",
+        "NOTIFY-27-A"
+      ],
+      [
+        "Replacement retry",
+        "Blocked"
+      ]
+    ],
+    "notice": "Reconcile the same operation first.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check this save",
+        "to": "notifications-reconciling",
+        "kind": "accent"
+      }
+    ],
+    "status": "warn",
+    "back": "account-overview"
+  },
+  "notifications-reconciling": {
+    "code": "J27-S28",
+    "eyebrow": "Notifications · reconciliation",
+    "title": "Checking NOTIFY-27-A",
+    "lead": "Current preference truth is compared with the existing operation.",
+    "facts": [
+      [
+        "New operation",
+        "No"
+      ],
+      [
+        "Possible result",
+        "Saved / no effect / still unknown"
+      ]
+    ],
+    "notice": "Reconciliation cannot grant OS permission.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Found saved",
+        "to": "notifications-saved",
+        "kind": "accent"
+      },
+      {
+        "label": "Proved no effect",
+        "to": "notifications-no-effect-retry",
+        "kind": "ghost"
+      },
+      {
+        "label": "Still unknown",
+        "to": "notifications-unknown",
+        "kind": "link"
+      }
+    ],
+    "status": "progress",
+    "back": "account-overview"
+  },
+  "notifications-no-effect-retry": {
+    "code": "J27-S29",
+    "eyebrow": "Notifications · safe retry",
+    "title": "No preference effect found",
+    "lead": "Reconciliation proved the prior operation had no effect.",
+    "facts": [
+      [
+        "Fresh retry",
+        "Allowed"
+      ],
+      [
+        "OS permission",
+        "Still separate"
+      ]
+    ],
+    "notice": "Review a new preference write deliberately.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Review retry",
+        "to": "notifications-review",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "account-overview"
+  },
+  "notifications-cancelled": {
+    "code": "J27-S30",
+    "eyebrow": "Notifications · cancelled",
+    "title": "Preference edit cancelled",
+    "lead": "The draft was abandoned before a write began.",
+    "facts": [
+      [
+        "Write",
+        "None"
+      ],
+      [
+        "Saved preferences",
+        "Unchanged"
+      ]
+    ],
+    "notice": "Cancellation preserves current truth.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Back to notifications",
+        "to": "notifications-overview",
+        "kind": "accent"
+      }
+    ],
+    "status": "neutral",
+    "back": "account-overview"
+  },
+  "appearance-overview": {
+    "code": "J27-S31",
+    "eyebrow": "Appearance",
+    "title": "Appearance preference",
+    "lead": "System follows the device appearance; Light and Dark are app display preferences.",
+    "facts": [
+      [
+        "Saved preference",
+        "System"
+      ],
+      [
+        "Preview",
+        "None"
+      ]
+    ],
+    "notice": "Changing appearance never changes account authority or OS settings.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Preview Dark",
+        "to": "appearance-preview",
+        "kind": "accent"
+      },
+      {
+        "label": "Back to account",
+        "to": "account-overview",
+        "kind": "ghost"
+      }
+    ],
+    "status": "",
+    "back": "account-overview"
+  },
+  "appearance-preview": {
+    "code": "J27-S32",
+    "eyebrow": "Appearance · preview",
+    "title": "Preview Dark",
+    "lead": "This preview is reversible and not persisted yet.",
+    "facts": [
+      [
+        "Saved preference",
+        "System"
+      ],
+      [
+        "Preview",
+        "Dark"
+      ]
+    ],
+    "notice": "Leaving without saving returns to the saved System preference.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Save Dark",
+        "to": "appearance-saving",
+        "kind": "accent"
+      },
+      {
+        "label": "Cancel preview",
+        "to": "appearance-cancelled",
+        "kind": "ghost"
+      }
+    ],
+    "status": "",
+    "back": "account-overview"
+  },
+  "appearance-saving": {
+    "code": "J27-S33",
+    "eyebrow": "Appearance · saving",
+    "title": "Saving Dark",
+    "lead": "One appearance preference operation is in progress.",
+    "facts": [
+      [
+        "Operation",
+        "THEME-27-A"
+      ],
+      [
+        "Replacement retry",
+        "Blocked"
+      ]
+    ],
+    "notice": "Preview is not used as proof of persistence.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: saved",
+        "to": "appearance-saved",
+        "kind": "accent"
+      },
+      {
+        "label": "Demo: failed",
+        "to": "appearance-failed",
+        "kind": "ghost"
+      },
+      {
+        "label": "Demo: unknown",
+        "to": "appearance-unknown",
+        "kind": "ghost"
+      }
+    ],
+    "status": "progress",
+    "back": "account-overview"
+  },
+  "appearance-saved": {
+    "code": "J27-S34",
+    "eyebrow": "Appearance · verified",
+    "title": "Dark saved",
+    "lead": "The fixture now treats Dark as the persisted app appearance preference.",
+    "facts": [
+      [
+        "Saved preference",
+        "Dark"
+      ],
+      [
+        "OS setting",
+        "Unchanged"
+      ]
+    ],
+    "notice": "Verified app preference only.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Back to appearance",
+        "to": "appearance-overview",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "account-overview"
+  },
+  "appearance-failed": {
+    "code": "J27-S35",
+    "eyebrow": "Appearance · failed",
+    "title": "Dark was not saved",
+    "lead": "The known failure preserves System as the saved preference.",
+    "facts": [
+      [
+        "Saved preference",
+        "System"
+      ],
+      [
+        "Effect",
+        "None"
+      ]
+    ],
+    "notice": "A fresh save may be reviewed.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Try again",
+        "to": "appearance-preview",
+        "kind": "accent"
+      }
+    ],
+    "status": "danger",
+    "back": "account-overview"
+  },
+  "appearance-unknown": {
+    "code": "J27-S36",
+    "eyebrow": "Appearance · result unknown",
+    "title": "Still checking THEME-27-A",
+    "lead": "The preference may have saved; replacement save is blocked.",
+    "facts": [
+      [
+        "Operation",
+        "THEME-27-A"
+      ],
+      [
+        "Replacement retry",
+        "Blocked"
+      ]
+    ],
+    "notice": "Reconcile this operation first.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check this save",
+        "to": "appearance-reconciling",
+        "kind": "accent"
+      }
+    ],
+    "status": "warn",
+    "back": "account-overview"
+  },
+  "appearance-reconciling": {
+    "code": "J27-S37",
+    "eyebrow": "Appearance · reconciliation",
+    "title": "Checking saved appearance",
+    "lead": "Current preference truth is compared with THEME-27-A.",
+    "facts": [
+      [
+        "New operation",
+        "No"
+      ],
+      [
+        "Possible result",
+        "Dark / no effect / still unknown"
+      ]
+    ],
+    "notice": "Navigation cannot decide the result.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Found Dark",
+        "to": "appearance-saved",
+        "kind": "accent"
+      },
+      {
+        "label": "Proved no effect",
+        "to": "appearance-no-effect-retry",
+        "kind": "ghost"
+      },
+      {
+        "label": "Still unknown",
+        "to": "appearance-unknown",
+        "kind": "link"
+      }
+    ],
+    "status": "progress",
+    "back": "account-overview"
+  },
+  "appearance-no-effect-retry": {
+    "code": "J27-S38",
+    "eyebrow": "Appearance · safe retry",
+    "title": "No theme effect found",
+    "lead": "Reconciliation proved System remains saved.",
+    "facts": [
+      [
+        "Saved preference",
+        "System"
+      ],
+      [
+        "Fresh retry",
+        "Allowed"
+      ]
+    ],
+    "notice": "A new preview/save can start.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Preview again",
+        "to": "appearance-preview",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "account-overview"
+  },
+  "appearance-cancelled": {
+    "code": "J27-S39",
+    "eyebrow": "Appearance · cancelled",
+    "title": "Preview cancelled",
+    "lead": "No appearance write began.",
+    "facts": [
+      [
+        "Saved preference",
+        "System"
+      ],
+      [
+        "Write",
+        "None"
+      ]
+    ],
+    "notice": "The saved preference remains authoritative.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Back to appearance",
+        "to": "appearance-overview",
+        "kind": "accent"
+      }
+    ],
+    "status": "neutral",
+    "back": "account-overview"
+  },
+  "security-overview": {
+    "code": "J27-S40",
+    "eyebrow": "Security",
+    "title": "Current session",
+    "lead": "Review the current signed-in session and sign out without changing account data.",
+    "facts": [
+      [
+        "Session",
+        "This device active"
+      ],
+      [
+        "Account",
+        "Still exists after sign-out"
+      ],
+      [
+        "Remote sessions",
+        "Not managed in V1"
+      ]
+    ],
+    "notice": "Sign-out is not account deletion, credential rotation, or wallet revocation.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Sign out this device",
+        "to": "signout-review",
+        "kind": "danger"
+      },
+      {
+        "label": "Back to account",
+        "to": "account-overview",
+        "kind": "ghost"
+      }
+    ],
+    "status": "",
+    "back": "account-overview"
+  },
+  "signout-review": {
+    "code": "J27-S41",
+    "eyebrow": "Security · review",
+    "title": "Sign out this device?",
+    "lead": "This ends the current session fixture only.",
+    "facts": [
+      [
+        "Account deletion",
+        "No"
+      ],
+      [
+        "Group / money history",
+        "Unchanged"
+      ],
+      [
+        "Remote sessions",
+        "Not claimed revoked"
+      ]
+    ],
+    "notice": "You can cancel before session revocation begins.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Sign out",
+        "to": "signing-out",
+        "kind": "danger"
+      },
+      {
+        "label": "Cancel",
+        "to": "signout-cancelled",
+        "kind": "ghost"
+      }
+    ],
+    "status": "warn",
+    "back": "account-overview"
+  },
+  "signing-out": {
+    "code": "J27-S42",
+    "eyebrow": "Security · pending",
+    "title": "Signing out",
+    "lead": "One current-session operation is in progress.",
+    "facts": [
+      [
+        "Operation",
+        "SESSION-27-A"
+      ],
+      [
+        "Replacement retry",
+        "Blocked"
+      ]
+    ],
+    "notice": "Do not infer signed-out status until verified.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: signed out",
+        "to": "signed-out",
+        "kind": "accent"
+      },
+      {
+        "label": "Demo: failed",
+        "to": "signout-failed",
+        "kind": "ghost"
+      },
+      {
+        "label": "Demo: unknown",
+        "to": "signout-unknown",
+        "kind": "ghost"
+      }
+    ],
+    "status": "progress",
+    "back": "account-overview"
+  },
+  "signed-out": {
+    "code": "J27-S43",
+    "eyebrow": "Security · verified",
+    "title": "Signed out on this device",
+    "lead": "The current session fixture is no longer active.",
+    "facts": [
+      [
+        "Current session",
+        "Revoked in fixture"
+      ],
+      [
+        "Account",
+        "Not deleted"
+      ],
+      [
+        "Groups / money / history",
+        "Unchanged"
+      ]
+    ],
+    "notice": "No production auth-provider or remote-session claim is made.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Return to signed-out owner surface",
+        "to": "you-home-boundary",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "you-home-boundary"
+  },
+  "signout-failed": {
+    "code": "J27-S44",
+    "eyebrow": "Security · failed",
+    "title": "You are still signed in",
+    "lead": "The sign-out operation failed with known no effect.",
+    "facts": [
+      [
+        "Session",
+        "Still active"
+      ],
+      [
+        "Account",
+        "Unchanged"
+      ]
+    ],
+    "notice": "A fresh retry is safe.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Try again",
+        "to": "signout-review",
+        "kind": "accent"
+      }
+    ],
+    "status": "danger",
+    "back": "account-overview"
+  },
+  "signout-unknown": {
+    "code": "J27-S45",
+    "eyebrow": "Security · result unknown",
+    "title": "Checking this session",
+    "lead": "ChopDot cannot yet prove whether SESSION-27-A revoked the session.",
+    "facts": [
+      [
+        "Operation",
+        "SESSION-27-A"
+      ],
+      [
+        "Replacement retry",
+        "Blocked"
+      ]
+    ],
+    "notice": "Reconcile the same operation; navigation cannot decide session truth.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check this sign-out",
+        "to": "signout-reconciling",
+        "kind": "accent"
+      }
+    ],
+    "status": "warn",
+    "back": "account-overview"
+  },
+  "signout-reconciling": {
+    "code": "J27-S46",
+    "eyebrow": "Security · reconciliation",
+    "title": "Checking SESSION-27-A",
+    "lead": "Current session truth is reconciled without starting another revocation.",
+    "facts": [
+      [
+        "New operation",
+        "No"
+      ],
+      [
+        "Possible result",
+        "Signed out / no effect / still unknown"
+      ]
+    ],
+    "notice": "No duplicate sign-out is created.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Found signed out",
+        "to": "signed-out",
+        "kind": "accent"
+      },
+      {
+        "label": "Proved no effect",
+        "to": "signout-no-effect-retry",
+        "kind": "ghost"
+      },
+      {
+        "label": "Still unknown",
+        "to": "signout-unknown",
+        "kind": "link"
+      }
+    ],
+    "status": "progress",
+    "back": "account-overview"
+  },
+  "signout-no-effect-retry": {
+    "code": "J27-S47",
+    "eyebrow": "Security · safe retry",
+    "title": "Session is still active",
+    "lead": "Reconciliation proved the prior sign-out had no effect.",
+    "facts": [
+      [
+        "Session",
+        "Active"
+      ],
+      [
+        "Fresh retry",
+        "Allowed"
+      ]
+    ],
+    "notice": "Review a new sign-out deliberately.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Review retry",
+        "to": "signout-review",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "account-overview"
+  },
+  "signout-cancelled": {
+    "code": "J27-S48",
+    "eyebrow": "Security · cancelled",
+    "title": "Sign-out cancelled",
+    "lead": "No session revocation began.",
+    "facts": [
+      [
+        "Session",
+        "Still active"
+      ],
+      [
+        "Account",
+        "Unchanged"
+      ]
+    ],
+    "notice": "Cancellation preserves current session truth.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Back to security",
+        "to": "security-overview",
+        "kind": "accent"
+      }
+    ],
+    "status": "neutral",
+    "back": "account-overview"
+  },
+  "deletion-entry": {
+    "code": "J27-S49",
+    "eyebrow": "Account deletion",
+    "title": "Delete account",
+    "lead": "Deletion is guarded because account removal must not orphan group authority or hide unresolved money.",
+    "facts": [
+      [
+        "Owned active groups",
+        "1 in blocked demo"
+      ],
+      [
+        "Unresolved money",
+        "Present in blocked demo"
+      ],
+      [
+        "Shared history",
+        "Preserved after deletion"
+      ]
+    ],
+    "notice": "Check prerequisites before destructive confirmation.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Demo: group ownership blocks",
+        "to": "deletion-blocked-owner",
+        "kind": "ghost"
+      },
+      {
+        "label": "Demo: money blocks",
+        "to": "deletion-blocked-money",
+        "kind": "ghost"
+      },
+      {
+        "label": "Demo: eligible",
+        "to": "deletion-review",
+        "kind": "danger"
+      },
+      {
+        "label": "Back to account",
+        "to": "account-overview",
+        "kind": "link"
+      }
+    ],
+    "status": "danger",
+    "back": "account-overview"
+  },
+  "deletion-blocked-owner": {
+    "code": "J27-S50",
+    "eyebrow": "Deletion · blocked",
+    "title": "Transfer group ownership first",
+    "lead": "You still own an active group, so Journey 27 cannot delete the account yet.",
+    "facts": [
+      [
+        "Blocking group",
+        "Zurich Weekend"
+      ],
+      [
+        "Delete request",
+        "Not created"
+      ]
+    ],
+    "notice": "Group ownership resolution belongs to Journey 26.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Manage ownership",
+        "to": "ownership-transfer-boundary",
+        "kind": "accent"
+      },
+      {
+        "label": "Back",
+        "to": "deletion-entry",
+        "kind": "ghost"
+      }
+    ],
+    "status": "warn",
+    "back": "account-overview"
+  },
+  "deletion-blocked-money": {
+    "code": "J27-S51",
+    "eyebrow": "Deletion · blocked",
+    "title": "Resolve open money first",
+    "lead": "Unresolved obligations require their owning money flow before deletion.",
+    "facts": [
+      [
+        "Open money items",
+        "Present"
+      ],
+      [
+        "Delete request",
+        "Not created"
+      ]
+    ],
+    "notice": "Journey 27 cannot settle, forgive, or zero balances.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Resolve money",
+        "to": "money-resolution-boundary",
+        "kind": "accent"
+      },
+      {
+        "label": "Back",
+        "to": "deletion-entry",
+        "kind": "ghost"
+      }
+    ],
+    "status": "warn",
+    "back": "account-overview"
+  },
+  "deletion-review": {
+    "code": "J27-S52",
+    "eyebrow": "Deletion · eligible",
+    "title": "Review account deletion",
+    "lead": "Prerequisites are clear in this fixture. Shared and external history will not be described as erased.",
+    "facts": [
+      [
+        "Owned groups",
+        "None"
+      ],
+      [
+        "Unresolved money",
+        "None"
+      ],
+      [
+        "Shared group/expense history",
+        "Preserved"
+      ],
+      [
+        "Exports/backups",
+        "Not claimed erased"
+      ],
+      [
+        "Provider/chain history",
+        "Not claimed erased"
+      ]
+    ],
+    "notice": "Export a copy first if you want one. Deletion affects only the ChopDot account working state modeled here.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Export my data first",
+        "to": "export-boundary",
+        "kind": "ghost"
+      },
+      {
+        "label": "Continue to typed confirmation",
+        "to": "deletion-type-confirm",
+        "kind": "danger"
+      },
+      {
+        "label": "Cancel",
+        "to": "deletion-cancelled",
+        "kind": "link"
+      }
+    ],
+    "status": "danger",
+    "back": "account-overview"
+  },
+  "deletion-type-confirm": {
+    "code": "J27-S53",
+    "eyebrow": "Deletion · confirmation",
+    "title": "Type DEVINSON to continue",
+    "lead": "This is deliberate confirmation, not a credential or reauthentication step.",
+    "facts": [
+      [
+        "Exact text required",
+        "DEVINSON"
+      ],
+      [
+        "Delete request",
+        "Not created yet"
+      ]
+    ],
+    "notice": "A mismatched value cannot reach final deletion review.",
+    "tone": "danger",
+    "actions": [],
+    "status": "danger",
+    "back": "account-overview"
+  },
+  "deletion-mismatch": {
+    "code": "J27-S54",
+    "eyebrow": "Deletion · mismatch",
+    "title": "Confirmation did not match",
+    "lead": "No deletion request was created.",
+    "facts": [
+      [
+        "Effect",
+        "None"
+      ],
+      [
+        "Account",
+        "Still active"
+      ]
+    ],
+    "notice": "Return and type the exact current display-name confirmation.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Try confirmation again",
+        "to": "deletion-type-confirm",
+        "kind": "accent"
+      },
+      {
+        "label": "Cancel",
+        "to": "deletion-cancelled",
+        "kind": "ghost"
+      }
+    ],
+    "status": "danger",
+    "back": "account-overview"
+  },
+  "deletion-final-review": {
+    "code": "J27-S55",
+    "eyebrow": "Deletion · final review",
+    "title": "Delete this ChopDot account?",
+    "lead": "This is the last reversible step before a deletion request begins.",
+    "facts": [
+      [
+        "Account working state",
+        "Will be removed in fixture"
+      ],
+      [
+        "Shared history",
+        "Preserved"
+      ],
+      [
+        "External/public history",
+        "Not claimed erased"
+      ]
+    ],
+    "notice": "After execution starts, an unknown result must be reconciled rather than retried.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Delete account",
+        "to": "deletion-requesting",
+        "kind": "danger"
+      },
+      {
+        "label": "Cancel",
+        "to": "deletion-cancelled",
+        "kind": "ghost"
+      }
+    ],
+    "status": "danger",
+    "back": "account-overview"
+  },
+  "deletion-requesting": {
+    "code": "J27-S56",
+    "eyebrow": "Deletion · pending",
+    "title": "Requesting deletion",
+    "lead": "One guarded deletion operation is in progress.",
+    "facts": [
+      [
+        "Operation",
+        "DELETE-27-A"
+      ],
+      [
+        "Duplicate request",
+        "Blocked"
+      ]
+    ],
+    "notice": "Do not start a replacement request while this result is unresolved.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: deleted",
+        "to": "deleted",
+        "kind": "accent"
+      },
+      {
+        "label": "Demo: failed",
+        "to": "deletion-failed",
+        "kind": "ghost"
+      },
+      {
+        "label": "Demo: unknown",
+        "to": "deletion-unknown",
+        "kind": "ghost"
+      }
+    ],
+    "status": "progress",
+    "back": "account-overview"
+  },
+  "deletion-cancelled": {
+    "code": "J27-S57",
+    "eyebrow": "Deletion · cancelled",
+    "title": "Account deletion cancelled",
+    "lead": "Cancellation happened before deletion execution began.",
+    "facts": [
+      [
+        "Delete request",
+        "None"
+      ],
+      [
+        "Account",
+        "Still active"
+      ]
+    ],
+    "notice": "No account working state was removed.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Back to account",
+        "to": "account-overview",
+        "kind": "accent"
+      }
+    ],
+    "status": "neutral",
+    "back": "account-overview"
+  },
+  "deletion-failed": {
+    "code": "J27-S58",
+    "eyebrow": "Deletion · failed",
+    "title": "Account was not deleted",
+    "lead": "The request failed with known no effect.",
+    "facts": [
+      [
+        "Account",
+        "Still active"
+      ],
+      [
+        "Delete effect",
+        "None"
+      ]
+    ],
+    "notice": "A fresh retry is safe only because no effect occurred.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Review deletion again",
+        "to": "deletion-final-review",
+        "kind": "accent"
+      }
+    ],
+    "status": "danger",
+    "back": "account-overview"
+  },
+  "deletion-unknown": {
+    "code": "J27-S59",
+    "eyebrow": "Deletion · result unknown",
+    "title": "Still checking DELETE-27-A",
+    "lead": "The request may have taken effect, so duplicate deletion is blocked.",
+    "facts": [
+      [
+        "Operation",
+        "DELETE-27-A"
+      ],
+      [
+        "Replacement retry",
+        "Blocked"
+      ]
+    ],
+    "notice": "Reconcile this same delete request identity first.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check deletion status",
+        "to": "deletion-reconciling",
+        "kind": "accent"
+      }
+    ],
+    "status": "warn",
+    "back": "account-overview"
+  },
+  "deletion-reconciling": {
+    "code": "J27-S60",
+    "eyebrow": "Deletion · reconciliation",
+    "title": "Checking DELETE-27-A",
+    "lead": "Account truth is checked without creating another deletion request.",
+    "facts": [
+      [
+        "New operation",
+        "No"
+      ],
+      [
+        "Possible result",
+        "Deleted / no effect / still unknown"
+      ]
+    ],
+    "notice": "Reconciliation cannot erase shared/external history.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Found deleted",
+        "to": "deleted",
+        "kind": "accent"
+      },
+      {
+        "label": "Proved no effect",
+        "to": "deletion-no-effect-retry",
+        "kind": "ghost"
+      },
+      {
+        "label": "Still unknown",
+        "to": "deletion-unknown",
+        "kind": "link"
+      }
+    ],
+    "status": "progress",
+    "back": "account-overview"
+  },
+  "deletion-no-effect-retry": {
+    "code": "J27-S61",
+    "eyebrow": "Deletion · safe retry",
+    "title": "No deletion effect found",
+    "lead": "Reconciliation proved the account remains active and DELETE-27-A had no effect.",
+    "facts": [
+      [
+        "Account",
+        "Active"
+      ],
+      [
+        "Fresh retry",
+        "Allowed"
+      ]
+    ],
+    "notice": "Return to final review before a new request.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Review retry",
+        "to": "deletion-final-review",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "account-overview"
+  },
+  "deleted": {
+    "code": "J27-S62",
+    "eyebrow": "Deletion · verified",
+    "title": "Account working state deleted",
+    "lead": "The deterministic fixture now treats this ChopDot account working state as removed.",
+    "facts": [
+      [
+        "Account working state",
+        "Removed in fixture"
+      ],
+      [
+        "Shared group/expense history",
+        "Preserved"
+      ],
+      [
+        "Exports/backups",
+        "Not claimed erased"
+      ],
+      [
+        "Provider/public/chain history",
+        "Not claimed erased"
+      ]
+    ],
+    "notice": "This does not claim production backend erasure, provider erasure, settlement changes, wallet effects, or chain deletion.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Continue to owner surface",
+        "to": "you-home-boundary",
+        "kind": "accent"
+      }
+    ],
+    "status": "success",
+    "back": "you-home-boundary"
+  },
+  "you-home-boundary": {
+    "code": "J27-B01",
+    "eyebrow": "Adjacent owner",
+    "title": "You surface owns navigation",
+    "lead": "Journey 27 returns control without creating account outcome truth.",
+    "facts": [
+      [
+        "Owner",
+        "You / app shell"
+      ],
+      [
+        "Journey 27 effect",
+        "None"
+      ]
+    ],
+    "notice": "Boundary fixture only.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Return to account entry",
+        "to": "account-entry",
+        "kind": "accent"
+      }
+    ],
+    "status": "",
+    "back": "account-entry"
+  },
+  "notification-system-boundary": {
+    "code": "J27-B02",
+    "eyebrow": "Adjacent owner",
+    "title": "System notification settings",
+    "lead": "The operating system owns notification permission.",
+    "facts": [
+      [
+        "Journey 27 authority",
+        "None over OS permission"
+      ],
+      [
+        "App preference",
+        "Preserved"
+      ]
+    ],
+    "notice": "This boundary cannot be treated as permission granted merely because it was opened.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Return: permission denied",
+        "to": "notifications-permission-denied",
+        "kind": "accent"
+      },
+      {
+        "label": "Return: permission granted",
+        "to": "notifications-overview",
+        "kind": "ghost"
+      }
+    ],
+    "status": "",
+    "back": "notifications-permission-needed"
+  },
+  "ownership-transfer-boundary": {
+    "code": "J27-B03",
+    "eyebrow": "Adjacent owner",
+    "title": "Group lifecycle owns transfer",
+    "lead": "Journey 26 must resolve active group ownership before deletion.",
+    "facts": [
+      [
+        "Journey 27 delete request",
+        "None"
+      ],
+      [
+        "Money/history",
+        "Unchanged"
+      ]
+    ],
+    "notice": "Returning here does not itself prove ownership changed; prerequisites are refreshed.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Return and refresh deletion",
+        "to": "deletion-entry",
+        "kind": "accent"
+      }
+    ],
+    "status": "",
+    "back": "deletion-blocked-owner"
+  },
+  "money-resolution-boundary": {
+    "code": "J27-B04",
+    "eyebrow": "Adjacent owner",
+    "title": "Money journey owns resolution",
+    "lead": "Journey 27 cannot settle, forgive, or zero obligations.",
+    "facts": [
+      [
+        "Journey 27 delete request",
+        "None"
+      ],
+      [
+        "Settlement effect",
+        "None here"
+      ]
+    ],
+    "notice": "Return only after the owning journey has independently resolved money truth.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Return and refresh deletion",
+        "to": "deletion-entry",
+        "kind": "accent"
+      }
+    ],
+    "status": "",
+    "back": "deletion-blocked-money"
+  },
+  "export-boundary": {
+    "code": "J27-B05",
+    "eyebrow": "Adjacent owner",
+    "title": "Export / Portability owns your copy",
+    "lead": "Journey 24 owns user-controlled export before deletion.",
+    "facts": [
+      [
+        "Deletion authority",
+        "Not granted by export"
+      ],
+      [
+        "Delete request",
+        "None"
+      ]
+    ],
+    "notice": "Return to deletion review after export or cancellation; export does not widen deletion authority.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Return to deletion review",
+        "to": "deletion-review",
+        "kind": "accent"
+      }
+    ],
+    "status": "",
+    "back": "deletion-review"
+  }
+}

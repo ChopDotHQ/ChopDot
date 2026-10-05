@@ -1,3 +1,4 @@
+import {routeLocalSession} from '../session-guard.js';
 import {requirePrototypeWriter,assertPrototypeWriter} from '../prototype-writer.js';
 import {repository,scopeProof,METHODS} from './model.js';
 import {allGroups,people,pairs,sources,sum,resolveScope,makePlan,unresolved,fail} from './ledger.js';
@@ -83,7 +84,7 @@ function positionPage(){
    $('[href="#mixed"]')?.remove();
  }
  content.append(link('Payment activity',()=>nav('activity')));
- action('[href="#home-handoff"]',()=>toGroup());action('[href="#add-handoff"]',()=>toGroup(state.group?.id,'editor'));action('[href="#activity-handoff"]',()=>nav('activity'));
+ action('[href="#home-handoff"]',()=>toGroup());action('[href="#add-handoff"]',()=>toGroup(state.group?.id,'editor'));action('[href="#activity-handoff"]',()=>{location.href=`../gate-d/index.html${fixtureMode?'?fixtures=1':''}#page=activity`;});action('[href="#you-handoff"]',()=>{location.href=`../gate-d/index.html${fixtureMode?'?fixtures=1':''}#page=account-overview`;});
  if(state.gateC.environment.offline)note('Offline. Showing saved balances.');
 }
 function groupPage(){
@@ -273,8 +274,9 @@ function toolbar(){
  }
  requestAnimationFrame(()=>document.body.style.setProperty('--fixture-height',`${bar.getBoundingClientRect().height}px`));
 }
-function render(focusLabel){try{state=repo.read();route=Object.fromEntries(new URLSearchParams(location.hash.slice(1)));route.page||='position';sessionStorage.setItem('chopdot.gate-c.route',location.hash);screen=null;
+function render(focusLabel){try{state=repo.read();if(!routeLocalSession(state))return;route=Object.fromEntries(new URLSearchParams(location.hash.slice(1)));route.page||='position';sessionStorage.setItem('chopdot.gate-c.route',location.hash);screen=null;
  ({position:positionPage,group:groupPage,person:personPage,settle:settlePage,scope:scopePage,methods:methodsPage,method_details:methodDetailsPage,amount:amountPage,payment:paymentPage,different:differentPage,details:detailsPage,record:recordPage,activity:activityPage}[route.page]||positionPage)();
+ if(route.page==='payment'&&state.gateC.payments.some(p=>p.id===route.id&&[p.payer,p.recipient].includes(actor)))$('.app-content').append(link('Recovery options',()=>{location.href=`../gate-d/index.html${fixtureMode?'?fixtures=1':''}#${new URLSearchParams({page:'recovery',owner:'payment',id:route.id})}`;}));
  for(const a of $$('a:not([data-bound])')){a.onclick=guard(e=>{e.preventDefault();boundary(a.getAttribute('aria-label')||a.textContent.trim(),'This journey is outside the current integrated prototype. Your saved balances stay available.');});}
  screen.focus({preventScroll:true});toolbar();if(typeof focusLabel==='string')[...document.querySelectorAll('[aria-label]')].find(n=>n.getAttribute('aria-label')===focusLabel)?.focus({preventScroll:true});notifyParent();
  }catch(e){showError(e);toolbar();}}
