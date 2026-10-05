@@ -1,3 +1,7 @@
+import { transition as commitExpense, upgrade as upgradePrototype } from './gate-b/model.js';
+const schemaCore = await fetch('./gate-b/contract/semantic-core.json').then(response => { if (!response.ok) throw new Error('Frozen schema contract unavailable.'); return response.json(); });
+import { requirePrototypeWriter, assertPrototypeWriter } from './prototype-writer.js';
+await requirePrototypeWriter();
 import {
   allocationView,
   formatPreviewMoney,
@@ -80,6 +84,7 @@ function loadGuestState() {
 }
 
 function saveGuestState(patch) {
+  assertPrototypeWriter();
   const next = { ...loadGuestState(), ...patch };
   window.localStorage.setItem(GUEST_KEY, JSON.stringify(next));
   return next;
@@ -242,6 +247,25 @@ function addLocalHomeCss(doc) {
   doc.head.appendChild(style);
 }
 
+function openGateB() {
+  stopMonitor();
+  currentJourney = 'GATE_B';
+  currentFlow = 'gate-b-local';
+  showFrame();
+  const url = new URL(window.location.href);
+  url.searchParams.set('gateB', '1');
+  history.replaceState(null, '', url);
+  frame.src = `./gate-b/index.html${params.has('fixtures') ? '?fixtures=1' : ''}`;
+}
+
+window.addEventListener('message', event => {
+  if (event.origin !== window.location.origin || event.source !== frame.contentWindow || event.data?.type !== 'chopdot-gate-b-home') return;
+  const url = new URL(window.location.href);
+  url.searchParams.delete('gateB');
+  history.replaceState(null, '', url);
+  returnToLocalHome();
+});
+
 function renderLocalHomeState(doc, { converted = false } = {}) {
   if (!doc?.body) return;
   addLocalHomeCss(doc);
@@ -276,7 +300,7 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
       <div class="local-actions"><button class="local-action primary guest-start-group" type="button">${svg(ICONS.plus)} Start a group</button></div>
     `;
   } else {
-    const expenseCount = state.expenses.length;
+    const expenseCount = state.expenses.filter(expense => !expense.deleted).length;
     const noun = expenseCount === 1 ? 'expense' : 'expenses';
     const peopleCount = 1 + state.people.length;
     content.innerHTML = `
@@ -296,6 +320,17 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
         ${converted ? '' : `<button class="local-action guest-invite" type="button">${svg(ICONS.people)} Invite someone</button>`}
       </div>
     `;
+  }
+
+  const groupCard = content.querySelector('.card.group');
+  if (groupCard) {
+    groupCard.tabIndex = 0;
+    groupCard.setAttribute('role', 'button');
+    groupCard.setAttribute('aria-label', 'Open group');
+    groupCard.addEventListener('click', openGateB);
+    groupCard.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openGateB(); }
+    });
   }
 
   const localName = content.querySelector('[data-local-group-name]');
@@ -394,6 +429,8 @@ function persistLocalExpenseDraft(doc) {
   const participantIds = [...new Set(current.selectedParticipantIds || ['self'])];
   const draft = {
     version: 2,
+    expenseId: current.expenseDraft?.expenseId || crypto.randomUUID(),
+    operationId: current.expenseDraft?.operationId || crypto.randomUUID(),
     groupId: current.group.id,
     currency: current.group.currency,
     amountText: amount.value,
@@ -889,24 +926,19 @@ function applyGuestExpenseState(doc) {
         return;
       }
       try {
-        saveGuestState({
-          expenses: [...current.expenses, {
-            id: `local-expense-${current.expenses.length + 1}`,
-            amount: raw,
-            amountText: raw,
-            money: exactAllocation.total,
-            allocation: exactAllocation,
-            description,
-            currency: group.currency,
-            payerId: current.selectedPayerId || 'self',
-            participantIds: ids,
-          }],
-          expenseDraft: null,
-          selectedPayerId: 'self',
-          selectedParticipantIds: localPeople(current).map(person => person.id),
-        });
-      } catch {
-        draftSaveNotice(doc, "Couldn't save on this device. Your details are still here.");
+        const expenseId = current.expenseDraft?.expenseId || crypto.randomUUID();
+        const operationId = current.expenseDraft?.operationId || crypto.randomUUID();
+        const draft = { id: expenseId, operationId, baseRevision: null, amountText: raw, description,
+          payerId: current.selectedPayerId || 'self', participantIds: ids, method: 'equal',
+          exact: {}, shares: {}, date: new Date().toISOString().slice(0, 10), receipt: null };
+        const next = commitExpense(upgradePrototype(current), {
+          type: 'create', actor: 'self', id: expenseId, operationId, draft,
+        }, schemaCore);
+        saveGuestState({ ...next, expenseDraft: null, selectedPayerId: 'self',
+          selectedParticipantIds: localPeople(current).map(person => person.id) });
+      } catch (error) {
+        draftSaveNotice(doc, error.code === 'GUARD' || error.code === 'DUPLICATE'
+          ? error.message : "Couldn't save on this device. Your details are still here.");
         return;
       }
       editing = false;
@@ -942,6 +974,7 @@ function enterAuthFormIfNeeded(doc) {
 }
 
 frame.addEventListener('load', () => {
+  if (currentJourney === 'GATE_B') return;
   const doc = frame.contentDocument;
   applyProductMode(doc);
 
@@ -1003,6 +1036,7 @@ window.ChopDotPreviewV2 = Object.freeze({
   openHome: () => openHome(lastEntryState, 'account'),
 });
 
-if (entryMode === 'invite') openInvite('account');
+if (params.has('gateB') && loadGuestState().group) openGateB();
+else if (entryMode === 'invite') openInvite('account');
 else if (entryMode === 'guest-invite') openInvite('guest');
 else showFrontDoor();

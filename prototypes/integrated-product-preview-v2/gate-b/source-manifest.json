@@ -1,0 +1,12 @@
+{
+  "schema_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "authority_sha": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "files": {
+    "goldens/j08.html": "c85d60a05afce323d9e13fce56060b2156f737ed35afe5b5d45f341407a8ee24",
+    "goldens/j07.html": "07375e2a7ec28951dae55d8cd10f61671385780f688592a72a157a2882ec2aab",
+    "goldens/j06.html": "106dd31331c425b562f54e815379d7fc70a9bcab5c809efd24237b698b45d807",
+    "goldens/j05.html": "4b0acc8be4ee72dd7fe75933cf533df49d1dc30add3b7552c4199113f3438643",
+    "contract/hardening-lib.mjs": "6600e46548615b2c1e106b9b4d264f227e46615f7e2e85ba22c2495b84475918",
+    "contract/semantic-core.json": "fdd3d66cd929b07a5ee868373bc92459e12dfbbe04c2cb74a5907b3aa40fa856"
+  }
+}
