@@ -1787,6 +1787,7 @@ async function render({ focusKey } = {}) {
       );
       const a = element("a", "", "Open Gate A");
       a.href = "../index.html";
+      a.target = "_top";
       app.append(a);
       return;
     }
