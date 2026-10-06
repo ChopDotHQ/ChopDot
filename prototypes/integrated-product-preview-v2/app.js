@@ -1,3 +1,4 @@
+import {currentActor} from './create-join/authority.js';
 import {repository as accountRepository} from './gate-d/model.js';
 import { transition as commitExpense, upgrade as upgradePrototype } from './gate-b/model.js';
 const schemaCore = await fetch('./gate-b/contract/semantic-core.json').then(response => { if (!response.ok) throw new Error('Frozen schema contract unavailable.'); return response.json(); });
@@ -195,6 +196,8 @@ function watchGoldenEntry() {
     lastEntryState = state;
     if (state.route === 'home-reference' && state.verified) {
       try { accountRepository(localStorage,assertPrototypeWriter).commit({type:'entry'},'entry-verified'); } catch(error) { stopMonitor(); const p=document.createElement('p');p.textContent=error.message;frame.contentDocument.body.append(p);return; }
+      const membershipReturn=sessionStorage.getItem('chopdot.membership.entry-return');
+      if(membershipReturn){const r=JSON.parse(membershipReturn);sessionStorage.removeItem('chopdot.membership.entry-return');window.ChopDotEntryPrecondition={verified:true,participantId:r.participantId,invite:r.invite,subject:state.verifiedSubject,request:state.verifiedRequest};openCreateJoin('#'+new URLSearchParams({page:r.page,...(r.invite?{invite:r.invite}:{})}));return;}
       const convertingGuest = currentFlow === 'convert-create' || currentFlow === 'convert-signin';
       if (convertingGuest) {
         saveGuestState({ accountCreated: true });
@@ -251,6 +254,8 @@ function addLocalHomeCss(doc) {
   doc.head.appendChild(style);
 }
 
+function openCreateJoin(hash='#page=entry'){stopMonitor();currentJourney='J04';currentFlow='create-join-local';showFrame();frame.src=`./create-join/index.html${params.has('fixtures')?'?fixtures=1':''}${hash.startsWith('#')?hash:'#'+hash}`;}
+window.addEventListener('message',event=>{if(event.origin!==location.origin||event.source!==frame.contentWindow)return;if(event.data?.type==='chopdot-create-join-route'){const url=new URL(location.href);for(const k of ['gateB','gateBRoute','gateC','gateD','entry'])url.searchParams.delete(k);url.searchParams.set('createJoin',event.data.hash.slice(1));history.replaceState(null,'',url);}else if(event.data?.type==='chopdot-create-join-entry'){openAuth('signin');}});
 function openGateD(hash='#page=activity') {
  stopMonitor();currentJourney='GATE_B';currentFlow='gate-d-local';showFrame();
  frame.src=`./gate-d/index.html${params.has('fixtures')?'?fixtures=1':''}${hash.startsWith('#')?hash:'#page=activity'}`;
@@ -299,6 +304,7 @@ window.addEventListener('message', event => {
 function renderLocalHomeState(doc, { converted = false } = {}) {
   if (!doc?.body) return;
   addLocalHomeCss(doc);
+  if(currentActor()!=='self'){openCreateJoin('#page=recovery');return;}
   const state = loadGuestState();
   doc.documentElement.dataset.previewMode = converted ? 'converted' : 'guest';
   doc.body.dataset.previewMode = converted ? 'converted' : 'guest';
@@ -1064,10 +1070,13 @@ window.ChopDotPreviewV2 = Object.freeze({
   openGuestExpense,
   openAuth,
   openInvite,
+  openCreateJoin,
   openHome: () => openHome(lastEntryState, 'account'),
 });
 
-if (params.has('gateD'))openGateD(params.get('gateD'));
+if(params.has('createJoin'))openCreateJoin('#'+params.get('createJoin'));
+else if(currentActor()!=='self'&&entryMode!=='signin'&&!params.has('gateB')&&!params.has('gateC')&&!params.has('gateD'))openCreateJoin('#page=recovery');
+else if (params.has('gateD'))openGateD(params.get('gateD'));
 else if (params.has('gateC')) openGateC(params.get('gateC'));
 else if (params.has('gateB') && loadGuestState().group) openGateB(params.get('gateBRoute')||'');
 else if (entryMode === 'signin')openAuth('signin');

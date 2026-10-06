@@ -1,3 +1,5 @@
+import {groupMembers} from '../create-join/model.js';
+import {assertParticipantCommand,signFixture,consumeFixture} from '../create-join/authority.js';
 import {assertLocalSession} from '../session-guard.js';
 import {
   moneyFromPreviewDecimal,
@@ -28,10 +30,7 @@ const fail = (code, message, detail) => {
   throw new DomainError(code, message, detail);
 };
 const clone = (x) => structuredClone(x);
-export const participants = (s) => [
-  { id: "self", name: "You" },
-  ...(s.people || []),
-];
+export const participants = (s) => groupMembers(s);
 export const activeExpenses = (s) => s.expenses.filter((e) => !e.deleted && (!s.gateC || e.groupId === s.group?.id));
 export const draftKey = (s, actor) => s.gateC ? JSON.stringify([actor, s.group?.id]) : actor;
 export const savedDraft = (s, actor) => s.gateB.drafts[draftKey(s, actor)];
@@ -330,7 +329,7 @@ export function transition(
 ) {
   const s = upgrade(input),
     { actor, type, id, operationId } = command;
-  assertLocalSession(s);
+  assertLocalSession(s,command.actor);
   if (!participants(s).some((p) => p.id === actor))
     fail("PERMISSION", "This person is not in the group.");
   if (!operationId) fail("OPERATION", "An operation identity is required.");
@@ -344,6 +343,7 @@ export function transition(
       );
     return s;
   }
+  assertParticipantCommand(s,command);
   if (type === "create" && id !== command.draft?.id)
     fail("LINEAGE", "The create command must use its draft expense identity.");
   const current = s.expenses.find((e) => e.id === id);
@@ -499,7 +499,7 @@ export function repository(storage, core, assertWriter = () => {}) {
       const s = read();
       if (s.gateB.environment.failSave)
         fail("SAVE", "Couldn’t save. Your details are still here.");
-      return write(transition(s, command, core));
+      const signed=signFixture(s,command);const next=write(transition(s,signed,core));consumeFixture(signed);return next;
     },
     setEnvironment(environment) {
       const s = read();

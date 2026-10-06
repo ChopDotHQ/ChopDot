@@ -22,6 +22,7 @@ for (const path of [
     "01-enter-chopdot",
     "02-home-orientation",
     "03-create-group",
+    "04-invite-join",
     "05-add-expense",
   ].map((j) => `prototypes/experience-workbench/journeys/${j}`),
 ])

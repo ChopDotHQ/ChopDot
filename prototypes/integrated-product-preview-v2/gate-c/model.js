@@ -1,3 +1,5 @@
+import {member} from '../create-join/model.js';
+import {assertParticipantCommand,signFixture,consumeFixture,currentActor} from '../create-join/authority.js';
 import {assertLocalSession} from '../session-guard.js';
 import { allGroups, people, resolveScope, makePlan, lowerReceiptPlan, sources, unresolved, fail } from './ledger.js';
 import { moneyFromMinorUnits } from '../money-v1.js';
@@ -36,13 +38,14 @@ function assertExclusive(s,p) {
 }
 export function transition(input, c, authority = 'user', now = new Date().toISOString()) {
   const s = upgrade(input), g = s.gateC;
-  assertLocalSession(s);
+  assertLocalSession(s,c.actor);
   if (!c.operationId) fail('OPERATION', 'An operation identity is required.');
   const fp = fingerprint({ command: c, authority });
   if (g.operations[c.operationId]) {
     if (g.operations[c.operationId] !== fp) fail('OPERATION','This operation identity belongs to another action.');
     return s;
   }
+  assertParticipantCommand(s,c);
   if (!people(s).some(p => p.id === c.actor)) fail('PERMISSION','Choose a participant in this prototype.');
   if (c.type === 'prepare') {
     online(s);
@@ -148,10 +151,10 @@ export function transition(input, c, authority = 'user', now = new Date().toISOS
 export function repository(storage, assertWriter=()=>{}) {
   const read=()=>upgrade(JSON.parse(storage.getItem(STORAGE_KEY)||'{}'));
   const write=s=>{assertWriter();storage.setItem(STORAGE_KEY,JSON.stringify(s));return s;};
-  return { read, commit(c,authority='user'){const s=read();if(s.gateC.environment.failSave)fail('SAVE','Could not save. The accepted payment state is unchanged.');return write(transition(s,c,authority));},
+  return { read, commit(c,authority='user'){const s=read();if(s.gateC.environment.failSave)fail('SAVE','Could not save. The accepted payment state is unchanged.');const signed=signFixture(s,c);const next=write(transition(s,signed,authority));consumeFixture(signed);return next;},
     saveDraft(actor,draft){const s=read();s.gateC.drafts[actor]=structuredClone(draft);return write(s);},
     setEnvironment(env){const s=read();s.gateC.environment=structuredClone(env);return write(s);},
-    selectGroup(id){const s=read(),g=allGroups(s).find(g=>g.id===id);if(!g)fail('GROUP','Group not found.');s.group=g;return write(s);},
+    selectGroup(id){const s=read(),p=member(s,currentActor());if(p&&p.groupId!==id)fail('PERMISSION','This participant belongs to one joined group.');const g=allGroups(s).find(g=>g.id===id);if(!g)fail('GROUP','Group not found.');s.group=g;return write(s);},
     addFixture(fixture){const s=read();if(s.gateC.fixtureAdded)return s;const next=fixture(s);next.gateC.fixtureAdded=true;return write(next);}
   };
 }

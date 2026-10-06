@@ -1,22 +1,25 @@
+import {member} from '../create-join/model.js';
+import {currentActor,routeParticipant} from '../create-join/authority.js';
 import {routeLocalSession} from '../session-guard.js';
 import {requirePrototypeWriter,assertPrototypeWriter} from '../prototype-writer.js';
 import {repository,scopeProof,METHODS} from './model.js';
-import {allGroups,people,pairs,sources,sum,resolveScope,makePlan,unresolved,fail} from './ledger.js';
+import {allGroups as canonicalGroups,people,pairs,sources,sum,resolveScope,makePlan,unresolved,fail} from './ledger.js';
 import {moneyFromMinorUnits,moneyFromPreviewDecimal,moneyToDecimal,formatPreviewMoney} from '../money-v1.js';
 import {addGoldenExample} from './fixtures.js';
 import {repository as expenseRepository} from '../gate-b/model.js';
 await requirePrototypeWriter();
+const allGroups=s=>{const p=member(s,currentActor());return canonicalGroups(s).filter(g=>!p||g.id===p.groupId);};
 const core=await fetch('../gate-b/contract/semantic-core.json').then(r=>{if(!r.ok)throw Error('Contract unavailable');return r.json();});
 const docs=Object.fromEntries(await Promise.all(['j10','j11','j12'].map(async j=>[j,new DOMParser().parseFromString(await fetch(`./goldens/${j}.html`).then(r=>{if(!r.ok)throw Error('Golden unavailable');return r.text();}),'text/html')])));
 const repo=repository(localStorage,assertPrototypeWriter), expenseRepo=expenseRepository(localStorage,core,assertPrototypeWriter);
 const fixtureMode=new URLSearchParams(location.search).has('fixtures');
-let actor=fixtureMode?sessionStorage.getItem('chopdot.gate-b.actor')||'self':'self';
+let actor=currentActor()!=='self'?currentActor():fixtureMode?sessionStorage.getItem('chopdot.gate-b.actor')||'self':'self';
 let state,route,screen,draft,busy=false;
 const app=document.querySelector('#app');
 const el=(tag,cls='',value)=>{const n=document.createElement(tag);n.className=cls;if(value!==undefined)n.textContent=value;return n;};
 const $=q=>screen.querySelector(q), $$=q=>[...screen.querySelectorAll(q)];
 const text=(q,value)=>{$$(q).forEach(n=>n.textContent=value);};
-const name=id=>id===actor?'You':id==='self'?'Guest':people(state).find(p=>p.id===id)?.name||id;
+const name=id=>id===actor?'You':id==='self'?(state.group?.membershipManaged?(state.gateD?.account.displayName==='You'?'Group owner':state.gateD?.account.displayName||'Group owner'):'Guest'):people(state).find(p=>p.id===id)?.name||id;
 const owesLabel=(debtor,creditor)=>debtor===actor?`You owe ${name(creditor)}`:`${name(debtor)} owes ${creditor===actor?'you':name(creditor)}`;
 const groupName=id=>allGroups(state).find(g=>g.id===id)?.name||id;
 const initials=id=>name(id).split(/\s+/).map(x=>x[0]).join('').slice(0,2);
@@ -258,6 +261,7 @@ function showError(e){
  if(['CHANGED','DISPUTE'].includes(e.code))($('.app-content')||screen).append(link('Review source expenses',()=>route.id?nav('details',{id:route.id}):nav('scope')));
 }
 function toolbar(){
+ if(currentActor()!=='self')return;
  if(!fixtureMode)return;const bar=document.querySelector('#fixtures');bar.hidden=false;document.body.classList.add('fixture-mode');bar.replaceChildren(el('b','','Prototype controls · simulated people and outcomes · no funds or authentication'));
  const select=el('select');select.setAttribute('aria-label','Test person');for(const p of people(state)){const o=el('option','',p.name);o.value=p.id;o.selected=p.id===actor;select.append(o);}select.onchange=()=>{actor=select.value;sessionStorage.setItem('chopdot.gate-b.actor',actor);if(route.id&&state.gateC.payments.find(p=>p.id===route.id)&&[state.gateC.payments.find(p=>p.id===route.id).payer,state.gateC.payments.find(p=>p.id===route.id).recipient].includes(actor))nav('payment',{id:route.id});else nav('position');};bar.append(select);
  if(!state.gateC.fixtureAdded)bar.append(button('Add Golden example',()=>{state=repo.addFixture(s=>addGoldenExample(s,core));nav('position');}));
@@ -274,7 +278,7 @@ function toolbar(){
  }
  requestAnimationFrame(()=>document.body.style.setProperty('--fixture-height',`${bar.getBoundingClientRect().height}px`));
 }
-function render(focusLabel){try{state=repo.read();if(!routeLocalSession(state))return;route=Object.fromEntries(new URLSearchParams(location.hash.slice(1)));route.page||='position';sessionStorage.setItem('chopdot.gate-c.route',location.hash);screen=null;
+function render(focusLabel){try{state=repo.read();if(!routeParticipant(state)||!routeLocalSession(state))return;route=Object.fromEntries(new URLSearchParams(location.hash.slice(1)));route.page||='position';sessionStorage.setItem('chopdot.gate-c.route',location.hash);screen=null;
  ({position:positionPage,group:groupPage,person:personPage,settle:settlePage,scope:scopePage,methods:methodsPage,method_details:methodDetailsPage,amount:amountPage,payment:paymentPage,different:differentPage,details:detailsPage,record:recordPage,activity:activityPage}[route.page]||positionPage)();
  if(route.page==='payment'&&state.gateC.payments.some(p=>p.id===route.id&&[p.payer,p.recipient].includes(actor)))$('.app-content').append(link('Recovery options',()=>{location.href=`../gate-d/index.html${fixtureMode?'?fixtures=1':''}#${new URLSearchParams({page:'recovery',owner:'payment',id:route.id})}`;}));
  for(const a of $$('a:not([data-bound])')){a.onclick=guard(e=>{e.preventDefault();boundary(a.getAttribute('aria-label')||a.textContent.trim(),'This journey is outside the current integrated prototype. Your saved balances stay available.');});}

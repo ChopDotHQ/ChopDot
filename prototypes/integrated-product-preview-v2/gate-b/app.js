@@ -1,3 +1,4 @@
+import {currentActor,routeParticipant} from '../create-join/authority.js';
 import {routeLocalSession} from '../session-guard.js';
 import {
   requirePrototypeWriter,
@@ -41,7 +42,7 @@ const templates = Object.fromEntries(
 );
 const repo = repository(localStorage, core, assertPrototypeWriter);
 const fixtureMode = new URLSearchParams(location.search).has("fixtures");
-let actor = fixtureMode
+let actor = currentActor()!=='self'?currentActor():fixtureMode
   ? sessionStorage.getItem("chopdot.gate-b.actor") || "self"
   : "self";
 let state,
@@ -68,7 +69,7 @@ const name = (id) =>
   id === actor
     ? "You"
     : id === "self"
-      ? "Guest"
+      ? (state.group?.membershipManaged ? (state.gateD?.account.displayName==='You'?'Group owner':state.gateD?.account.displayName||'Group owner') : "Guest")
       : participants(state).find((p) => p.id === id)?.name || id;
 const initials = (id) =>
   name(id)
@@ -373,11 +374,11 @@ function group() {
     list.append(element("p", "caption", "Add an expense or invite people."));
     for (const [label, go] of [
       ["Add expense", () => openEditor()],
-      ["Invite people", () => nav("boundary", "", { label: "Invite people" })],
+      ["Invite people", () => {location.href=`../create-join/index.html${fixtureMode?'?fixtures=1':''}#page=invite`}],
     ]) {
       const a = element(
         "a",
-        label === "Add expense" ? "primary" : "secondary",
+        label === "Add expense" ? "btn dark" : "btn soft",
         label,
       );
       a.href = "#";
@@ -1594,6 +1595,8 @@ function people() {
     nav("group", "");
   };
   content.append(a);
+  const membership=element('a','btn secondary',currentActor()==='self'?'Invite people':'Your membership');membership.dataset.bound='true';membership.href=`../create-join/index.html${fixtureMode?'?fixtures=1':''}#page=${currentActor()==='self'?'invite':'member'}`;content.append(membership);
+  if(currentActor()==='self')for(const i of state.membership?.invitations.filter(i=>i.groupId===state.group.id&&i.status!=='joined')||[])content.append(element('p','',`${i.name} · ${i.status==='pending'?'Pending invite':'Expired invite'}`));
 }
 function boundary(label) {
   mount("j08", "settle-handoff");
@@ -1645,6 +1648,7 @@ function showError(error) {
     }
     return;
   }
+  if(error.code==='GUEST_PROOF'){const a=element('a','secondary','Recover your existing participant');a.href='../create-join/index.html#page=recovery';a.dataset.bound='true';screen.append(a);}
   note(
     error.message ||
       "Couldn’t complete this action. Your saved state is unchanged.",
@@ -1652,6 +1656,7 @@ function showError(error) {
   );
 }
 function fixtureToolbar() {
+  if(currentActor()!=='self')return;
   if (!fixtureMode) return;
   const bar = document.querySelector("#fixtures");
   bar.hidden = false;
@@ -1776,7 +1781,7 @@ async function render({ focusKey } = {}) {
   const generation = ++renderGeneration;
   try {
     state = repo.read();
-    if(!routeLocalSession(state))return;
+    if(!routeParticipant(state)||!routeLocalSession(state))return;
     if (!state.group) {
       app.replaceChildren(
         element(
@@ -1806,7 +1811,7 @@ async function render({ focusKey } = {}) {
       state = repo.read();
     }
     const e = state.expenses.find(
-      (e) => e.id === route.id && (!e.deleted || route.page === "deleted"),
+      (e) => e.id === route.id && (!e.groupId || e.groupId===state.group.id) && (!e.deleted || route.page === "deleted"),
     );
     renderedRevision = e?.revision;
     const editorPages = [
