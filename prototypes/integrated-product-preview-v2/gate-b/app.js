@@ -1771,7 +1771,8 @@ async function render({ focusKey } = {}) {
   const generation = ++renderGeneration;
   try {
     state = repo.read();
-    if(!routeParticipant(state)||!routeLocalSession(state))return;
+    const emptyOwn = currentActor()==='self'&&!state.group&&!(state.groups||[]).length&&!state.expenses.length&&!(state.gateC?.payments||[]).length;
+    if((!emptyOwn&&!routeParticipant(state))||!routeLocalSession(state))return;
     if(state.group?.kind==='savings'){location.href='../expansion/index.html'+(new URLSearchParams(location.search).has('fixtures')?'?fixtures=1':'')+'#'+new URLSearchParams({family:'16',page:'home',group:state.group.id});return;}
     if (!state.group) {
       app.replaceChildren(
