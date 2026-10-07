@@ -279,7 +279,7 @@ function toolbar(){
  }
  requestAnimationFrame(()=>document.body.style.setProperty('--fixture-height',`${bar.getBoundingClientRect().height}px`));
 }
-function render(focusLabel){try{state=repo.read();if(!routeParticipant(state)||!routeLocalSession(state))return;route=Object.fromEntries(new URLSearchParams(location.hash.slice(1)));route.page||='position';sessionStorage.setItem('chopdot.gate-c.route',location.hash);screen=null;
+function render(focusLabel){try{state=repo.read();const emptyFixture=fixtureMode&&currentActor()==='self'&&!state.group&&canonicalGroups(state).length===0&&state.expenses.length===0&&state.gateC.payments.length===0;if((!emptyFixture&&!routeParticipant(state))||!routeLocalSession(state))return;route=Object.fromEntries(new URLSearchParams(location.hash.slice(1)));route.page||='position';sessionStorage.setItem('chopdot.gate-c.route',location.hash);screen=null;
  ({position:positionPage,group:groupPage,person:personPage,settle:settlePage,scope:scopePage,methods:methodsPage,method_details:methodDetailsPage,amount:amountPage,payment:paymentPage,different:differentPage,details:detailsPage,record:recordPage,activity:activityPage}[route.page]||positionPage)();
  if(route.page==='payment'&&state.gateC.payments.some(p=>p.id===route.id&&[p.payer,p.recipient].includes(actor)))$('.app-content').append(link('Recovery options',()=>{location.href=`../gate-d/index.html${fixtureMode?'?fixtures=1':''}#${new URLSearchParams({page:'recovery',owner:'payment',id:route.id})}`;}));
  for(const a of $$('a:not([data-bound])')){a.onclick=guard(e=>{e.preventDefault();boundary(a.getAttribute('aria-label')||a.textContent.trim(),'This journey is outside the current integrated prototype. Your saved balances stay available.');});}

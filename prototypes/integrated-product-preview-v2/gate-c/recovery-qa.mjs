@@ -4,19 +4,20 @@ import assert from 'node:assert/strict';
 import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {serve} from '../gate-b/test-server.mjs';
+import {transition as accountPrecondition} from '../gate-d/model.js';
 import {addGoldenExample} from './fixtures.js';
 import {newDraft,transition as expenseTransition} from '../gate-b/model.js';
 const core=JSON.parse(readFileSync(new URL('../gate-b/contract/semantic-core.json',import.meta.url)));
 const root=process.env.PREVIEW_ROOT||resolve(new URL('../../..',import.meta.url).pathname),out=process.env.EVIDENCE_DIR||'/tmp/gate-c-recovery';mkdirSync(out,{recursive:true});
 const host=await serve(root),browser=await chromium.launch({headless:true});
-const report={status:'RUNNING',checks:[],errors:[],browser:browser.version(),scope:'Alternate methods, explicit source allocation, recovery controls, keyboard state and outer-host continuity'};
+const report={status:'RUNNING',checks:[],errors:[],browser:browser.version(),precondition:'Explicit verified local Entry/session fixture; actual Entry UI exercised separately by Gate A',scope:'Alternate methods, explicit source allocation, recovery controls, keyboard state and outer-host continuity'};
 let page,context;
 const pass=id=>report.checks.push({id,status:'PASS'});
 const click=async n=>page.getByRole('link',{name:n,exact:true}).click();
 const data=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('chopdot.preview-v2.guest')));
 const payment=async()=> (await data()).gateC.payments.at(-1);
 const state=async s=>page.waitForFunction(v=>document.querySelector('#app>.screen')?.dataset.paymentState===v,s);
-async function start(initial=addGoldenExample({},core),width=393){if(context)await context.close();context=await browser.newContext({viewport:{width,height:852},permissions:['clipboard-read','clipboard-write']});page=await context.newPage();page.on('pageerror',e=>report.errors.push(e.message));await page.addInitScript(s=>{if(!localStorage.getItem('chopdot.preview-v2.guest'))localStorage.setItem('chopdot.preview-v2.guest',JSON.stringify(s));},initial);await page.goto(host.base+'/prototypes/integrated-product-preview-v2/gate-c/index.html?fixtures=1#page=position');await page.locator('.person-row').first().waitFor();}
+async function start(initial=addGoldenExample({},core),width=393){if(context)await context.close();context=await browser.newContext({viewport:{width,height:852},permissions:['clipboard-read','clipboard-write']});page=await context.newPage();page.on('pageerror',e=>report.errors.push(e.message));await page.addInitScript(s=>{if(!localStorage.getItem('chopdot.preview-v2.guest'))localStorage.setItem('chopdot.preview-v2.guest',JSON.stringify(s));},accountPrecondition(initial,{type:'entry'},'entry-verified'));await page.goto(host.base+'/prototypes/integrated-product-preview-v2/gate-c/index.html?fixtures=1#page=position');await page.locator('.person-row').first().waitFor();}
 async function draft(other='Jeanine',amount='54.30'){await page.locator('.person-row').filter({hasText:other}).filter({hasText:'CHF'}).click();await click('Settle CHF '+amount);}
 async function method(m){await page.locator('[href="#methods"]').click();await page.locator('.method-row').filter({has:page.locator('b',{hasText:new RegExp('^'+m+'$')})}).click();}
 try{
@@ -47,7 +48,7 @@ try{
   await start();await draft();await method('Wallet');await click('Review wallet payment');await state('prepared');await page.getByRole('combobox',{name:'Wallet precondition'}).selectOption(problem);await click('Approve in wallet');assert.equal((await payment()).state,'prepared');assert.equal(await page.locator('#app>.screen').getAttribute('data-golden'),problem);pass('wallet-precondition-'+problem);
  }
  for(const [control,expected] of [['Verify cancellation','cancelled'],['Verify expiry','expired']]){
-  await start();await draft();await method('Wallet');await click('Review wallet payment');await click('Approve in wallet');await click('Return to ChopDot');await page.getByRole('button',{name:control}).click();await state(expected);assert.equal((await payment()).confirmed,'0');await click('Review and retry');await state('prepared');assert.equal((await payment()).attempt,2);pass('wallet-'+expected+'-safe-retry');
+  await start();await draft();await method('Wallet');await click('Review wallet payment');await click('Approve in wallet');await page.getByRole('button',{name:'Return to same payment',exact:true}).click();await state('approval_waiting');await page.getByRole('button',{name:control}).click();await state(expected);assert.equal((await payment()).confirmed,'0');await click('Review and retry');await state('prepared');assert.equal((await payment()).attempt,2);pass('wallet-'+expected+'-safe-retry');
  }
  await start();await draft();await page.locator('[href="#amount"]').click();await page.getByRole('textbox',{name:'Payment amount',exact:true}).fill('20');const offset=page.getByRole('checkbox',{name:'Apply included offsets'});await offset.focus();await page.keyboard.press('Space');assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('aria-label')),'Apply included offsets');const outline=await offset.evaluate(n=>getComputedStyle(n).outlineStyle);assert.notEqual(outline,'none');pass('keyboard-offset-focus-retained-visible');await click('Use CHF 20.00');
  // The outer host restores the exact inner payment route on reload.
