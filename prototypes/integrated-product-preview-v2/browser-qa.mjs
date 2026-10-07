@@ -29,7 +29,12 @@ async function fillExpense(page, amount, description) {
   await product(page).getByLabel('Description', { exact: true }).fill(description);
 }
 async function backFromExpense(page, mode = 'guest') {
+  const integrated = await page.evaluate(() => window.ChopDotPreviewV2.getCurrentJourney() === 'GATE_B');
   await product(page).locator('#entry').getByRole('link', { name: 'Back', exact: true }).click();
+  if (integrated) {
+    await product(page).locator('[data-golden="active"]').waitFor();
+    await product(page).locator('[href="#home-handoff"][aria-label="Back"]').click();
+  }
   await atHome(page, mode);
 }
 async function saveExpense(page, description) {
@@ -37,7 +42,12 @@ async function saveExpense(page, description) {
   await product(page).locator('#success').getByRole('heading', { name: `${description} added.`, exact: true }).waitFor();
 }
 async function returnFromReceipt(page, mode = 'guest') {
+  const integrated = await page.evaluate(() => window.ChopDotPreviewV2.getCurrentJourney() === 'GATE_B');
   await product(page).locator('#success').getByRole('link', { name: 'Back to group', exact: true }).click();
+  if (integrated) {
+    await product(page).locator('[data-golden="active"]').waitFor();
+    await product(page).locator('[href="#home-handoff"][aria-label="Back"]').click();
+  }
   await atHome(page, mode);
 }
 async function createLocalGroup(page, name) {
@@ -176,6 +186,7 @@ try {
       for (const key of ['group', 'people', 'expenses']) check(`${label}: conversion preserves ${key}`, converted[key], saved[key]);
       const entryBefore = await page.evaluate(() => window.ChopDotPreviewV2.getLastEntryState());
       await openExpense(page);
+      check(`${label}: converted Add uses the canonical integrated editor`, await page.evaluate(() => window.ChopDotPreviewV2.getCurrentJourney()), 'GATE_B');
       await fillExpense(page, '30.00', 'Train tickets');
       await backFromExpense(page, 'converted');
       check(`${label}: editing Back retains conversion`, (await state(page)).accountCreated);

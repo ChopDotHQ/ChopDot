@@ -138,6 +138,7 @@ function note(message, error = false) {
   ($(".app-content") || $(".handoff") || screen).prepend(n);
   return n;
 }
+const draftPartition=()=>state.expenses.find(e=>e.id===draft?.id)?.money||{currency:state.group.currency,exponent:state.group.exponent??2};
 function persistDraft() {
   repo.saveDraft(actor, draft);
 }
@@ -435,7 +436,7 @@ function editor() {
       "Only the expense owner can edit this expense.",
     );
   mount(editing ? "j06" : "j05", editing ? "edit" : "entry");
-  text(".currency", state.group.currency);
+  text(".currency", draftPartition().currency);
   for (const [selector, field, label] of [
     ["input.amount", "amountText", "Amount"],
     ["input.description", "description", "Description"],
@@ -460,7 +461,7 @@ function editor() {
     draft.method === "equal" ? "Split equally" : `Split by ${draft.method}`;
   let summary = "";
   try {
-    summary = ` · ${splitSummary(allocationFor(draft, state.group.currency, state.group.exponent ?? 2))}`;
+    summary = ` · ${splitSummary(allocationFor(draft, draftPartition().currency, draftPartition().exponent))}`;
   } catch {}
   rows[1].querySelector(".row-sub").textContent =
     `${draft.participantIds.length} people${summary}`;
@@ -524,7 +525,7 @@ function split() {
   list.replaceChildren();
   let snapshot;
   try {
-    snapshot = allocationFor(draft, state.group.currency, state.group.exponent ?? 2);
+    snapshot = allocationFor(draft, draftPartition().currency, draftPartition().exponent);
   } catch {}
   for (const p of participants(state)) {
     const row = template.cloneNode(true),
@@ -585,7 +586,7 @@ function methodPage() {
     text(
       ".shares b",
       splitSummary(
-        allocationFor({ ...draft, method: "equal" }, state.group.currency),
+        allocationFor({ ...draft, method: "equal" }, draftPartition().currency, draftPartition().exponent),
       ),
     );
   } catch {
@@ -610,7 +611,7 @@ function customSplit(kind) {
   persistDraft();
   text(
     ".header-title span",
-    `Total ${state.group.currency} ${draft.amountText}`,
+    `Total ${draftPartition().currency} ${draft.amountText}`,
   );
   const card = $(".app-content>.card"),
     template = card.querySelector(".amount-row");
@@ -618,7 +619,7 @@ function customSplit(kind) {
   $(".text-link")?.remove();
   let snapshot;
   try {
-    snapshot = allocationFor(draft, state.group.currency, state.group.exponent ?? 2);
+    snapshot = allocationFor(draft, draftPartition().currency, draftPartition().exponent);
   } catch {}
   for (const id of [...draft.participantIds].sort()) {
     const row = template.cloneNode(true);
@@ -646,7 +647,7 @@ function customSplit(kind) {
       (kind === "exact" ? draft.exact : draft.shares)[id] = field.value;
       try {
         persistDraft();
-        const a = allocationFor(draft, state.group.currency, state.group.exponent ?? 2);
+        const a = allocationFor(draft, draftPartition().currency, draftPartition().exponent);
         text(".sum b", money(a.total));
         for (const display of card.querySelectorAll("[data-share-id]"))
           display.textContent = money(
@@ -671,7 +672,7 @@ function customSplit(kind) {
     snapshot ? money(snapshot.total) : "Amounts must add to total",
   );
   action(".app-footer a", () => {
-    allocationFor(draft, state.group.currency, state.group.exponent ?? 2);
+    allocationFor(draft, draftPartition().currency, draftPartition().exponent);
     persistDraft();
     backEditor();
   });
@@ -761,7 +762,7 @@ async function saveExpense(allowDuplicate = false) {
   persistDraft();
   const editing = draft.baseRevision !== null;
   try {
-    allocationFor(draft, state.group.currency, state.group.exponent ?? 2);
+    allocationFor(draft, draftPartition().currency, draftPartition().exponent);
     if (!draft.description.trim())
       throw new DomainError("MISSING", "Add a description.");
   } catch (e) {
@@ -1502,7 +1503,7 @@ function recovery() {
     if (rows[1]) {
       rows[1].querySelector("b").textContent = "Your saved version";
       rows[1].querySelector(":scope > div > span").textContent =
-        `${draft.description} · ${state.group.currency} ${draft.amountText} · ${name(draft.payerId)} paid · ${draft.date} · ${draft.participantIds.map(name).join(", ")} · ${method(draft)}`;
+        `${draft.description} · ${draftPartition().currency} ${draft.amountText} · ${name(draft.payerId)} paid · ${draft.date} · ${draft.participantIds.map(name).join(", ")} · ${method(draft)}`;
     }
     action(".primary", () => {
       if (!current || current.deleted) {
@@ -1552,7 +1553,7 @@ function recovery() {
       (e) =>
         e.description.toLowerCase() === draft.description.toLowerCase() &&
         e.money.minorUnits ===
-          allocationFor(draft, state.group.currency, state.group.exponent ?? 2).total.minorUnits &&
+          allocationFor(draft, draftPartition().currency, draftPartition().exponent).total.minorUnits &&
         e.payerId === draft.payerId &&
         e.date === draft.date,
     );
@@ -1575,7 +1576,7 @@ function recovery() {
     action(".primary", () => saveExpense(true));
     action(".secondary", backEditor);
   } else {
-    text(".currency", state.group.currency);
+    text(".currency", draftPartition().currency);
     text(".amount", draft.amountText);
     text(".description", draft.description);
     action(".primary", () => saveExpense());

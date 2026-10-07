@@ -198,6 +198,33 @@
       "source": "prototypes/experience-workbench/journeys/26-group-lifecycle/spec.md",
       "copy": "authority/j26-spec.md",
       "sha256": "3f1cb13980e10fd4ccd1ada1f7b08794f2379d346575f9e73e159ec6a4a0c362"
+    },
+    {
+      "journey": "14",
+      "kind": "approved-qr-reference-fixtures",
+      "source": "prototypes/experience-workbench/journeys/14-receive-money/source/qr.json",
+      "copy": "authority/receive-qr.json",
+      "sha256": "18a42e14321e7d335fed05a5cd74337def89bf6e0123f0cd1c900501013b5d08"
+    }
+  ],
+  "derived": [
+    {
+      "copy": "authority/j24-states.json",
+      "source": "authority/j24.html",
+      "generator": "extract-definition-states.mjs",
+      "sha256": "27497fff3ce4befbb05f8115a4a8e9149b78557cea937ff9c2ad99bf7b17d48d"
+    },
+    {
+      "copy": "authority/j25-states.json",
+      "source": "authority/j25.html",
+      "generator": "extract-definition-states.mjs",
+      "sha256": "bf6ff4338acb6d175f1ebff25e1d7a7e7aaa3982e76ad9424b5b253a759bbff9"
+    },
+    {
+      "copy": "authority/j26-states.json",
+      "source": "authority/j26.html",
+      "generator": "extract-definition-states.mjs",
+      "sha256": "cd6d5b379cfc4ee1a9154f7f1730754da62360858610ef4fc320232031a02d2d"
     }
   ]
 }

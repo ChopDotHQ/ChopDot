@@ -183,7 +183,7 @@ function proposal(s, d, actor, current) {
       d.receipt.data.length > 1500000)
   )
     fail("RECEIPT", "Choose a PNG, JPEG or WebP image smaller than 1 MB.");
-  const allocation = allocationFor(d, s.group.currency, s.group.exponent ?? 2);
+  const allocation = allocationFor(d, current?.money.currency ?? s.group.currency, current?.money.exponent ?? s.group.exponent ?? 2);
   return {
     ...(current || {}),
     id: d.id,
@@ -194,7 +194,7 @@ function proposal(s, d, actor, current) {
     amountText: moneyToDecimal(allocation.total),
     money: allocation.total,
     allocation,
-    currency: s.group.currency,
+    currency: allocation.total.currency,
     payerId: d.payerId,
     participantIds: [...d.participantIds].sort(),
     method: d.method,

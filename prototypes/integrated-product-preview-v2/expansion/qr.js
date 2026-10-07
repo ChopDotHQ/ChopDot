@@ -1,0 +1,12 @@
+import {membershipActive,groupMembers,fail} from '../create-join/model.js';import {shareStatus} from './model.js';
+export const qrReference=(kind,id)=>'chopdot-demo:v1:'+kind+':'+encodeURIComponent(id);
+export function resolveQR(s,actor,reference,{paymentId,now=Date.now()}={}){
+ if(typeof reference!=='string'||reference.length>500)return {page:'malformed'};
+ const approvedReceive=/^https:\/\/example\.invalid\/chopdot\/receive\/(demo-share-(?:[1-9]|[12][0-9]|3[0-2]))$/.exec(reference.trim());if(approvedReceive)reference=qrReference('receive',approvedReceive[1]);
+ const match=/^chopdot-demo:(v\d+):([a-z-]+):(.+)$/.exec(reference.trim());if(!match)return {page:reference.startsWith('chopdot-demo:')?'malformed':'external-payload'};if(match[1]!=='v1')return {page:'unsupported-version'};let id;try{id=decodeURIComponent(match[3]);}catch{return {page:'malformed'};}
+ if(s.expansion?.environment.offline)return {page:'offline',reference};
+ if(match[2]==='person'){if(id===actor)return {page:'own-person',id};const gs=s.groups.filter(g=>membershipActive(s,actor,g.id)&&groupMembers(s,g).some(p=>p.id===id));if(!gs.length)return {page:'person-unavailable'};return {page:'person',id,groupId:gs[0].id};}
+ if(match[2]==='invite'){const i=s.membership?.invitations.find(i=>i.id===id),g=s.groups.find(g=>g.id===i?.groupId&&!g.deleted);if(!i||!g||i.status==='expired')return {page:'invite-expired'};if(i.status!=='pending'&&!i.redemptions?.includes(actor))return {page:'invite-expired'};return {page:membershipActive(s,actor,g.id)?'invite-already-joined':'invite',id,groupId:g.id,name:g.name};}
+ if(match[2]==='receive'){const r=s.expansion.shares.find(r=>r.id===id);if(!r||r.audience!==actor)return {page:'receive-wrong-audience'};if(shareStatus(s,r,now,paymentId)!=='active')return {page:'receive-expired'};if(paymentId){const p=s.gateC?.payments.find(p=>p.id===paymentId&&p.payer===actor);if(!p||p.recipient!==r.owner||p.currency!==r.currency||p.exponent!==r.exponent||p.amount!==r.amount||p.groupIds.some(g=>!membershipActive(s,actor,g)))return {page:'settlement-mismatch'};if(r.requestId){const request=s.expansion.requests.find(q=>q.id===r.requestId),same=(a,b)=>JSON.stringify([...a].sort())===JSON.stringify([...b].sort());if(!request||!same(request.payload.sourceGroups,p.groupIds)||!same(request.payload.sourceItems,p.sources.map(x=>x.id)))return {page:'settlement-mismatch'};}return {page:'settlement-match',id,paymentId};}return {page:'receive-share',id,owner:r.owner};}
+ return {page:'unsupported-type'};
+}
