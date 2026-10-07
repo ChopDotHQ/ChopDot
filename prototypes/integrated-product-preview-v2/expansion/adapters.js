@@ -1,0 +1,37 @@
+import {activeMembers,visibleGroups,access,relationship,name,requestSnapshot,requestStatus,shareStatus,money} from './model.js';
+import {online} from '../create-join/model.js';
+export function peopleProjection(state,actor,route){
+ const gs=visibleGroups(state,actor),PEOPLE={},GROUPS={},members={};
+ for(const g of gs){GROUPS[g.id]={name:g.name,currency:g.currency,owner:g.ownerId||'self'};members[g.id]=activeMembers(state,g).map(p=>p.id);for(const p of activeMembers(state,g))PEOPLE[p.id]={name:p.id===actor?'You':name(state,p.id),initials:name(state,p.id).slice(0,2).toUpperCase(),preferred:state.expansion.methods.find(m=>m.owner===p.id&&(p.id===actor||m.visible)&&m.preferred&&!m.removed)?.method||null};}
+ const invites=(state.membership?.invitations||[]).filter(i=>i.status==='pending'&&gs.some(g=>g.id===i.groupId)&&i.kind!=='group-link').map(i=>{const person='invitation:'+i.id;PEOPLE[person]={name:i.name,initials:i.name.slice(0,2).toUpperCase()};return {id:i.id,person,group:i.groupId};});
+ const g=route.group||state.group?.id,scope=route.scope||g;
+ const s={route:route.page||'members',group:g,scope,person:route.person||null,viewer:actor,query:route.query||'',online:online(state)&&!state.expansion.environment.offline,access:access(state,actor,g),members,invites,owners:Object.fromEntries(gs.map(g=>[g.id,g.ownerId||'self']))};
+ const rows=(s,p,scope=s.scope)=>relationship(state,actor,p,scope==='all'?null:scope).map(r=>({...r,person:p,group:r.groupId,minor:-BigInt(r.minor)}));
+ const M={PEOPLE,GROUPS,canMoney:()=>actor==='self'?state.gateD?.session.status==='active':state.people.find(p=>p.id===actor)?.identity==='linked',name:id=>PEOPLE[id]?.name||'Former participant',owner:(s,g=s.group)=>s.owners[g],canView:s=>s.scope==='all'||!!members[s.scope]?.includes(actor),visibleGroups:(s,p)=>gs.filter(g=>members[g.id].includes(p)).map(g=>g.id),directory:s=>Object.keys(PEOPLE).filter(p=>p!==actor&&!p.startsWith('invitation:')&&PEOPLE[p].name.toLowerCase().includes(s.query.toLowerCase())),balances:(s,p,scope=s.scope)=>{const v={};for(const r of rows(s,p,scope))v[r.currency]=(v[r.currency]||0n)+r.minor;return v;},amount:(n,c)=>money(n,c,c==='DOT'?6:2),affected:(s,p)=>rows(s,p).some(r=>r.disputed),preference:s=>PEOPLE[s.person]?.preferred||null};
+ return {s,M};
+}
+export function requestProjection(state,actor,route){
+ const {s:data,M:P}=peopleProjection(state,actor,{...route,page:'person'});const selected=state.expansion.requests.find(r=>r.id===route.id&&r.payload.requester===actor);const candidate=state.expansion.operations[route.operation],operation=candidate?.actor===actor?candidate:null;const p=selected?.payload||operation?.payload;
+ const context={person:p?.payer||route.person,scope:p?.groupId||route.scope||route.group||state.group?.id,currency:p?.currency||route.currency||state.group?.currency||'CHF',exponent:p?.exponent||Number(route.exponent||2)};
+ const s={data,context,route:route.page||'compose',note:state.expansion.drafts[actor+':request']?.note||'',review:null,command:operation?{...operation,payload:displayPayload(operation.kind==='request'?operation.payload:selected?.payload||{amount:'0',currency:context.currency,exponent:context.exponent})}:null,selected:route.id};
+ const source=()=>relationship(state,actor,context.person,context.scope==='all'?null:context.scope).filter(r=>r.currency===context.currency&&r.exponent===context.exponent&&BigInt(r.minor)!==0n).map(r=>({...r,group:r.groupId,minor:-BigInt(r.minor)}));
+ const snapshot=()=>{const rows=source();return {requester:actor,payer:context.person,recipient:actor,currency:context.currency,amountMinor:rows.reduce((n,r)=>n+r.minor,0n),displayScale:context.exponent,scope:context.scope,sourceItems:rows.map(r=>r.id),sourceGroups:[...new Set(rows.map(r=>r.group))],note:s.note,audience:[actor,context.person]};};
+ const current=()=>selected?{...selected,status:requestStatus(state,selected),payload:displayPayload(selected.payload)}:null;
+ const M={P,source,snapshot,amount:()=>snapshot().amountMinor,current,guard:()=>!s.data.online?'offline':source().some(r=>r.disputed)?'issue':snapshot().amountMinor<=0n?'nothing-due':s.note.length>160?'note':null};
+ s.review=operation?.kind==='request'?displayPayload(operation.payload):snapshot();
+ if(selected&&!['withdraw-confirm','sources','duplicate'].includes(s.route))s.route=current().status==='active'?'detail':current().status;
+ if(operation&&!['prepared','succeeded'].includes(operation.status))s.route=operation.status==='no-effect'?(operation.kind==='withdraw-request'?'withdraw-failed':'failed'):operation.kind==='withdraw-request'?'withdraw-unknown':'unknown';
+ if(operation?.status==='succeeded'&&operation.kind==='withdraw-request')s.route='withdrawn';
+ return {s,M};
+}
+export function displayPayload(p){return {...p,amountMinor:BigInt(p.amount),displayScale:p.exponent,scope:p.groupId||'all'};}
+export function receiveProjection(state,actor,route,QR_DATA){
+ const groups=visibleGroups(state,actor),names=Object.fromEntries(groups.flatMap(g=>activeMembers(state,g)).map(p=>[p.id,p.id===actor?'You':name(state,p.id)]));const selected=state.expansion.shares.find(r=>r.id===route.id&&r.owner===actor),candidate=state.expansion.operations[route.operation],o=candidate?.actor===actor?candidate:null;const methodId=selected?.methodId||o?.payload.methodId||route.method;
+ const method=state.expansion.methods.find(m=>m.id===methodId&&m.owner===actor&&!m.removed);const request=state.expansion.requests.find(r=>r.id===(selected?.requestId||route.request)&&r.payload.requester===actor);
+ const s={route:route.page||'methods',context:{owner:actor,origin:request?'request':'you',person:request?.payload.payer,currency:request?.payload.currency,amountMinor:request?.payload.amount,scale:request?.payload.exponent},audience:selected?.audience||o?.payload.audience||route.audience||'',audienceOptions:Object.keys(names).filter(id=>id!==actor&&state.people.find(p=>p.id===id)?.identity!=='guest'),online:online(state)&&!state.expansion.environment.offline,access:true,command:o?{...o,type:o.kind==='share-stop'?'stop':'prepare'}:null,now:Date.now(),toast:route.toast||'',copyState:route.copy||'idle'};
+ const available=()=>state.expansion.methods.filter(m=>m.owner===actor&&!m.removed&&m.visible&&(!request||(m.currency===request.payload.currency&&m.exponent===request.payload.exponent)));
+ if(!s.online)s.route='offline';else if(o&&['pending','unknown','no-effect'].includes(o.status))s.route=o.status==='no-effect'?'failed':'recovery';else if(selected){const status=shareStatus(state,selected);if(status!=='active')s.route=status==='unavailable'?'unavailable':status;else if(!['ready','code','recipient','stop-confirm','share-preview','share-return','copy-review'].includes(s.route))s.route='ready';}else if(!available().length)s.route='empty';
+ if(s.route==='details'&&!method)s.route='methods';if(['ready','code','recipient','stop-confirm','share-preview','share-return'].includes(s.route)&&!selected)s.route='methods';
+ const M={P:null,QR_DATA,names,formatAmount:()=>request?money(request.payload.amount,request.payload.currency,request.payload.exponent):null,available,own:()=>true,dest:()=>method,record:()=>selected,link:()=>selected?'https://example.invalid/chopdot/receive/'+selected.id:'',raw:()=>method?[method.method,method.currency,...method.fields.map(([k,v])=>k+': '+v)].join('\n'):''};
+ return {s,M,method,request};
+}

@@ -1,0 +1,203 @@
+{
+  "implementationBase": "0f1565a8285e2fc8b4330bbc6b7f29d727982e52",
+  "authority": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "schema": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "files": [
+    {
+      "journey": "09",
+      "kind": "golden",
+      "source": "prototypes/experience-workbench/journeys/09-manage-people/v1-candidate.html",
+      "copy": "authority/j09.html",
+      "sha256": "715077633a17cf37ef587988c0aee7f4906403a030d8e0d17d1b0c46aa6cb37d"
+    },
+    {
+      "journey": "09",
+      "kind": "spec",
+      "source": "prototypes/experience-workbench/journeys/09-manage-people/spec.md",
+      "copy": "authority/j09-spec.md",
+      "sha256": "5202ed6bcb19fdfba414854e5ae28d9fbfe0b5e39e676c20ca623c59d489267c"
+    },
+    {
+      "journey": "13",
+      "kind": "golden",
+      "source": "prototypes/experience-workbench/journeys/13-request-money/v1-candidate.html",
+      "copy": "authority/j13.html",
+      "sha256": "a22664499c4056d95a6cdeb45df85d43fd2055713e80ae8f69020469aa9bb707"
+    },
+    {
+      "journey": "13",
+      "kind": "spec",
+      "source": "prototypes/experience-workbench/journeys/13-request-money/spec.md",
+      "copy": "authority/j13-spec.md",
+      "sha256": "4c230953020a14a9228433161e7fd9b4a754e2c8d40f478d06a2d68848032761"
+    },
+    {
+      "journey": "14",
+      "kind": "golden",
+      "source": "prototypes/experience-workbench/journeys/14-receive-money/v1-candidate.html",
+      "copy": "authority/j14.html",
+      "sha256": "5ce877d89157a4203a2e4a2c5fad795a4ecfabf5388dbaecb00bbf28f2f31e1d"
+    },
+    {
+      "journey": "14",
+      "kind": "spec",
+      "source": "prototypes/experience-workbench/journeys/14-receive-money/spec.md",
+      "copy": "authority/j14-spec.md",
+      "sha256": "ca4066768738b6ad7511e51468d2e10b837fe215bbf3e1a486da960a924d2d9a"
+    },
+    {
+      "journey": "15",
+      "kind": "golden",
+      "source": "prototypes/experience-workbench/journeys/15-settlement-history/v1-recovered.html",
+      "copy": "authority/j15.html",
+      "sha256": "0915e060314e06471d5039e735dca4f2e708940f3a33f2a5890b8758671584e0"
+    },
+    {
+      "journey": "15",
+      "kind": "spec",
+      "source": "prototypes/experience-workbench/journeys/15-settlement-history/spec.md",
+      "copy": "authority/j15-spec.md",
+      "sha256": "4a9871b3907f107904ca9e9f7f61aba692c35ae85edce8833d449090d7be9347"
+    },
+    {
+      "journey": "16",
+      "kind": "golden",
+      "source": "prototypes/experience-workbench/journeys/16-savings-group/v1.2-review-candidate.html",
+      "copy": "authority/j16.html",
+      "sha256": "dc920000fc4120accab588413ee79095093f8e4223066d7d3a94fb524e5cd0de"
+    },
+    {
+      "journey": "16",
+      "kind": "spec",
+      "source": "prototypes/experience-workbench/journeys/16-savings-group/spec.md",
+      "copy": "authority/j16-spec.md",
+      "sha256": "639a65d1a2d5ba84c4234bb5a83e5fdbd91259a19079bc506b646c64d4adf7d3"
+    },
+    {
+      "journey": "17",
+      "kind": "golden",
+      "source": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/v1.4-review-candidate.html",
+      "copy": "authority/j17.html",
+      "sha256": "a5dad1dc659955d4b70acaa13eced199dd778ff628ab8998d4c7ae83055d4915"
+    },
+    {
+      "journey": "17",
+      "kind": "spec",
+      "source": "prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/spec.md",
+      "copy": "authority/j17-spec.md",
+      "sha256": "bb725849c7d4a997a993b11fe92cc33d996f0ed26ff33195a37b4c2dfc00c567"
+    },
+    {
+      "journey": "19",
+      "kind": "golden",
+      "source": "prototypes/experience-workbench/journeys/19-insights/review-v1.1/v1.1-candidate.html",
+      "copy": "authority/j19.html",
+      "sha256": "c67973e0efc1068d006d57c4d5690b6c49218bd63f24cb62ab587fbf5b9862da"
+    },
+    {
+      "journey": "19",
+      "kind": "spec",
+      "source": "prototypes/experience-workbench/journeys/19-insights/spec.md",
+      "copy": "authority/j19-spec.md",
+      "sha256": "fa9ed8ad99b39a3b2088e1b18c6b2582f8268c0ea78a770b2f8ce6fde699b0ee"
+    },
+    {
+      "journey": "20",
+      "kind": "golden",
+      "source": "prototypes/experience-workbench/journeys/20-payment-methods/review-v1/v1-candidate.html",
+      "copy": "authority/j20.html",
+      "sha256": "02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab"
+    },
+    {
+      "journey": "20",
+      "kind": "spec",
+      "source": "prototypes/experience-workbench/journeys/20-payment-methods/spec.md",
+      "copy": "authority/j20-spec.md",
+      "sha256": "6de557de9699a95d6bdecc05b9afc0b9db84e7fc4bbfc33a0128f02fc1d3116f"
+    },
+    {
+      "journey": "21",
+      "kind": "golden",
+      "source": "prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html",
+      "copy": "authority/j21.html",
+      "sha256": "28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6"
+    },
+    {
+      "journey": "21",
+      "kind": "spec",
+      "source": "prototypes/experience-workbench/journeys/21-wallet-crypto/spec.md",
+      "copy": "authority/j21-spec.md",
+      "sha256": "440edde0a4e880e9c1827f0fe5d0881e15fe6676d4caf30e45c5f8833833b753"
+    },
+    {
+      "journey": "22",
+      "kind": "golden",
+      "source": "prototypes/experience-workbench/journeys/22-qr-flows/v1-candidate.html",
+      "copy": "authority/j22.html",
+      "sha256": "3bbab5328a71d42866006c6f48088c06759fd0a3a922ee4a91e6fcd7bb75fe23"
+    },
+    {
+      "journey": "22",
+      "kind": "spec",
+      "source": "prototypes/experience-workbench/journeys/22-qr-flows/spec.md",
+      "copy": "authority/j22-spec.md",
+      "sha256": "3cab69dafed477fd6eaf86496e69a99e5b64b2b3aca85d9a0f110f24365547df"
+    },
+    {
+      "journey": "23",
+      "kind": "golden",
+      "source": "prototypes/experience-workbench/journeys/23-import/v1-candidate.html",
+      "copy": "authority/j23.html",
+      "sha256": "3a6f88274ff59bd7d513d5bbcee57a235465f1d33345df37a0b84ed51a2f6f9d"
+    },
+    {
+      "journey": "23",
+      "kind": "spec",
+      "source": "prototypes/experience-workbench/journeys/23-import/spec.md",
+      "copy": "authority/j23-spec.md",
+      "sha256": "bf2cd061d0ee6ba026d60438ce3ef7c58efc0b98ddd962ccdbd0fc530a8daf64"
+    },
+    {
+      "journey": "24",
+      "kind": "golden",
+      "source": "prototypes/experience-workbench/journeys/24-export-portability/v1-candidate.html",
+      "copy": "authority/j24.html",
+      "sha256": "03d1c2094251dc3ec683108c484bdc84e6f7db08b1c40ce042535a2d186a9b82"
+    },
+    {
+      "journey": "24",
+      "kind": "spec",
+      "source": "prototypes/experience-workbench/journeys/24-export-portability/spec.md",
+      "copy": "authority/j24-spec.md",
+      "sha256": "473bbc20a282e78df0e3e4ea56b395316fa874c7bb1c529afde9e673da13a293"
+    },
+    {
+      "journey": "25",
+      "kind": "golden",
+      "source": "prototypes/experience-workbench/journeys/25-storage-recovery/v1-candidate.html",
+      "copy": "authority/j25.html",
+      "sha256": "785fd02267b1e47e1bde8513a6c91373ee1ce8dd85b35812201f0af92c77ca3f"
+    },
+    {
+      "journey": "25",
+      "kind": "spec",
+      "source": "prototypes/experience-workbench/journeys/25-storage-recovery/spec.md",
+      "copy": "authority/j25-spec.md",
+      "sha256": "e7331d9abdc0f7a1f46d379ffa692a4b166e999c4c7c632f71931109ecdbe8ee"
+    },
+    {
+      "journey": "26",
+      "kind": "golden",
+      "source": "prototypes/experience-workbench/journeys/26-group-lifecycle/v1-candidate.html",
+      "copy": "authority/j26.html",
+      "sha256": "4d93b1b3458aead8d412256f65d0e4c2c2de1b273abc0af58bd89cb56783da28"
+    },
+    {
+      "journey": "26",
+      "kind": "spec",
+      "source": "prototypes/experience-workbench/journeys/26-group-lifecycle/spec.md",
+      "copy": "authority/j26-spec.md",
+      "sha256": "3f1cb13980e10fd4ccd1ada1f7b08794f2379d346575f9e73e159ec6a4a0c362"
+    }
+  ]
+}

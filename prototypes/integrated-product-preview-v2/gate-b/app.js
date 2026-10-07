@@ -217,7 +217,7 @@ function group() {
         ? e.issues.filter((i) => i.status === "open").map((i) => ({ e, i }))
         : [],
     );
-  const total = expenses.reduce((n, e) => n + BigInt(e.money.minorUnits), 0n);
+  const spending=new Map();for(const e of expenses){const key=JSON.stringify([e.money.currency,e.money.exponent]);spending.set(key,(spending.get(key)||0n)+BigInt(e.money.minorUnits));}
   text(".header-title b", state.group.name);
   text(
     ".header-title span",
@@ -235,7 +235,7 @@ function group() {
   );
   text(
     ".meta-copy b",
-    `${money(moneyFromMinorUnits(total, state.group.currency))} spent`,
+    (spending.size?[...spending].map(([key,n])=>{const[c,x]=JSON.parse(key);return money(moneyFromMinorUnits(n,c,x));}).join(' · '):money(moneyFromMinorUnits('0',state.group.currency,state.group.exponent??2)))+' spent',
   );
   text(
     ".meta-copy span",
@@ -254,8 +254,7 @@ function group() {
       page: "review",
     })),
   ];
-  const balances = position(state, actor),
-    units = BigInt(balances[`${state.group.currency}:${state.group.exponent ?? 2}`] || "0");
+  const balances=position(state,actor),defaultKey=`${state.group.currency}:${state.group.exponent??2}`,displayKey=BigInt(balances[defaultKey]||0)!==0n?defaultKey:Object.keys(balances).find(k=>BigInt(balances[k])!==0n)||defaultKey,[displayCurrency,displayExponentText]=displayKey.split(':'),displayExponent=Number(displayExponentText),units=BigInt(balances[displayKey]||0);
   text(
     ".hero",
     !expenses.length
@@ -314,7 +313,7 @@ function group() {
   text(
     ".position-value",
     money(
-      moneyFromMinorUnits(units < 0n ? -units : units, state.group.currency, state.group.exponent ?? 2),
+      moneyFromMinorUnits(units<0n?-units:units,displayCurrency,displayExponent),
     ),
   );
   $(".position-value").classList.toggle("positive", units > 0n);
@@ -333,7 +332,7 @@ function group() {
   if (state.gateC) {
     for (const id of Object.keys(pairs)) delete pairs[id];
     for (const p of settlementPairs(state, actor, state.group.id))
-      if(p.currency===state.group.currency && p.exponent===(state.group.exponent??2)) pairs[p.other]=-BigInt(p.minor);
+      if(p.currency===displayCurrency&&p.exponent===displayExponent) pairs[p.other]=-BigInt(p.minor);
   }
   const involved = Object.keys(pairs).filter((id) => pairs[id] !== 0n);
   text(".position-side b", involved.map(name).join(" + "));
@@ -416,6 +415,9 @@ function group() {
       parent.postMessage({ type: "chopdot-gate-b-home" }, location.origin);
     else location.href = "../index.html";
   });
+  const familyNav=element('div','local-actions');for(const[label,family,page]of [['Group settings','26','settings'],['Savings','16','list'],['Insights','19','overview']]){const b=element('button','btn soft',label);b.onclick=()=>{location.href='../expansion/index.html'+(fixtureMode?'?fixtures=1':'')+'#'+new URLSearchParams({family,page,group:family==='26'?state.group.id:''});};familyNav.append(b);}$('.app-content').append(familyNav);
+  for(const[key,n]of Object.entries(balances).filter(([key])=>key!==displayKey)){const[c,x]=key.split(':');note((BigInt(n)>0n?'Also owed ':BigInt(n)<0n?'Also owe ':'No net position in ')+money(moneyFromMinorUnits(BigInt(n)<0n?-BigInt(n):BigInt(n),c,Number(x))));}
+  if(state.group.archived){note('Archived · history and outstanding positions are preserved. Restore this group before new expenses or invitations.');for(const n of $$('.app-content a,.app-content button,.add-tab'))if(/^(Add expense|Invite people)$/i.test(n.textContent.trim())){n.setAttribute('aria-disabled','true');n.onclick=e=>e.preventDefault();}}
   if (state.gateB.environment.offline)
     note(
       "Offline. Showing saved group data. This prototype stores changes on this device only.",
@@ -1582,22 +1584,9 @@ function recovery() {
   action('[aria-label="Back"]', backEditor);
 }
 function people() {
-  mount("j08", "members-handoff");
-  const content = $(".handoff");
-  content.replaceChildren(element("h1", "", "People"));
-  for (const p of participants(state))
-    content.append(element("p", "", name(p.id)));
-  const a = element("a", "btn dark", "Back to group");
-  a.href = "#";
-  a.dataset.bound = "true";
-  a.onclick = (ev) => {
-    ev.preventDefault();
-    nav("group", "");
-  };
-  content.append(a);
-  const membership=element('a','btn secondary',currentActor()==='self'?'Invite people':'Your membership');membership.dataset.bound='true';membership.href=`../create-join/index.html${fixtureMode?'?fixtures=1':''}#page=${currentActor()==='self'?'invite':'member'}`;content.append(membership);
-  if(currentActor()==='self')for(const i of state.membership?.invitations.filter(i=>i.groupId===state.group.id&&i.status!=='joined')||[])content.append(element('p','',`${i.name} · ${i.status==='pending'?'Pending invite':'Expired invite'}`));
+  location.href=`../expansion/index.html${fixtureMode?'?fixtures=1':''}#${new URLSearchParams({family:'09',page:'members',group:state.group.id})}`;
 }
+
 function boundary(label) {
   mount("j08", "settle-handoff");
   text("h1", label || "Outside this prototype");
@@ -1782,6 +1771,7 @@ async function render({ focusKey } = {}) {
   try {
     state = repo.read();
     if(!routeParticipant(state)||!routeLocalSession(state))return;
+    if(state.group?.kind==='savings'){location.href='../expansion/index.html'+(new URLSearchParams(location.search).has('fixtures')?'?fixtures=1':'')+'#'+new URLSearchParams({family:'16',page:'home',group:state.group.id});return;}
     if (!state.group) {
       app.replaceChildren(
         element(

@@ -1,0 +1,3 @@
+// Extract pure data declarations from checksum-locked Golden sources. No browser/demo effects.
+import {readFileSync,writeFileSync} from 'node:fs';import {Script,createContext} from 'node:vm';
+for(const [id,end,name]of [['24','const all=','defs'],['25','window.__J25_DEFS=','raw'],['26','const ROOTS=','D']]){const html=readFileSync(new URL('./authority/j'+id+'.html',import.meta.url),'utf8'),script=html.slice(html.indexOf('<script>')+8,html.lastIndexOf('</script>')),prefix=script.slice(0,script.indexOf(end));const ctx=createContext({URLSearchParams,location:{search:''}});new Script(prefix+';globalThis.extracted='+name).runInContext(ctx,{timeout:1000});writeFileSync(new URL('./authority/j'+id+'-states.json',import.meta.url),JSON.stringify(ctx.extracted,null,2)+'\n');}

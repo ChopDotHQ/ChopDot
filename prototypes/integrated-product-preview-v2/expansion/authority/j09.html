@@ -1,0 +1,422 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>ChopDot — Manage People V1</title><style>
+:root{
+  --bg:#f7f7f8;--surface:#fff;--surface2:#f0f0f2;--ink:#111113;--secondary:#66666d;--muted:#929299;
+  --border:#e6e6e9;--accent:#e6007a;--accent-soft:#fde9f3;--success:#17a66b;
+  --shadow:0 1px 2px rgba(0,0,0,.025),0 10px 28px rgba(0,0,0,.05);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#ececef;color:var(--ink);font-family:var(--font)}
+a{text-decoration:none;color:inherit}
+
+/* REVIEW WRAPPER */
+.lab{height:100vh;height:100dvh;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:28px;padding:28px;overflow:hidden}
+.stage{min-height:0;display:flex;justify-content:center;align-items:stretch;overflow:hidden}
+.device{width:min(430px,100%);height:100%;max-height:890px;border-radius:34px;overflow:hidden;background:var(--bg);border:1px solid rgba(0,0,0,.12);box-shadow:0 30px 75px rgba(0,0,0,.17);position:relative}
+
+/* LOCKED APP FRAME */
+.app{position:absolute;inset:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:var(--bg);overflow:hidden}
+.app-header{padding:calc(15px + env(safe-area-inset-top)) 16px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(247,247,248,.96);border-bottom:1px solid rgba(0,0,0,.04);z-index:5}
+.app-content{min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:16px;display:flex;flex-direction:column;gap:12px}
+.app-content>*{flex:0 0 auto}
+.app-footer{background:rgba(255,255,255,.96);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom);z-index:5}
+.tabbar{height:78px;display:grid;grid-template-columns:1fr 1fr 72px 1fr 1fr;padding:5px 8px 8px;align-items:end}
+.tab{height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--muted);font-size:10px}.tab.active{color:var(--ink);font-weight:700}.tab .nav-icon{width:20px;height:20px;display:block}.tab.active .nav-icon{stroke-width:2.2}
+.add-tab{align-self:center;justify-self:center;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:0 12px 28px rgba(230,0,122,.28);transform:translateY(-12px)}
+
+/* HEADER */
+.brand{display:flex;align-items:center;gap:9px;font-weight:770;font-size:17px;letter-spacing:-.02em}.mark{width:26px;height:26px;border-radius:50%;background:var(--accent);position:relative;overflow:hidden;flex:none}.mark:after{content:"";position:absolute;left:-5px;right:-5px;top:11px;height:4px;background:var(--surface);transform:rotate(-35deg)}
+.header-actions{display:flex;align-items:center;gap:8px}.bell{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;position:relative}.bell .icon{width:18px;height:18px}.notif{position:absolute;right:0;top:0;width:14px;height:14px;border-radius:50%;background:#d8484d;color:#fff;font-size:9px;display:grid;place-items:center}.avatar{width:29px;height:29px;border-radius:50%;background:#151515;color:#fff;display:grid;place-items:center;font-weight:750;font-size:10px}
+
+/* TYPOGRAPHY */
+.eyebrow{font-size:11px;color:var(--secondary);margin-bottom:4px}.hero{font-size:26px;line-height:1.08;margin:0;letter-spacing:-.045em;font-weight:780}.h2{font-size:15px;font-weight:700;margin:0}.caption{font-size:11px;color:var(--secondary)}.micro{font-size:10px;color:var(--secondary)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}.clamp{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ATTENTION — original visual weight */
+.attention{overflow:hidden}.attention-head{padding:15px;display:flex;align-items:center;gap:9px}.attention-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px var(--accent-soft);flex:none}.attention-title{font-size:14px;font-weight:730}.attention-sub{font-size:11px;color:var(--secondary);margin-top:2px}
+.attention-item{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:11px;padding:13px 15px;border-top:1px solid var(--border)}.ai-icon{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);flex:none}.ai-icon .icon{width:17px;height:17px}.ai-icon.pink{background:var(--accent-soft);color:var(--accent)}.ai-title{font-size:13px;font-weight:680}.ai-sub{font-size:11px;color:var(--secondary);margin-top:2px}.chev{color:var(--muted);display:grid;place-items:center}.chev .icon{width:18px;height:18px}
+
+/* WALLET — present, calm, not tiny */
+.wallet{padding:13px 15px;display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:11px;align-items:center}.wallet-icon{width:36px;height:36px;border-radius:12px;background:var(--surface2);display:grid;place-items:center}.wallet-icon .icon{width:18px;height:18px}.wallet-name{font-size:13px;font-weight:700}.wallet-meta{font-size:11px;color:var(--secondary);margin-top:2px}.wallet-amount{text-align:right}.wallet-amount b{display:block;font-size:14px}.wallet-amount span{font-size:10px;color:var(--secondary)}
+
+/* POSITION */
+.balance{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:end;padding:14px 15px}.netline{font-size:11px;color:var(--secondary)}.netvalue{font-size:24px;letter-spacing:-.04em;font-weight:790;color:var(--success);margin-top:1px;font-variant-numeric:tabular-nums}.balance-side{text-align:right;font-size:11px;color:var(--secondary);line-height:1.6}.balance-side b{color:var(--ink);font-weight:680}
+
+/* GROUPS */
+.section-head{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 0}.section-head span{color:var(--accent);font-size:12px}.groups{display:flex;flex-direction:column;gap:10px}.group{padding:15px}.group-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px}.group-name{font-size:14px;font-weight:740}.group-meta{font-size:11px;color:var(--secondary);margin-top:3px}.group-balance{font-size:17px;font-weight:760;white-space:nowrap;font-variant-numeric:tabular-nums}.positive{color:var(--success)}.group-status{margin-top:12px;padding-top:11px;border-top:1px solid var(--border);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}.status-left{display:grid;grid-template-columns:7px minmax(0,1fr);gap:7px;align-items:center}.status-dot{width:7px;height:7px;border-radius:50%;background:var(--success)}.status-dot.pink{background:var(--accent)}.status-text{font-size:11px;color:var(--secondary)}.status-action{font-size:11px;font-weight:700}
+.start{min-height:46px;border:1px dashed #ccccd2;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:7px;color:var(--secondary);font-size:12px}
+
+/* LAB PANEL */
+.labpanel{height:100%;overflow:auto;background:#151516;color:white;border-radius:22px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.18)}.labpanel h2{font-size:17px;margin:0 0 5px}.labpanel p{font-size:12px;line-height:1.5;color:#b9b9bf;margin:0}.labsec{margin-top:16px;padding-top:14px;border-top:1px solid #303034}.lablabel{font-size:10px;color:#929299;text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px}.note{font-size:11px;line-height:1.5;color:#a9a9af}.pass{color:#bcebd4}.compare{display:block;border:1px solid #37373a;background:#222225;color:#fff;border-radius:12px;padding:10px 12px;margin-top:7px;font-size:11px}
+
+@media(max-width:860px){
+  .lab{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;display:block;padding:0;overflow:hidden}.labpanel{display:none}.stage{position:absolute;inset:0}.device{position:absolute;inset:0;width:100%;height:100%;max-height:none;border:0;border-radius:0;box-shadow:none}
+}
+
+/* JOURNEY 10 — OVERALL POSITION */
+.screen{position:absolute;inset:0;display:none;grid-template-rows:auto minmax(0,1fr) auto;background:var(--bg);overflow:hidden}
+.screen:target{display:grid}
+body:not(:has(.screen:target)) #people{display:grid}
+.root-header{padding:calc(15px + env(safe-area-inset-top)) 16px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(247,247,248,.96);border-bottom:1px solid rgba(0,0,0,.04);z-index:5}
+.detail-header{padding:calc(12px + env(safe-area-inset-top)) 14px 11px;display:grid;grid-template-columns:38px minmax(0,1fr) 38px;align-items:center;gap:8px;background:rgba(247,247,248,.97);border-bottom:1px solid rgba(0,0,0,.04);z-index:5}
+.header-title{text-align:center}.header-title b{display:block;font-size:15px;line-height:1.1}.header-title span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}
+.icon-btn{width:36px;height:36px;border-radius:11px;display:grid;place-items:center}.icon-btn svg{width:18px;height:18px}
+.position-card{overflow:hidden}
+.position-main{padding:15px}
+.position-label{font-size:10px;color:var(--secondary)}
+.position-net{font-size:32px;line-height:1.04;font-weight:790;letter-spacing:-.05em;color:var(--success);margin-top:3px;font-variant-numeric:tabular-nums}
+.position-net.negative{color:var(--ink)}.position-net.zero{color:var(--ink)}
+.gross-grid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)}
+.gross{padding:12px 15px}.gross+.gross{border-left:1px solid var(--border)}
+.gross span{display:block;font-size:9px;color:var(--secondary)}.gross b{display:block;font-size:14px;margin-top:3px;font-variant-numeric:tabular-nums}
+.ready-line{display:grid;grid-template-columns:17px minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 15px;border-top:1px solid var(--border);font-size:10px}
+.ready-line svg{width:16px;height:16px;color:var(--success)}.ready-line .action{font-weight:720;color:var(--accent)}
+.segmented{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:#e9e9ed;border-radius:13px}
+.segment{min-height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--secondary)}
+.segment.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.07);font-weight:700}
+.section-title{display:flex;align-items:end;justify-content:space-between;padding:3px 2px 0}.section-title h2{font-size:14px;margin:0}.section-title span{font-size:10px;color:var(--secondary)}
+.people-list,.group-list,.currency-list{overflow:hidden}
+.person-row,.group-row,.currency-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px;border-top:1px solid var(--border)}
+.person-row:first-child,.group-row:first-child,.currency-row:first-child{border-top:0}
+.person-avatar,.row-icon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#dedee3;color:#303036;font-size:10px;font-weight:760}
+.row-icon{border-radius:12px;background:var(--surface2)}.row-icon svg{width:18px;height:18px}
+.person-copy b,.group-copy b,.currency-copy b{display:block;font-size:13px}.person-copy span,.group-copy span,.currency-copy span{display:block;font-size:10px;color:var(--secondary);margin-top:2px}
+.row-money{text-align:right}.row-money b{display:block;font-size:14px;font-variant-numeric:tabular-nums}.row-money b.positive{color:var(--success)}.row-money span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.row-money span.ready{color:var(--ink);font-weight:720}.row-money span.issue{color:var(--accent);font-weight:720}
+.mini-note{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:center;padding:11px 12px;border-radius:13px;background:var(--accent-soft);color:#7f174d;font-size:10px;line-height:1.4;border:1px solid #f2cde0}
+.mini-note svg{width:17px;height:17px}.mini-note .action{font-weight:740;white-space:nowrap}
+.detail-summary{padding:17px 16px 15px;text-align:center}
+.detail-summary .direction{font-size:10px;color:var(--secondary)}
+.detail-summary .amount{font-size:34px;line-height:1.05;font-weight:790;letter-spacing:-.05em;margin-top:4px;font-variant-numeric:tabular-nums}
+.detail-summary .amount.positive{color:var(--success)}
+.detail-summary .sub{font-size:10px;color:var(--secondary);margin-top:5px}
+.breakdown{overflow:hidden}.break-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 15px;border-top:1px solid var(--border)}
+.break-row:first-child{border-top:0}.break-row .row-icon{width:38px;height:38px}.break-row b{display:block;font-size:12px}.break-row span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}
+.break-money{text-align:right;font-size:12px;font-weight:720;font-variant-numeric:tabular-nums}.break-money.positive{color:var(--success)}
+.net-explainer{padding:13px 15px}.net-explainer h3{font-size:12px;margin:0}.net-equation{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px;font-size:10px;color:var(--secondary)}.net-equation b{color:var(--ink);font-size:11px}
+.focus-footer{background:rgba(255,255,255,.97);border-top:1px solid var(--border);padding:10px 16px calc(12px + env(safe-area-inset-bottom));z-index:5}
+.footer-stack{display:flex;flex-direction:column;gap:7px}.primary{min-height:46px;border-radius:14px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;font-weight:730}.primary.pink{background:var(--accent)}.primary svg,.secondary svg{width:16px;height:16px}
+.secondary{min-height:42px;border-radius:13px;background:var(--surface2);display:flex;align-items:center;justify-content:center;gap:7px;font-size:11px;font-weight:700}
+.text-link{min-height:30px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--secondary)}
+.currency-summary{padding:14px 15px}.currency-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.currency-head b{font-size:14px}.currency-head .currency-net{font-size:18px;font-weight:780;font-variant-numeric:tabular-nums}.currency-net.positive{color:var(--success)}
+.currency-gross{display:flex;gap:14px;margin-top:9px;font-size:10px;color:var(--secondary)}.currency-gross strong{color:var(--ink)}
+.estimate-card{padding:14px 15px;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:11px;align-items:center}.estimate-card .row-icon{width:38px;height:38px}.estimate-card b{display:block;font-size:12px}.estimate-card span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.estimate-card .value{font-size:10px;font-weight:720;color:var(--accent)}
+.estimate-hero{padding:16px;text-align:center}.estimate-hero span{font-size:10px;color:var(--secondary)}.estimate-hero b{display:block;font-size:30px;letter-spacing:-.05em;color:var(--success);margin-top:4px}.estimate-hero small{display:block;font-size:9px;color:var(--secondary);margin-top:5px}
+.state-wrap{padding:24px 18px;text-align:center}.state-icon{width:52px;height:52px;border-radius:16px;background:var(--surface2);display:grid;place-items:center;margin:2px auto 13px}.state-icon.good{background:#e9f8f1;color:var(--success)}.state-icon svg{width:22px;height:22px}.state-wrap h1{font-size:25px;letter-spacing:-.04em;margin:0}.state-wrap p{font-size:11px;color:var(--secondary);line-height:1.5;max-width:255px;margin:6px auto 15px}
+.notice{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;align-items:start;padding:11px 12px;border-radius:13px;background:#fff5dd;border:1px solid #ead7a9;color:#6d4c11;font-size:10px;line-height:1.45}.notice svg{width:17px;height:17px}
+.loading-card{padding:16px}.skel{height:11px;border-radius:999px;background:#e8e8eb;margin-top:10px}.skel.big{height:31px;width:52%}.skel.med{width:72%}.skel.short{width:38%}
+.action-card{padding:14px 15px;display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:11px;align-items:center}.action-card b{display:block;font-size:12px}.action-card span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.action-card .row-icon{width:40px;height:40px}.action-card .action{font-size:10px;font-weight:720;color:var(--accent)}
+.tabbar .people-active{color:var(--ink);font-weight:700}.tabbar .people-active .nav-icon{stroke-width:2.2}
+
+.add-tab .icon{width:23px;height:23px}
+.currency-list{display:flex;flex-direction:column;gap:10px;overflow:visible}
+.currency-list>.card{display:block}
+.ready-line.changing svg{color:var(--accent)}
+
+/* JOURNEY 11 — SETTLE UP */
+.settle-hero{padding:18px 16px 16px;text-align:center}
+.settle-hero .person-avatar{width:52px;height:52px;margin:0 auto 10px;font-size:12px}
+.settle-hero .direction{font-size:10px;color:var(--secondary)}
+.settle-hero .amount-display{font-size:40px;line-height:1.04;font-weight:790;letter-spacing:-.055em;margin-top:3px;font-variant-numeric:tabular-nums}
+.settle-hero h1{font-size:18px;margin:8px 0 0;letter-spacing:-.025em}
+.settle-hero .sub{font-size:10px;color:var(--secondary);margin-top:4px}
+.ready-card{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px}
+.ready-icon{width:38px;height:38px;border-radius:50%;background:#e9f8f1;color:var(--success);display:grid;place-items:center}
+.ready-icon.warning{background:var(--accent-soft);color:var(--accent)}
+.ready-icon.neutral{background:var(--surface2);color:var(--ink)}
+.ready-icon svg{width:18px;height:18px}
+.ready-card b{display:block;font-size:12px}.ready-card>div>span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}
+.ready-action{font-size:10px;font-weight:720;color:var(--accent);white-space:nowrap}
+.method-card{overflow:hidden}.method-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px;border-top:1px solid var(--border)}
+.method-row:first-child{border-top:0}.method-icon{width:40px;height:40px;border-radius:12px;background:var(--surface2);display:grid;place-items:center}
+.method-icon.preferred{background:var(--accent-soft);color:var(--accent)}
+.method-icon svg{width:19px;height:19px}.method-copy b{display:block;font-size:12px}.method-copy span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}
+.method-side{text-align:right}.method-side b{display:block;font-size:10px}.method-side span{display:block;font-size:8px;color:var(--secondary);margin-top:2px}
+.summary-card{overflow:hidden}.summary-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:12px 15px;border-top:1px solid var(--border);font-size:10px}
+.summary-row:first-child{border-top:0}.summary-row span{color:var(--secondary)}.summary-row b{text-align:right;font-size:11px}
+.breakdown-card{overflow:hidden}.breakdown-row{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 14px;border-top:1px solid var(--border)}
+.breakdown-row:first-child{border-top:0}.breakdown-row .row-icon{width:36px;height:36px}.breakdown-row b{display:block;font-size:11px}.breakdown-row span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.breakdown-money{font-size:11px;font-weight:720}
+.section-title{display:flex;align-items:end;justify-content:space-between;padding:3px 2px 0}.section-title h2{font-size:13px;margin:0}.section-title a,.section-title span{font-size:9px;color:var(--secondary)}
+.detail-box{padding:14px 15px}.detail-box h3{font-size:12px;margin:0 0 9px}.detail-line{display:flex;justify-content:space-between;gap:10px;font-size:10px;margin-top:7px}.detail-line span{color:var(--secondary)}.detail-line b{font-size:11px;text-align:right}
+.account-box{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px}.account-box .method-icon{width:38px;height:38px}.account-box b{display:block;font-size:12px}.account-box span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.account-box .action{font-size:10px;font-weight:720;color:var(--accent)}
+.amount-edit{padding:17px 15px;text-align:center}.amount-edit label{font-size:10px;color:var(--secondary)}.amount-input{width:100%;border:0;background:transparent;text-align:center;font:inherit;font-size:38px;font-weight:790;letter-spacing:-.05em;outline:0;margin-top:4px}.amount-edit .remaining{font-size:10px;color:var(--secondary);margin-top:8px}
+.amount-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:13px}.amount-chip{min-height:36px;border-radius:11px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:10px}.amount-chip.active{background:#111;color:#fff}
+.copy-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 14px;border-top:1px solid var(--border)}.copy-row:first-child{border-top:0}.copy-row span{display:block;font-size:9px;color:var(--secondary)}.copy-row b{display:block;font-size:11px;margin-top:2px;overflow-wrap:anywhere}.copy-button{width:34px;height:34px;border-radius:10px;background:var(--surface2);display:grid;place-items:center}.copy-button svg{width:16px;height:16px}
+.quote-card{padding:14px 15px}.quote-card .quote-amount{font-size:26px;font-weight:790;letter-spacing:-.04em}.quote-card .quote-sub{font-size:9px;color:var(--secondary);margin-top:3px}.quote-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin:13px -15px -14px;border-top:1px solid var(--border)}.quote-cell{padding:11px 15px;background:var(--surface)}.quote-cell+.quote-cell{border-left:1px solid var(--border)}.quote-cell span{display:block;font-size:8px;color:var(--secondary)}.quote-cell b{display:block;font-size:10px;margin-top:3px}
+.asset-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:#e9e9ed;border-radius:13px}.asset-tab{min-height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:10px;color:var(--secondary)}.asset-tab.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.07);font-weight:700}.asset-tab svg{width:15px;height:15px}
+.notice-card{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;align-items:start;padding:11px 12px;border-radius:13px;font-size:10px;line-height:1.45}.notice-card.info{background:#edf3ff;border:1px solid #cbd9f3;color:#2d4c83}.notice-card.warning{background:#fff5dd;border:1px solid #ead7a9;color:#6d4c11}.notice-card.danger{background:#fff0f1;border:1px solid #f0c8ca;color:#842f34}.notice-card svg{width:17px;height:17px}
+.state-wrap{padding:24px 18px;text-align:center}.state-icon{width:52px;height:52px;border-radius:16px;background:var(--surface2);display:grid;place-items:center;margin:2px auto 13px}.state-icon.good{background:#e9f8f1;color:var(--success)}.state-icon.warning{background:var(--accent-soft);color:var(--accent)}.state-icon svg{width:22px;height:22px}.state-wrap h1{font-size:24px;letter-spacing:-.04em;margin:0}.state-wrap p{font-size:11px;color:var(--secondary);line-height:1.5;max-width:260px;margin:6px auto 15px}
+.primary{min-height:46px;border-radius:14px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;font-weight:730}.primary.pink{background:var(--accent)}.primary.disabled{background:#d9d9de;color:#919197;pointer-events:none}.primary svg,.secondary svg{width:16px;height:16px}
+.secondary{min-height:42px;border-radius:13px;background:var(--surface2);display:flex;align-items:center;justify-content:center;gap:7px;font-size:11px;font-weight:700}.text-link{min-height:30px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--secondary)}
+.footer-stack{display:flex;flex-direction:column;gap:7px}.focus-footer{background:rgba(255,255,255,.97);border-top:1px solid var(--border);padding:10px 16px calc(12px + env(safe-area-inset-bottom));z-index:5}
+.selection-list{overflow:hidden}.selection-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px;border-top:1px solid var(--border)}.selection-row:first-child{border-top:0}.selection-row .person-avatar{width:40px;height:40px}.selection-row b{display:block;font-size:12px}.selection-row>div>span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.selection-row .amount{font-size:12px;font-weight:720;text-align:right}.selection-row .amount span{display:block;font-size:8px;color:var(--secondary);margin-top:2px}
+.progress-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 2px}.progress-step{font-size:8px;color:var(--muted);text-align:center}.progress-step:before{content:"";display:block;height:4px;border-radius:99px;background:#e2e2e6;margin-bottom:5px}.progress-step.active{color:var(--ink);font-weight:700}.progress-step.active:before{background:#111}.progress-step.done:before{background:var(--success)}
+
+/* Payment compatibility contract — visible states stay human */
+.payment-status-card{padding:20px 16px 17px;text-align:center}
+.payment-status-card .state-icon{margin:2px auto 13px}
+.state-icon.sent{background:#e8efff;color:#315aa8}
+.state-icon.waiting{background:var(--warning-soft);color:#835800}
+.state-icon.received{background:var(--success-soft);color:var(--success)}
+.state-icon.failed{background:var(--danger-soft);color:var(--danger)}
+.payment-status-card h1{font-size:26px;letter-spacing:-.042em;margin:0}
+.payment-status-card>p{font-size:11px;color:var(--secondary);line-height:1.5;max-width:270px;margin:6px auto 0}
+.payment-status-meta{margin-top:15px;padding-top:13px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left}
+.payment-status-meta span{display:block;font-size:9px;color:var(--secondary)}
+.payment-status-meta b{display:block;font-size:12px;margin-top:3px}
+.status-rail{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:11px 13px}
+.status-step{height:5px;border-radius:999px;background:#e1e1e5}
+.status-step.on{background:#315aa8}.status-step.wait{background:#b27b18}.status-step.good{background:var(--success)}.status-step.bad{background:var(--danger)}
+.state-caption{text-align:center;font-size:9px;color:var(--secondary);margin-top:-3px}
+.primary[data-domain-event],.secondary[data-domain-event]{position:relative}
+
+/* Journey 12 — Complete Settlement */
+body:not(:has(.screen:target)) #twint-return{display:grid}
+.status-note{font-size:9px;color:var(--secondary);text-align:center;line-height:1.45;padding:0 8px}
+.progress-labels{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:0 5px 11px;font-size:8px;color:var(--muted);text-align:center}
+.progress-labels .active{color:var(--ink);font-weight:700}.progress-labels .waiting{color:#946400;font-weight:700}.progress-labels .done{color:var(--success);font-weight:700}.progress-labels .bad{color:var(--danger);font-weight:700}
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.choice-grid .secondary{min-height:44px}
+.timeline{overflow:hidden}.timeline-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 14px;border-top:1px solid var(--border)}.timeline-row:first-child{border-top:0}
+.timeline-icon{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);color:var(--secondary)}.timeline-icon svg{width:16px;height:16px}.timeline-icon.done{background:var(--success-soft);color:var(--success)}.timeline-icon.wait{background:var(--warning-soft);color:#946400}.timeline-icon.bad{background:var(--danger-soft);color:var(--danger)}
+.timeline-row b{display:block;font-size:11px}.timeline-row span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.timeline-row time{font-size:9px;color:var(--muted);white-space:nowrap}
+.record-card{overflow:hidden}.record-head{padding:15px;text-align:center;border-bottom:1px solid var(--border)}.record-head .record-mark{width:42px;height:42px;border-radius:14px;background:var(--success-soft);color:var(--success);display:grid;place-items:center;margin:0 auto 9px}.record-head .record-mark svg{width:20px;height:20px}.record-head h2{font-size:17px;margin:0}.record-head p{font-size:9px;color:var(--secondary);margin:4px 0 0}
+.record-row{display:grid;grid-template-columns:100px minmax(0,1fr);gap:10px;padding:10px 14px;border-top:1px solid var(--border);font-size:10px}.record-row:first-of-type{border-top:0}.record-row span{color:var(--secondary)}.record-row b{font-weight:700;text-align:right;overflow-wrap:anywhere}
+.balance-after{padding:14px 15px}.balance-after .label{font-size:9px;color:var(--secondary)}.balance-after .amount{font-size:28px;font-weight:790;letter-spacing:-.045em;margin-top:3px}.balance-after .amount.good{color:var(--success)}.balance-after .sub{font-size:9px;color:var(--secondary);margin-top:4px}
+.notice-soft{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;align-items:start;padding:11px 12px;border-radius:13px;background:var(--surface2);border:1px solid var(--border);font-size:10px;line-height:1.45;color:var(--secondary)}.notice-soft svg{width:17px;height:17px;color:var(--ink)}
+.receiver-card{padding:16px;text-align:center}.receiver-card .avatar-big{width:52px;height:52px;border-radius:50%;background:#dedee3;display:grid;place-items:center;margin:0 auto 11px;font-size:12px;font-weight:780}.receiver-card h1{font-size:24px;letter-spacing:-.04em;margin:0}.receiver-card p{font-size:11px;color:var(--secondary);line-height:1.5;margin:7px auto 0;max-width:270px}
+.amount-check{font-size:35px;line-height:1.05;font-weight:790;letter-spacing:-.05em;margin-top:13px;font-variant-numeric:tabular-nums}
+.issue-card{padding:14px 15px}.issue-card h2{font-size:15px;margin:0}.issue-card p{font-size:10px;color:var(--secondary);line-height:1.5;margin:5px 0 0}
+.method-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;background:var(--surface2);font-size:9px;font-weight:700;margin-top:9px}.method-chip svg{width:14px;height:14px}
+.detail-pair{display:grid;grid-template-columns:1fr 1fr;gap:1px;overflow:hidden}.detail-pair>div{padding:12px 14px;background:var(--surface)}.detail-pair>div+div{border-left:1px solid var(--border)}.detail-pair span{display:block;font-size:9px;color:var(--secondary)}.detail-pair b{display:block;font-size:12px;margin-top:3px}
+.error-list{overflow:hidden}.error-row{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:center;padding:12px 14px;border-top:1px solid var(--border)}.error-row:first-child{border-top:0}.error-row .timeline-icon{width:34px;height:34px}.error-row b{display:block;font-size:11px}.error-row span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}
+.labpanel .compare{display:block;width:100%;padding:9px 10px;margin-top:6px;border:1px solid #37373a;border-radius:11px;background:#222225;color:#fff;font-size:10px}
+
+.method-row>div b{display:block;font-size:12px}
+.method-row>div span{display:block;font-size:9px;color:var(--secondary);margin-top:2px;line-height:1.35}
+.method-row>svg{width:16px;height:16px;color:var(--muted)}
+</style><style>/* Scoped Journey 09 components. The inherited Golden stylesheet is untouched. */
+.mp-screen{display:grid!important}
+.mp-screen button,.mp-lab button{font-family:var(--font);cursor:pointer}
+.mp-screen button{color:inherit;border:0;padding:0;background:none;text-align:inherit}
+.mp-screen .primary{color:white;background:var(--ink);text-align:center;width:100%;border:0;padding:0 14px}
+.mp-screen .secondary{background:var(--surface2);width:100%;justify-content:center;padding:0 14px}
+.mp-screen .primary.danger{background:#b73445}
+.mp-screen button:disabled{opacity:.45;cursor:default}
+.mp-screen button:focus-visible,.mp-lab button:focus-visible,.mp-screen input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.mp-demo{font-size:9px!important;text-align:center!important;color:var(--secondary)!important;border:1px solid var(--border)!important;border-radius:8px;padding:7px 3px!important;background:var(--surface)!important}
+.mp-screen .detail-header{grid-template-columns:38px minmax(0,1fr) 42px}
+.mp-top{display:flex;align-items:center;gap:13px;padding:5px 0 6px}
+.mp-top .person-avatar{width:50px;height:50px;font-size:14px}
+.mp-top h1{font-size:26px;letter-spacing:-.045em;line-height:1.08;margin:0 0 4px;font-weight:780}
+.mp-meta{font-size:11px;color:var(--secondary);line-height:1.5;margin:5px 0 0}
+.mp-screen .mp-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px;width:100%;border-top:1px solid var(--border)}
+.mp-screen .mp-row:first-child{border-top:0}
+.mp-row b{display:block;font-size:13px;font-weight:700;line-height:1.3}.mp-row span.sub{display:block;font-size:10px;color:var(--secondary);margin-top:3px;line-height:1.4}
+.mp-row svg{width:18px;height:18px}
+.mp-row .chevron{color:var(--muted);width:16px;height:16px}
+.mp-badge{font-size:9px;background:var(--surface2);color:var(--secondary);border-radius:6px;padding:4px 6px;white-space:nowrap}
+.mp-card{overflow:hidden}
+.mp-card-copy{padding:14px 15px}.mp-card-copy h2{font-size:13px;margin:0 0 5px}.mp-card-copy p{font-size:11px;line-height:1.5;color:var(--secondary);margin:0}
+.mp-search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:0 12px;height:44px;color:var(--secondary)}
+.mp-search svg{width:17px;height:17px}.mp-search input{font-family:var(--font);font-size:12px;color:var(--ink);width:100%;border:0;background:none;outline:none;height:40px}
+.mp-money{padding:15px}.mp-money .value{font-size:28px;font-weight:780;letter-spacing:-.04em;margin-top:4px;font-variant-numeric:tabular-nums}.mp-money .label{font-size:10px;color:var(--secondary)}
+.mp-balance-action{padding:10px 15px!important;width:100%;border-top:1px solid var(--border)!important;font-size:11px;font-weight:700;color:var(--accent)!important;display:flex;align-items:center;justify-content:space-between}
+.mp-balance-action svg{width:16px;height:16px}
+.mp-row-money{text-align:right;white-space:nowrap}.mp-row-money b{font-size:12px}.mp-row-money span{font-size:9px;color:var(--secondary)}
+.mp-pill{background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:4px 6px;font-size:9px}
+.mp-rule{font-size:10px;color:var(--secondary);line-height:1.5;padding:0 2px;margin:0}
+.mp-section{display:flex;justify-content:space-between;align-items:center;margin:3px 2px 0}.mp-section h2{font-size:14px;margin:0}.mp-section span{font-size:10px;color:var(--secondary)}
+.mp-empty{padding:22px 16px;text-align:center}.mp-empty p{font-size:11px;color:var(--secondary);line-height:1.5;margin:6px auto 0;max-width:270px}.mp-empty h2{font-size:18px;letter-spacing:-.025em;margin:0}
+.mp-status{padding:18px 0 4px}.mp-status .state-icon{margin:0 0 15px}.mp-status h1{font-size:26px;line-height:1.08;letter-spacing:-.045em;margin:0;font-weight:780}.mp-status p{font-size:11px;line-height:1.5;color:var(--secondary);max-width:285px;margin:7px 0 0}
+.mp-inline{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--surface2);padding:11px 12px;border-radius:12px;font-size:10px;line-height:1.45;color:var(--secondary)}.mp-inline svg{width:16px;height:16px;flex:none}
+.mp-lab .compare{width:100%;text-align:left;font-family:var(--font);cursor:pointer}.mp-lab .labsec:first-child{border:0;margin-top:0;padding-top:0}
+.mp-dialog{max-height:82dvh;width:min(380px,94vw);border:1px solid #343438;border-radius:22px;background:#151516;color:white;padding:20px;font-family:var(--font)}
+.mp-dialog::backdrop{background:rgba(0,0,0,.35)}.mp-dialog .close-demo{font-size:12px;padding:9px 0;color:white;background:none;border:0;cursor:pointer}
+</style></head><body><div class="lab"><div class="stage"><div class="device" id="device"></div></div><aside class="labpanel mp-lab"><h2>Journey 09 · Manage People</h2><p>Review candidate · simulated data only.</p><div class="labsec"><div class="lablabel">Current context</div><p id="lab-state"></p></div><div class="labsec"><div class="lablabel">Click-through scenarios</div><div data-demo-list></div></div><div class="labsec"><div class="lablabel">Simulated service results</div><button class="compare" data-result="accepted">Removal saved</button><button class="compare" data-result="not-saved">Verified not saved</button><button class="compare" data-result="permission-lost">Access revoked</button></div><div class="labsec"><p>All people, preferences and balances are demo fixtures. Handoff cards preview the exact context for Journeys 04, 11, 13 and 20; they do not send invitations or payments. Goldens are unchanged. TYPO-01 remains deferred.</p></div></aside></div><dialog class="mp-dialog mp-lab" id="demo-dialog"><button class="close-demo" onclick="this.closest('dialog').close()">Close demo controls</button><p class="caption">Prototype scenarios · no real changes</p><div data-demo-list></div><div class="labsec"><div class="lablabel">Simulated service results</div><button class="compare" data-result="accepted">Removal saved</button><button class="compare" data-result="not-saved">Verified not saved</button><button class="compare" data-result="permission-lost">Access revoked</button></div></dialog><script>/* Journey 09 prototype model. No network, accounts, messages or money are changed. */
+(function(root,factory){const api=factory();if(typeof module==='object')module.exports=api;else root.PeopleModel=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
+ 'use strict';
+ const PEOPLE={dev:{name:'You',initials:'DP',preferred:'TWINT'},jeanine:{name:'Jeanine',initials:'JA',preferred:'TWINT'},marc:{name:'Marc',initials:'M',preferred:'Bank transfer'},sam:{name:'Sam',initials:'S',preferred:'Wallet'},nina:{name:'Nina',initials:'N',preferred:null},luca:{name:'Luca',initials:'L',preferred:'Bank transfer'}};
+ const GROUPS={zurich:{name:'Zurich Weekend',currency:'CHF',owner:'dev'},apartment:{name:'Apartment',currency:'CHF',owner:'jeanine'},ski:{name:'Ski Trip',currency:'CHF',owner:'marc'},geneva:{name:'Geneva Day',currency:'CHF',owner:'nina'},lisbon:{name:'Lisbon Weekend',currency:'EUR',owner:'luca'},hackathon:{name:'Hackathon',currency:'DOT',owner:'dev'},solo:{name:'Summer plans',currency:'CHF',owner:'dev'}};
+ // Fixture read model from the approved balance examples; signed amounts are from Dev's view.
+ const ITEMS=[['ja-apartment','jeanine','apartment','CHF',-7430],['ja-ski','jeanine','ski','CHF',2000],['marc-apartment','marc','apartment','CHF',2000],['marc-zurich','marc','zurich','CHF',3000],['marc-ski','marc','ski','CHF',3000],['marc-geneva','marc','geneva','CHF',4540],['sam-zurich','sam','zurich','CHF',2290],['sam-ski','sam','ski','CHF',2930],['sam-geneva','sam','geneva','CHF',3890],['nina-geneva','nina','geneva','CHF',-3000],['luca-lisbon','luca','lisbon','EUR',-1800],['sam-hackathon','sam','hackathon','DOT',2400000]].map(([id,person,group,currency,minor])=>({id,person,group,currency,minor}));
+ const MEMBERS={zurich:['dev','jeanine','marc','sam'],apartment:['dev','jeanine','marc'],ski:['dev','jeanine','marc','sam'],geneva:['dev','marc','sam','nina'],lisbon:['dev','luca'],hackathon:['dev','sam'],solo:['dev']};
+ const clone=x=>JSON.parse(JSON.stringify(x));
+ const routes=['members','directory','person','groups','preferences','roles','manage','remove-confirm','remove-blocked','remove-saving','remove-unknown','remove-failed','removed','access-changed','offline','loading','error','handoff'];
+ function create(){return {route:'members',group:'zurich',scope:'zurich',person:null,viewer:'dev',owners:Object.fromEntries(Object.entries(GROUPS).map(([k,v])=>[k,v.owner])),online:true,access:true,query:'',mixed:false,privatePreference:false,issue:false,version:1,members:clone(MEMBERS),items:clone(ITEMS),invites:[{id:'invite-nina-zurich',person:'nina',group:'zurich'}],command:null,sequence:0,saveMode:'accepted',handoff:null};}
+ function visibleGroups(s,p){return Object.keys(GROUPS).filter(g=>g!=='solo'&&(s.mixed||g!=='hackathon')&&s.members[g].includes('dev')&&s.members[g].includes(p));}
+ function rows(s,p,scope=s.scope){return s.items.filter(x=>x.person===p&&(scope==='all'?s.mixed||x.group!=='hackathon':x.group===scope));}
+ function balances(s,p,scope=s.scope){const out={};for(const x of rows(s,p,scope))out[x.currency]=(out[x.currency]||0)+x.minor;return out;}
+ function amount(minor,currency){return currency+' '+(Math.abs(minor)/(currency==='DOT'?1e6:100)).toFixed(currency==='DOT'?6:2);}
+ function name(p){if(!PEOPLE[p])throw Error('Unknown person');return PEOPLE[p].name;}
+ function owner(s,g=s.group){return s.owners[g];}
+ function canView(s){return s.scope==='all'||(s.access&&s.members[s.scope]?.includes(s.viewer));}
+ function directory(s){return Object.keys(PEOPLE).filter(p=>p!=='dev'&&visibleGroups(s,p).length&&name(p).toLowerCase().includes(s.query.trim().toLowerCase()));}
+ function affected(s,p,scope=s.scope){return s.issue&&rows(s,p,scope).some(x=>x.id==='marc-zurich');}
+ function removalBlock(s){
+  if(!canView(s))return 'access';
+  if(!s.online)return 'offline';
+  if(!GROUPS[s.group]||owner(s)!==s.viewer)return 'permission';
+  if(s.person===s.viewer||s.person===owner(s))return 'owner';
+  if(!s.members[s.group]?.includes(s.person))return 'missing';
+  // Group membership removal requires the person to have no open group items, not just zero net.
+  if(rows(s,s.person,s.group).some(x=>x.minor!==0)||affected(s,s.person,s.group))return 'balance';
+  return null;
+ }
+ function requestRemoval(s){
+  if(s.command&&['pending','unknown','recovering','accepted'].includes(s.command.status)){
+   if(s.command.person===s.person&&s.command.group===s.group&&s.command.actor===s.viewer)return clone(s.command);
+   if(s.command.status!=='accepted')return {blocked:'existing'};
+  }
+  const block=removalBlock(s);if(block)return {blocked:block};
+  const c={id:'demo-remove-'+(++s.sequence),actor:s.viewer,person:s.person,group:s.group,expectedVersion:s.version,status:'pending'};s.command=c;return clone(c);
+ }
+ function acceptRemoval(s,id){
+  const c=s.command;if(!c||c.id!==id)return 'stale';
+  if(c.status==='accepted')return 'accepted';
+  if(!['pending','unknown','recovering'].includes(c.status))return 'invalid';
+  if(c.actor!==s.viewer||owner(s,c.group)!==s.viewer||!s.access){c.status='denied';return 'denied';}
+  if(s.version!==c.expectedVersion){c.status='conflict';return 'conflict';}
+  if(s.items.some(x=>x.group===c.group&&x.person===c.person&&x.minor!==0)){c.status='blocked';return 'blocked';}
+  s.members[c.group]=s.members[c.group].filter(x=>x!==c.person);s.version++;c.status='accepted';return 'accepted';
+ }
+ function resolveScope(s,currency){
+  if(!canView(s)||!s.online||s.viewer!=='dev'||s.person==='dev')return null;
+  if(s.scope!=='all'&&!s.members[s.scope].includes(s.person))return null;
+  if(affected(s,s.person))return null;
+  const xs=rows(s,s.person).filter(x=>x.currency===currency);const net=xs.reduce((a,x)=>a+x.minor,0);if(!net)return null;
+  return {kind:net<0?'settle':'request',payer:net<0?'dev':s.person,recipient:net<0?s.person:'dev',amountMinor:Math.abs(net),currency,person:s.person,scope:s.scope,sourceItems:xs.map(x=>x.id),sourceGroups:[...new Set(xs.map(x=>x.group))],paymentMethod:currency==='DOT'?'Wallet':PEOPLE[net<0?s.person:'dev'].preferred||null,version:s.version};
+ }
+ function preference(s){if(!canView(s)||s.privatePreference)return null;return PEOPLE[s.person]?.preferred||null;}
+ function navigate(s,route,patch={}){if(!routes.includes(route))throw Error('Unknown route');Object.assign(s,patch,{route});return s;}
+ return {PEOPLE,GROUPS,ITEMS,MEMBERS,routes,owner,create,clone,visibleGroups,rows,balances,amount,name,canView,directory,affected,removalBlock,requestRemoval,acceptRemoval,resolveScope,preference,navigate};
+});
+</script><script>(function(){'use strict';
+ const M=PeopleModel;let s=M.create();let trail=[];let pendingTimer=null;
+ const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const paths={back:'<path d="m15 18-6-6 6-6"/>',chev:'<path d="m9 18 6-6-6-6"/>',people:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',group:'<path d="M3 7h18v12H3zM6 7V4h12v3M8 11h8"/>',search:'<circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/>',check:'<path d="m5 12 4 4L19 6"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M12 11v6"/>',wallet:'<path d="M20 8V5a2 2 0 0 0-2-2H5a3 3 0 0 0 0 6h15v11H5a3 3 0 0 1-3-3V6"/><path d="M20 12h-5v4h5"/>',refresh:'<path d="M20 7v5h-5M4 17v-5h5"/><path d="M18 7a7 7 0 0 0-11-2L4 8m2 9a7 7 0 0 0 11 2l3-3"/>',plus:'<path d="M12 5v14M5 12h14"/>',remove:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V3h6v4"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
+ const icon=(id,cl='icon')=>`<svg class="${cl}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[id]||paths.info}</svg>`;
+ const btn=(label,act,cl='primary',attrs='')=>`<button type="button" class="${cl}" data-action="${act}" ${attrs}>${label}</button>`;
+ const row=(title,sub,act,ic='group',tail='',attrs='')=>`<button class="mp-row" data-action="${act}" ${attrs}><span class="row-icon">${icon(ic)}</span><span><b>${esc(title)}</b><span class="sub">${esc(sub)}</span></span>${tail||icon('chev','chevron')}</button>`;
+ const section=(title,detail='')=>`<div class="mp-section"><h2>${title}</h2><span>${detail}</span></div>`;
+ const card=(title,copy)=>`<section class="card mp-card-copy"><h2>${title}</h2><p>${copy}</p></section>`;
+ const status=(title,copy,ic='info',good=false)=>`<div class="mp-status"><div class="state-icon ${good?'good':''}">${icon(ic)}</div><h1 tabindex="-1">${title}</h1><p>${copy}</p></div>`;
+ const personRow=(p,group=false)=>`<button class="mp-row" data-action="person" data-person="${p}"><span class="person-avatar">${M.PEOPLE[p].initials}</span><span><b>${esc(M.name(p))}</b><span class="sub">${group?(M.owner(s)===p?'Group owner':'Member'):M.visibleGroups(s,p).length+' shared '+(M.visibleGroups(s,p).length===1?'group':'groups')}</span></span>${p===s.viewer?'<span class="mp-badge">You</span>':icon('chev','chevron')}</button>`;
+ function screenData(){
+  const p=M.PEOPLE[s.person]||M.PEOPLE.jeanine,who=esc(p.name),g=esc(M.GROUPS[s.group]?.name||'Your groups'),scope=s.scope==='all'?'All shared groups':esc(M.GROUPS[s.scope]?.name||g);
+  let header='People',sub=g,body='',foot='';
+  if(!M.canView(s)&&!['access-changed','handoff'].includes(s.route))s.route='access-changed';
+  if(s.route==='person'&&s.scope!=='all'&&!s.members[s.scope].includes(s.person))s.route='access-changed';
+  switch(s.route){
+  case 'members':{
+   const members=s.members[s.group],invites=s.invites.filter(i=>i.group===s.group);
+   body=`<div><div class="eyebrow">${g}</div><h1 class="hero" tabindex="-1">People.</h1><p class="mp-meta">${members.length} ${members.length===1?'member':'members'}${invites.length?' · '+invites.length+' invited':''}</p></div>`;
+   if(!s.online)body+=`<div class="notice">${icon('info')}<span>Offline. Showing your saved group.</span></div>`;
+   body+=`<section class="card mp-card">${members.map(p=>personRow(p,true)).join('')}</section>`;
+   if(members.length===1)body+=card('Make room for your people.','Invite someone when you are ready to share expenses.');
+   if(invites.length)body+=section('Invited')+`<section class="card mp-card">${invites.map(i=>row(M.name(i.person),'Has not joined yet','invite-detail','people','<span class="mp-badge">Pending</span>',`data-person="${i.person}"`)).join('')}</section>`;
+   body+=`<section class="card mp-card">${row('Group roles','Who can do what','roles','people')}${row('All your people','Across your shared groups','directory','people')}</section>`;
+   foot=btn(icon('plus')+' Invite someone','invite', 'primary',s.online?'':'disabled');break;}
+  case 'directory':{
+   header='Your people';sub='Across your groups';const filtered=M.directory(s);
+   body=`<div><div class="eyebrow">Your shared groups</div><h1 class="hero" tabindex="-1">Familiar faces.</h1><p class="mp-meta">Find someone. Pick up where you left off.</p></div><label class="mp-search">${icon('search')}<input id="people-search" aria-label="Search people" value="${esc(s.query)}" placeholder="Search people" autocomplete="off"></label>`;
+   body+=filtered.length?`<section class="card mp-card">${filtered.map(p=>personRow(p)).join('')}</section>`:`<section class="card mp-empty"><h2>No matches.</h2><p>Try another name.</p></section>`;
+   foot=btn('Back to group','members');break;}
+  case 'person':{
+   header=p.name;sub=scope;const self=s.person===s.viewer;
+   body=`<div class="mp-top"><span class="person-avatar">${p.initials}</span><div><h1 tabindex="-1">${who}.</h1><span class="caption">${s.scope==='all'?'Your shared groups':(M.owner(s,s.scope)===s.person?'Group owner':'Member')+' · '+scope}</span></div></div>`;
+   if(self){body+=card('Your place here.',`${M.owner(s)===s.viewer?'You own':'You are a member of'} ${g}.`);}
+   else{
+    const balances=M.balances(s,s.person),currencies=Object.keys(balances);if(!currencies.length)currencies.push(M.GROUPS[s.group].currency);
+    for(const c of currencies){const n=balances[c]||0;const blocked=M.affected(s,s.person);
+     body+=`<section class="card mp-card"><div class="mp-money"><span class="label">${n===0?'Nothing to settle':n<0?'You owe '+who:who+' owes you'}</span><div class="value ${n>0?'positive':''}">${M.amount(n,c)}</div><p class="mp-meta">${scope}${blocked?' · May change':''}</p></div>${n!==0?btn(blocked?'Review open issue':(n<0?'Settle ':'Request ')+M.amount(n,c)+icon('chev'),blocked?'review-issue':'payment','mp-balance-action',`data-currency="${c}" ${(!s.online||s.viewer!=='dev')?'disabled':''}`):''}</section>`;
+    }
+    if(M.affected(s,s.person))body+=card('One expense is still in review.','Only this balance is affected. Other people remain available.');
+   }
+   body+=section('Shared with you')+`<section class="card mp-card">${row('Payment preference',M.preference(s)?M.preference(s)+' preferred':'Not shared','preferences','wallet')}${row('Shared groups',M.visibleGroups(s,s.person).length+' together','groups','group')}</section>`;
+   if(s.scope!=='all'&&!self&&M.owner(s)===s.viewer)body+=btn('Manage in this group','manage','text-link');
+   foot=btn('Back to people',s.scope==='all'?'directory':'members');break;}
+  case 'groups':{
+   header='Shared groups';sub=p.name;body=`<div><div class="eyebrow">You and ${who}</div><h1 class="hero" tabindex="-1">Your groups.</h1></div>`;
+   body+=`<section class="card mp-card">${M.visibleGroups(s,s.person).map(k=>{const n=M.balances(s,s.person,k)[M.GROUPS[k].currency]||0;return row(M.GROUPS[k].name,n===0?'Nothing to settle':n<0?'You owe '+who:who+' owes you','open-group','group',`<span class="mp-row-money"><b class="${n>0?'positive':''}">${M.amount(n,M.GROUPS[k].currency)}</b></span>`,`data-group="${k}"`);}).join('')}</section>`;
+   foot=btn('Back to '+who,'back');break;}
+  case 'preferences':{
+   header='Payment preference';sub=p.name;const pref=M.preference(s);
+   body=status(pref?who+' prefers '+esc(pref)+'.':'Details not shared.',pref?'You can review payment options when you settle.':who+' has not shared a payment preference with you.','wallet');
+   body+=pref?card('Shared with you',esc(pref)+' · No account details shown here.'):card('Still private.','No phone number, bank details or wallet address is revealed.');
+   if(s.person===s.viewer)body+=`<section class="card mp-card">${row('Manage your methods','Choose what you share','own-methods','wallet')}</section>`;
+   else body+=`<p class="mp-rule">Only ${who} can change their payment details.</p>`;
+   foot=btn('Back to '+who,'back');break;}
+  case 'roles':header='Group roles';body=status('Everyone has a place.','Roles apply only to '+g+'.','people')+card('Group owner',esc(M.name(M.owner(s)))+' manages invitations and members.')+card('Members','Add shared expenses and review their own share.')+card('Payments stay personal.','A group role never lets someone approve your payment or confirm receipt for you.');foot=btn('Back to people','back');break;
+  case 'manage':header='Manage member';sub=g;body=`<div class="mp-top"><span class="person-avatar">${p.initials}</span><div><h1 tabindex="-1">${who}.</h1><span class="caption">Member · ${g}</span></div></div>`+card('Only this group.','Changes here do not remove '+who+' from other groups or erase past expenses.')+`<section class="card mp-card">${row('Remove from this group','Review before removing','remove','remove')}</section>`;foot=btn('Back to '+who,'back');break;
+  case 'remove-confirm':header='Remove member';sub=g;body=status('Remove '+who+'?',who+' will lose access to '+g+'.','remove')+card('Past expenses stay.','Their name remains on shared records. Nothing changes in other groups.')+card('Nothing left to settle here.','No open payments or expense issues in this group.');foot=btn('Remove from group','confirm-remove','primary danger')+btn('Keep '+who,'back','secondary');break;
+  case 'remove-blocked':header='Keep this clear';body=status('Settle up first.','There are still open items with '+who+' in '+g+'.','info')+card('No one has been removed.','Resolve the amount or open issue before changing membership.');foot=btn('View balance','person-return')+btn('Back','back','secondary');break;
+  case 'remove-saving':header='Updating group';body=status('Removing '+who+'…','We are saving this change.','clock');foot=btn('Saving…','noop','primary','disabled');break;
+  case 'remove-unknown':header='Updating group';body=status('Still checking.','We could not confirm whether the change was saved. Check the same request before trying again.','refresh')+card('Your records stay.','No expenses or balances will be deleted.');foot=btn('Check status','recover');break;
+  case 'remove-failed':header='Change not saved';body=status('No one was removed.','Try the same change again when you are ready.','info');foot=btn('Try again','retry')+btn('Back to people','members','secondary');break;
+  case 'removed':header='Group updated';body=status(who+' was removed.','From '+g+' only.','check',true)+card('Past records are still here.','Their shared expenses remain. Your other groups are unchanged.');foot=btn('Back to people','members');break;
+  case 'access-changed':header='Access changed';sub='ChopDot';body=status('This view has changed.','You may no longer have access, or this person may have left. Refresh before continuing.','info');foot=btn('Back to your people','safe-directory');break;
+  case 'offline':header='You are offline';body=status('Your group is saved.','You can look around. Reconnect before inviting or making changes.','info');foot=btn('View saved people','members');break;
+  case 'loading':header='Loading people';body=`<h1 class="hero" tabindex="-1">One moment.</h1><section class="card loading-card"><div class="skel short"></div><div class="skel"></div><div class="skel med"></div></section>`;foot=btn('Back','members');break;
+  case 'error':header='Could not load';body=status('People could not load.','Your group has not changed. Please try again.','refresh');foot=btn('Try again','members');break;
+  case 'handoff':{
+   const h=s.handoff;header=h?.title||'Continue';sub=h?.subtitle||g;
+   if(h?.payment){const t=h.payment;body=status(t.kind==='settle'?'Ready to settle.':'Ready to request.','Review this exact amount in the next step.','wallet')+`<section class="card mp-money"><span class="label">${t.kind==='settle'?'You pay '+esc(M.name(t.recipient)):esc(M.name(t.payer))+' pays you'}</span><div class="value">${M.amount(t.amountMinor,t.currency)}</div><p class="mp-meta">${t.sourceGroups.map(k=>esc(M.GROUPS[k].name)).join(' · ')}</p></section>`+card('Payment method',esc(t.paymentMethod||'Choose when you settle'));
+    body+=`<div class="mp-inline">${icon('info')}<span>Preview only. No request was sent and no payment was started.</span></div>`;
+   }else body=status(esc(h?.title||'Continue')+'.',esc(h?.copy||'Your place is kept for the next step.'),h?.icon||'people')+`<div class="mp-inline">${icon('info')}<span>Preview only. No invitation, profile or group setting was changed.</span></div>`;
+   foot=btn(h?.backLabel||'Back','back');break;}
+  }
+  return {header,sub,body,foot};
+ }
+ function render(focus=false){const d=screenData();document.getElementById('device').innerHTML=`<section class="screen mp-screen" id="${s.route}" data-route="${s.route}"><header class="detail-header">${btn(icon('back'),'back','icon-btn','aria-label="Back"')}<div class="header-title"><b>${esc(d.header)}</b><span>${esc(d.sub)}</span></div>${btn('Demo','demo','mp-demo','aria-label="Open prototype scenarios"')}</header><main class="app-content">${d.body}</main><footer class="focus-footer"><div class="footer-stack">${d.foot}</div></footer></section>`;document.getElementById('lab-state').textContent=`${s.route} · ${s.scope} · ${M.owner(s)===s.viewer?'Owner demo':'Member demo'}`;if(focus)document.querySelector('h1')?.focus({preventScroll:true});}
+ const context=()=>({route:s.route,group:s.group,scope:s.scope,person:s.person,query:s.query,handoff:M.clone(s.handoff)});
+ function go(route,patch={}){trail.push(context());M.navigate(s,route,patch);history.pushState(context(),'','#'+route);render(true);}
+ function back(){const prev=trail.pop();if(prev)Object.assign(s,prev);else if(s.route==='members'){go('handoff',{handoff:{title:M.GROUPS[s.group].name,copy:'Return to your group to add or review expenses.',backLabel:'Back to people',ownerJourney:'08'}});return;}else s.route='members';history.replaceState(context(),'','#'+s.route);render(true);}
+ function accept(id){if(s.command?.id!==id)return;const result=M.acceptRemoval(s,id);Object.assign(s,{person:s.command.person,group:s.command.group,scope:s.command.group});s.route=result==='accepted'?'removed':'access-changed';render(true);}
+ function execute(){const c=M.requestRemoval(s);if(c.blocked){s.route=c.blocked==='balance'?'remove-blocked':c.blocked==='offline'?'offline':'access-changed';render();return;}s.route='remove-saving';render();const id=c.id;pendingTimer=setTimeout(()=>{if(s.command?.id!==id)return;if(s.saveMode==='unknown'){s.command.status='unknown';s.route='remove-unknown';}else if(s.saveMode==='failed'){s.command.status='failed';s.route='remove-failed';}else{accept(id);return;}render(true);},180);}
+ function action(a,el){
+  if(a==='demo'){document.getElementById('demo-dialog').showModal();return;}
+  if(a==='back'){back();return;}
+  if(a==='members'){go('members',{scope:s.group,person:null,query:''});return;}
+  if(a==='directory'||a==='safe-directory'){if(a==='safe-directory'){s.members[s.group]=s.members[s.group].filter(p=>p!==s.viewer);s.scope='all';}go('directory',{scope:'all',person:null});return;}
+  if(a==='person'){go('person',{person:el.dataset.person});return;}
+  if(a==='person-return'){go('person');return;}
+  if(['roles','preferences','groups','manage'].includes(a)){if(a==='manage'&&(M.owner(s)!==s.viewer||s.person===s.viewer)){go('access-changed');return;}go(a);return;}
+  if(a==='open-group'){go('person',{scope:el.dataset.group,group:el.dataset.group});return;}
+  if(a==='payment'){const t=M.resolveScope(s,el.dataset.currency);if(!t)return;go('handoff',{handoff:{title:t.kind==='settle'?'Settle Up':'Request Money',subtitle:M.name(s.person),payment:t,backLabel:'Back to '+M.name(s.person)}});return;}
+  if(a==='review-issue'){go('handoff',{handoff:{title:'Review the expense',subtitle:M.name(s.person),copy:'Dinner in Zurich Weekend is still in review. Only the related balance may change.',backLabel:'Back to '+M.name(s.person),ownerJourney:'07'}});return;}
+  if(a==='invite'||a==='invite-detail'){if(!s.online)return;go('handoff',{handoff:{title:a==='invite'?'Invite someone':'Invitation pending',subtitle:M.GROUPS[s.group].name,copy:a==='invite'?'Choose who to invite to '+M.GROUPS[s.group].name+'.':M.name(el.dataset.person)+' has not joined this group yet.',backLabel:'Back to people',ownerJourney:'04'}});return;}
+  if(a==='own-methods'){go('handoff',{handoff:{title:'Your payment methods',copy:'Choose which details you share. Your sign-in method stays separate.',backLabel:'Back to preferences',ownerJourney:'20'}});return;}
+  if(a==='remove'){const block=M.removalBlock(s);go(block?(block==='balance'?'remove-blocked':block==='offline'?'offline':'access-changed'):'remove-confirm');return;}
+  if(a==='confirm-remove'){execute();return;}
+  if(a==='recover'){if(!s.command)return;s.command.status='recovering';render();return;}
+  if(a==='retry'){if(s.command?.status!=='failed')return;/* same immutable command; no second request identity */s.command.status='pending';s.saveMode='accepted';s.route='remove-saving';render();pendingTimer=setTimeout(()=>accept(s.command.id),180);}
+ }
+ document.addEventListener('click',e=>{const el=e.target.closest('[data-action]');if(el&&!el.disabled)action(el.dataset.action,el);const demo=e.target.closest('[data-demo]');if(demo){scenario(demo.dataset.demo);document.getElementById('demo-dialog').close();}});
+ document.addEventListener('input',e=>{if(e.target.id==='people-search'){const start=e.target.selectionStart;s.query=e.target.value;render();const input=document.getElementById('people-search');input.focus();input.setSelectionRange(start,start);}});
+ window.addEventListener('popstate',e=>{if(e.state&&M.routes.includes(e.state.route)){Object.assign(s,e.state);render();}});
+ function scenario(id){clearTimeout(pendingTimer);trail=[];s=M.create();switch(id){
+  case 'all':s.route='directory';s.scope='all';break;
+  case 'global-ja':s.route='person';s.scope='all';s.person='jeanine';break;
+  case 'member':s.owners.zurich='marc';break;
+  case 'mixed':s.mixed=true;s.route='person';s.person='sam';s.scope='all';break;
+  case 'private':s.privatePreference=true;s.person='jeanine';s.route='preferences';break;
+  case 'issue':s.issue=true;s.person='marc';s.route='person';break;
+  case 'blocked':s.person='marc';s.route='remove-blocked';break;
+  case 'remove':s.person='jeanine';s.route='remove-confirm';break;
+  case 'unknown':s.person='jeanine';M.requestRemoval(s);s.command.status='unknown';s.route='remove-unknown';break;
+  case 'failed':s.person='jeanine';M.requestRemoval(s);s.command.status='failed';s.route='remove-failed';break;
+  case 'accepted-result':if(window.PeopleDemo.previous?.command){s=window.PeopleDemo.previous;accept(s.command.id);}break;
+  case 'denied':s.person='jeanine';s.access=false;s.route='access-changed';break;
+  case 'offline':s.online=false;s.route='offline';break;
+  case 'solo':s.group=s.scope='solo';break;
+  case 'loading':s.route='loading';break;
+  case 'error':s.route='error';break;
+ }
+ history.replaceState(context(),'','#'+s.route);render(true);
+ }
+ const demos=[['Group members','members'],['All your people','all'],['Jeanine across groups','global-ja'],['Sam · two currencies','mixed'],['Member view','member'],['Preference not shared','private'],['Open expense issue','issue'],['Removal blocked','blocked'],['Remove a settled member','remove'],['Save result unknown','unknown'],['Save failed · retry','failed'],['Access changed','denied'],['Offline saved group','offline'],['Only you in the group','solo'],['Loading','loading'],['Load failed','error']];
+ const lab=demos.map(([label,id])=>`<button class="compare" data-demo="${id}">${label}</button>`).join('');document.querySelectorAll('[data-demo-list]').forEach(x=>x.innerHTML=lab);
+ window.PeopleDemo={get state(){return M.clone(s);},go,scenario,result:(result)=>{if(!s.command)return;if(result==='accepted')accept(s.command.id);else if(result==='permission-lost'){s.members[s.group]=s.members[s.group].filter(p=>p!==s.viewer);s.access=false;accept(s.command.id);}else if(result==='not-saved'){s.command.status='failed';s.route='remove-failed';render();}},configure:patch=>{Object.assign(s,patch);render();},render};
+ document.querySelectorAll('[data-result]').forEach(x=>x.addEventListener('click',()=>{window.PeopleDemo.result(x.dataset.result);document.getElementById('demo-dialog').close();}));
+ history.replaceState(context(),'','#members');render();
+})();
+</script></body></html>

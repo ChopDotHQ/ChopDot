@@ -1,4 +1,4 @@
-import {member} from '../create-join/model.js';
+import {member,membershipActive} from '../create-join/model.js';
 import {assertParticipantCommand,signFixture,consumeFixture,currentActor} from '../create-join/authority.js';
 import {assertLocalSession} from '../session-guard.js';
 import { allGroups, people, resolveScope, makePlan, lowerReceiptPlan, sources, unresolved, fail } from './ledger.js';
@@ -154,7 +154,7 @@ export function repository(storage, assertWriter=()=>{}) {
   return { read, commit(c,authority='user'){const s=read();if(s.gateC.environment.failSave)fail('SAVE','Could not save. The accepted payment state is unchanged.');const signed=signFixture(s,c);const next=write(transition(s,signed,authority));consumeFixture(signed);return next;},
     saveDraft(actor,draft){const s=read();s.gateC.drafts[actor]=structuredClone(draft);return write(s);},
     setEnvironment(env){const s=read();s.gateC.environment=structuredClone(env);return write(s);},
-    selectGroup(id){const s=read(),p=member(s,currentActor());if(p&&p.groupId!==id)fail('PERMISSION','This participant belongs to one joined group.');const g=allGroups(s).find(g=>g.id===id);if(!g)fail('GROUP','Group not found.');s.group=g;return write(s);},
+    selectGroup(id){const s=read(),p=member(s,currentActor());if(!membershipActive(s,currentActor(),id)||p&&p.groupId!==id)fail('PERMISSION','This participant belongs to one joined group.');const g=allGroups(s).find(g=>g.id===id);if(!g)fail('GROUP','Group not found.');s.group=g;return write(s);},
     addFixture(fixture){const s=read();if(s.gateC.fixtureAdded)return s;const next=fixture(s);next.gateC.fixtureAdded=true;return write(next);}
   };
 }

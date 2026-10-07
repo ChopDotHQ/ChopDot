@@ -1,3 +1,4 @@
+import {membershipActive} from '../create-join/model.js';
 import { upgrade as upgradeLedger } from '../gate-c/model.js';
 import { allGroups, sources, unresolved, fail } from '../gate-c/ledger.js';
 export const KEY='chopdot.preview-v2.guest';
@@ -75,7 +76,7 @@ export function repository(storage,assertWriter=()=>{}){
  return {read,commit(c,a='user'){return write(transition(read(),c,a));}};
 }
 // Read-only projections. Event identity belongs to the accepted owner history, not delivery order.
-export function canOpenExpense(s,e,actor){return !!e&&!e.deleted&&!s.gateD?.environment.revokedGroups?.includes(e.groupId)&&[e.ownerId,e.payerId,...e.participantIds].includes(actor);}
+export function canOpenExpense(s,e,actor){return !!e&&!e.deleted&&membershipActive(s,actor,e.groupId)&&!s.gateD?.environment.revokedGroups?.includes(e.groupId)&&[e.ownerId,e.payerId,...e.participantIds].includes(actor);}
 export function activity(input,actor='self'){
  const s=upgrade(input);available(s,actor);const events=[],attention=[];
  for(const h of s.gateB.history){const current=s.expenses.find(e=>e.id===h.expenseId);if(!current||!canOpenExpense(s,{...current,deleted:false},actor))continue;

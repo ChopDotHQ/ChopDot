@@ -1,3 +1,5 @@
+import {groupMembers,membershipActive} from './create-join/model.js';
+import {allGroups} from './gate-c/ledger.js';
 import {currentActor} from './create-join/authority.js';
 import {repository as accountRepository} from './gate-d/model.js';
 import { transition as commitExpense, upgrade as upgradePrototype } from './gate-b/model.js';
@@ -254,6 +256,8 @@ function addLocalHomeCss(doc) {
   doc.head.appendChild(style);
 }
 
+function openExpansion(hash='#family=09&page=members'){stopMonitor();currentJourney='STAGE_5';currentFlow='expansion-local';showFrame();frame.src=`./expansion/index.html${params.has('fixtures')?'?fixtures=1':''}${hash}`;}
+window.addEventListener('message',event=>{if(event.origin!==location.origin||event.source!==frame.contentWindow)return;if(event.data?.type==='chopdot-expansion-route'){const url=new URL(location.href);for(const k of ['gateB','gateBRoute','gateC','gateD','entry','createJoin'])url.searchParams.delete(k);url.searchParams.set('expansion',event.data.hash.slice(1));history.replaceState(null,'',url);}});
 function openCreateJoin(hash='#page=entry'){stopMonitor();currentJourney='J04';currentFlow='create-join-local';showFrame();frame.src=`./create-join/index.html${params.has('fixtures')?'?fixtures=1':''}${hash.startsWith('#')?hash:'#'+hash}`;}
 window.addEventListener('message',event=>{if(event.origin!==location.origin||event.source!==frame.contentWindow)return;if(event.data?.type==='chopdot-create-join-route'){const url=new URL(location.href);for(const k of ['gateB','gateBRoute','gateC','gateD','entry'])url.searchParams.delete(k);url.searchParams.set('createJoin',event.data.hash.slice(1));history.replaceState(null,'',url);}else if(event.data?.type==='chopdot-create-join-entry'){openAuth('signin');}});
 function openGateD(hash='#page=activity') {
@@ -305,7 +309,8 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
   if (!doc?.body) return;
   addLocalHomeCss(doc);
   if(currentActor()!=='self'){openCreateJoin('#page=recovery');return;}
-  const state = loadGuestState();
+  const state = loadGuestState(),activeGroups=allGroups(state).filter(g=>!g.archived&&!g.deleted&&membershipActive(state,'self',g.id));
+  if(!activeGroups.some(g=>g.id===state.group?.id))state.group=activeGroups[0]||null;
   doc.documentElement.dataset.previewMode = converted ? 'converted' : 'guest';
   doc.body.dataset.previewMode = converted ? 'converted' : 'guest';
 
@@ -358,32 +363,16 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
     `;
   }
 
-  const groupCard = content.querySelector('.card.group');
-  if (groupCard) {
-    groupCard.tabIndex = 0;
-    groupCard.setAttribute('role', 'button');
-    groupCard.setAttribute('aria-label', 'Open group');
-    groupCard.addEventListener('click', openGateB);
-    groupCard.addEventListener('keydown', event => {
-      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openGateB(); }
-    });
-  }
-
-  const localName = content.querySelector('[data-local-group-name]');
-  if (localName) localName.textContent = String(state.group?.name || '');
-  const localMeta = content.querySelector('[data-local-group-meta]');
-  if (localMeta && state.group) {
-    const count = 1 + state.people.length;
-    localMeta.textContent = `${state.group.currency} · ${count === 1 ? 'only you' : `${count} people`}${converted ? '' : ' · local'}`;
-  }
-
+  const template=content.querySelector('.card.group');
+  if(template){const parent=template.parentElement;for(const g of activeGroups){const card=template.cloneNode(true),count=state.expenses.filter(e=>!e.deleted&&e.groupId===g.id).length;card.querySelector('[data-local-group-name]').textContent=g.name;card.querySelector('[data-local-group-meta]').textContent=g.currency+' · '+groupMembers(state,g).length+' people';card.querySelector('.group-balance').textContent=g.kind==='savings'?'Savings':count+' '+(count===1?'expense':'expenses');card.tabIndex=0;card.setAttribute('role','button');card.setAttribute('aria-label',activeGroups.length===1?'Open group':'Open '+g.name);const open=()=>{saveGuestState({group:g});if(g.kind==='savings')openExpansion('#'+new URLSearchParams({family:'16',page:'home',group:g.id}));else openGateB();};card.addEventListener('click',open);card.addEventListener('keydown',event=>{if(['Enter',' '].includes(event.key)){event.preventDefault();open();}});parent.insertBefore(card,template);}template.remove();}
+  const familyLinks=document.createElement('div');familyLinks.className='local-actions';for(const [label,route]of [['Savings','family=16&page=list&group='],['Insights','family=19&page=overview&group='],['All groups / archived','family=26&page=list&group='],['Payment methods','family=20&page=overview&group=']]){const b=document.createElement('button');b.className='local-action';b.textContent=label;b.addEventListener('click',()=>openExpansion('#'+route));familyLinks.append(b);}content.append(familyLinks);
   const wallet = doc.querySelector('.wallet');
   if (wallet) wallet.style.display = 'none';
 
   const start = content.querySelector('.guest-start-group');
   if (start) start.addEventListener('click', openGuestCreateGroup);
   const add = content.querySelector('.guest-add-expense');
-  if (add) add.addEventListener('click', openGuestExpense);
+  if(add){if(state.group?.kind==='savings'){add.textContent='Add money';add.addEventListener('click',()=>openExpansion('#'+new URLSearchParams({family:'17',page:'add',kind:'savings-add',group:state.group.id})));}else add.addEventListener('click',openGuestExpense);}
   const invite = content.querySelector('.guest-invite');
   if (invite) invite.addEventListener('click', showAccountWall);
 
@@ -1074,7 +1063,8 @@ window.ChopDotPreviewV2 = Object.freeze({
   openHome: () => openHome(lastEntryState, 'account'),
 });
 
-if(params.has('createJoin'))openCreateJoin('#'+params.get('createJoin'));
+if(params.has('expansion'))openExpansion('#'+params.get('expansion'));
+else if(params.has('createJoin'))openCreateJoin('#'+params.get('createJoin'));
 else if(currentActor()!=='self'&&entryMode!=='signin'&&!params.has('gateB')&&!params.has('gateC')&&!params.has('gateD'))openCreateJoin('#page=recovery');
 else if (params.has('gateD'))openGateD(params.get('gateD'));
 else if (params.has('gateC')) openGateC(params.get('gateC'));

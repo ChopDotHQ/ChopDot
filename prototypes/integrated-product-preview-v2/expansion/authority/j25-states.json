@@ -1,0 +1,2030 @@
+{
+  "settings-entry": {
+    "code": "J25-S01",
+    "eyebrow": "Storage / recovery",
+    "title": "Keep recovery understandable",
+    "rows": [
+      [
+        "Current source",
+        "This device · fixture"
+      ]
+    ],
+    "lead": "Storage choices never create payment, wallet, signing, or member authority.",
+    "notice": [
+      "",
+      "Storage choices never create payment, wallet, signing, or member authority."
+    ],
+    "primary": {
+      "label": "Review storage",
+      "to": "storage-summary"
+    },
+    "secondary": {
+      "label": "Recovery event",
+      "to": "recovery-entry"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": null
+  },
+  "recovery-entry": {
+    "code": "J25-S02",
+    "eyebrow": "Storage / recovery",
+    "title": "Something is missing?",
+    "rows": [
+      [
+        "Current device state",
+        "Unavailable · fixture"
+      ]
+    ],
+    "lead": "Do not guess that a backup exists or that a restore already happened.",
+    "notice": [
+      "warn",
+      "Do not guess that a backup exists or that a restore already happened."
+    ],
+    "primary": {
+      "label": "Find recovery options",
+      "to": "restore-source-choice"
+    },
+    "secondary": {
+      "label": "Return to storage",
+      "to": "settings-entry"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "storage-summary": {
+    "code": "J25-S03",
+    "eyebrow": "Storage / recovery",
+    "title": "Your device is the working copy",
+    "rows": [
+      [
+        "Working copy",
+        "Current device"
+      ]
+    ],
+    "lead": "A copy is useful only when its scope, age and recovery limits are visible.",
+    "notice": [
+      "",
+      "A copy is useful only when its scope, age and recovery limits are visible."
+    ],
+    "primary": {
+      "label": "Choose storage approach",
+      "to": "storage-choice"
+    },
+    "secondary": {
+      "label": "Recovery options",
+      "to": "restore-source-choice"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": null
+  },
+  "storage-choice": {
+    "code": "J25-S04",
+    "eyebrow": "Storage / recovery",
+    "title": "Choose what problem you are solving",
+    "rows": [
+      [
+        "Device only",
+        "No backup claim"
+      ]
+    ],
+    "lead": "Changing approach does not move data by itself.",
+    "notice": [
+      "",
+      "Changing approach does not move data by itself."
+    ],
+    "primary": {
+      "label": "Use device only",
+      "to": "device-only"
+    },
+    "secondary": {
+      "label": "Prepare backup copy",
+      "to": "backup-scope"
+    },
+    "tertiary": {
+      "label": "Explore external sync",
+      "to": "sync-info"
+    },
+    "quaternary": null,
+    "tone": null
+  },
+  "device-only": {
+    "code": "J25-S05",
+    "eyebrow": "Storage / recovery",
+    "title": "No backup claim is made",
+    "rows": [
+      [
+        "Backup copy",
+        "None verified"
+      ]
+    ],
+    "lead": "Device-only is a valid choice only if you accept that loss may be unrecoverable.",
+    "notice": [
+      "warn",
+      "Device-only is a valid choice only if you accept that loss may be unrecoverable."
+    ],
+    "primary": {
+      "label": "Keep device only",
+      "to": "device-only-result"
+    },
+    "secondary": {
+      "label": "Choose another approach",
+      "to": "storage-choice"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "device-only-result": {
+    "code": "J25-S06",
+    "eyebrow": "Storage / recovery",
+    "title": "Device-only choice recorded · fixture",
+    "rows": [
+      [
+        "Working copy",
+        "Unchanged"
+      ]
+    ],
+    "lead": "You can prepare a backup later without rewriting current records.",
+    "notice": [
+      "success",
+      "You can prepare a backup later without rewriting current records."
+    ],
+    "primary": {
+      "label": "Return to storage",
+      "to": "settings-entry"
+    },
+    "secondary": null,
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "success"
+  },
+  "backup-scope": {
+    "code": "J25-S07",
+    "eyebrow": "Storage / recovery",
+    "title": "Choose what this recovery copy covers",
+    "rows": [
+      [
+        "Account data",
+        "Groups / expenses / splits / activity"
+      ]
+    ],
+    "lead": "Scope remains reversible until the first backup effect.",
+    "notice": [
+      "",
+      "Scope remains reversible until the first backup effect."
+    ],
+    "primary": {
+      "label": "Use account recovery scope",
+      "to": "backup-classes"
+    },
+    "secondary": {
+      "label": "Cancel",
+      "to": "storage-choice"
+    },
+    "tertiary": {
+      "label": "Demo: nothing to back up",
+      "to": "backup-empty"
+    },
+    "quaternary": null,
+    "tone": null
+  },
+  "backup-classes": {
+    "code": "J25-S08",
+    "eyebrow": "Storage / recovery",
+    "title": "Recovery copy without authority",
+    "rows": [
+      [
+        "Groups / expenses / splits",
+        "Included as recorded"
+      ]
+    ],
+    "lead": "Payment-looking history stays inert. Restore cannot create payment, retry, wallet or signing authority.",
+    "notice": [
+      "",
+      "Payment-looking history stays inert. Restore cannot create payment, retry, wallet or signing authority."
+    ],
+    "primary": {
+      "label": "Review privacy rule",
+      "to": "backup-sensitive-policy"
+    },
+    "secondary": {
+      "label": "Backup format",
+      "to": "backup-format"
+    },
+    "tertiary": {
+      "label": "Demo: secret-like field",
+      "to": "secret-like-field-blocked"
+    },
+    "quaternary": null,
+    "tone": null
+  },
+  "backup-sensitive-policy": {
+    "code": "J25-S09",
+    "eyebrow": "Storage / recovery",
+    "title": "Sensitive authority stays behind",
+    "rows": [
+      [
+        "Credentials",
+        "Excluded"
+      ]
+    ],
+    "lead": "Recovery may restore context without restoring credentials or permission.",
+    "notice": [
+      "",
+      "Recovery may restore context without restoring credentials or permission."
+    ],
+    "primary": {
+      "label": "Continue",
+      "to": "backup-format"
+    },
+    "secondary": {
+      "label": "Back",
+      "to": "backup-classes"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": null
+  },
+  "backup-format": {
+    "code": "J25-S10",
+    "eyebrow": "Storage / recovery",
+    "title": "One explicit backup artifact",
+    "rows": [
+      [
+        "Schema",
+        "chopdot-recovery-v1"
+      ]
+    ],
+    "lead": "A checksum does not prove the source was complete, current, authentic or durably stored.",
+    "notice": [
+      "",
+      "A checksum does not prove the source was complete, current, authentic or durably stored."
+    ],
+    "primary": {
+      "label": "Prepare recovery snapshot",
+      "to": "snapshot-preparing"
+    },
+    "secondary": {
+      "label": "Back",
+      "to": "backup-classes"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": null
+  },
+  "snapshot-preparing": {
+    "code": "J25-S11",
+    "eyebrow": "Storage / recovery",
+    "title": "Preparing backup preview facts",
+    "rows": [
+      [
+        "Operation",
+        "BKP25-DEMO-A"
+      ]
+    ],
+    "lead": "Snapshot preparation is read-only.",
+    "notice": [
+      "",
+      "Snapshot preparation is read-only."
+    ],
+    "primary": {
+      "label": "Demo: snapshot ready",
+      "to": "snapshot-ready"
+    },
+    "secondary": {
+      "label": "Demo: offline",
+      "to": "snapshot-offline"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "progress"
+  },
+  "snapshot-ready": {
+    "code": "J25-S12",
+    "eyebrow": "Storage / recovery",
+    "title": "Review can begin",
+    "rows": [
+      [
+        "Snapshot",
+        "SNAP-25-A"
+      ]
+    ],
+    "lead": "A source or scope change invalidates this preview.",
+    "notice": [
+      "",
+      "A source or scope change invalidates this preview."
+    ],
+    "primary": {
+      "label": "Preview backup",
+      "to": "backup-preview"
+    },
+    "secondary": {
+      "label": "Demo: source changed",
+      "to": "backup-preview-stale"
+    },
+    "tertiary": {
+      "label": "Demo: unresolved identity",
+      "to": "identity-unresolved"
+    },
+    "quaternary": null,
+    "tone": null
+  },
+  "backup-empty": {
+    "code": "J25-S13",
+    "eyebrow": "Storage / recovery",
+    "title": "Nothing needs a recovery copy",
+    "rows": [
+      [
+        "Artifact",
+        "None"
+      ]
+    ],
+    "lead": "Return or choose another authorized scope.",
+    "notice": [
+      "",
+      "Return or choose another authorized scope."
+    ],
+    "primary": {
+      "label": "Return to storage",
+      "to": "storage-choice"
+    },
+    "secondary": null,
+    "tertiary": null,
+    "quaternary": null,
+    "tone": null
+  },
+  "snapshot-offline": {
+    "code": "J25-S14",
+    "eyebrow": "Storage / recovery",
+    "title": "Fresh source facts cannot be established",
+    "rows": [
+      [
+        "Snapshot",
+        "Not current"
+      ]
+    ],
+    "lead": "Recheck before reviewing or creating a backup.",
+    "notice": [
+      "warn",
+      "Recheck before reviewing or creating a backup."
+    ],
+    "primary": {
+      "label": "Recheck snapshot",
+      "to": "snapshot-preparing"
+    },
+    "secondary": {
+      "label": "Return",
+      "to": "backup-scope"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "secret-like-field-blocked": {
+    "code": "J25-S15",
+    "eyebrow": "Storage / recovery",
+    "title": "Unexpected secret-like field found",
+    "rows": [
+      [
+        "Artifact",
+        "None"
+      ]
+    ],
+    "lead": "There is no V1 override to include credential-like material.",
+    "notice": [
+      "danger",
+      "There is no V1 override to include credential-like material."
+    ],
+    "primary": {
+      "label": "Return to data review",
+      "to": "backup-classes"
+    },
+    "secondary": null,
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "danger"
+  },
+  "identity-unresolved": {
+    "code": "J25-S16",
+    "eyebrow": "Storage / recovery",
+    "title": "One member link remains unresolved",
+    "rows": [
+      [
+        "Stable IDs",
+        "Preserved"
+      ]
+    ],
+    "lead": "Restore must revalidate identity before applying ambiguous links.",
+    "notice": [
+      "warn",
+      "Restore must revalidate identity before applying ambiguous links."
+    ],
+    "primary": {
+      "label": "Continue to preview",
+      "to": "backup-preview"
+    },
+    "secondary": {
+      "label": "Cancel",
+      "to": "backup-cancelled-before-confirm"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "backup-preview": {
+    "code": "J25-S17",
+    "eyebrow": "Storage / recovery",
+    "title": "Review this exact recovery snapshot",
+    "rows": [
+      [
+        "Scope",
+        "Authorized account recovery data"
+      ]
+    ],
+    "lead": "Values and statuses remain as recorded; backup does not settle or mutate them.",
+    "notice": [
+      "",
+      "Values and statuses remain as recorded; backup does not settle or mutate them."
+    ],
+    "primary": {
+      "label": "View backup details",
+      "to": "backup-preview-details"
+    },
+    "secondary": {
+      "label": "Demo: source changed",
+      "to": "backup-preview-stale"
+    },
+    "tertiary": {
+      "label": "Cancel",
+      "to": "backup-cancelled-before-confirm"
+    },
+    "quaternary": null,
+    "tone": null
+  },
+  "backup-preview-details": {
+    "code": "J25-S18",
+    "eyebrow": "Storage / recovery",
+    "title": "Know what recovery could restore",
+    "rows": [
+      [
+        "Recoverable context",
+        "Groups / expenses / splits / activity"
+      ]
+    ],
+    "lead": "Preview remains read-only.",
+    "notice": [
+      "",
+      "Preview remains read-only."
+    ],
+    "primary": {
+      "label": "Final review",
+      "to": "backup-ready-to-confirm"
+    },
+    "secondary": {
+      "label": "Back",
+      "to": "backup-preview"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": null
+  },
+  "backup-preview-stale": {
+    "code": "J25-S19",
+    "eyebrow": "Storage / recovery",
+    "title": "Source changed after preview",
+    "rows": [
+      [
+        "Old snapshot",
+        "SNAP-25-A"
+      ]
+    ],
+    "lead": "Refresh snapshot and review again.",
+    "notice": [
+      "warn",
+      "Refresh snapshot and review again."
+    ],
+    "primary": {
+      "label": "Refresh snapshot",
+      "to": "snapshot-preparing"
+    },
+    "secondary": {
+      "label": "Cancel",
+      "to": "backup-cancelled-before-confirm"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "backup-ready-to-confirm": {
+    "code": "J25-S20",
+    "eyebrow": "Storage / recovery",
+    "title": "Ready to create the recovery artifact",
+    "rows": [
+      [
+        "Snapshot",
+        "SNAP-25-A"
+      ]
+    ],
+    "lead": "Create backup creates artifact bytes only. It does not save them externally.",
+    "notice": [
+      "",
+      "Create backup creates artifact bytes only. It does not save them externally."
+    ],
+    "primary": {
+      "label": "Review Create backup",
+      "to": "backup-confirmation"
+    },
+    "secondary": {
+      "label": "Cancel",
+      "to": "backup-cancelled-before-confirm"
+    },
+    "tertiary": {
+      "label": "Demo: exact backup exists",
+      "to": "backup-existing"
+    },
+    "quaternary": null,
+    "tone": null
+  },
+  "backup-confirmation": {
+    "code": "J25-S21",
+    "eyebrow": "Storage / recovery",
+    "title": "Create this backup?",
+    "rows": [
+      [
+        "Operation",
+        "BKP25-DEMO-A"
+      ]
+    ],
+    "lead": "This is the first point where recovery artifact creation may begin.",
+    "notice": [
+      "",
+      "This is the first point where recovery artifact creation may begin."
+    ],
+    "primary": {
+      "label": "Create backup",
+      "to": "backup-creating"
+    },
+    "secondary": {
+      "label": "Cancel",
+      "to": "backup-cancelled-before-confirm"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": null
+  },
+  "backup-cancelled-before-confirm": {
+    "code": "J25-S22",
+    "eyebrow": "Storage / recovery",
+    "title": "Backup creation cancelled",
+    "rows": [
+      [
+        "Artifact",
+        "None"
+      ],
+      [
+        "Working copy",
+        "Unchanged"
+      ]
+    ],
+    "lead": "No backup artifact was created. Return to storage or restart review.",
+    "notice": [
+      "cancelled",
+      "No backup artifact was created. Return to storage or restart review."
+    ],
+    "primary": {
+      "label": "Return to backup scope",
+      "to": "backup-scope"
+    },
+    "secondary": {
+      "label": "Return to storage",
+      "to": "settings-entry"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "cancelled"
+  },
+  "backup-existing": {
+    "code": "J25-S23",
+    "eyebrow": "Storage / recovery",
+    "title": "This exact backup operation already has an artifact",
+    "rows": [
+      [
+        "Operation",
+        "BKP25-DEMO-A"
+      ]
+    ],
+    "lead": "Existing exact artifact wins for the same logical operation.",
+    "notice": [
+      "success",
+      "Existing exact artifact wins for the same logical operation."
+    ],
+    "primary": {
+      "label": "Use existing backup",
+      "to": "backup-ready"
+    },
+    "secondary": {
+      "label": "Change scope",
+      "to": "backup-scope"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "success"
+  },
+  "backup-creating": {
+    "code": "J25-S24",
+    "eyebrow": "Storage / recovery",
+    "title": "Packaging the reviewed recovery snapshot",
+    "rows": [
+      [
+        "Snapshot",
+        "SNAP-25-A"
+      ]
+    ],
+    "lead": "Duplicate creation is blocked while this exact operation is pending.",
+    "notice": [
+      "",
+      "Duplicate creation is blocked while this exact operation is pending."
+    ],
+    "primary": {
+      "label": "Demo: backup ready",
+      "to": "backup-ready"
+    },
+    "secondary": {
+      "label": "Demo: taking longer",
+      "to": "backup-taking-longer"
+    },
+    "tertiary": {
+      "label": "More states",
+      "to": "backup-leave-pending"
+    },
+    "quaternary": {
+      "label": "Demo: known failure",
+      "to": "backup-failed-before-artifact"
+    },
+    "tone": "progress"
+  },
+  "backup-taking-longer": {
+    "code": "J25-S25",
+    "eyebrow": "Storage / recovery",
+    "title": "Taking longer is not failure",
+    "rows": [
+      [
+        "Operation",
+        "BKP25-DEMO-A"
+      ]
+    ],
+    "lead": "Wait, request stop, or leave safely; do not start another backup.",
+    "notice": [
+      "warn",
+      "Wait, request stop, or leave safely; do not start another backup."
+    ],
+    "primary": {
+      "label": "Keep waiting",
+      "to": "backup-creating"
+    },
+    "secondary": {
+      "label": "Leave safely",
+      "to": "backup-leave-pending"
+    },
+    "tertiary": {
+      "label": "Request stop",
+      "to": "backup-stop-requested"
+    },
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "backup-leave-pending": {
+    "code": "J25-S26",
+    "eyebrow": "Storage / recovery",
+    "title": "Leaving does not prove cancellation",
+    "rows": [
+      [
+        "Operation",
+        "BKP25-DEMO-A"
+      ]
+    ],
+    "lead": "Navigation cannot rewrite pending work into failure or success.",
+    "notice": [
+      "warn",
+      "Navigation cannot rewrite pending work into failure or success."
+    ],
+    "primary": {
+      "label": "Check backup operation",
+      "to": "backup-reconcile"
+    },
+    "secondary": {
+      "label": "Return without retry",
+      "to": "settings-entry"
+    },
+    "tertiary": {
+      "label": "Demo: outcome unknown",
+      "to": "backup-outcome-unknown"
+    },
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "backup-stop-requested": {
+    "code": "J25-S27",
+    "eyebrow": "Storage / recovery",
+    "title": "Future work will stop where possible",
+    "rows": [
+      [
+        "Operation",
+        "BKP25-DEMO-A"
+      ]
+    ],
+    "lead": "A stop request is not yet a proven no-artifact result.",
+    "notice": [
+      "warn",
+      "A stop request is not yet a proven no-artifact result."
+    ],
+    "primary": {
+      "label": "Verify backup outcome",
+      "to": "backup-reconcile"
+    },
+    "secondary": null,
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "backup-stopped": {
+    "code": "J25-S28",
+    "eyebrow": "Storage / recovery",
+    "title": "Verified: no artifact exists for this operation",
+    "rows": [
+      [
+        "Operation",
+        "BKP25-DEMO-A"
+      ]
+    ],
+    "lead": "No hidden backup or external effect remains.",
+    "notice": [
+      "success",
+      "No hidden backup or external effect remains."
+    ],
+    "primary": {
+      "label": "Start fresh review",
+      "to": "backup-scope"
+    },
+    "secondary": {
+      "label": "Return",
+      "to": "settings-entry"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "success"
+  },
+  "backup-failed-before-artifact": {
+    "code": "J25-S29",
+    "eyebrow": "Storage / recovery",
+    "title": "Known failure occurred before artifact bytes existed",
+    "rows": [
+      [
+        "Operation",
+        "BKP25-DEMO-A"
+      ]
+    ],
+    "lead": "A changed source/scope/schema requires fresh review.",
+    "notice": [
+      "danger",
+      "A changed source/scope/schema requires fresh review."
+    ],
+    "primary": {
+      "label": "Retry same operation",
+      "to": "backup-creating"
+    },
+    "secondary": {
+      "label": "Return",
+      "to": "backup-ready-to-confirm"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "danger"
+  },
+  "backup-outcome-unknown": {
+    "code": "J25-S30",
+    "eyebrow": "Storage / recovery",
+    "title": "Neither success nor failure is established",
+    "rows": [
+      [
+        "Operation",
+        "BKP25-DEMO-A"
+      ]
+    ],
+    "lead": "Reconcile the exact operation first.",
+    "notice": [
+      "warn",
+      "Reconcile the exact operation first."
+    ],
+    "primary": {
+      "label": "Reconcile backup",
+      "to": "backup-reconcile"
+    },
+    "secondary": {
+      "label": "Recovery boundary",
+      "to": "recovery-owner-boundary"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "backup-reconcile": {
+    "code": "J25-S31",
+    "eyebrow": "Storage / recovery",
+    "title": "Check whether this exact recovery artifact exists",
+    "rows": [
+      [
+        "Operation",
+        "BKP25-DEMO-A"
+      ]
+    ],
+    "lead": "Fixture outcomes are deterministic review states, not live backend proof.",
+    "notice": [
+      "",
+      "Fixture outcomes are deterministic review states, not live backend proof."
+    ],
+    "primary": {
+      "label": "Demo: artifact found",
+      "to": "backup-artifact-recovered"
+    },
+    "secondary": {
+      "label": "Demo: no artifact",
+      "to": "backup-no-artifact-retry"
+    },
+    "tertiary": {
+      "label": "Demo: unresolved",
+      "to": "recovery-owner-boundary"
+    },
+    "quaternary": {
+      "label": "Demo: stopped verified",
+      "to": "backup-stopped"
+    },
+    "tone": "progress"
+  },
+  "backup-no-artifact-retry": {
+    "code": "J25-S32",
+    "eyebrow": "Storage / recovery",
+    "title": "Reconciliation proved no artifact exists",
+    "rows": [
+      [
+        "Operation",
+        "BKP25-DEMO-A"
+      ]
+    ],
+    "lead": "Retry is replay-safe only because no artifact was found.",
+    "notice": [
+      "success",
+      "Retry is replay-safe only because no artifact was found."
+    ],
+    "primary": {
+      "label": "Retry same operation",
+      "to": "backup-creating"
+    },
+    "secondary": {
+      "label": "Cancel",
+      "to": "settings-entry"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "success"
+  },
+  "backup-artifact-recovered": {
+    "code": "J25-S33",
+    "eyebrow": "Storage / recovery",
+    "title": "Existing exact artifact found",
+    "rows": [
+      [
+        "Operation",
+        "BKP25-DEMO-A"
+      ]
+    ],
+    "lead": "Recovered artifact preserves the originally reviewed snapshot.",
+    "notice": [
+      "success",
+      "Recovered artifact preserves the originally reviewed snapshot."
+    ],
+    "primary": {
+      "label": "Open recovered backup",
+      "to": "backup-ready"
+    },
+    "secondary": {
+      "label": "Return",
+      "to": "settings-entry"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "success"
+  },
+  "backup-ready": {
+    "code": "J25-S34",
+    "eyebrow": "Storage / recovery",
+    "title": "A recovery artifact exists",
+    "rows": [
+      [
+        "Artifact",
+        "BKP-25-A"
+      ]
+    ],
+    "lead": "Artifact-byte integrity is not source authenticity or durable backup proof.",
+    "notice": [
+      "success",
+      "Artifact-byte integrity is not source authenticity or durable backup proof."
+    ],
+    "primary": {
+      "label": "Choose where to keep it",
+      "to": "backup-destination-choice"
+    },
+    "secondary": {
+      "label": "Test restore preview",
+      "to": "restore-file-selected"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "success"
+  },
+  "backup-destination-choice": {
+    "code": "J25-S35",
+    "eyebrow": "Storage / recovery",
+    "title": "Where should this artifact go?",
+    "rows": [
+      [
+        "Artifact",
+        "BKP-25-A"
+      ]
+    ],
+    "lead": "Destination actions never regenerate the backup.",
+    "notice": [
+      "",
+      "Destination actions never regenerate the backup."
+    ],
+    "primary": {
+      "label": "Save on this device",
+      "to": "browser-save-requested"
+    },
+    "secondary": {
+      "label": "Save elsewhere",
+      "to": "external-save-opened"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": null
+  },
+  "browser-save-requested": {
+    "code": "J25-S36",
+    "eyebrow": "Storage / recovery",
+    "title": "Save requested",
+    "rows": [
+      [
+        "Artifact",
+        "BKP-25-A"
+      ]
+    ],
+    "lead": "The browser/OS owns final placement.",
+    "notice": [
+      "warn",
+      "The browser/OS owns final placement."
+    ],
+    "primary": {
+      "label": "View result",
+      "to": "backup-result-local"
+    },
+    "secondary": {
+      "label": "System boundary",
+      "to": "system-file-boundary"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "external-save-opened": {
+    "code": "J25-S37",
+    "eyebrow": "Storage / recovery",
+    "title": "External save sheet opened",
+    "rows": [
+      [
+        "Artifact",
+        "BKP-25-A"
+      ]
+    ],
+    "lead": "The external provider/system owns the result from here.",
+    "notice": [
+      "warn",
+      "The external provider/system owns the result from here."
+    ],
+    "primary": {
+      "label": "Demo: cancel",
+      "to": "external-save-cancelled"
+    },
+    "secondary": {
+      "label": "Demo: return unknown",
+      "to": "external-save-unknown"
+    },
+    "tertiary": {
+      "label": "Demo: provider confirms",
+      "to": "external-save-confirmed"
+    },
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "external-save-cancelled": {
+    "code": "J25-S38",
+    "eyebrow": "Storage / recovery",
+    "title": "External save cancelled",
+    "rows": [
+      [
+        "Artifact",
+        "BKP-25-A"
+      ],
+      [
+        "Durable external copy",
+        "Not claimed"
+      ]
+    ],
+    "lead": "No external save success is claimed. Try the same artifact again or return.",
+    "notice": [
+      "cancelled",
+      "No external save success is claimed. Try the same artifact again or return."
+    ],
+    "primary": {
+      "label": "Try same artifact again",
+      "to": "external-save-opened"
+    },
+    "secondary": {
+      "label": "Return to artifact",
+      "to": "backup-ready"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "cancelled"
+  },
+  "external-save-unknown": {
+    "code": "J25-S39",
+    "eyebrow": "Storage / recovery",
+    "title": "Returning from the sheet is not success",
+    "rows": [
+      [
+        "Artifact",
+        "BKP-25-A"
+      ]
+    ],
+    "lead": "Reconcile destination truth before another save attempt.",
+    "notice": [
+      "warn",
+      "Reconcile destination truth before another save attempt."
+    ],
+    "primary": {
+      "label": "Reconcile destination",
+      "to": "external-save-reconcile"
+    },
+    "secondary": {
+      "label": "Recovery boundary",
+      "to": "recovery-owner-boundary"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "external-save-reconcile": {
+    "code": "J25-S40",
+    "eyebrow": "Storage / recovery",
+    "title": "Check this exact external save attempt",
+    "rows": [
+      [
+        "Artifact",
+        "BKP-25-A"
+      ]
+    ],
+    "lead": "Fixture outcomes are review-only and not live provider evidence.",
+    "notice": [
+      "",
+      "Fixture outcomes are review-only and not live provider evidence."
+    ],
+    "primary": {
+      "label": "Demo: saved",
+      "to": "external-save-confirmed"
+    },
+    "secondary": {
+      "label": "Demo: not saved",
+      "to": "external-save-not-saved"
+    },
+    "tertiary": {
+      "label": "Demo: unresolved",
+      "to": "recovery-owner-boundary"
+    },
+    "quaternary": null,
+    "tone": "progress"
+  },
+  "external-save-not-saved": {
+    "code": "J25-S41",
+    "eyebrow": "Storage / recovery",
+    "title": "Reconciliation proved no external save",
+    "rows": [
+      [
+        "Artifact",
+        "BKP-25-A"
+      ]
+    ],
+    "lead": "Retry destination only.",
+    "notice": [
+      "success",
+      "Retry destination only."
+    ],
+    "primary": {
+      "label": "Retry same artifact",
+      "to": "external-save-opened"
+    },
+    "secondary": {
+      "label": "Return",
+      "to": "backup-ready"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "success"
+  },
+  "external-save-confirmed": {
+    "code": "J25-S42",
+    "eyebrow": "Storage / recovery",
+    "title": "Provider fixture reports saved copy",
+    "rows": [
+      [
+        "Artifact",
+        "BKP-25-A"
+      ]
+    ],
+    "lead": "The prototype does not claim real cloud/storage execution.",
+    "notice": [
+      "success",
+      "The prototype does not claim real cloud/storage execution."
+    ],
+    "primary": {
+      "label": "View backup result",
+      "to": "backup-result-external"
+    },
+    "secondary": {
+      "label": "Test restore preview",
+      "to": "restore-file-selected"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "success"
+  },
+  "backup-result-local": {
+    "code": "J25-S43",
+    "eyebrow": "Storage / recovery",
+    "title": "Artifact created · local save requested",
+    "rows": [
+      [
+        "Artifact",
+        "BKP-25-A"
+      ]
+    ],
+    "lead": "Recovery confidence requires a later readable restore test.",
+    "notice": [
+      "success",
+      "Recovery confidence requires a later readable restore test."
+    ],
+    "primary": {
+      "label": "Test restore preview",
+      "to": "restore-file-selected"
+    },
+    "secondary": {
+      "label": "Return to storage",
+      "to": "settings-entry"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "success"
+  },
+  "backup-result-external": {
+    "code": "J25-S44",
+    "eyebrow": "Storage / recovery",
+    "title": "Artifact created · external save fixture confirmed",
+    "rows": [
+      [
+        "Artifact",
+        "BKP-25-A"
+      ]
+    ],
+    "lead": "A saved copy is not yet a proven recoverable restore.",
+    "notice": [
+      "success",
+      "A saved copy is not yet a proven recoverable restore."
+    ],
+    "primary": {
+      "label": "Test restore preview",
+      "to": "restore-file-selected"
+    },
+    "secondary": {
+      "label": "Return to storage",
+      "to": "settings-entry"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "success"
+  },
+  "restore-source-choice": {
+    "code": "J25-S45",
+    "eyebrow": "Storage / recovery",
+    "title": "Choose only a source you can inspect",
+    "rows": [
+      [
+        "Recovery artifact",
+        "Local / exported package"
+      ]
+    ],
+    "lead": "Selecting a source does not apply it.",
+    "notice": [
+      "",
+      "Selecting a source does not apply it."
+    ],
+    "primary": {
+      "label": "Use recovery artifact",
+      "to": "restore-file-selected"
+    },
+    "secondary": {
+      "label": "External provider source",
+      "to": "provider-restore-boundary"
+    },
+    "tertiary": {
+      "label": "Demo: lost access",
+      "to": "lost-access"
+    },
+    "quaternary": null,
+    "tone": null
+  },
+  "restore-file-selected": {
+    "code": "J25-S46",
+    "eyebrow": "Storage / recovery",
+    "title": "Inspect before restore",
+    "rows": [
+      [
+        "Artifact",
+        "BKP-25-A"
+      ]
+    ],
+    "lead": "Checksum match does not prove the artifact is complete, current, or authorized for this account.",
+    "notice": [
+      "",
+      "Checksum match does not prove the artifact is complete, current, or authorized for this account."
+    ],
+    "primary": {
+      "label": "Inspect manifest",
+      "to": "restore-manifest"
+    },
+    "secondary": {
+      "label": "Cancel",
+      "to": "restore-source-choice"
+    },
+    "tertiary": {
+      "label": "Demo: corrupted artifact",
+      "to": "restore-corrupt"
+    },
+    "quaternary": null,
+    "tone": null
+  },
+  "restore-manifest": {
+    "code": "J25-S47",
+    "eyebrow": "Storage / recovery",
+    "title": "Understand the recovery source before applying it",
+    "rows": [
+      [
+        "Source",
+        "BKP-25-A · captured 2026-09-12 18:40 UTC"
+      ],
+      [
+        "Schema",
+        "chopdot-recovery-v1"
+      ],
+      [
+        "Scope",
+        "Groups / expenses / splits / activity"
+      ],
+      [
+        "Excluded",
+        "Credentials / signing / raw receiving details"
+      ]
+    ],
+    "lead": "This fixture is older than the working copy. Newer current facts must be preserved before any apply.",
+    "notice": [
+      "warn",
+      "This fixture is older than the working copy. Newer current facts must be preserved before any apply."
+    ],
+    "primary": {
+      "label": "Preview restore",
+      "to": "restore-preview"
+    },
+    "secondary": {
+      "label": "Demo: incompatible schema",
+      "to": "restore-incompatible"
+    },
+    "tertiary": {
+      "label": "Demo: version conflict",
+      "to": "restore-conflict"
+    },
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "restore-corrupt": {
+    "code": "J25-S48",
+    "eyebrow": "Storage / recovery",
+    "title": "Checksum or package structure failed",
+    "rows": [
+      [
+        "Applied",
+        "No"
+      ]
+    ],
+    "lead": "Choose another recovery source or keep current state.",
+    "notice": [
+      "danger",
+      "Choose another recovery source or keep current state."
+    ],
+    "primary": {
+      "label": "Choose another source",
+      "to": "restore-source-choice"
+    },
+    "secondary": {
+      "label": "Return",
+      "to": "settings-entry"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "danger"
+  },
+  "restore-incompatible": {
+    "code": "J25-S49",
+    "eyebrow": "Storage / recovery",
+    "title": "This schema cannot be safely applied here",
+    "rows": [
+      [
+        "Artifact schema",
+        "Unsupported"
+      ]
+    ],
+    "lead": "Migration needs an explicitly supported path, not guesswork.",
+    "notice": [
+      "warn",
+      "Migration needs an explicitly supported path, not guesswork."
+    ],
+    "primary": {
+      "label": "Choose another source",
+      "to": "restore-source-choice"
+    },
+    "secondary": {
+      "label": "Schema boundary",
+      "to": "schema-owner-boundary"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "restore-conflict": {
+    "code": "J25-S50",
+    "eyebrow": "Storage / recovery",
+    "title": "Restore conflicts with newer working-copy facts",
+    "rows": [
+      [
+        "Source",
+        "BKP-25-A · captured 2026-09-12 18:40 UTC"
+      ],
+      [
+        "Incoming",
+        "2 expenses + 1 split history"
+      ],
+      [
+        "Preserve newer current",
+        "Lisbon Weekend title + 1 newer expense"
+      ],
+      [
+        "Held out",
+        "Maya link held out"
+      ],
+      [
+        "Decision",
+        "Preserve newer current facts · non-destructive merge"
+      ]
+    ],
+    "lead": "Preview the non-destructive merge. Nothing is applied from this conflict state.",
+    "notice": [
+      "warn",
+      "Preview the non-destructive merge. Nothing is applied from this conflict state."
+    ],
+    "primary": {
+      "label": "Preview non-destructive merge",
+      "to": "restore-preview"
+    },
+    "secondary": {
+      "label": "Keep current device only",
+      "to": "restore-cancelled"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "restore-preview": {
+    "code": "J25-S51",
+    "eyebrow": "Storage / recovery",
+    "title": "See exactly what would change",
+    "rows": [
+      [
+        "Source",
+        "BKP-25-A · captured 2026-09-12 18:40 UTC"
+      ],
+      [
+        "Schema",
+        "chopdot-recovery-v1"
+      ],
+      [
+        "Scope",
+        "Groups / expenses / splits / activity"
+      ],
+      [
+        "Excluded",
+        "Credentials / signing / raw receiving details"
+      ],
+      [
+        "Incoming changes",
+        "2 expenses + 1 split history"
+      ],
+      [
+        "Preserve newer current",
+        "Lisbon Weekend title + 1 newer expense"
+      ],
+      [
+        "Held out",
+        "Maya link held out"
+      ],
+      [
+        "Conflict rule",
+        "Preserve newer current facts · non-destructive merge"
+      ],
+      [
+        "Exact apply set",
+        "2 expenses + 1 split history · no member merge"
+      ]
+    ],
+    "lead": "This is a read-only fixture preview. Restore rehydrates only the listed records and cannot manufacture payment, wallet, signing, provider or member authority.",
+    "notice": [
+      "",
+      "This is a read-only fixture preview. Restore rehydrates only the listed records and cannot manufacture payment, wallet, signing, provider or member authority."
+    ],
+    "primary": {
+      "label": "Final restore review",
+      "to": "restore-ready-to-confirm"
+    },
+    "secondary": {
+      "label": "Cancel restore",
+      "to": "restore-cancelled"
+    },
+    "tertiary": {
+      "label": "Review unresolved identity",
+      "to": "restore-identity-unresolved"
+    },
+    "quaternary": null,
+    "tone": null
+  },
+  "restore-identity-unresolved": {
+    "code": "J25-S52",
+    "eyebrow": "Storage / recovery",
+    "title": "One identity mapping stays outside this restore",
+    "rows": [
+      [
+        "Held out",
+        "Maya link held out"
+      ],
+      [
+        "Exact apply set",
+        "2 expenses + 1 split history · no member merge"
+      ],
+      [
+        "Preserve newer current",
+        "Lisbon Weekend title + 1 newer expense"
+      ]
+    ],
+    "lead": "The ambiguous Maya link is not merged by name. Continue only with the explicit non-ambiguous apply set or use the owning identity flow.",
+    "notice": [
+      "warn",
+      "The ambiguous Maya link is not merged by name. Continue only with the explicit non-ambiguous apply set or use the owning identity flow."
+    ],
+    "primary": {
+      "label": "Continue without ambiguous link",
+      "to": "restore-ready-to-confirm"
+    },
+    "secondary": {
+      "label": "Identity boundary",
+      "to": "identity-owner-boundary"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "restore-ready-to-confirm": {
+    "code": "J25-S53",
+    "eyebrow": "Storage / recovery",
+    "title": "Final review of the exact restore set",
+    "rows": [
+      [
+        "Source",
+        "BKP-25-A · captured 2026-09-12 18:40 UTC"
+      ],
+      [
+        "Schema",
+        "chopdot-recovery-v1"
+      ],
+      [
+        "Preserve newer current",
+        "Lisbon Weekend title + 1 newer expense"
+      ],
+      [
+        "Held out",
+        "Maya link held out"
+      ],
+      [
+        "Exact apply set",
+        "2 expenses + 1 split history · no member merge"
+      ],
+      [
+        "Operation",
+        "RST25-DEMO-A"
+      ]
+    ],
+    "lead": "Only this reviewed apply set may be bound to the restore operation. Any changed source or working-copy fact requires a fresh preview.",
+    "notice": [
+      "",
+      "Only this reviewed apply set may be bound to the restore operation. Any changed source or working-copy fact requires a fresh preview."
+    ],
+    "primary": {
+      "label": "Review Apply restore",
+      "to": "restore-confirmation"
+    },
+    "secondary": {
+      "label": "Cancel",
+      "to": "restore-cancelled"
+    },
+    "tertiary": {
+      "label": "Demo: already applied",
+      "to": "restore-already-applied"
+    },
+    "quaternary": null,
+    "tone": null
+  },
+  "restore-confirmation": {
+    "code": "J25-S54",
+    "eyebrow": "Storage / recovery",
+    "title": "Apply this reviewed restore?",
+    "rows": [
+      [
+        "Operation",
+        "RST25-DEMO-A"
+      ],
+      [
+        "Source",
+        "BKP-25-A · captured 2026-09-12 18:40 UTC"
+      ],
+      [
+        "Preserve newer current",
+        "Lisbon Weekend title + 1 newer expense"
+      ],
+      [
+        "Held out",
+        "Maya link held out"
+      ],
+      [
+        "Exact apply set",
+        "2 expenses + 1 split history · no member merge"
+      ]
+    ],
+    "lead": "This is the first point where working-copy recovery mutation may begin. The operation is bound to the exact reviewed set above.",
+    "notice": [
+      "",
+      "This is the first point where working-copy recovery mutation may begin. The operation is bound to the exact reviewed set above."
+    ],
+    "primary": {
+      "label": "Apply restore",
+      "to": "restore-applying"
+    },
+    "secondary": {
+      "label": "Cancel",
+      "to": "restore-cancelled"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": null
+  },
+  "restore-cancelled": {
+    "code": "J25-S55",
+    "eyebrow": "Storage / recovery",
+    "title": "Restore cancelled",
+    "rows": [
+      [
+        "Applied",
+        "No"
+      ],
+      [
+        "Working copy",
+        "Unchanged"
+      ]
+    ],
+    "lead": "No restore mutation was applied. Return to storage or review another source.",
+    "notice": [
+      "cancelled",
+      "No restore mutation was applied. Return to storage or review another source."
+    ],
+    "primary": {
+      "label": "Return to storage",
+      "to": "settings-entry"
+    },
+    "secondary": {
+      "label": "Choose another source",
+      "to": "restore-source-choice"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "cancelled"
+  },
+  "restore-already-applied": {
+    "code": "J25-S56",
+    "eyebrow": "Storage / recovery",
+    "title": "This exact restore operation is already applied",
+    "rows": [
+      [
+        "Operation",
+        "RST25-DEMO-A"
+      ]
+    ],
+    "lead": "Existing applied result wins for the same operation.",
+    "notice": [
+      "success",
+      "Existing applied result wins for the same operation."
+    ],
+    "primary": {
+      "label": "View recovered state",
+      "to": "restore-success"
+    },
+    "secondary": {
+      "label": "Return",
+      "to": "settings-entry"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "success"
+  },
+  "restore-applying": {
+    "code": "J25-S57",
+    "eyebrow": "Storage / recovery",
+    "title": "Rehydrating the reviewed recoverable records",
+    "rows": [
+      [
+        "Operation",
+        "RST25-DEMO-A"
+      ],
+      [
+        "Exact apply set",
+        "2 expenses + 1 split history · no member merge"
+      ]
+    ],
+    "lead": "Duplicate apply is blocked while outcome is pending.",
+    "notice": [
+      "",
+      "Duplicate apply is blocked while outcome is pending."
+    ],
+    "primary": {
+      "label": "Demo: recovered",
+      "to": "restore-success"
+    },
+    "secondary": {
+      "label": "Demo: known pre-commit failure",
+      "to": "restore-failed-before-commit"
+    },
+    "tertiary": {
+      "label": "Demo: outcome unknown",
+      "to": "restore-outcome-unknown"
+    },
+    "quaternary": null,
+    "tone": "progress"
+  },
+  "restore-failed-before-commit": {
+    "code": "J25-S58",
+    "eyebrow": "Storage / recovery",
+    "title": "Known failure occurred before any recovery mutation committed",
+    "rows": [
+      [
+        "Operation",
+        "RST25-DEMO-A"
+      ]
+    ],
+    "lead": "Retry is allowed only because no commit occurred.",
+    "notice": [
+      "danger",
+      "Retry is allowed only because no commit occurred."
+    ],
+    "primary": {
+      "label": "Retry same restore",
+      "to": "restore-applying"
+    },
+    "secondary": {
+      "label": "Return to review",
+      "to": "restore-ready-to-confirm"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "danger"
+  },
+  "restore-outcome-unknown": {
+    "code": "J25-S59",
+    "eyebrow": "Storage / recovery",
+    "title": "Do not assume success or failure",
+    "rows": [
+      [
+        "Operation",
+        "RST25-DEMO-A"
+      ]
+    ],
+    "lead": "Reconcile first; navigation cannot create truth.",
+    "notice": [
+      "warn",
+      "Reconcile first; navigation cannot create truth."
+    ],
+    "primary": {
+      "label": "Reconcile restore",
+      "to": "restore-reconcile"
+    },
+    "secondary": {
+      "label": "Recovery boundary",
+      "to": "recovery-owner-boundary"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "restore-reconcile": {
+    "code": "J25-S60",
+    "eyebrow": "Storage / recovery",
+    "title": "Check the exact apply operation",
+    "rows": [
+      [
+        "Operation",
+        "RST25-DEMO-A"
+      ]
+    ],
+    "lead": "Fixture outcomes are deterministic review states, not live database proof.",
+    "notice": [
+      "",
+      "Fixture outcomes are deterministic review states, not live database proof."
+    ],
+    "primary": {
+      "label": "Demo: applied",
+      "to": "restore-success"
+    },
+    "secondary": {
+      "label": "Demo: not applied",
+      "to": "restore-not-applied"
+    },
+    "tertiary": {
+      "label": "Demo: unresolved",
+      "to": "recovery-owner-boundary"
+    },
+    "quaternary": null,
+    "tone": "progress"
+  },
+  "restore-not-applied": {
+    "code": "J25-S61",
+    "eyebrow": "Storage / recovery",
+    "title": "Reconciliation proved the operation did not apply",
+    "rows": [
+      [
+        "Operation",
+        "RST25-DEMO-A"
+      ]
+    ],
+    "lead": "Retry is safe only because no apply was found.",
+    "notice": [
+      "success",
+      "Retry is safe only because no apply was found."
+    ],
+    "primary": {
+      "label": "Retry same restore",
+      "to": "restore-applying"
+    },
+    "secondary": {
+      "label": "Return to review",
+      "to": "restore-ready-to-confirm"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "success"
+  },
+  "restore-success": {
+    "code": "J25-S62",
+    "eyebrow": "Storage / recovery",
+    "title": "Reviewed recovery data applied · fixture",
+    "rows": [
+      [
+        "Operation",
+        "RST25-DEMO-A"
+      ],
+      [
+        "Applied set",
+        "2 expenses + 1 split history · no member merge"
+      ],
+      [
+        "Preserved newer current",
+        "Lisbon Weekend title + 1 newer expense"
+      ],
+      [
+        "Held out",
+        "Maya link held out"
+      ]
+    ],
+    "lead": "Recovery restored only the reviewed context. It did not restore credentials, signing material, payment authority or ambiguous identity links.",
+    "notice": [
+      "success",
+      "Recovery restored only the reviewed context. It did not restore credentials, signing material, payment authority or ambiguous identity links."
+    ],
+    "primary": {
+      "label": "Return to storage",
+      "to": "settings-entry"
+    },
+    "secondary": {
+      "label": "View backup status",
+      "to": "storage-summary"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "success"
+  },
+  "sync-info": {
+    "code": "J25-S63",
+    "eyebrow": "Storage / recovery",
+    "title": "Provider copy is a separate role",
+    "rows": [
+      [
+        "Working copy",
+        "This device"
+      ]
+    ],
+    "lead": "V1 does not grant background sync permission or provider credentials.",
+    "notice": [
+      "warn",
+      "V1 does not grant background sync permission or provider credentials."
+    ],
+    "primary": {
+      "label": "View sync conflict example",
+      "to": "sync-conflict"
+    },
+    "secondary": {
+      "label": "Provider boundary",
+      "to": "sync-provider-boundary"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "sync-conflict": {
+    "code": "J25-S64",
+    "eyebrow": "Storage / recovery",
+    "title": "Two copies disagree",
+    "rows": [
+      [
+        "Device copy",
+        "Version A"
+      ]
+    ],
+    "lead": "Reconcile versions or choose an explicit recovery source.",
+    "notice": [
+      "warn",
+      "Reconcile versions or choose an explicit recovery source."
+    ],
+    "primary": {
+      "label": "Use recovery flow",
+      "to": "restore-source-choice"
+    },
+    "secondary": {
+      "label": "Provider boundary",
+      "to": "sync-provider-boundary"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "warn"
+  },
+  "lost-access": {
+    "code": "J25-S65",
+    "eyebrow": "Storage / recovery",
+    "title": "No readable recovery source is proven",
+    "rows": [
+      [
+        "Current device",
+        "Unavailable"
+      ]
+    ],
+    "lead": "Recovery must stop rather than bypass account, identity, encryption or provider ownership boundaries.",
+    "notice": [
+      "danger",
+      "Recovery must stop rather than bypass account, identity, encryption or provider ownership boundaries."
+    ],
+    "primary": {
+      "label": "View recovery boundary",
+      "to": "recovery-owner-boundary"
+    },
+    "secondary": {
+      "label": "Return",
+      "to": "settings-entry"
+    },
+    "tertiary": null,
+    "quaternary": null,
+    "tone": "danger"
+  },
+  "system-file-boundary": {
+    "boundary": true,
+    "code": "J25-B01",
+    "owner": "Browser / operating system",
+    "title": "Final local placement is outside J25",
+    "lead": "ChopDot can request a save but cannot invent where bytes ultimately landed or how long they persist.",
+    "primary": {
+      "label": "Return to backup result",
+      "to": "backup-result-local"
+    },
+    "notice": [
+      "warn",
+      "This seam is owned outside J25; no live external effect is claimed."
+    ]
+  },
+  "sync-provider-boundary": {
+    "boundary": true,
+    "code": "J25-B02",
+    "owner": "External sync / storage provider",
+    "title": "Provider storage is owned outside ChopDot",
+    "lead": "Provider credentials, background writes, retention, deletion and durability belong to the external system.",
+    "primary": {
+      "label": "Return to storage choice",
+      "to": "storage-choice"
+    },
+    "notice": [
+      "warn",
+      "This seam is owned outside J25; no live external effect is claimed."
+    ]
+  },
+  "provider-restore-boundary": {
+    "boundary": true,
+    "code": "J25-B03",
+    "owner": "External provider / account access",
+    "title": "Provider restore starts outside ChopDot",
+    "lead": "The provider must first prove an accessible artifact or version before ChopDot can preview recovery.",
+    "primary": {
+      "label": "Return to recovery sources",
+      "to": "restore-source-choice"
+    },
+    "notice": [
+      "warn",
+      "This seam is owned outside J25; no live external effect is claimed."
+    ]
+  },
+  "identity-owner-boundary": {
+    "boundary": true,
+    "code": "J25-B04",
+    "owner": "Identity / account ownership flow",
+    "title": "Ambiguous identity must be resolved by its owner",
+    "lead": "Recovery cannot merge people, accounts or permissions from display names alone.",
+    "primary": {
+      "label": "Return to restore preview",
+      "to": "restore-preview"
+    },
+    "notice": [
+      "warn",
+      "This seam is owned outside J25; no live external effect is claimed."
+    ]
+  },
+  "schema-owner-boundary": {
+    "boundary": true,
+    "code": "J25-B05",
+    "owner": "Supported migration / schema owner",
+    "title": "Unsupported schema needs an explicit migration path",
+    "lead": "J25 will not guess how to reinterpret an incompatible recovery artifact.",
+    "primary": {
+      "label": "Choose another source",
+      "to": "restore-source-choice"
+    },
+    "notice": [
+      "warn",
+      "This seam is owned outside J25; no live external effect is claimed."
+    ]
+  },
+  "recovery-owner-boundary": {
+    "boundary": true,
+    "code": "J25-B06",
+    "owner": "Journey 28 · Things Go Wrong / Recovery",
+    "title": "Unresolved storage truth stops here",
+    "lead": "Exact operation, artifact, snapshot and destination facts are carried forward without blind retry or bypass authority.",
+    "primary": {
+      "label": "Return to safe storage entry",
+      "to": "settings-entry"
+    },
+    "notice": [
+      "warn",
+      "This seam is owned outside J25; no live external effect is claimed."
+    ]
+  }
+}

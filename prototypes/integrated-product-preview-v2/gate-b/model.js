@@ -344,6 +344,7 @@ export function transition(
     return s;
   }
   assertParticipantCommand(s,command);
+  if(type==='create'&&(s.group.archived||s.group.kind==='savings'))fail('GROUP_STATE','New expenses are unavailable in archived or savings groups. Existing history stays unchanged.');
   if (type === "create" && id !== command.draft?.id)
     fail("LINEAGE", "The create command must use its draft expense identity.");
   const current = s.expenses.find((e) => e.id === id);
