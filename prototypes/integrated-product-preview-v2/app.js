@@ -266,8 +266,11 @@ function recordPrototypeRoute(source, type, hash) {
     'chopdot-gate-d-route': ['gate-d', 'gateD'] };
   const owner = owners[type];
   try {
-    if (!owner || source !== frame.contentWindow || source.location.origin !== location.origin ||
-        !source.location.pathname.endsWith('/' + owner[0] + '/index.html') ||
+    if (!owner) return false;
+    const ownedIndex = new URL('./' + owner[0] + '/index.html', location.href).pathname;
+    const ownedDirectory = ownedIndex.slice(0, -'index.html'.length);
+    if (source !== frame.contentWindow || source.location.origin !== location.origin ||
+        ![ownedIndex, ownedDirectory].includes(source.location.pathname) ||
         (source.location.hash || (owner[0] === 'gate-b' ? '#page=group' : owner[0] === 'gate-d' ? '#page=activity' : '')) !== hash) return false;
     const url = new URL(location.href);
     for (const key of ['gateB', 'gateBRoute', 'gateC', 'gateD', 'entry', 'createJoin', 'expansion']) url.searchParams.delete(key);

@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, resolve, sep } from "node:path";
-export async function serve(root, port = 0) {
+export async function serve(root, port = 0, { cleanIndex = false } = {}) {
   root = resolve(root);
   const types = {
     ".html": "text/html",
@@ -17,6 +17,11 @@ export async function serve(root, port = 0) {
       const pathname = decodeURIComponent(
         new URL(req.url, "http://localhost").pathname,
       );
+      if (cleanIndex && pathname.endsWith('/index.html')) {
+        const url = new URL(req.url, 'http://localhost');
+        res.writeHead(302, { Location: pathname.slice(0, -'index.html'.length) + url.search }).end();
+        return;
+      }
       const path = resolve(
         root,
         "." + pathname + (pathname.endsWith("/") ? "index.html" : ""),
