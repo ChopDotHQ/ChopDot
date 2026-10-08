@@ -1,3 +1,4 @@
+import {publishPrototypeRoute} from '../prototype-route.js';
 import {currentActor,routeParticipant} from '../create-join/authority.js';
 import {routeLocalSession} from '../session-guard.js';
 import {
@@ -114,6 +115,7 @@ const action = (selector, fn) =>
 function nav(page, id = route?.id || "", extra = {}) {
   const params = new URLSearchParams({ page, ...(id ? { id } : {}), ...extra });
   location.hash = params.toString();
+  publishPrototypeRoute('chopdot-gate-b-route', location.hash);
 }
 function mount(j, id) {
   const template = templates[j].getElementById(id);
@@ -1886,7 +1888,7 @@ async function render({ focusKey } = {}) {
     if(sessionStorage.getItem('chopdot.gate-d.return')&&route.page==='detail'){
       const back=element('a','gb-recovery-link','Back to Activity');back.href=`../gate-d/index.html${fixtureMode?'?fixtures=1':''}#page=${sessionStorage.getItem('chopdot.gate-d.return')==='notifications'?'notifications':'activity'}`;back.dataset.bound='true';$('.app-content').append(back);
     }
-    if(parent!==window)parent.postMessage({type:'chopdot-gate-b-route',hash:location.hash||'#page=group'},location.origin);
+    publishPrototypeRoute('chopdot-gate-b-route',location.hash||'#page=group');
     // Every remaining Golden-only link becomes an explicit boundary, never a static fixture outcome.
     for (const a of $$("a:not([data-bound])")) {
       a.onclick = (ev) => {

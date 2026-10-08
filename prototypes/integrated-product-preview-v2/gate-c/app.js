@@ -1,3 +1,4 @@
+import {publishPrototypeRoute} from '../prototype-route.js';
 import {member} from '../create-join/model.js';
 import {currentActor,routeParticipant} from '../create-join/authority.js';
 import {routeLocalSession} from '../session-guard.js';
@@ -32,7 +33,7 @@ function action(q,fn){$$(q).forEach(a=>{a.dataset.bound='true';a.onclick=guard(e
 function button(label,fn,cls='gc-button'){const n=el('button',cls,label);n.type='button';n.onclick=guard(fn);return n;}
 function link(label,fn,cls='text-link'){const n=el('a',cls,label);n.href='#';n.dataset.bound='true';n.onclick=guard(ev=>{ev.preventDefault();fn();});return n;}
 function nav(page,params={}){const hash=new URLSearchParams({page,...params}).toString();if(location.hash.slice(1)===hash)render();else location.hash=hash;}
-function notifyParent(){if(parent!==window)parent.postMessage({type:'chopdot-gate-c-route',hash:location.hash},location.origin);}
+function notifyParent(){publishPrototypeRoute('chopdot-gate-c-route',location.hash);}
 function mount(j,id){
  const t=docs[j].getElementById(id);if(!t)throw Error(`Missing Golden ${j}/${id}`);
  document.querySelector('#golden-style').textContent=[...docs[j].querySelectorAll('style')].map(s=>s.textContent).join('\n');

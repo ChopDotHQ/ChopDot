@@ -256,6 +256,33 @@ function addLocalHomeCss(doc) {
   doc.head.appendChild(style);
 }
 
+// Record the current same-origin owner route before a rapid top-level reload.
+// Reject late messages from a prior child route; navigation intents remain separate.
+function recordPrototypeRoute(source, type, hash) {
+  const owners = { 'chopdot-expansion-route': ['expansion', 'expansion'],
+    'chopdot-create-join-route': ['create-join', 'createJoin'],
+    'chopdot-gate-b-route': ['gate-b', 'gateBRoute'],
+    'chopdot-gate-c-route': ['gate-c', 'gateC'],
+    'chopdot-gate-d-route': ['gate-d', 'gateD'] };
+  const owner = owners[type];
+  try {
+    if (!owner || source !== frame.contentWindow || source.location.origin !== location.origin ||
+        !source.location.pathname.endsWith('/' + owner[0] + '/index.html') ||
+        (source.location.hash || (owner[0] === 'gate-b' ? '#page=group' : owner[0] === 'gate-d' ? '#page=activity' : '')) !== hash) return false;
+    const url = new URL(location.href);
+    for (const key of ['gateB', 'gateBRoute', 'gateC', 'gateD', 'entry', 'createJoin', 'expansion']) url.searchParams.delete(key);
+    if (owner[0] === 'gate-b') url.searchParams.set('gateB', '1');
+    url.searchParams.set(owner[1], ['expansion', 'create-join'].includes(owner[0]) ? hash.slice(1) : hash);
+    history.replaceState(null, '', url);
+    return true;
+  } catch { return false; }
+}
+Object.defineProperty(window, 'ChopDotPrototypeRoute', { value: Object.freeze({ publish: recordPrototypeRoute }) });
+window.addEventListener('message', event => {
+  if (event.origin !== location.origin || !['chopdot-expansion-route','chopdot-create-join-route','chopdot-gate-b-route','chopdot-gate-c-route','chopdot-gate-d-route'].includes(event.data?.type)) return;
+  recordPrototypeRoute(event.source, event.data.type, event.data.hash);
+  event.stopImmediatePropagation();
+});
 function openExpansion(hash='#family=09&page=members'){stopMonitor();currentJourney='STAGE_5';currentFlow='expansion-local';showFrame();frame.src=`./expansion/index.html${params.has('fixtures')?'?fixtures=1':''}${hash}`;}
 window.addEventListener('message',event=>{if(event.origin!==location.origin||event.source!==frame.contentWindow)return;if(event.data?.type==='chopdot-expansion-route'){const url=new URL(location.href);for(const k of ['gateB','gateBRoute','gateC','gateD','entry','createJoin'])url.searchParams.delete(k);url.searchParams.set('expansion',event.data.hash.slice(1));history.replaceState(null,'',url);}});
 function openCreateJoin(hash='#page=entry'){stopMonitor();currentJourney='J04';currentFlow='create-join-local';showFrame();frame.src=`./create-join/index.html${params.has('fixtures')?'?fixtures=1':''}${hash.startsWith('#')?hash:'#'+hash}`;}

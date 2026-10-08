@@ -1,3 +1,4 @@
+import {publishPrototypeRoute} from '../prototype-route.js';
 import {currentActor,routeParticipant} from '../create-join/authority.js';
 import {requirePrototypeWriter,assertPrototypeWriter} from '../prototype-writer.js';
 import {repository,activity,openItem,pending,deletionBlockers,offline,available} from './model.js';
@@ -108,6 +109,6 @@ function fixtures(){const bar=document.querySelector('#fixtures');if(!fixture)re
  document.documentElement.style.setProperty('--fixture-height',bar.offsetHeight+'px');}
 function render(){try{s=repo.read();if(!routeParticipant(s,'account'))return;route=Object.fromEntries(new URLSearchParams(location.hash.slice(1)));route.page||='activity';appearance(s.gateD.account.appearance);if(['signed-out','expired'].includes(s.gateD.session.status)||s.gateD.account.status==='deleted'){entry();return;}available(s,actor);
  if(['activity','notifications'].includes(route.page))activityPage();else if(route.page==='recovery')recovery();else if(route.page==='operation')operationPage();else if(route.page==='changed')view('j28','conflict-current',{title:'This item has changed',lead:'The delivery copy is older than the current record. Open the owner to see its current state.',facts:[['Old action','Not replayed']],actions:[['Open current record',()=>{const target=openItem(repo.read(),{owner:route.owner,recordId:route.id},actor);owner(target.owner,target.id,target.group);},'accent'],['Back to Activity',()=>go('activity')]]});else accountPage();
- fixtures();screen?.focus({preventScroll:true});if(parent!==window)parent.postMessage({type:'chopdot-gate-d-route',hash:location.hash||'#page=activity'},location.origin);
+ fixtures();screen?.focus({preventScroll:true});publishPrototypeRoute('chopdot-gate-d-route',location.hash||'#page=activity');
  }catch(e){error(e);}}
 window.addEventListener('hashchange',render);window.addEventListener('storage',e=>{if(e.key==='chopdot.preview-v2.guest')render();});render();

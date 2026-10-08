@@ -22,7 +22,9 @@ for(const viewport of [{width:393,height:852},{width:1440,height:1000}]) {
   async function tabTo(target,name,back=false) {
     await target.waitFor();
     for(let n=0;n<70;n++) {
-      if(await focused(target)) {
+      // A newly rendered route can replace a focused control between Tab and Enter.
+      // Wait for one paint with the same focused node; do not programmatically focus it.
+      if(await target.evaluate(el=>new Promise(resolve=>requestAnimationFrame(()=>resolve(el.isConnected && el===el.ownerDocument.activeElement))))) {
         check(`${name} reachable with ${back?'Shift+Tab':'Tab'}`,true);
         const info=await target.evaluate(el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect();return {tag:el.tagName,role:el.getAttribute('role'),name:el.getAttribute('aria-label')||el.textContent.trim().slice(0,60),outline:s.outlineStyle,outlineWidth:s.outlineWidth,visible:r.width>0&&r.height>0,disabled:el.getAttribute('aria-disabled')==='true',inViewport:r.top>=0&&r.bottom<=innerHeight};});
         check(`${name} visible and enabled`,info.visible&&!info.disabled&&info.inViewport);

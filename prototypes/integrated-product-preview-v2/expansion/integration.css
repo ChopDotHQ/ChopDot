@@ -15,3 +15,14 @@ html,body{margin:0;min-height:100%;}body{background:#f7f7f8;}#device{width:100%;
 .integration-nav{display:block;font:12px system-ui;border:1px solid #e5e5e8;border-radius:12px;padding:8px;color:#66666d;background:#f7f7f8}.integration-nav summary{cursor:pointer}.integration-nav nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.integration-nav button{font:inherit;padding:8px;border:1px solid #e5e5e8;border-radius:10px;background:white;color:#111113}
 #device .meta-row{grid-template-columns:minmax(0,40%) minmax(0,1fr);align-items:start}#device .meta-row>*{overflow-wrap:anywhere;white-space:normal;line-height:1.45}#device .row{gap:12px}#device .row>*{overflow-wrap:anywhere;min-width:0}#device textarea{width:100%;font:inherit}#device input[type=file]{max-width:100%}
 #device .context-grid{grid-template-columns:minmax(0,40%) minmax(0,1fr)}#device .context-grid>*{overflow-wrap:anywhere;min-width:0;line-height:1.45}#device .context-head{gap:10px;flex-wrap:wrap}
+
+/* Preserve Golden columns for dynamic exact values and native controls. */
+#device button,#device input,#device select,#device textarea{font-family:var(--font,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif);}
+#device button.icon-btn{border:0;}
+#device button.btn{border:0;font-size:13px;font-weight:700;line-height:1.35;min-height:46px;}
+#device .field input:not([type=checkbox]):not([type=radio]),#device .field textarea{display:block;width:100%;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--surface,#fff);font-size:14px;line-height:1.4;}
+#device [data-savings-home] .savings-goal-top{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;}
+#device [data-savings-home] .savings-goal-top>div>b{font-size:clamp(21px,5.8vw,28px);line-height:1.15;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;}
+#device [data-savings-home] .list-row .row-main{min-width:0;}
+#device [data-savings-home] .list-row .amount{max-width:145px;text-align:right;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;}
+#device [data-savings-home] .list-row time{white-space:normal;}
