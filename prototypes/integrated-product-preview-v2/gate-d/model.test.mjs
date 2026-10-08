@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
+import test from '../test-runner.mjs';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {upgrade,transition,activity,openItem,deletionBlockers,pending,repository} from './model.js';
 import {transition as payment,scopeProof} from '../gate-c/model.js';
 import {transition as expense} from '../gate-b/model.js';

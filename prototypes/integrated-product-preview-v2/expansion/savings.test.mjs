@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';
+import test from '../test-runner.mjs';import assert from 'node:assert/strict';
 import {upgrade,transition} from './model.js';import {available,position,savingsSnapshot} from './savings.js';
 const seed=()=>upgrade({group:{id:'g',name:'Existing',currency:'CHF'},groups:[{id:'g',name:'Existing',currency:'CHF'}],people:[],expenses:[],gateD:{session:{status:'active'},account:{displayName:'You'}}});
 const c=(type,p={})=>({type,actor:'self',operationId:crypto.randomUUID(),...p});

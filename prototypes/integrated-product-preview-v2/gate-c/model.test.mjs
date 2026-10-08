@@ -1,4 +1,4 @@
-import test from 'node:test';
+import test from '../test-runner.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { transition, upgrade, scopeProof, repository } from './model.js';

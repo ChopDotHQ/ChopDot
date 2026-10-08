@@ -1,5 +1,5 @@
 // Bounded seeded checks. No dependency, fuzzing service or product rule is added.
-import test from 'node:test';
+import test from '../test-runner.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync, writeFileSync} from 'node:fs';
 import {allocationFor, upgrade, newDraft, editDraft, repository, position, STORAGE_KEY} from './model.js';

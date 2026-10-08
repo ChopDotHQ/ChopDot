@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';
+import test from '../test-runner.mjs';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';
 import {transition,upgrade,inviteContext,groupMembers} from './model.js';
 import {grantFixture,revokeFixture,signFixture,verifyFixture,consumeFixture,assertParticipantCommand} from './authority.js';
 import {transition as expense,upgrade as expenses,newDraft,participants} from '../gate-b/model.js';

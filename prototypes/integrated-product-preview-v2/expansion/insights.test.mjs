@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {insights} from './insights.js';import {moneyFromMinorUnits} from '../money-v1.js';
+import test from '../test-runner.mjs';import assert from 'node:assert/strict';import {insights} from './insights.js';import {moneyFromMinorUnits} from '../money-v1.js';
 const now=Date.parse('2026-10-07T12:00:00Z'),row=(id,minor,extra={})=>({id,revision:1,groupId:'g',date:'2026-10-05',money:moneyFromMinorUnits(minor,'CHF',2),...extra});
 const seed=()=>({groups:[{id:'g',name:'Shared',currency:'CHF',membershipManaged:true},{id:'other',name:'Private',currency:'DOT',membershipManaged:true}],people:[{id:'g:a',groupId:'g',identity:'linked'}],expenses:[row('a','10001'),row('b','9007199254740993'),row('dot','2400000',{money:moneyFromMinorUnits('2400000','DOT',6)})]});
 test('insights keeps exact large totals/currencies and is read-only',()=>{const s=seed(),before=JSON.stringify(s),x=insights(s,'g:a',{now});assert.equal(x.totals['["CHF",2]'],'9007199254750994');assert.equal(x.totals['["DOT",6]'],'2400000');assert.equal(JSON.stringify(s),before);assert.equal(x.comparison,null);});
