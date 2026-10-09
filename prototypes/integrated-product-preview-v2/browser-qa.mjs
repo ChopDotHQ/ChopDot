@@ -150,9 +150,7 @@ try {
       check(`${label}: draft selections survive Back`, (await state(page)).expenseDraft, draft);
       // A native top-level reload while editing: no injected storage or success state.
       await page.reload({ waitUntil: 'networkidle' });
-      await page.getByRole('button', { name: 'Continue as guest', exact: true }).click();
-      await atHome(page);
-      await openExpense(page);
+      await product(page).getByLabel('Amount', {exact:true}).waitFor();
       check(`${label}: native reload preserves entire unfinished draft`, (await state(page)).expenseDraft, draft);
       check(`${label}: native reload restores visible amount`, await product(page).getByLabel('Amount').inputValue(), '42.00');
       check(`${label}: native reload restores visible description`, await product(page).getByLabel('Description').inputValue(), 'Coffee');
@@ -177,7 +175,6 @@ try {
       await atHome(page);
       check(`${label}: Not now preserves saved work`, (await state(page)).expenses, saved.expenses);
       await page.reload({ waitUntil: 'networkidle' });
-      await page.getByRole('button', { name: 'Continue as guest', exact: true }).click();
       await atHome(page);
       check(`${label}: native reload preserves local people`, (await state(page)).people, originalPeople);
       check(`${label}: native reload preserves saved work`, (await state(page)).expenses, saved.expenses);
@@ -236,7 +233,6 @@ try {
       check(`${label}: group label is literal text`, await product(p2).locator('[data-local-group-name]').innerText(), 'Trip <friends> & family');
       check(`${label}: group label creates no elements`, await product(p2).locator('[data-local-group-name] > *').count(), 0);
       await p2.reload({ waitUntil: 'networkidle' });
-      await p2.getByRole('button', { name: 'Continue as guest', exact: true }).click();
       await atHome(p2); await openExpense(p2);
       await product(p2).locator('#entry a[href="#payer"]').click();
       await product(p2).locator('#payer').getByText('<b>Alex</b>', { exact: true }).waitFor();

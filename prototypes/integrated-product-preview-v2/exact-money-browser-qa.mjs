@@ -167,9 +167,6 @@ try {
       check(`${label}: Back/reopen retains exact allocation`, (await state(page)).expenseDraft, beforeBack);
 
       await page.reload({ waitUntil: 'networkidle' });
-      await page.getByRole('button', { name: 'Continue as guest', exact: true }).click();
-      await atHome(page);
-      await product(page).getByRole('button', { name: 'Add expense', exact: true }).click();
       await product(page).locator('#entry .amount').waitFor();
       const afterReload = (await state(page)).expenseDraft;
       check(`${label}: reload retains exact allocation snapshot`, afterReload, beforeBack);
@@ -198,7 +195,6 @@ try {
       await product(page).locator('#success').getByRole('link', { name: 'Back to group', exact: true }).click();
       await atHome(page);
       await page.reload({ waitUntil: 'networkidle' });
-      await page.getByRole('button', { name: 'Continue as guest', exact: true }).click();
       await atHome(page);
       const persisted = await state(page);
       check(`${label}: saved exact allocation survives reload`, persisted.expenses[0].allocation, saved.expenses[0].allocation);

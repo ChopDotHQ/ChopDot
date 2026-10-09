@@ -24,9 +24,7 @@ async function home(page) {
 }
 async function reopen(page) {
   await page.reload({ waitUntil: 'networkidle' });
-  await page.getByRole('button', { name: 'Continue as guest', exact: true }).click();
-  await home(page);
-  await product(page).getByRole('button', { name: 'Add expense', exact: true }).click();
+  // Reload restores the guest editor directly, including invalid raw text.
   await product(page).locator('#entry .amount').waitFor();
 }
 

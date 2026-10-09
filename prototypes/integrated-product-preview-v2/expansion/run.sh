@@ -25,5 +25,5 @@ run_logged package node scripts/package-preview-v2-gate-b.mjs "$scratch_root/pre
 run_logged package-repeat node scripts/package-preview-v2-gate-b.mjs "$scratch_root/preview-repeat"
 run_logged deterministic diff -qr "$scratch_root/preview" "$scratch_root/preview-repeat"
 export PREVIEW_ROOT="$scratch_root/preview"
-for test_name in qa-people qa-savings qa-wallet-qr qa-data-lifecycle qa-continuity;do EVIDENCE_DIR="$output_root/$test_name" run_logged "$test_name" node "$suite/$test_name.mjs";done
+for test_name in qa-people qa-savings qa-wallet-qr qa-data-lifecycle qa-continuity qa-demo;do EVIDENCE_DIR="$output_root/$test_name" run_logged "$test_name" node "$suite/$test_name.mjs";done
 printf 'Evidence: %s\n' "$output_root"

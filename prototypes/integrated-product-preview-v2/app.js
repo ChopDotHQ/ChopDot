@@ -2,7 +2,7 @@ import {groupMembers,membershipActive} from './create-join/model.js';
 import {allGroups} from './gate-c/ledger.js';
 import {currentActor} from './create-join/authority.js';
 import {repository as accountRepository} from './gate-d/model.js';
-import { transition as commitExpense, upgrade as upgradePrototype } from './gate-b/model.js';
+import { transition as commitExpense, recoverableDrafts, guestDraftView, putGuestDraft, savedDraft, upgrade as upgradePrototype } from './gate-b/model.js';
 const schemaCore = await fetch('./gate-b/contract/semantic-core.json').then(response => { if (!response.ok) throw new Error('Frozen schema contract unavailable.'); return response.json(); });
 import { requirePrototypeWriter, assertPrototypeWriter } from './prototype-writer.js';
 await requirePrototypeWriter();
@@ -66,7 +66,8 @@ function applyProductMode(doc) {
 
 function loadGuestState() {
   try {
-    const parsed = JSON.parse(window.localStorage.getItem(GUEST_KEY) || 'null');
+    const parsed = upgradePrototype(JSON.parse(window.localStorage.getItem(GUEST_KEY) || 'null'));
+    parsed.expenseDraft = parsed.expenseDraft || guestDraftView(parsed);
     return {
       mode: 'guest-local',
       accountCreated: false,
@@ -89,7 +90,10 @@ function loadGuestState() {
 
 function saveGuestState(patch) {
   assertPrototypeWriter();
-  const next = { ...loadGuestState(), ...patch };
+  const loaded = loadGuestState(); delete loaded.expenseDraft;
+  const next = upgradePrototype({ ...loaded, ...patch });
+  if (Object.hasOwn(patch, 'expenseDraft')) putGuestDraft(next, patch.expenseDraft);
+  delete next.expenseDraft;
   window.localStorage.setItem(GUEST_KEY, JSON.stringify(next));
   return next;
 }
@@ -142,6 +146,9 @@ function openHome(entryState = lastEntryState, mode = 'account') {
   currentJourney = 'J02';
   currentFlow = mode;
   showFrame();
+  const url = new URL(location.href);
+  for (const key of ['guestExpense','gateB','gateBRoute','gateC','gateD','expansion','createJoin']) url.searchParams.delete(key);
+  url.searchParams.set('home','1'); history.replaceState(null,'',url);
   frame.src = SOURCES.j02;
 }
 
@@ -172,6 +179,11 @@ function openGuestExpense() {
     openGuestCreateGroup();
     return;
   }
+  const shared = savedDraft(upgradePrototype(state), 'self');
+  if (shared && (shared.receipt || shared.date !== new Date().toISOString().slice(0,10) || shared.method !== 'equal' || shared.baseRevision !== null)) { openGateB('#page=editor&id='+encodeURIComponent(shared.id)); return; }
+  const url = new URL(location.href);
+  for (const key of ['gateB','gateBRoute','gateC','gateD','expansion','createJoin','home']) url.searchParams.delete(key);
+  url.searchParams.set('guestExpense','1'); history.replaceState(null,'',url);
   currentJourney = 'J05';
   currentFlow = 'guest-local-expense';
   showFrame();
@@ -395,7 +407,7 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
   }
 
   const template=content.querySelector('.card.group');
-  if(template){const parent=template.parentElement;for(const g of activeGroups){const card=template.cloneNode(true),count=state.expenses.filter(e=>!e.deleted&&e.groupId===g.id).length;card.querySelector('[data-local-group-name]').textContent=g.name;card.querySelector('[data-local-group-meta]').textContent=g.currency+' · '+groupMembers(state,g).length+' people';card.querySelector('.group-balance').textContent=g.kind==='savings'?'Savings':count+' '+(count===1?'expense':'expenses');card.tabIndex=0;card.setAttribute('role','button');card.setAttribute('aria-label',activeGroups.length===1?'Open group':'Open '+g.name);const open=()=>{saveGuestState({group:g});if(g.kind==='savings')openExpansion('#'+new URLSearchParams({family:'16',page:'home',group:g.id}));else openGateB();};card.addEventListener('click',open);card.addEventListener('keydown',event=>{if(['Enter',' '].includes(event.key)){event.preventDefault();open();}});parent.insertBefore(card,template);}template.remove();}
+  if(template){const parent=template.parentElement;for(const g of activeGroups){const card=template.cloneNode(true),count=state.expenses.filter(e=>!e.deleted&&e.groupId===g.id).length;card.querySelector('[data-local-group-name]').textContent=g.name;card.querySelector('[data-local-group-meta]').textContent=g.currency+' · '+groupMembers(state,g).length+(groupMembers(state,g).length===1?' person':' people');card.querySelector('.group-balance').textContent=g.kind==='savings'?'Savings':count+' '+(count===1?'expense':'expenses');card.tabIndex=0;card.setAttribute('role','button');card.setAttribute('aria-label',activeGroups.length===1?'Open group':'Open '+g.name);const open=()=>{saveGuestState({group:g});if(g.kind==='savings')openExpansion('#'+new URLSearchParams({family:'16',page:'home',group:g.id}));else openGateB();};card.addEventListener('click',open);card.addEventListener('keydown',event=>{if(['Enter',' '].includes(event.key)){event.preventDefault();open();}});parent.insertBefore(card,template);}template.remove();}
   const familyLinks=document.createElement('div');familyLinks.className='local-actions';for(const [label,route]of [['Savings','family=16&page=list&group='],['Insights','family=19&page=overview&group='],['All groups / archived','family=26&page=list&group='],['Payment methods','family=20&page=overview&group='],['Wallet','family=21&page=handoff&group='],['Scan QR','family=22&page=entry&group='],['Import / export','family=24&page=entry&group='],['Storage & recovery','family=25&page=entry&group=']]){const b=document.createElement('button');b.className='local-action';b.textContent=label;b.addEventListener('click',()=>openExpansion('#'+route));familyLinks.append(b);}content.append(familyLinks);
   const wallet = doc.querySelector('.wallet');
   if (wallet) wallet.style.display = 'none';
@@ -495,7 +507,7 @@ function persistLocalExpenseDraft(doc) {
     payerId: current.selectedPayerId || 'self',
     participantIds,
     allocation: tryAllocationSnapshot(amount.value, current.group.currency, participantIds),
-    method: 'equal', date: 'today', receipt: null,
+    method: 'equal', date: current.expenseDraft?.date || new Date().toISOString().slice(0,10), receipt: current.expenseDraft?.receipt || null,
   };
   try {
     saveGuestState({ expenseDraft: draft });
@@ -1101,8 +1113,13 @@ else if(currentActor()!=='self'&&entryMode!=='signin'&&!params.has('gateB')&&!pa
 else if (params.has('gateD'))openGateD(params.get('gateD'));
 else if (params.has('gateC')) openGateC(params.get('gateC'));
 else if (params.has('gateB') && loadGuestState().group) openGateB(params.get('gateBRoute')||'');
-else if(params.has('home')&&loadGuestState().gateD?.session?.status==='active')returnToLocalHome();
+else if(params.has('guestExpense')&&loadGuestState().group)openGuestExpense();
+else if(params.has('home')&&loadGuestState().enteredAt&&!['signed-out','expired'].includes(loadGuestState().gateD?.session?.status))returnToLocalHome();
 else if (entryMode === 'signin')openAuth('signin');
 else if (entryMode === 'invite') openInvite('account');
 else if (entryMode === 'guest-invite') openInvite('guest');
 else showFrontDoor();
+
+if (recoverableDrafts(loadGuestState(),'self').length && currentActor()==='self') {
+ const notice=document.createElement('a');notice.href='./demo.html';notice.className='draft-recovery-notice';notice.textContent='An unfinished draft was recovered. Review drafts';document.body.append(notice);
+}

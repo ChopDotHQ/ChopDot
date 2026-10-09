@@ -35,3 +35,5 @@ button{font:inherit}
 .account-wall-copy h1{margin:0;font-size:34px;line-height:1.04;letter-spacing:-.05em;font-weight:790}
 .account-wall-copy p{margin:12px 0 0;font-size:17px;line-height:1.4;color:#66666d}
 .account-wall-copy strong{display:block;margin-top:20px;font-size:16px;line-height:1.35;font-weight:760}
+
+.draft-recovery-notice{position:fixed;bottom:12px;left:12px;right:12px;z-index:20;padding:12px;border:1px solid #d8d8de;border-radius:12px;background:#fff;color:#171719;font:13px system-ui;text-align:center}

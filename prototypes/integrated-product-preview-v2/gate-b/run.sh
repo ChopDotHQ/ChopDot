@@ -33,7 +33,7 @@ run_logged() {
   cat "$output_root/$label.log"
   if [[ $code -ne 0 ]]; then exit "$code"; fi
 }
-run_logged model node --test "$suite/model.test.mjs"
+run_logged model node --test "$suite/model.test.mjs" "$suite/guest-draft.test.mjs"
 export CHOPDOT_PROPERTY_REPORT="$output_root/property-results.json"
 run_logged generated-properties node --test "$suite/property.test.mjs"
 run_logged source-integrity node "$suite/verify-sources.mjs"

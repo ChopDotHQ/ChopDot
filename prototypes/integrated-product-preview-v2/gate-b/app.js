@@ -224,7 +224,7 @@ function group() {
   text(".header-title b", state.group.name);
   text(
     ".header-title span",
-    `${participants(state).length} people · ${state.group.currency}`,
+    `${participants(state).length} ${participants(state).length===1?'person':'people'} · ${state.group.currency}`,
   );
   const stack = $(".people-stack");
   stack.replaceChildren(
@@ -364,7 +364,7 @@ function group() {
       ? "Open issue"
       : e.reviews[actor]?.status && e.reviews[actor].status !== "agreed"
         ? "Review"
-        : `Split ${e.participantIds.length} ways`;
+        : `Split ${e.participantIds.length} ${e.participantIds.length===1?'way':'ways'}`;
     row.dataset.bound = "true";
     row.onclick = (ev) => {
       ev.preventDefault();
@@ -394,7 +394,7 @@ function group() {
   }
   text(
     '[href="#members-handoff"] span',
-    `${participants(state).length} members`,
+    `${participants(state).length} ${participants(state).length===1?'member':'members'}`,
   );
   text(
     '[href="#settle-handoff"] span',
@@ -418,7 +418,7 @@ function group() {
       parent.postMessage({ type: "chopdot-gate-b-home" }, location.origin);
     else location.href = "../index.html";
   });
-  const familyNav=element('div','local-actions');for(const[label,family,page]of [['Group settings','26','settings'],['Savings','16','list'],['Insights','19','overview']]){const b=element('button','btn soft',label);b.onclick=()=>{location.href='../expansion/index.html'+(fixtureMode?'?fixtures=1':'')+'#'+new URLSearchParams({family,page,group:family==='26'?state.group.id:''});};familyNav.append(b);}$('.app-content').append(familyNav);
+  const familyNav=element('div','gb-family-actions');for(const[label,family,page]of [['Group settings','26','settings'],['Savings','16','list'],['Insights','19','overview']]){const b=element('button','btn soft',label);b.onclick=()=>{location.href='../expansion/index.html'+(fixtureMode?'?fixtures=1':'')+'#'+new URLSearchParams({family,page,group:family==='26'?state.group.id:''});};familyNav.append(b);}$('.app-content').append(familyNav);
   for(const[key,n]of Object.entries(balances).filter(([key])=>key!==displayKey)){const[c,x]=key.split(':');note((BigInt(n)>0n?'Also owed ':BigInt(n)<0n?'Also owe ':'No net position in ')+money(moneyFromMinorUnits(BigInt(n)<0n?-BigInt(n):BigInt(n),c,Number(x))));}
   if(state.group.archived){note('Archived · history and outstanding positions are preserved. Restore this group before new expenses or invitations.');for(const n of $$('.app-content a,.app-content button,.add-tab'))if(/^(Add expense|Invite people)$/i.test(n.textContent.trim())){n.setAttribute('aria-disabled','true');n.onclick=e=>e.preventDefault();}}
   if (state.gateB.environment.offline)

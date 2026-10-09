@@ -51,6 +51,19 @@ export function upgrade(input) {
       JSON.stringify([actor,d.groupId||s.group?.id]),{...d,groupId:d.groupId||s.group?.id}
     ]));s.gateB.draftStorageVersion=2;
   }
+  // Adopt the old guest draft once; all editors then share the same record.
+  const legacy = s.expenseDraft;
+  if (legacy && legacy.groupId === s.group?.id && legacy.currency === s.group?.currency) {
+    const existing = savedDraft(s, 'self');
+    if (!existing) putGuestDraft(s, legacy);
+    else if (existing.id !== legacy.expenseId) {
+      const copy = clone(s); putGuestDraft(copy, legacy);
+      s.gateB.recoveredDrafts ||= [];
+      if (!s.gateB.recoveredDrafts.some(r => r.draft.id === savedDraft(copy,'self').id))
+        s.gateB.recoveredDrafts.push({actor:'self',groupId:s.group.id,draft:clone(savedDraft(copy,'self'))});
+    }
+    delete s.expenseDraft;
+  }
   for (const e of s.expenses) {
     e.ownerId ||= "self";
     e.revision ||= 1;
@@ -68,6 +81,43 @@ export function upgrade(input) {
     e.issues ||= [];
     e.receipt ||= null;
   }
+  return s;
+}
+// Compatibility view for the accepted guest UI, never a second stored draft.
+export function guestDraftView(s) {
+  const d = savedDraft(s, 'self');
+  if (!d || d.baseRevision !== null || d.method !== 'equal') return null;
+  let allocation = null;
+  try { allocation = allocationFor(d, s.group.currency, s.group.exponent ?? 2); } catch {}
+  return {version: 2, expenseId: d.id, operationId: d.operationId,
+    groupId: s.group.id, currency: s.group.currency, amountText: d.amountText,
+    description: d.description, payerId: d.payerId, participantIds: d.participantIds,
+    allocation, method: 'equal', date: d.date, receipt: d.receipt};
+}
+export function putGuestDraft(s, d) {
+  const key = draftKey(s, 'self');
+  if (!d) { delete s.gateB.drafts[key]; return s; }
+  s.gateB.drafts[key] = {id: d.expenseId || crypto.randomUUID(), operationId: d.operationId || crypto.randomUUID(),
+    baseRevision: null, groupId: d.groupId, amountText: d.amountText,
+    description: d.description, payerId: d.payerId, participantIds: [...d.participantIds],
+    method: 'equal', exact: {}, shares: {}, date: d.date && d.date !== 'today' ? d.date : new Date().toISOString().slice(0,10), receipt: d.receipt ?? null};
+  return s;
+}
+export function recoverableDrafts(s, actor) {
+  try { assertLocalSession(s, actor); } catch { return []; }
+  if (!s.group || s.group.deleted || !participants(s).some(p=>p.id===actor)) return [];
+  return (s.gateB.recoveredDrafts || []).filter(r=>r.actor===actor && r.groupId===s.group.id);
+}
+export function restoreRecoveredDraft(s, actor, id) {
+  assertLocalSession(s, actor);
+  if (!recoverableDrafts(s,actor).some(r=>r.draft.id===id)) fail('NOT_FOUND', 'This recovered draft is unavailable in the current group.');
+  const rows = s.gateB.recoveredDrafts || [];
+  const index = rows.findIndex(r => r.actor === actor && r.groupId === s.group?.id && r.draft.id === id);
+  if (index < 0) fail('NOT_FOUND', 'This recovered draft is unavailable in the current group.');
+  const current = savedDraft(s, actor), selected = rows[index].draft;
+  rows.splice(index, 1);
+  if (current && current.id !== selected.id) rows.push({actor,groupId:s.group.id,draft:clone(current)});
+  s.gateB.drafts[draftKey(s,actor)] = clone(selected);
   return s;
 }
 export function allocationFor(d, currency, exponent = 2) {
