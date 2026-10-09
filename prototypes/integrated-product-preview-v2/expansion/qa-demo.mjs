@@ -5,7 +5,17 @@ import {mkdirSync,writeFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 const out=process.env.EVIDENCE_DIR;mkdirSync(out,{recursive:true});const checks=[],errors=[];
 const browser=await chromium.launch({headless:true}),host=await serve(process.env.PREVIEW_ROOT,0,{cleanIndex:true});
-try{for(const width of [393,430,1440]){
+try{
+ const startup=await browser.newContext(),early=await startup.newPage();let release;
+ const hold=new Promise(resolve=>{release=resolve;});
+ await early.route('**/gate-b/contract/semantic-core.json',async route=>{await hold;await route.continue();});
+ await early.goto(host.base+'/prototypes/integrated-product-preview-v2/index.html',{waitUntil:'commit'});
+ await early.getByRole('button',{name:'Continue as guest',exact:true}).waitFor();
+ assert.equal(await early.getByRole('button',{name:'Continue as guest',exact:true}).isEnabled(),false);
+ release();await early.getByRole('button',{name:'Continue as guest',exact:true}).click();
+ await early.frameLocator('#product-frame').getByRole('button',{name:'Start a group',exact:true}).waitFor();
+ checks.push('Entry controls wait for the frozen contract and event handlers before accepting a click');await startup.close();
+ for(const width of [393,430,1440]){
  const ctx=await browser.newContext({viewport:{width,height:900}}),page=await ctx.newPage();page.setDefaultTimeout(12000);page.on('pageerror',e=>errors.push(e.message));
  await page.goto(host.base+'/prototypes/integrated-product-preview-v2/demo.html');
  await page.getByRole('link',{name:'Open prototype',exact:true}).click();await page.getByRole('button',{name:'Continue as guest'}).click();

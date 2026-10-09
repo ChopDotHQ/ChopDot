@@ -1107,6 +1107,8 @@ window.ChopDotPreviewV2 = Object.freeze({
   openHome: () => openHome(lastEntryState, 'account'),
 });
 
+for (const button of [guestEntry, createAccount, signIn]) button.disabled = false;
+
 if(params.has('expansion'))openExpansion('#'+params.get('expansion'));
 else if(params.has('createJoin'))openCreateJoin('#'+params.get('createJoin'));
 else if(currentActor()!=='self'&&entryMode!=='signin'&&!params.has('gateB')&&!params.has('gateC')&&!params.has('gateD'))openCreateJoin('#page=recovery');
