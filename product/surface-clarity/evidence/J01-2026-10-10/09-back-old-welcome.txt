@@ -1,0 +1,28 @@
+Browser tab: 3, Title: "ChopDot — Golden-faithful Preview V2", URL: "https://chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/?home=1".
+1 AXWebArea ChopDot — Golden-faithful Preview V2, URL: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/?home=1
+	2 container
+		3 text Prototype Saved on this browser · 
+		4 link Description: Demo guide, Value: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/demo.html
+		5 container ChopDot preview
+			46 container Description: ChopDot, ID: product-frame
+				47 AXWebArea ChopDot — Enter ChopDot V1 candidate, URL: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate#welcome
+					48 container Description: Enter ChopDot, ID: entry-screen
+						49 text ChopDot
+						50 container
+							51 heading Shared expenses. Less back-and-forth., Value: 1
+								52 text Shared expenses.
+								53 text Less back-and-forth.
+							54 text One place for who paid what.
+							55 text Bring your people.
+							56 text A trip, a home, or just dinner.
+							57 text Keep things clear.
+							58 text Add expenses. Know where you stand.
+							59 text Start with an email. No wallet needed.
+						60 container
+							61 button Continue with email
+							62 button Use a wallet
+	43 container
+		44 container
+			45 button Bring back toolbar
+
+The focused UI element is 47 AXWebArea ChopDot — Enter ChopDot V1 candidate, URL: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate#welcome

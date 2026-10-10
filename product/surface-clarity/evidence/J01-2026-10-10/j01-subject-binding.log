@@ -1,0 +1,4 @@
+$ node prototypes/experience-workbench/journeys/01-enter-chopdot/source/test-subject-binding.cjs
+{"ok":true,"suite":"j01-subject-binding","checks":163}
+
+exit_code=0

@@ -1,0 +1,4 @@
+$ node prototypes/experience-workbench/journeys/01-enter-chopdot/source/test-model.cjs
+{"ok":true,"checks":50}
+
+exit_code=0

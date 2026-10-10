@@ -1,0 +1,48 @@
+Browser tab: 3, Title: "ChopDot — Golden-faithful Preview V2", URL: "https://chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/?home=1".
+1 AXWebArea ChopDot — Golden-faithful Preview V2, URL: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/?home=1
+	2 container
+		3 text Prototype Saved on this browser · 
+		4 link Description: Demo guide, Value: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/demo.html
+		5 container ChopDot preview
+			6 container Description: ChopDot, ID: product-frame
+				7 AXWebArea ChopDot — Home V1.4, URL: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons
+					8 container
+						9 text ChopDot
+						10 container Guest
+							11 text G
+						12 text Saved locally
+						13 heading Keep going., Value: 1
+							14 text Keep going.
+						15 heading Your groups, Value: 2
+							16 text Your groups
+						17 button Open UX audit group
+							18 text UX audit group
+							19 text CHF · 2 people
+							20 text 1 expense
+							21 text Saved on this device
+						22 button Open UX audit savings
+							23 text UX audit savings
+							24 text CHF · 1 person
+							25 text Savings
+							26 text Saved on this device
+						27 button Add expense
+						28 button Invite someone
+						29 button Savings
+						30 button Insights
+						31 button All groups / archived
+						32 button Payment methods
+						33 button Wallet
+						34 button Scan QR
+						35 button Import / export
+						36 button Storage & recovery
+						37 container
+							38 link Description: Pots, Value: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons#
+							39 link Description: People, Value: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons#
+							40 link Description: Add expense, Value: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons#
+							41 link Description: Activity, Value: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons#
+							42 link Description: You, Value: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons#
+	43 container
+		44 container
+			45 button Bring back toolbar
+
+The focused UI element is 1 AXWebArea ChopDot — Golden-faithful Preview V2, URL: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/?home=1

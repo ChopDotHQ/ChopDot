@@ -311,5 +311,87 @@
     "disposition": null,
     "inherited_from": "historical-audit/results.json",
     "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
+  },
+  {
+    "id": "SC-J01-001",
+    "priority": "P2",
+    "certainty": "Confirmed interaction; user comprehension impact not measured",
+    "journeys": [
+      "J01"
+    ],
+    "principles": [
+      "Truth",
+      "recognition",
+      "proximity",
+      "recovery"
+    ],
+    "title": "Simulated account approval has no discoverable local completion path",
+    "evidence": "Email claims Sent to a synthetic address; wallet requests approval elsewhere. Product mode hides entry-demohelp including local code/outcome instructions. Prototype badge/guide discloses simulation but does not tell the person how to finish this step.",
+    "recommendation": "Keep simulation disclosed, show the public local code/labelled outcome path at the action, and avoid implying external delivery. Keep pending/verification binding unchanged.",
+    "screenshots": [
+      "06-code-promise-stable",
+      "10-wallet-waiting"
+    ],
+    "authority_boundary": "Integrated wrapper/fixture disclosure correction proposal; compare approved entry decision and source before changing runtime. No new product rule or frozen-source edit.",
+    "status": "open",
+    "disposition": null,
+    "observed_implementation_sha": "4857d3beca6add7ba1a03f210d79ff67c215b931",
+    "observed_runtime_digest": "b73554f66065ce545675ebe56dd0baf79b3fb426b24d724628a7ef30dd4801ab",
+    "evidence_ids": [
+      "J01-BROWSER-20261010"
+    ]
+  },
+  {
+    "id": "SC-J01-002",
+    "priority": "P2",
+    "certainty": "Confirmed interaction; user comprehension impact not measured",
+    "journeys": [
+      "J01"
+    ],
+    "principles": [
+      "Jakob",
+      "orientation",
+      "continuity"
+    ],
+    "title": "Account-conversion Back returns to the superseded welcome",
+    "evidence": "Guest Home -> Invite someone -> Create account -> email Back reaches old welcome with email/wallet only. No guest or Home exit is visible.",
+    "recommendation": "Route Back according to the incoming guest/account/invite context, preserving the accepted minimal entry and guest work. Do not modify frozen Goldens.",
+    "screenshots": [
+      "09-back-old-welcome"
+    ],
+    "authority_boundary": "Integrated wrapper/fixture disclosure correction proposal; compare approved entry decision and source before changing runtime. No new product rule or frozen-source edit.",
+    "status": "open",
+    "disposition": null,
+    "observed_implementation_sha": "4857d3beca6add7ba1a03f210d79ff67c215b931",
+    "observed_runtime_digest": "b73554f66065ce545675ebe56dd0baf79b3fb426b24d724628a7ef30dd4801ab",
+    "evidence_ids": [
+      "J01-BROWSER-20261010"
+    ]
+  },
+  {
+    "id": "SC-J01-003",
+    "priority": "P3",
+    "certainty": "Confirmed interaction; user comprehension impact not measured",
+    "journeys": [
+      "J01"
+    ],
+    "principles": [
+      "Continuity",
+      "recovery"
+    ],
+    "title": "Interrupted account conversion drops its task without explanation",
+    "evidence": "Host reload at code entry restores Guest Home and saved records, but loses conversion step and invite intent. Whether the auth step must restart is a bounded product/security decision.",
+    "recommendation": "Specify safe destination persistence or explicitly disclose restart. Never persist or reuse auth proof merely to preserve UX.",
+    "screenshots": [
+      "08-reload-conversion"
+    ],
+    "authority_boundary": "Integrated wrapper/fixture disclosure correction proposal; compare approved entry decision and source before changing runtime. No new product rule or frozen-source edit.",
+    "status": "needs_product_decision",
+    "disposition": null,
+    "observed_implementation_sha": "4857d3beca6add7ba1a03f210d79ff67c215b931",
+    "observed_runtime_digest": "b73554f66065ce545675ebe56dd0baf79b3fb426b24d724628a7ef30dd4801ab",
+    "evidence_ids": [
+      "J01-BROWSER-20261010"
+    ]
   }
 ]

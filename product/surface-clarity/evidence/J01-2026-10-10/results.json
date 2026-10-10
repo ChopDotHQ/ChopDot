@@ -1,0 +1,342 @@
+{
+  "audit": "J01 Surface Clarity battle test",
+  "date": "2026-10-10",
+  "source_candidate_sha": "4857d3beca6add7ba1a03f210d79ff67c215b931",
+  "source_candidate_tree": "716b05d6cd7c27340211a4edcce5eef974459f45",
+  "runtime_digest": "b73554f66065ce545675ebe56dd0baf79b3fb426b24d724628a7ef30dd4801ab",
+  "served_source_commit": "3c33539b2a25ac5d26a05b444b78c1eff06d1d7d",
+  "version_binding": "Sites version 13/source commit matches recorded prior deployment mapping to runtime 3738c730. Current repo runtime matches that commit. Historical deployment mapping reused; no fresh hosted asset-by-asset readback.",
+  "method": "Single-owner heuristic and interaction audit; no independent reviewer or human comprehension study.",
+  "verdict": "J01_NOT_CLEARED",
+  "cases": [
+    {
+      "id": "J01-BT-01",
+      "name": "Guest entry",
+      "layer": "browser",
+      "outcome": "pass",
+      "steps": [
+        "Open normal entry",
+        "Continue as guest"
+      ],
+      "expected": "Reach local Home without auth",
+      "observed": "Guest Home with Saved locally, existing groups and one expense.",
+      "evidence": [
+        "01-front-door.txt",
+        "02-guest-home.txt"
+      ]
+    },
+    {
+      "id": "J01-BT-02",
+      "name": "Guest Home reload",
+      "layer": "browser",
+      "outcome": "pass",
+      "steps": [
+        "Reload Home",
+        "Wait for Home to finish loading"
+      ],
+      "expected": "Guest session and saved business records remain",
+      "observed": "Guest Home returned with same two groups and one expense.",
+      "evidence": [
+        "08-reload-conversion.txt"
+      ]
+    },
+    {
+      "id": "J01-BT-03",
+      "name": "Guest invite permission boundary",
+      "layer": "browser",
+      "outcome": "pass",
+      "steps": [
+        "Invite someone"
+      ],
+      "expected": "Explain account prerequisite before invitation",
+      "observed": "Ready to share? Create your ChopDot account to invite people. Everything you have done stays. No invitation sent.",
+      "evidence": [
+        "03-account-boundary.txt"
+      ]
+    },
+    {
+      "id": "J01-BT-04",
+      "name": "Boundary cancellation and reopen",
+      "layer": "browser",
+      "outcome": "pass",
+      "steps": [
+        "Not now",
+        "Reopen Invite someone"
+      ],
+      "expected": "Return to same saved guest Home and allow retry",
+      "observed": "Same groups and expense retained; account boundary reopened.",
+      "evidence": [
+        "04-boundary-cancel.txt"
+      ]
+    },
+    {
+      "id": "J01-BT-05",
+      "name": "Create-account form",
+      "layer": "browser",
+      "outcome": "fail",
+      "steps": [
+        "Create account at boundary"
+      ],
+      "expected": "Make the local prototype completion method clear",
+      "observed": "Email form says We will send you a sign-in code; local mock instructions hidden.",
+      "evidence": [
+        "05-email-form.txt"
+      ]
+    },
+    {
+      "id": "J01-BT-06",
+      "name": "Empty email validation",
+      "layer": "browser",
+      "outcome": "pass",
+      "steps": [
+        "Send code without an address"
+      ],
+      "expected": "Prevent progression and identify missing input",
+      "observed": "Native Please fill out this field prompt focused Email. No screenshot of transient native validation saved.",
+      "evidence": []
+    },
+    {
+      "id": "J01-BT-07",
+      "name": "Synthetic email challenge",
+      "layer": "browser",
+      "outcome": "fail",
+      "steps": [
+        "Enter clarity-j01@example.com",
+        "Send code"
+      ],
+      "expected": "Truthfully describe simulated external capability and how to continue",
+      "observed": "Check your email; Sent to clarity-j01@example.com; no delivery or visible fixture-code instructions.",
+      "evidence": [
+        "06-code-promise-stable.txt"
+      ]
+    },
+    {
+      "id": "J01-BT-08",
+      "name": "Invalid code",
+      "layer": "browser",
+      "outcome": "pass",
+      "steps": [
+        "Enter public mock invalid code 000000",
+        "Continue"
+      ],
+      "expected": "Stay on code entry with an inline error",
+      "observed": "That code does not match. Try again.",
+      "evidence": [
+        "07-invalid-code.txt"
+      ]
+    },
+    {
+      "id": "J01-BT-09",
+      "name": "Change email",
+      "layer": "browser",
+      "outcome": "pass",
+      "steps": [
+        "Change email after invalid code"
+      ],
+      "expected": "Return to email form and retain entered address",
+      "observed": "Email form returned with populated field (AX redacted); resending without changing it produced the same destination.",
+      "evidence": []
+    },
+    {
+      "id": "J01-BT-10",
+      "name": "Reload during conversion",
+      "layer": "browser",
+      "outcome": "needs_product_decision",
+      "steps": [
+        "Send code again",
+        "Reload entire host"
+      ],
+      "expected": "Preserve safe destination/effort or explain intentional restart",
+      "observed": "Guest Home and business records survive; code entry and invite intent disappear without restart explanation. No auth proof should be persisted merely to fix this.",
+      "evidence": [
+        "08-reload-conversion.txt"
+      ]
+    },
+    {
+      "id": "J01-BT-11",
+      "name": "Back during conversion",
+      "layer": "browser",
+      "outcome": "fail",
+      "steps": [
+        "Reopen Invite someone",
+        "Create account",
+        "Email Back"
+      ],
+      "expected": "Return to guest boundary/Home or the accepted guest-first entry",
+      "observed": "Older marketing welcome with only email and wallet options; no guest or Home escape. Reload required to get back to guest Home.",
+      "evidence": [
+        "09-back-old-welcome.txt"
+      ]
+    },
+    {
+      "id": "J01-BT-12",
+      "name": "Wallet alternative",
+      "layer": "browser",
+      "outcome": "fail",
+      "steps": [
+        "Continue with email",
+        "Use a wallet instead",
+        "Everyday Account ending 9Kq"
+      ],
+      "expected": "Explain simulated approval and provide the defined local outcome path",
+      "observed": "Check your wallet. Approve the sign-in request there. Hidden local outcome controls; no real wallet request.",
+      "evidence": [
+        "10-wallet-waiting.txt"
+      ]
+    },
+    {
+      "id": "J01-BT-13",
+      "name": "Wallet pending/cancel",
+      "layer": "browser",
+      "outcome": "pass",
+      "steps": [
+        "Check again",
+        "Cancel",
+        "Use email instead"
+      ],
+      "expected": "Never turn pending into success; cancellation remains available",
+      "observed": "Still waiting for your wallet. Cancel returned to wallet selector; email alternative returned to email.",
+      "evidence": []
+    },
+    {
+      "id": "J01-BT-14",
+      "name": "New-person ready with documented fixture",
+      "layer": "browser",
+      "outcome": "pass",
+      "steps": [
+        "Synthetic email challenge",
+        "Public fixture code 123456",
+        "Name Clarity Test",
+        "Continue"
+      ],
+      "expected": "Model permits a local verified ready state without automatic join/payment",
+      "observed": "Signed in / You are ready / Open ChopDot. No final conversion committed. Completion depended on source knowledge unavailable in the normal form.",
+      "evidence": [
+        "11-new-person-ready.txt"
+      ]
+    },
+    {
+      "id": "J01-BT-15",
+      "name": "Demo guide disclosure",
+      "layer": "browser",
+      "outcome": "pass",
+      "steps": [
+        "Open Demo guide",
+        "Expand Test controls"
+      ],
+      "expected": "Disclose simulations and local storage",
+      "observed": "Guide says one tab, browser-local work, simulated accounts/external results and no funds; does not provide email-code instructions. Transcript in tool record, captured screenshot unavailable.",
+      "evidence": []
+    },
+    {
+      "id": "J01-BT-16",
+      "name": "Second-tab writer boundary",
+      "layer": "browser",
+      "outcome": "pass",
+      "steps": [
+        "Open a second integrated tab while prior tab holds writer lock"
+      ],
+      "expected": "Refuse concurrent writes with actionable recovery",
+      "observed": "Close other tab, then reload; data has not changed. Releasing prior tab via about:blank allowed testing. Initial observation was not saved as a screenshot.",
+      "evidence": []
+    },
+    {
+      "id": "J01-BT-17",
+      "name": "Real account-conversion commit",
+      "layer": "browser",
+      "outcome": "not_executed",
+      "steps": [
+        "Open ChopDot on ready"
+      ],
+      "expected": "Guest business records and identity survive final conversion",
+      "observed": "Intentionally not executed against existing saved audit records; ready-state check is not integrated completion.",
+      "evidence": []
+    },
+    {
+      "id": "J01-BT-18",
+      "name": "Returning Sign in",
+      "layer": "browser",
+      "outcome": "not_executed",
+      "steps": [
+        "Sign in",
+        "Use returning synthetic fixture"
+      ],
+      "expected": "Returning identity and destination clear",
+      "observed": "Not executed before browser navigation policy blocked later actions. Covered model behavior separately, not rendered UX.",
+      "evidence": []
+    },
+    {
+      "id": "J01-BT-19",
+      "name": "Contextual invite and counterpart",
+      "layer": "browser",
+      "outcome": "not_executed",
+      "steps": [
+        "Open approved invite entry",
+        "Back/reload",
+        "Return to invitation"
+      ],
+      "expected": "Preserve inviter/group/participant context and avoid automatic membership",
+      "observed": "Not executed; counterpart UX and integrated participant link remain unassessed.",
+      "evidence": []
+    },
+    {
+      "id": "J01-BT-20",
+      "name": "Offline/expired/declined/unknown recovery UI",
+      "layer": "browser",
+      "outcome": "not_executed",
+      "steps": [
+        "Exercise explicit local outcome fixtures"
+      ],
+      "expected": "Every required recovery screen has a truthful next step",
+      "observed": "Model checks passed; rendered fixture recovery screens were not executed. Do not substitute model PASS for UI PASS.",
+      "evidence": []
+    },
+    {
+      "id": "J01-BT-21",
+      "name": "Canonical viewport and keyboard comparison",
+      "layer": "browser",
+      "outcome": "not_executed",
+      "steps": [
+        "Compare source and integrated states at established viewports",
+        "Keyboard-only entry and recovery"
+      ],
+      "expected": "Retain approved hierarchy with accessible controls",
+      "observed": "1363x936 cloud viewport only; observed embedded CSS 428x878. No canonical 393x852/430x890 comparison or keyboard-only qualification.",
+      "evidence": []
+    },
+    {
+      "id": "J01-BT-22",
+      "name": "Fresh-storage first use",
+      "layer": "browser",
+      "outcome": "not_executed",
+      "steps": [
+        "Use a genuinely isolated new browser context"
+      ],
+      "expected": "Start empty without changing existing saved work",
+      "observed": "Local package built, but cloud browser cannot reach 127.0.0.1:4187 (ERR_CONNECTION_REFUSED). Hosted tabs share storage; no reset performed.",
+      "evidence": []
+    }
+  ],
+  "source_tests": [
+    {
+      "command": "node prototypes/experience-workbench/journeys/01-enter-chopdot/source/test-model.cjs",
+      "exit_code": 0,
+      "checks": 50,
+      "scope": "Local model guards, no rendered UX"
+    },
+    {
+      "command": "node prototypes/experience-workbench/journeys/01-enter-chopdot/source/test-subject-binding.cjs",
+      "exit_code": 0,
+      "checks": 163,
+      "scope": "Local subject/request/identity binding, no real authentication"
+    }
+  ],
+  "limitations": [
+    "Original browser business records were not reset, removed or converted. Guest entry/test actor selection changed local entry state only.",
+    "Prior Audit Alex test actor was changed to You to enter J01. Original tab was placed on about:blank to release writer lock; restoration later could not be verified because browser policy rejected the cleanup call. Saved original payment URL is unchanged; actor may remain You.",
+    "Two guide-link actions and the later diagnostics/restore call were rejected by browser URL policy. No circumvention attempted. These are environment blocks, not proven app broken-link findings.",
+    "Some AX/image pairs lagged; rejected screenshots are listed explicitly.",
+    "No repo-wide CI, hosted Actions, canonical screenshot certification, real emails, wallets, funds, signing, independent review or user study executed.",
+    "Other 27 journeys and prior 12 findings are not cleared by this audit."
+  ]
+}

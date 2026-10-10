@@ -8,7 +8,7 @@
     "schema_commit": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
     "golden_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881"
   },
-  "status": "not_reviewed",
+  "status": "blocked",
   "source_binding": {
     "status": "frozen_mapping_available",
     "registry_spec": "journeys/01-enter-chopdot/spec.md",
@@ -43,160 +43,387 @@
     "note": "Related laws are a navigation aid, not an assertion that every law applies in every state. Inspect composition units and approved later impacts too."
   },
   "scope": {
-    "tasks": [],
-    "states": [],
-    "actors": [],
-    "incoming_routes": [],
-    "return_routes": [],
-    "viewports": [],
-    "fixtures": [],
-    "limitations": []
+    "tasks": [
+      "Guest entry and invite-triggered account conversion; email and wallet alternatives"
+    ],
+    "states": [
+      "front-door",
+      "Guest Home",
+      "account-wall",
+      "email",
+      "code",
+      "wallet",
+      "approval-waiting",
+      "profile",
+      "ready",
+      "older welcome via Back"
+    ],
+    "actors": [
+      "Existing local self/guest; synthetic clarity-j01@example.com; local Everyday wallet fixture"
+    ],
+    "incoming_routes": [
+      "Normal front door",
+      "Guest Home -> Invite someone -> account boundary"
+    ],
+    "return_routes": [
+      "Boundary cancellation -> Guest Home",
+      "Email Back -> older welcome (finding)",
+      "Host reload -> Guest Home"
+    ],
+    "viewports": [
+      "Cloud Chrome 1363x936; embedded CSS 428x878; canonical viewport comparison unexecuted"
+    ],
+    "fixtures": [
+      "Existing UX audit group: CHF, 2 people, 1 expense",
+      "Existing UX audit savings",
+      "Public local mock code 123456; invalid fixture 000000",
+      "Synthetic Clarity Test name; no final account conversion"
+    ],
+    "limitations": [
+      "Original browser business records were not reset, removed or converted. Guest entry/test actor selection changed local entry state only.",
+      "Prior Audit Alex test actor was changed to You to enter J01. Original tab was placed on about:blank to release writer lock; restoration later could not be verified because browser policy rejected the cleanup call. Saved original payment URL is unchanged; actor may remain You.",
+      "Two guide-link actions and the later diagnostics/restore call were rejected by browser URL policy. No circumvention attempted. These are environment blocks, not proven app broken-link findings.",
+      "Some AX/image pairs lagged; rejected screenshots are listed explicitly.",
+      "No repo-wide CI, hosted Actions, canonical screenshot certification, real emails, wallets, funds, signing, independent review or user study executed.",
+      "Other 27 journeys and prior 12 findings are not cleared by this audit."
+    ]
   },
   "checks": [
     {
       "id": "truth",
-      "result": "unassessed",
-      "expectation": "",
-      "steps": [],
-      "evidence_ids": [],
+      "result": "fail",
+      "expectation": "Visible capability claims match the local simulation",
+      "steps": [
+        "BT-05/07/12: normal account flow requires external-looking actions with hidden fixture instructions."
+      ],
+      "evidence_ids": [
+        "J01-BROWSER-20261010"
+      ],
       "reason": ""
     },
     {
       "id": "orientation",
-      "result": "unassessed",
-      "expectation": "",
-      "steps": [],
-      "evidence_ids": [],
+      "result": "fail",
+      "expectation": "Back preserves the accepted guest entry hierarchy",
+      "steps": [
+        "BT-11: guest conversion Back returns to an older welcome without guest/Home exit."
+      ],
+      "evidence_ids": [
+        "J01-BROWSER-20261010"
+      ],
       "reason": ""
     },
     {
       "id": "consequence",
-      "result": "unassessed",
-      "expectation": "",
-      "steps": [],
-      "evidence_ids": [],
+      "result": "pass",
+      "expectation": "Guest invite states the account prerequisite before any invitation",
+      "steps": [
+        "BT-03: inspect account boundary; BT-04: cancel and verify same local work."
+      ],
+      "evidence_ids": [
+        "J01-BROWSER-20261010"
+      ],
       "reason": ""
     },
     {
       "id": "effort",
       "result": "unassessed",
-      "expectation": "",
+      "expectation": "Comprehension and unnecessary effort require neutral participant tasks",
       "steps": [],
       "evidence_ids": [],
-      "reason": ""
+      "reason": "See retained unexecuted scope; no human comprehension study or final conversion."
     },
     {
       "id": "controls",
-      "result": "unassessed",
-      "expectation": "",
-      "steps": [],
-      "evidence_ids": [],
+      "result": "pass",
+      "expectation": "Observed pointer controls are labelled; missing email and invalid code are blocked",
+      "steps": [
+        "BT-01/04/06/08/13: activate visible controls; inspect inline/native errors and cancellation."
+      ],
+      "evidence_ids": [
+        "J01-BROWSER-20261010"
+      ],
       "reason": ""
     },
     {
       "id": "continuity",
-      "result": "unassessed",
-      "expectation": "",
-      "steps": [],
-      "evidence_ids": [],
+      "result": "fail",
+      "expectation": "Back/reload preserve safe task continuity or explicitly explain restart",
+      "steps": [
+        "BT-10/11: saved work survives, conversion intent and guest exit do not."
+      ],
+      "evidence_ids": [
+        "J01-BROWSER-20261010"
+      ],
       "reason": ""
     },
     {
       "id": "recovery",
-      "result": "unassessed",
-      "expectation": "",
-      "steps": [],
-      "evidence_ids": [],
+      "result": "fail",
+      "expectation": "Simulated external approval has a discoverable local completion path",
+      "steps": [
+        "BT-12/13: pending remains honest and Cancel works, but wallet completion fixtures are hidden."
+      ],
+      "evidence_ids": [
+        "J01-BROWSER-20261010"
+      ],
       "reason": ""
     },
     {
       "id": "finish",
       "result": "unassessed",
-      "expectation": "",
+      "expectation": "Verify final conversion and counterpart state, not only ready screen",
       "steps": [],
       "evidence_ids": [],
-      "reason": ""
+      "reason": "See retained unexecuted scope; no human comprehension study or final conversion."
     }
   ],
   "scenarios": [
     {
       "id": "primary_task",
-      "result": "unassessed",
-      "expectation": "",
-      "steps": [],
-      "evidence_ids": [],
+      "result": "pass",
+      "expectation": "Verify primary task within the stated J01 scope.",
+      "steps": [
+        "BT-01: Continue as guest -> Home; this pass covers guest entry only."
+      ],
+      "evidence_ids": [
+        "J01-BROWSER-20261010"
+      ],
       "reason": ""
     },
     {
       "id": "alternate_paths",
-      "result": "unassessed",
-      "expectation": "",
-      "steps": [],
-      "evidence_ids": [],
+      "result": "fail",
+      "expectation": "Verify alternate paths within the stated J01 scope.",
+      "steps": [
+        "BT-05/07/12: email and wallet alternatives lack discoverable fixture instructions."
+      ],
+      "evidence_ids": [
+        "J01-BROWSER-20261010"
+      ],
       "reason": ""
     },
     {
       "id": "back_reopen_reload",
-      "result": "unassessed",
-      "expectation": "",
-      "steps": [],
-      "evidence_ids": [],
+      "result": "fail",
+      "expectation": "Verify back reopen reload within the stated J01 scope.",
+      "steps": [
+        "BT-04/10/11: local work survives, Back and interrupted conversion continuity need repair/decision."
+      ],
+      "evidence_ids": [
+        "J01-BROWSER-20261010"
+      ],
       "reason": ""
     },
     {
       "id": "permissions",
-      "result": "unassessed",
-      "expectation": "",
-      "steps": [],
-      "evidence_ids": [],
+      "result": "pass",
+      "expectation": "Verify permissions within the stated J01 scope.",
+      "steps": [
+        "BT-03: guest cannot invite before the explained account boundary; no invitation emitted."
+      ],
+      "evidence_ids": [
+        "J01-BROWSER-20261010"
+      ],
       "reason": ""
     },
     {
       "id": "counterpart",
       "result": "unassessed",
-      "expectation": "",
+      "expectation": "Verify counterpart within the stated J01 scope.",
       "steps": [],
       "evidence_ids": [],
-      "reason": ""
+      "reason": "Not executed as rendered interaction; see J01-BT-17 through J01-BT-22."
     },
     {
       "id": "empty_unavailable",
       "result": "unassessed",
-      "expectation": "",
+      "expectation": "Verify empty unavailable within the stated J01 scope.",
       "steps": [],
       "evidence_ids": [],
-      "reason": ""
+      "reason": "Not executed as rendered interaction; see J01-BT-17 through J01-BT-22."
     },
     {
       "id": "error_recovery",
-      "result": "unassessed",
-      "expectation": "",
-      "steps": [],
-      "evidence_ids": [],
+      "result": "fail",
+      "expectation": "Verify error recovery within the stated J01 scope.",
+      "steps": [
+        "BT-06/08/13: tested errors/cancel work; wallet completion is unavailable in normal mode."
+      ],
+      "evidence_ids": [
+        "J01-BROWSER-20261010"
+      ],
       "reason": ""
     },
     {
       "id": "completion",
       "result": "unassessed",
-      "expectation": "",
+      "expectation": "Verify completion within the stated J01 scope.",
       "steps": [],
       "evidence_ids": [],
-      "reason": ""
+      "reason": "Not executed as rendered interaction; see J01-BT-17 through J01-BT-22."
     },
     {
       "id": "visual_access",
       "result": "unassessed",
-      "expectation": "",
+      "expectation": "Verify visual access within the stated J01 scope.",
       "steps": [],
       "evidence_ids": [],
-      "reason": ""
+      "reason": "Not executed as rendered interaction; see J01-BT-17 through J01-BT-22."
     }
   ],
-  "decisions": [],
-  "hypotheses": [],
+  "decisions": [
+    {
+      "action": "KEEP",
+      "scope": "Guest primary, account boundary and local business-record continuity",
+      "evidence_ids": [
+        "J01-BROWSER-20261010"
+      ]
+    },
+    {
+      "action": "CORRECT",
+      "scope": "Make fixture capability/completion truthful at the account action",
+      "finding": "SC-J01-001"
+    },
+    {
+      "action": "CORRECT",
+      "scope": "Return guest conversion Back to its actual incoming boundary",
+      "finding": "SC-J01-002"
+    },
+    {
+      "action": "TEST",
+      "scope": "Specify safe interrupted-entry destination and restart expectations",
+      "finding": "SC-J01-003"
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "J01-H01",
+      "prediction": "Local fixture instructions beside code entry will prevent waiting for a nonexistent email.",
+      "evidence_needed": "Neutral cold task asking how to continue and whether a real email/account/payment exists.",
+      "status": "needs_user_study"
+    },
+    {
+      "id": "J01-H02",
+      "prediction": "Returning Back to the incoming guest boundary will make cancellation predictable.",
+      "evidence_needed": "Browser replay plus cold task prediction before Back.",
+      "status": "needs_test"
+    }
+  ],
   "additional_authority": [],
-  "evidence": [],
-  "finding_ids": [],
+  "evidence": [
+    {
+      "id": "J01-BROWSER-20261010",
+      "kind": "BROWSER",
+      "implementation_sha": "4857d3beca6add7ba1a03f210d79ff67c215b931",
+      "runtime_digest": "b73554f66065ce545675ebe56dd0baf79b3fb426b24d724628a7ef30dd4801ab",
+      "scope": "Observed hosted entry and conversion paths only; target source/runtime matched to unchanged deployment via retained prior mapping, not fresh asset readback. See results cases and rejected screenshot index.",
+      "environment": "Cloud Chrome; one active writer; existing synthetic local data; Sites version 13; no real auth/funds",
+      "artifacts": [
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/01-front-door.txt",
+          "sha256": "e680c10d176ed2a060865fd66e952a7a80edd799c79b1a2da28a9618430425d1"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/02-guest-home.txt",
+          "sha256": "8eb74c23d44de0a9bdc875e33b24b0132fee689659131cc44eb98b9bd819cf7d"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/03-account-boundary.txt",
+          "sha256": "2cf6ae06f0abf2c9b9b297bd08cb560dc5a022195baef311f2623f15a00a1aa5"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/04-boundary-cancel.txt",
+          "sha256": "431db1850bb20b7e61d9120259d6d79effd29ac02111dc2cfa2b9b5d03817edc"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/05-email-form.txt",
+          "sha256": "70db17da97172b7fe0a927f130db7460726cb6cd4c69f3338482f1b12daa7056"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/06-code-promise-stable.txt",
+          "sha256": "0281771a46d7f6bd58e17cf693934d9282f22c05f1c7350c647d6d739b5ce01b"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/06-code-promise.txt",
+          "sha256": "0281771a46d7f6bd58e17cf693934d9282f22c05f1c7350c647d6d739b5ce01b"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/07-invalid-code.txt",
+          "sha256": "70551984bb6cd7b8380cdf367c5fcbcf2bad371838e7b29720845698e84bd840"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/08-reload-conversion.txt",
+          "sha256": "03ef93ee29c9844198fb7c317a8e891c258e6ab4f8f7a7de45bfebc410c84708"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/09-back-old-welcome.txt",
+          "sha256": "43d98d801cebaf2bfa3ff250c744b215b033e7db1414861bc40d573722eb83a1"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/10-wallet-waiting.txt",
+          "sha256": "68c6b02d7bf62b09336e8c3069f85b8fd4b95be0fd98fcfc39101e482d76282d"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/11-new-person-ready.txt",
+          "sha256": "a9c6443d97dbb2f0b136606a888046ce80a7ccb336ac070d6cb333a61428e811"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/results.json",
+          "sha256": "2a5ea83820edfd9a09dd97344485be089f124dd7f212908fccb6f9ebd204ea59"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/deployment.json",
+          "sha256": "14d123ed00bc7fd52b07d4969922459f9abbea2bc988b711731a5777b1a20b14"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/screenshots.json",
+          "sha256": "f8493ba96450932ee7d5f87fdbe3eea53b48d18333b78eb4f507cdd41f87254e"
+        }
+      ]
+    },
+    {
+      "id": "J01-SOURCE-MODEL",
+      "kind": "SOURCE",
+      "implementation_sha": "4857d3beca6add7ba1a03f210d79ff67c215b931",
+      "runtime_digest": "b73554f66065ce545675ebe56dd0baf79b3fb426b24d724628a7ef30dd4801ab",
+      "scope": "Existing J01 model regression, 50 checks; not browser UX",
+      "environment": "Node local source execution",
+      "automated": true,
+      "command": "node prototypes/experience-workbench/journeys/01-enter-chopdot/source/test-model.cjs",
+      "exit_code": 0,
+      "log": "product/surface-clarity/evidence/J01-2026-10-10/j01-model.log",
+      "artifacts": [
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/j01-model.log",
+          "sha256": "df230755da3e461ab3ae1b8e850fa734ea237c7c0979449639da9ec603c662bb"
+        }
+      ]
+    },
+    {
+      "id": "J01-SOURCE-BINDING",
+      "kind": "SOURCE",
+      "implementation_sha": "4857d3beca6add7ba1a03f210d79ff67c215b931",
+      "runtime_digest": "b73554f66065ce545675ebe56dd0baf79b3fb426b24d724628a7ef30dd4801ab",
+      "scope": "Existing J01 subject/request binding regression, 163 checks; not browser UX",
+      "environment": "Node local source execution",
+      "automated": true,
+      "command": "node prototypes/experience-workbench/journeys/01-enter-chopdot/source/test-subject-binding.cjs",
+      "exit_code": 0,
+      "log": "product/surface-clarity/evidence/J01-2026-10-10/j01-subject-binding.log",
+      "artifacts": [
+        {
+          "path": "product/surface-clarity/evidence/J01-2026-10-10/j01-subject-binding.log",
+          "sha256": "cfcd1e08f46f65dd303876eb75a59b80aef02bd9ad1c5ffe2432db948800f904"
+        }
+      ]
+    }
+  ],
+  "finding_ids": [
+    "SC-J01-001",
+    "SC-J01-002",
+    "SC-J01-003"
+  ],
   "historical_sample": {
     "source": "historical-audit/results.json",
     "implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a",

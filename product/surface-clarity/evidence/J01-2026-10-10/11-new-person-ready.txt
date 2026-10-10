@@ -1,0 +1,26 @@
+Browser tab: 3, Title: "ChopDot — Golden-faithful Preview V2", URL: "https://chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/?home=1".
+1 AXWebArea ChopDot — Golden-faithful Preview V2, URL: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/?home=1
+	2 container
+		3 text Prototype Saved on this browser · 
+		4 link Description: Demo guide, Value: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/demo.html
+		5 container ChopDot preview
+			46 container Description: ChopDot, ID: product-frame
+				47 AXWebArea ChopDot — Enter ChopDot V1 candidate, URL: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate#ready
+					48 container Description: Enter ChopDot, ID: entry-screen
+						49 container
+							50 button Back
+							51 text Signed in ChopDot
+						52 container
+							53 heading You’re ready., Value: 1
+								54 text You’re ready.
+							55 text Start a group when you’re ready.
+							56 text Clarity Test
+							57 text clarity-j01@example.com
+						58 container
+							59 button Open ChopDot
+							60 button Use a different account
+	43 container
+		44 container
+			45 button Bring back toolbar
+
+The focused UI element is 47 AXWebArea ChopDot — Enter ChopDot V1 candidate, URL: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate#ready

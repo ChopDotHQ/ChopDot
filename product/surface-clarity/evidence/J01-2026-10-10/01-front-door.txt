@@ -1,0 +1,20 @@
+Browser tab: 3, Title: "ChopDot — Golden-faithful Preview V2", URL: "https://chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/".
+1 AXWebArea ChopDot — Golden-faithful Preview V2, URL: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/
+	2 container
+		3 text Prototype Saved on this browser · 
+		4 link Description: Demo guide, Value: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/demo.html
+		5 container ChopDot preview
+			6 container Description: Enter ChopDot, ID: front-door
+				7 container ChopDot
+					8 text ChopDot
+				9 text Share & chop.
+				10 button Continue as guest, ID: guest-entry
+				11 button Create account, ID: create-account
+				12 container
+					13 text Already have an account? 
+					14 button Sign in, ID: sign-in
+	15 container
+		16 container
+			17 button Bring back toolbar
+
+The focused UI element is 1 AXWebArea ChopDot — Golden-faithful Preview V2, URL: chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/

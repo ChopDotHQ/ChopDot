@@ -9,7 +9,7 @@ import { validate, initialize, context, sha256 } from './surface-clarity.mjs';
 
 const source = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const base = 'product/surface-clarity';
-function fixture(t) {
+function fixture(t, live = false) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'chopdot-clarity-test-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   for (const p of [base, 'prototypes/integrated-product-preview-v2', 'prototypes/experience-workbench/registry/journeys.json', 'scripts/package-preview-v2-gate-b.mjs']) {
@@ -19,6 +19,16 @@ function fixture(t) {
   // Git access is read-only in the tested functions; mutations target copied files.
   const gitdir = execFileSync('git', ['rev-parse', '--absolute-git-dir'], { cwd: source, encoding: 'utf8' }).trim();
   fs.writeFileSync(path.join(root, '.git'), `gitdir: ${gitdir}\n`);
+  // Unit cases start from pending obligations, independent of accumulated audits.
+  // Only disposable test files are changed; live coverage is tested separately.
+  if (!live) for (const name of fs.readdirSync(path.join(root, base, 'journeys'))) {
+    const p = path.join(root, base, 'journeys', name), r = JSON.parse(fs.readFileSync(p));
+    r.status = 'not_reviewed'; r.evidence = [];
+    for (const x of [...r.checks, ...r.scenarios]) Object.assign(x, {
+      result: 'unassessed', expectation: '', steps: [], evidence_ids: [], reason: ''
+    });
+    fs.writeFileSync(p, JSON.stringify(r, null, 2) + '\n');
+  }
   return root;
 }
 const read = (root, p) => JSON.parse(fs.readFileSync(path.join(root, p), 'utf8'));
@@ -114,4 +124,13 @@ test('historical result bytes cannot be silently reclassified', t => {
 test('frozen authority tree mismatch stops the check', t => {
   const root = fixture(t); change(root, `${base}/policy.json`, p => { p.schema_tree = '0000000000000000000000000000000000000000'; });
   assert.throws(() => validate(root), /Frozen tree mismatch/);
+});
+test('live J01 failures and unexecuted paths remain incomplete with valid bookkeeping', t => {
+  const root = fixture(t, true), r = validate(root), record = read(root, j01);
+  assert.deepEqual(r.errors, []);
+  assert.equal(r.readiness, 'INCOMPLETE');
+  for (const x of [...record.checks, ...record.scenarios].filter(x => ['fail', 'unassessed'].includes(x.result))) {
+    assert.ok(r.blockers.includes(`J01: ${x.id} ${x.result}`));
+  }
+  for (const id of record.finding_ids) assert.ok(r.blockers.some(b => b.startsWith(`J01: ${id} `)));
 });

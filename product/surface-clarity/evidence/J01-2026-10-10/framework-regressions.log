@@ -1,0 +1,29 @@
+node --test scripts/surface-clarity.test.mjs 
+✔ all registered journeys have coherent records; imported samples are not readiness (102.220838ms)
+✔ missing current journey cannot shrink coverage (80.189792ms)
+✔ future registered journey is counted and init remains pending without new authority (181.075557ms)
+✔ init refuses existing records and unregistered journey IDs (111.141756ms)
+✔ runtime edit invalidates bindings without resetting them (96.125964ms)
+✔ docs-only changes retain runtime binding (75.259986ms)
+✔ invented certified task mapping is rejected (67.935106ms)
+✔ a pass needs steps, an expectation and referenced evidence (74.581101ms)
+✔ not applicable cannot silently replace unexecuted checks (67.849566ms)
+✔ bounded supported check is allowed without clearing unrelated paths (611.90343ms)
+✔ failed command cannot support pass (582.599765ms)
+✔ changed artifact bytes invalidate evidence (611.315499ms)
+✔ artifact paths cannot escape the disposable evidence root (694.800745ms)
+✔ borrowed available commit cannot attest different runtime bytes (151.543472ms)
+✔ fixed finding requires linked evidence and current runtime disposition (76.667611ms)
+✔ historical result bytes cannot be silently reclassified (82.199194ms)
+✔ frozen authority tree mismatch stops the check (23.947778ms)
+✔ live J01 failures and unexecuted paths remain incomplete with valid bookkeeping (687.462116ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4506.058502
+
+exit_code=0

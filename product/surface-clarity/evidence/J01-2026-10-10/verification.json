@@ -1,0 +1,30 @@
+{
+  "versions": {
+    "node": "v24.19.0",
+    "git": "git version 2.51.1",
+    "python": "Python 3.12.14"
+  },
+  "trees": {
+    "HEAD": "716b05d6cd7c27340211a4edcce5eef974459f45",
+    "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+    "4ba456e6595330e4ca8e21366e0d827f17e10881": "cb424dafedff066fed433e106eb4468bec985d98"
+  },
+  "checks": {
+    "node scripts/surface-clarity.mjs context": {
+      "exit_code": 0,
+      "stdout": "{\n  \"implementation_sha\": \"4857d3beca6add7ba1a03f210d79ff67c215b931\",\n  \"binding\": {\n    \"registry_digest\": \"f5b46bc031ea2235484ebd492e09540bfde23dca1e774591c71b3fa5c18efbda\",\n    \"runtime_digest\": \"b73554f66065ce545675ebe56dd0baf79b3fb426b24d724628a7ef30dd4801ab\",\n    \"schema_commit\": \"5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013\",\n    \"golden_commit\": \"4ba456e6595330e4ca8e21366e0d827f17e10881\"\n  },\n  \"runtime_file_count\": 162\n}\n",
+      "stderr": ""
+    },
+    "git diff --check": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "git status --short": {
+      "exit_code": 0,
+      "stdout": " M product/surface-clarity/findings.json\n M product/surface-clarity/journeys/J01.json\n M scripts/surface-clarity.test.mjs\n?? product/surface-clarity/evidence/\n",
+      "stderr": ""
+    }
+  },
+  "local_test_server_cleanup": "Stopped session 60936 with SIGINT; exit 130 as expected. Only task-created packaged files remain."
+}
