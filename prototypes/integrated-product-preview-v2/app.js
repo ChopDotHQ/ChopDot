@@ -5,6 +5,7 @@ import {repository as accountRepository} from './gate-d/model.js';
 import { transition as commitExpense, recoverableDrafts, guestDraftView, putGuestDraft, savedDraft, upgrade as upgradePrototype } from './gate-b/model.js';
 const schemaCore = await fetch('./gate-b/contract/semantic-core.json').then(response => { if (!response.ok) throw new Error('Frozen schema contract unavailable.'); return response.json(); });
 import { requirePrototypeWriter, assertPrototypeWriter } from './prototype-writer.js';
+import { installEntrySurface } from './j01-surface.js';
 await requirePrototypeWriter();
 import {
   allocationView,
@@ -41,6 +42,24 @@ let currentFlow = 'front-door';
 let homeMode = 'account';
 let monitorTimer = null;
 let lastEntryState = null;
+let resumedEntry = false;
+
+// Only routing intent is durable in the URL. Never serialize auth proof, codes,
+// subjects, pending requests or model state to recover an interrupted entry.
+function entryIntent(flow, method = '') {
+  const url = new URL(location.href);
+  for (const key of ['home', 'guestExpense', 'gateB', 'gateBRoute', 'gateC', 'gateD', 'expansion', 'createJoin']) url.searchParams.delete(key);
+  url.searchParams.set('entry', flow);
+  if (method) url.searchParams.set('entryMethod', method); else url.searchParams.delete('entryMethod');
+  history.replaceState(null, '', url);
+}
+
+function clearEntryIntent() {
+  const url = new URL(location.href);
+  for (const key of ['entry', 'entryMethod']) url.searchParams.delete(key);
+  history.replaceState(null, '', url);
+  resumedEntry = false;
+}
 
 function productModeCss() {
   return `
@@ -116,6 +135,8 @@ function showFrame() {
 
 function showFrontDoor() {
   stopMonitor();
+  clearEntryIntent();
+  frame.src = 'about:blank';
   currentJourney = 'J01';
   currentFlow = 'front-door';
   homeMode = 'account';
@@ -125,6 +146,8 @@ function showFrontDoor() {
 
 function showAccountWall() {
   stopMonitor();
+  clearEntryIntent();
+  frame.src = 'about:blank';
   currentJourney = 'ACCOUNT_BOUNDARY';
   currentFlow = 'guest-share-boundary';
   hideHostSurfaces();
@@ -147,7 +170,7 @@ function openHome(entryState = lastEntryState, mode = 'account') {
   currentFlow = mode;
   showFrame();
   const url = new URL(location.href);
-  for (const key of ['guestExpense','gateB','gateBRoute','gateC','gateD','expansion','createJoin']) url.searchParams.delete(key);
+  for (const key of ['guestExpense','gateB','gateBRoute','gateC','gateD','expansion','createJoin','entry','entryMethod']) url.searchParams.delete(key);
   url.searchParams.set('home','1'); history.replaceState(null,'',url);
   frame.src = SOURCES.j02;
 }
@@ -190,13 +213,15 @@ function openGuestExpense() {
   frame.src = SOURCES.j05;
 }
 
-function openAuth(flow = 'create') {
+function openAuth(flow = 'create', { resumed = false, method = 'email' } = {}) {
   stopMonitor();
+  resumedEntry = resumed;
+  entryIntent(flow, method);
   currentJourney = 'J01';
   currentFlow = flow;
   homeMode = 'account';
   showFrame();
-  frame.src = `${SOURCES.j01}#welcome`;
+  frame.src = `${SOURCES.j01}#${method}`;
 }
 
 function watchGoldenEntry() {
@@ -211,7 +236,7 @@ function watchGoldenEntry() {
     if (state.route === 'home-reference' && state.verified) {
       try { accountRepository(localStorage,assertPrototypeWriter).commit({type:'entry'},'entry-verified'); } catch(error) { stopMonitor(); const p=document.createElement('p');p.textContent=error.message;frame.contentDocument.body.append(p);return; }
       const membershipReturn=sessionStorage.getItem('chopdot.membership.entry-return');
-      if(membershipReturn){const r=JSON.parse(membershipReturn);sessionStorage.removeItem('chopdot.membership.entry-return');window.ChopDotEntryPrecondition={verified:true,participantId:r.participantId,invite:r.invite,subject:state.verifiedSubject,request:state.verifiedRequest};openCreateJoin('#'+new URLSearchParams({page:r.page,...(r.invite?{invite:r.invite}:{})}));return;}
+      if(membershipReturn){const r=JSON.parse(membershipReturn);sessionStorage.removeItem('chopdot.membership.entry-return');clearEntryIntent();window.ChopDotEntryPrecondition={verified:true,participantId:r.participantId,invite:r.invite,subject:state.verifiedSubject,request:state.verifiedRequest};openCreateJoin('#'+new URLSearchParams({page:r.page,...(r.invite?{invite:r.invite}:{})}));return;}
       const convertingGuest = currentFlow === 'convert-create' || currentFlow === 'convert-signin';
       if (convertingGuest) {
         saveGuestState({ accountCreated: true });
@@ -1070,15 +1095,33 @@ frame.addEventListener('load', () => {
   }
 
   enterAuthFormIfNeeded(doc);
-  if (currentJourney === 'J01') watchGoldenEntry();
+  if (currentJourney === 'J01') {
+    installEntrySurface(doc, {
+      resumed: resumedEntry,
+      onMethod: method => entryIntent(currentFlow, method),
+      onExit: () => {
+        const membershipReturn = sessionStorage.getItem('chopdot.membership.entry-return');
+        if (membershipReturn) {
+          const intent = JSON.parse(membershipReturn);
+          sessionStorage.removeItem('chopdot.membership.entry-return');
+          clearEntryIntent();
+          openCreateJoin('#' + new URLSearchParams({ page: intent.page, ...(intent.invite ? { invite: intent.invite } : {}) }));
+        } else if (['convert-create', 'convert-signin'].includes(currentFlow)) showAccountWall();
+        else showFrontDoor();
+      },
+    });
+    watchGoldenEntry();
+  }
 });
 
-function openInvite(mode = 'account') {
+function openInvite(mode = 'account', { resumed = false, method = '' } = {}) {
   stopMonitor();
+  resumedEntry = resumed;
   currentJourney = 'J01';
   currentFlow = mode === 'guest' ? 'guest-invite' : 'invite';
+  entryIntent(currentFlow, method);
   showFrame();
-  frame.src = mode === 'guest' ? `${SOURCES.j01GuestInvite}#invite` : `${SOURCES.j01}#invite`;
+  frame.src = mode === 'guest' ? `${SOURCES.j01GuestInvite}#invite` : `${SOURCES.j01}#${method ? method + '/invite' : 'invite'}`;
 }
 
 guestEntry.addEventListener('click', openGuestHome);
@@ -1117,8 +1160,8 @@ else if (params.has('gateC')) openGateC(params.get('gateC'));
 else if (params.has('gateB') && loadGuestState().group) openGateB(params.get('gateBRoute')||'');
 else if(params.has('guestExpense')&&loadGuestState().group)openGuestExpense();
 else if(params.has('home')&&loadGuestState().enteredAt&&!['signed-out','expired'].includes(loadGuestState().gateD?.session?.status))returnToLocalHome();
-else if (entryMode === 'signin')openAuth('signin');
-else if (entryMode === 'invite') openInvite('account');
+else if (['create', 'signin', 'convert-create', 'convert-signin'].includes(entryMode))openAuth(entryMode, { resumed: true, method: params.get('entryMethod') === 'wallet' ? 'wallet' : 'email' });
+else if (entryMode === 'invite') openInvite('account', { resumed: params.has('entryMethod'), method: ['email','wallet'].includes(params.get('entryMethod')) ? params.get('entryMethod') : '' });
 else if (entryMode === 'guest-invite') openInvite('guest');
 else showFrontDoor();
 

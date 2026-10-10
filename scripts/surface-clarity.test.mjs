@@ -19,6 +19,20 @@ function fixture(t, live = false) {
   // Git access is read-only in the tested functions; mutations target copied files.
   const gitdir = execFileSync('git', ['rev-parse', '--absolute-git-dir'], { cwd: source, encoding: 'utf8' }).trim();
   fs.writeFileSync(path.join(root, '.git'), `gitdir: ${gitdir}\n`);
+  // Method unit fixtures use the explicitly recorded historical implementation,
+  // not the evolving application or generated local QA output. This is confined
+  // to this disposable directory; it never rebinds a live review record.
+  if (!live) {
+    const policy = JSON.parse(fs.readFileSync(path.join(root, base, 'policy.json')));
+    for (const relative of policy.runtime_roots) {
+      fs.rmSync(path.join(root, relative), { recursive: true, force: true });
+      const paths = execFileSync('git', ['ls-tree', '-r', '--name-only', policy.inherited_audit.implementation_sha, '--', relative], { cwd: source, encoding: 'utf8' }).trim().split('\n').filter(Boolean);
+      for (const p of paths) {
+        fs.mkdirSync(path.dirname(path.join(root, p)), { recursive: true });
+        fs.writeFileSync(path.join(root, p), execFileSync('git', ['show', `${policy.inherited_audit.implementation_sha}:${p}`], { cwd: source, maxBuffer: 32 * 1024 * 1024 }));
+      }
+    }
+  }
   // Unit cases start from pending obligations, independent of accumulated audits.
   // Only disposable test files are changed; live coverage is tested separately.
   if (!live) for (const name of fs.readdirSync(path.join(root, base, 'journeys'))) {
@@ -125,9 +139,12 @@ test('frozen authority tree mismatch stops the check', t => {
   const root = fixture(t); change(root, `${base}/policy.json`, p => { p.schema_tree = '0000000000000000000000000000000000000000'; });
   assert.throws(() => validate(root), /Frozen tree mismatch/);
 });
-test('live J01 failures and unexecuted paths remain incomplete with valid bookkeeping', t => {
+test('live J01 failures remain incomplete and changed runtime evidence remains stale', t => {
   const root = fixture(t, true), r = validate(root), record = read(root, j01);
-  assert.deepEqual(r.errors, []);
+  if (record.binding.runtime_digest !== context(root).binding.runtime_digest) {
+    assert.ok(r.errors.includes('J01: stale runtime/registry/authority binding'));
+    assert.ok(r.errors.some(e => e.startsWith('J01: stale evidence ')));
+  } else assert.deepEqual(r.errors, []);
   assert.equal(r.readiness, 'INCOMPLETE');
   for (const x of [...record.checks, ...record.scenarios].filter(x => ['fail', 'unassessed'].includes(x.result))) {
     assert.ok(r.blockers.includes(`J01: ${x.id} ${x.result}`));
