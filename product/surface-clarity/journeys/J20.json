@@ -1,0 +1,225 @@
+{
+  "framework_version": "1.0.0",
+  "journey": "J20",
+  "name": "Payment Methods",
+  "binding": {
+    "registry_digest": "f5b46bc031ea2235484ebd492e09540bfde23dca1e774591c71b3fa5c18efbda",
+    "runtime_digest": "b73554f66065ce545675ebe56dd0baf79b3fb426b24d724628a7ef30dd4801ab",
+    "schema_commit": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "golden_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881"
+  },
+  "status": "not_reviewed",
+  "source_binding": {
+    "status": "frozen_mapping_available",
+    "registry_spec": "journeys/20-payment-methods/spec.md",
+    "schema_projection": "20",
+    "owns_operations": [
+      "payment_destination.create_update",
+      "payment_destination.remove"
+    ],
+    "participates_operations": [],
+    "contexts": [
+      "ctx.payment_destination",
+      "ctx.identity",
+      "ctx.settlement",
+      "ctx.receiving",
+      "ctx.wallet",
+      "ctx.account"
+    ],
+    "related_laws_inspect_applicability": [
+      "LAW-ACCOUNT-01",
+      "LAW-AUTH-01",
+      "LAW-DEST-01",
+      "LAW-ID-01",
+      "LAW-ID-02",
+      "LAW-ID-03",
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-PAY-01",
+      "LAW-PAY-02",
+      "LAW-PAY-03",
+      "LAW-POS-SCOPE-01",
+      "LAW-PREF-01",
+      "LAW-WALLET-01"
+    ],
+    "certified_task_ids": [],
+    "approved_piece_count": 420,
+    "piece_locator": "product-schema/generated/reconstruction-pieces.json",
+    "note": "Related laws are a navigation aid, not an assertion that every law applies in every state. Inspect composition units and approved later impacts too."
+  },
+  "scope": {
+    "tasks": [],
+    "states": [],
+    "actors": [],
+    "incoming_routes": [],
+    "return_routes": [],
+    "viewports": [],
+    "fixtures": [],
+    "limitations": []
+  },
+  "checks": [
+    {
+      "id": "truth",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "orientation",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "consequence",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "effort",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "controls",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "continuity",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "recovery",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "finish",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "primary_task",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "alternate_paths",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "back_reopen_reload",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "permissions",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "counterpart",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "empty_unavailable",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "error_recovery",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "completion",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "visual_access",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    }
+  ],
+  "decisions": [],
+  "hypotheses": [],
+  "additional_authority": [],
+  "evidence": [],
+  "finding_ids": [
+    "UX-009"
+  ],
+  "historical_sample": {
+    "source": "historical-audit/results.json",
+    "implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a",
+    "method": "Single reviewer heuristic audit, current-run cloud Chrome interaction and screenshots; no independent usability panel or psychological performance study",
+    "sample": {
+      "id": "J20",
+      "title": "Payment methods",
+      "health": "Mixed; form and hierarchy polish",
+      "actions": "Empty methods \u2192 Bank transfer form \u2192 Cancel",
+      "screenshot": "20-method-form",
+      "observation": "Visible field labels are helpful; four competing Add choices and tiny Cancel need polish.",
+      "limitations": "No real receiving details entered; save, preference and validation outcomes not exercised.",
+      "findings": [
+        "UX-009"
+      ]
+    },
+    "scope_note": "Imported historical sample only. Checks/scenarios remain unassessed; screenshots in original audit archive."
+  }
+}

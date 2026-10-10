@@ -1,0 +1,245 @@
+{
+  "framework_version": "1.0.0",
+  "journey": "J06",
+  "name": "Review / Correct an Expense",
+  "binding": {
+    "registry_digest": "f5b46bc031ea2235484ebd492e09540bfde23dca1e774591c71b3fa5c18efbda",
+    "runtime_digest": "b73554f66065ce545675ebe56dd0baf79b3fb426b24d724628a7ef30dd4801ab",
+    "schema_commit": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "golden_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881"
+  },
+  "status": "not_reviewed",
+  "source_binding": {
+    "status": "frozen_mapping_available",
+    "registry_spec": "journeys/06-review-correct-expense/spec.md",
+    "schema_projection": "06",
+    "owns_operations": [
+      "expense.edit",
+      "expense.delete"
+    ],
+    "participates_operations": [],
+    "contexts": [
+      "ctx.expense",
+      "ctx.identity",
+      "ctx.expense_guard",
+      "ctx.review",
+      "ctx.group",
+      "ctx.position",
+      "ctx.activity"
+    ],
+    "related_laws_inspect_applicability": [
+      "LAW-ACT-01",
+      "LAW-AUTH-01",
+      "LAW-EXP-01",
+      "LAW-EXP-02",
+      "LAW-EXP-03",
+      "LAW-EXP-CLOSEOUT-01",
+      "LAW-EXP-GUARD-01",
+      "LAW-EXP-HISTORY-01",
+      "LAW-EXP-REVIEW-01",
+      "LAW-GROUP-02",
+      "LAW-HIST-01",
+      "LAW-ID-01",
+      "LAW-ID-02",
+      "LAW-ID-03",
+      "LAW-ISSUE-01",
+      "LAW-MONEY-01",
+      "LAW-OP-01",
+      "LAW-OP-02",
+      "LAW-OP-04",
+      "LAW-PAY-03",
+      "LAW-PAY-04",
+      "LAW-POS-01",
+      "LAW-POS-SCOPE-01"
+    ],
+    "certified_task_ids": [
+      "TASK-J06-EDIT",
+      "TASK-J06-DELETE",
+      "TASK-J06-VIEW-HISTORY",
+      "TASK-J06-VIEW-RECEIPT",
+      "TASK-J06-OTHER-MEMBER-REVIEW-HANDOFF"
+    ],
+    "approved_piece_count": 143,
+    "piece_locator": "product-schema/generated/reconstruction-pieces.json",
+    "note": "Related laws are a navigation aid, not an assertion that every law applies in every state. Inspect composition units and approved later impacts too."
+  },
+  "scope": {
+    "tasks": [],
+    "states": [],
+    "actors": [],
+    "incoming_routes": [],
+    "return_routes": [],
+    "viewports": [],
+    "fixtures": [],
+    "limitations": []
+  },
+  "checks": [
+    {
+      "id": "truth",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "orientation",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "consequence",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "effort",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "controls",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "continuity",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "recovery",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "finish",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "primary_task",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "alternate_paths",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "back_reopen_reload",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "permissions",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "counterpart",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "empty_unavailable",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "error_recovery",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "completion",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    },
+    {
+      "id": "visual_access",
+      "result": "unassessed",
+      "expectation": "",
+      "steps": [],
+      "evidence_ids": [],
+      "reason": ""
+    }
+  ],
+  "decisions": [],
+  "hypotheses": [],
+  "additional_authority": [],
+  "evidence": [],
+  "finding_ids": [
+    "UX-007",
+    "UX-009",
+    "UX-011"
+  ],
+  "historical_sample": {
+    "source": "historical-audit/results.json",
+    "implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a",
+    "method": "Single reviewer heuristic audit, current-run cloud Chrome interaction and screenshots; no independent usability panel or psychological performance study",
+    "sample": {
+      "id": "J06",
+      "title": "Inspect / correct",
+      "health": "Mixed; wayfinding and small controls",
+      "actions": "Inspect \u2192 Edit \u2192 Cancel; review status \u2192 History",
+      "screenshot": "06-inspect",
+      "observation": "Facts are chunked, exact shares visible, cancellation works; status destination is surprising.",
+      "limitations": "No correction submitted in this audit; retained earlier engineering tests are not new UX evidence.",
+      "findings": [
+        "UX-007",
+        "UX-009",
+        "UX-011"
+      ]
+    },
+    "scope_note": "Imported historical sample only. Checks/scenarios remain unassessed; screenshots in original audit archive."
+  }
+}

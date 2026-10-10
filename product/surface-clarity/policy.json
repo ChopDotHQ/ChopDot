@@ -1,0 +1,59 @@
+{
+  "framework_version": "1.0.0",
+  "authority": "REVIEW_METHOD_ONLY",
+  "schema_commit": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "schema_tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+  "golden_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "golden_tree": "cb424dafedff066fed433e106eb4468bec985d98",
+  "registry": "prototypes/experience-workbench/registry/journeys.json",
+  "runtime_roots": [
+    "prototypes/integrated-product-preview-v2",
+    "scripts/package-preview-v2-gate-b.mjs"
+  ],
+  "runtime_extensions": [
+    ".js",
+    ".mjs",
+    ".cjs",
+    ".html",
+    ".css",
+    ".json",
+    ".ts",
+    ".tsx",
+    ".jsx",
+    ".svg"
+  ],
+  "checks": [
+    "truth",
+    "orientation",
+    "consequence",
+    "effort",
+    "controls",
+    "continuity",
+    "recovery",
+    "finish"
+  ],
+  "scenario_categories": [
+    "primary_task",
+    "alternate_paths",
+    "back_reopen_reload",
+    "permissions",
+    "counterpart",
+    "empty_unavailable",
+    "error_recovery",
+    "completion",
+    "visual_access"
+  ],
+  "evidence_kinds": [
+    "SOURCE",
+    "BROWSER",
+    "INDEPENDENT_REVIEW",
+    "USER_STUDY"
+  ],
+  "inherited_audit": {
+    "implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a",
+    "archive": "ChopDot-UX-Laws-Audit-3738c730.zip",
+    "archive_sha256": "99f59cbec898e03f75a5cb621022d9afbd260ea4ea925931cc4f16008c2c5e6f",
+    "rule": "Historical single-reviewer samples, not whole-journey passes or independent review.",
+    "results_sha256": "1c966f25e56a5d148f75515dd0cd08eecffb51c373c49037b15aaa841647f13c"
+  }
+}

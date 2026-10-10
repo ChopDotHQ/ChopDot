@@ -1,0 +1,315 @@
+[
+  {
+    "id": "UX-001",
+    "priority": "P2",
+    "certainty": "Confirmed interaction",
+    "journeys": [
+      "J16"
+    ],
+    "principles": [
+      "Cognitive load",
+      "Proximity",
+      "Peak-end"
+    ],
+    "title": "Required Savings date is validated two steps late",
+    "evidence": "Leave target date blank at step1; choose people; continue; Review group at step3 reports Choose a target date. Back twice to correct it.",
+    "recommendation": "Validate required goal fields on Choose people, mark requirements, and focus the date error beside its field. Preserve draft and final authoritative validation.",
+    "screenshots": [
+      "16-late-validation"
+    ],
+    "authority_boundary": "Integration behavior correction; check C1 allows earlier validation, no new product rule.",
+    "status": "open",
+    "disposition": null,
+    "inherited_from": "historical-audit/results.json",
+    "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
+  },
+  {
+    "id": "UX-002",
+    "priority": "P2",
+    "certainty": "Confirmed rendered layout",
+    "journeys": [
+      "J15",
+      "J16"
+    ],
+    "principles": [
+      "Cognitive load",
+      "Proximity"
+    ],
+    "title": "Empty-state text is constrained to a narrow column",
+    "evidence": "Payment history and Savings Recent render ordinary sentences as a one-word vertical stack inside a wide card.",
+    "recommendation": "Give empty-state prose its full card width; avoid inheriting icon/text/action grid columns; retain exact semantic copy.",
+    "screenshots": [
+      "15-history",
+      "16-home"
+    ],
+    "authority_boundary": "CSS integration repair; compare the same empty states against approved source layouts.",
+    "status": "open",
+    "disposition": null,
+    "inherited_from": "historical-audit/results.json",
+    "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
+  },
+  {
+    "id": "UX-003",
+    "priority": "P2",
+    "certainty": "Confirmed cross-screen inconsistency",
+    "journeys": [
+      "J10",
+      "J23",
+      "J24",
+      "J25",
+      "J26",
+      "J27",
+      "J28"
+    ],
+    "principles": [
+      "Jakob",
+      "Cognitive load"
+    ],
+    "title": "Bottom navigation changes composition across families",
+    "evidence": "Core uses Pots/People/Add/Activity/You; account/data/lifecycle use Pots/Groups/Add/People/You. Import displays a footer with non-actionable text in the AX tree. Recovery links intentionally route through an owner boundary.",
+    "recommendation": "Keep approved destinations/permissions, but resolve a consistent integrated navigation contract; unavailable destinations must look unavailable and explain why. Never make blocked actions silently successful.",
+    "screenshots": [
+      "10-overall",
+      "23-import",
+      "24-export",
+      "27-account",
+      "28-recovery"
+    ],
+    "authority_boundary": "Cross-Golden/C1 product decision may be needed for navigation composition; record separately before changing frozen sources.",
+    "status": "open",
+    "disposition": null,
+    "inherited_from": "historical-audit/results.json",
+    "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
+  },
+  {
+    "id": "UX-004",
+    "priority": "P2",
+    "certainty": "Confirmed content burden; usability impact inferred",
+    "journeys": [
+      "J17",
+      "J18",
+      "J19",
+      "J21",
+      "J22",
+      "J24",
+      "J25",
+      "J26",
+      "J27",
+      "J28"
+    ],
+    "principles": [
+      "Cognitive load",
+      "Hick",
+      "Peak-end"
+    ],
+    "title": "Engineering concepts dominate ordinary task copy",
+    "evidence": "Profile discusses cryptographic identity/personhood; Wallet repeats inert fixture/no signing disclaimers; export shows long source hashes, participant IDs and unverified-export-reference as primary review facts.",
+    "recommendation": "Use one concise prototype notice; put detailed provenance/authority diagnostics behind Details. Translate owner truth into current status and Return to payment. Keep all meaningful safety and limitation disclosures.",
+    "screenshots": [
+      "27-profile",
+      "21-wallet",
+      "24-preview",
+      "28-recovery"
+    ],
+    "authority_boundary": "Copy/progressive disclosure needs comparison with approved copy and documented post-Golden impacts; no guardrail weakening.",
+    "status": "open",
+    "disposition": null,
+    "inherited_from": "historical-audit/results.json",
+    "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
+  },
+  {
+    "id": "UX-005",
+    "priority": "P2",
+    "certainty": "Confirmed choice layout; overload inferred",
+    "journeys": [
+      "J02"
+    ],
+    "principles": [
+      "Hick",
+      "Cognitive load",
+      "Jakob"
+    ],
+    "title": "Empty Home exposes many secondary destinations",
+    "evidence": "Eight destination buttons under the first-group task use dashed pale styling similar to unavailable controls.",
+    "recommendation": "Prioritize Start group; collect secondary tasks into predictable navigation or a labelled More section. Enabled secondary controls should look enabled.",
+    "screenshots": [
+      "02-home-empty"
+    ],
+    "authority_boundary": "Hierarchy change needs bounded Golden-impact review; do not remove supported journeys.",
+    "status": "open",
+    "disposition": null,
+    "inherited_from": "historical-audit/results.json",
+    "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
+  },
+  {
+    "id": "UX-006",
+    "priority": "P2",
+    "certainty": "Confirmed navigation",
+    "journeys": [
+      "J05",
+      "J02",
+      "J08"
+    ],
+    "principles": [
+      "Jakob",
+      "Peak-end"
+    ],
+    "title": "Guest expense Back to group lands on Home",
+    "evidence": "After saving UX audit dinner, Back to group opens the Home list; Open UX audit group is another required action.",
+    "recommendation": "Return to the newly affected group, or accurately label the Home destination. Preserve the canonical group selection.",
+    "screenshots": [
+      "05-expense-added",
+      "02-back-to-group-lands-home"
+    ],
+    "authority_boundary": "Integration route fix; preserve the accepted group-home meaning.",
+    "status": "open",
+    "disposition": null,
+    "inherited_from": "historical-audit/results.json",
+    "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
+  },
+  {
+    "id": "UX-007",
+    "priority": "P3",
+    "certainty": "Confirmed route; intentional permissions",
+    "journeys": [
+      "J06",
+      "J07"
+    ],
+    "principles": [
+      "Jakob",
+      "Cognitive load"
+    ],
+    "title": "Review status routes an unassigned owner to History",
+    "evidence": "The 0 of1 reviewed / Status row opens History twice, including a semantic-label click. Source gate-b/app.js routes unassigned actors to history intentionally; owner is not eligible to agree as reviewer.",
+    "recommendation": "Offer a read-only review-status summary or label the History destination clearly. Do not let owners manufacture another participant review.",
+    "screenshots": [
+      "06-inspect",
+      "06-history"
+    ],
+    "authority_boundary": "Read-only status presentation; permission behavior is correct, not a security defect.",
+    "status": "open",
+    "disposition": null,
+    "inherited_from": "historical-audit/results.json",
+    "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
+  },
+  {
+    "id": "UX-008",
+    "priority": "P2",
+    "certainty": "Confirmed visual affordance",
+    "journeys": [
+      "J05"
+    ],
+    "principles": [
+      "Cognitive load",
+      "Jakob"
+    ],
+    "title": "Blank expense fields lack visible task labels",
+    "evidence": "Amount and description have accessible names, but blank visible lines provide little guidance about what to type.",
+    "recommendation": "Retain accessible labels and add persistent visible Amount/Description labels or approved hints that survive input.",
+    "screenshots": [
+      "05-expense-entry"
+    ],
+    "authority_boundary": "Compare against approved Golden; visible-copy addition needs bounded review.",
+    "status": "open",
+    "disposition": null,
+    "inherited_from": "historical-audit/results.json",
+    "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
+  },
+  {
+    "id": "UX-009",
+    "priority": "P3",
+    "certainty": "Measured affordance risk",
+    "journeys": [
+      "J06",
+      "J20"
+    ],
+    "principles": [
+      "Fitts",
+      "Cognitive load"
+    ],
+    "title": "Small secondary targets and type",
+    "evidence": "Inspect See all measured32\u00d711CSSpx with10px type; form Cancel396\u00d734 with9px type. Main actions are large; Back is36\u00d736. Some targets are measured in expanded menus.",
+    "recommendation": "Increase secondary hit area and readable type while keeping visual hierarchy. Check neighboring target spacing and actual touch behavior.",
+    "screenshots": [
+      "06-inspect",
+      "20-method-form"
+    ],
+    "authority_boundary": "CSS/target repair; no blanket WCAG violation asserted from dimensions alone.",
+    "status": "open",
+    "disposition": null,
+    "inherited_from": "historical-audit/results.json",
+    "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
+  },
+  {
+    "id": "UX-010",
+    "priority": "P3",
+    "certainty": "Confirmed local precursor layout",
+    "journeys": [
+      "J04"
+    ],
+    "principles": [
+      "Proximity",
+      "Fitts",
+      "Cognitive load"
+    ],
+    "title": "Local add-person panel sits below the success screen",
+    "evidence": "Gate A create confirmation remains above injected person form; Done is near/under fixed actions until scrolling. Actual J04 invite screen is much clearer.",
+    "recommendation": "Focus the local-person panel and ensure Done stays visible; reuse approved Invite layout only where semantics match.",
+    "screenshots": [
+      "04-add-people",
+      "04-invite"
+    ],
+    "authority_boundary": "Integration layout repair; local named person is not a verified remote membership.",
+    "status": "open",
+    "disposition": null,
+    "inherited_from": "historical-audit/results.json",
+    "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
+  },
+  {
+    "id": "UX-011",
+    "priority": "P3",
+    "certainty": "Confirmed copy",
+    "journeys": [
+      "J06"
+    ],
+    "principles": [
+      "Cognitive load",
+      "Jakob"
+    ],
+    "title": "Expense history shows raw timestamps/action names",
+    "evidence": "History displays create and an ISO timestamp instead of a readable event/date. Activity already has more readable timestamps.",
+    "recommendation": "Render Created expense and local date/time; retain exact timestamp in Details.",
+    "screenshots": [
+      "06-history"
+    ],
+    "authority_boundary": "Presentation-only; history bytes and lineage stay unchanged.",
+    "status": "open",
+    "disposition": null,
+    "inherited_from": "historical-audit/results.json",
+    "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
+  },
+  {
+    "id": "UX-012",
+    "priority": "P3",
+    "certainty": "Confirmed initial choices",
+    "journeys": [
+      "J22"
+    ],
+    "principles": [
+      "Hick",
+      "Jakob",
+      "Cognitive load"
+    ],
+    "title": "Rescan and local-reference checks appear before the first scan",
+    "evidence": "Initial QR screen mixes Scan, Check reference, Rescan and Return account. Local fixture explanation is shown in ordinary mode.",
+    "recommendation": "Show Rescan after a result; separate the prototype reference tool from the normal scanner path, retaining explicit simulation disclosure.",
+    "screenshots": [
+      "22-qr"
+    ],
+    "authority_boundary": "State-dependent presentation; no camera permission or external payload was exercised.",
+    "status": "open",
+    "disposition": null,
+    "inherited_from": "historical-audit/results.json",
+    "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
+  }
+]

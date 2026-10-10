@@ -1,0 +1,660 @@
+{
+  "audit": "ChopDot UX principles journey audit",
+  "date": "2026-10-10",
+  "implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a",
+  "implementation_tree": "b894bc87e8dba6d889f626785be3e7d9b6f0b3d2",
+  "published_source_commit": "3c33539b2a25ac5d26a05b444b78c1eff06d1d7d",
+  "schema_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "schema_tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+  "golden_authority": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "preview": "https://chopdot-gate-b-preview.devpen.chatgpt.site/prototypes/integrated-product-preview-v2/demo",
+  "method": "Single reviewer heuristic audit, current-run cloud Chrome interaction and screenshots; no independent usability panel or psychological performance study",
+  "viewport": {
+    "outer": [
+      1363,
+      936
+    ],
+    "embedded_css": [
+      428,
+      878
+    ],
+    "nominal_device_width": 430
+  },
+  "journey_count": 28,
+  "principles": {
+    "Hick": [
+      "Task-relevant choices and progressive disclosure",
+      "https://lawsofux.com/hicks-law/"
+    ],
+    "Fitts": [
+      "Target size, spacing and reach; DOM measurements where recorded",
+      "https://lawsofux.com/fittss-law/"
+    ],
+    "Jakob": [
+      "Familiar conventions, predictable labels and consistent navigation",
+      "https://lawsofux.com/jakobs-law/"
+    ],
+    "Cognitive load": [
+      "Plain language, recognition, useful defaults and manageable steps",
+      "https://lawsofux.com/cognitive-load/"
+    ],
+    "Proximity": [
+      "Related facts and actions grouped together; errors beside fields",
+      "https://lawsofux.com/law-of-proximity/"
+    ],
+    "Peak-end": [
+      "Clear, truthful completion and calm recovery at difficult moments",
+      "https://lawsofux.com/peak-end-rule/"
+    ]
+  },
+  "journeys": [
+    {
+      "id": "J01",
+      "title": "Enter ChopDot",
+      "health": "Good sampled entry",
+      "actions": "Continue as guest \u2192 Home",
+      "screenshot": "01-entry",
+      "observation": "Clear guest primary, separate account alternatives, generous primary targets.",
+      "limitations": "Account creation and sign-in not exercised.",
+      "findings": []
+    },
+    {
+      "id": "J02",
+      "title": "Home orientation",
+      "health": "Needs polish",
+      "actions": "Empty Home \u2192 Start group; populated Home \u2192 Open group",
+      "screenshot": "02-home-empty",
+      "observation": "Primary start is clear; eight secondary destinations compete and look disabled.",
+      "limitations": "Large collections and returning real accounts not sampled.",
+      "findings": [
+        "UX-005"
+      ]
+    },
+    {
+      "id": "J03",
+      "title": "Create group",
+      "health": "Good sampled completion",
+      "actions": "Name/currency \u2192 create \u2192 confirmation",
+      "screenshot": "03-created",
+      "observation": "Two-field task and next-step confirmation support low load and closure.",
+      "limitations": "Alternate create errors and shared-account creation not sampled.",
+      "findings": []
+    },
+    {
+      "id": "J04",
+      "title": "Invite / join",
+      "health": "Mixed; precursor layout issue",
+      "actions": "Add local person \u2192 Done; members \u2192 Invite \u2192 Share screen",
+      "screenshot": "04-invite",
+      "observation": "Actual invite screen groups link/person alternatives well; earlier local-person panel is buried.",
+      "limitations": "No invitation transmitted; remote join, claim and recovery not exercised.",
+      "findings": [
+        "UX-010"
+      ]
+    },
+    {
+      "id": "J05",
+      "title": "Add expense",
+      "health": "Mixed; labels and return issue",
+      "actions": "Amount/description \u2192 split \u2192 reload draft \u2192 save \u2192 Back to group",
+      "screenshot": "05-expense-entry",
+      "observation": "Live share feedback and success receipt work; blank fields need visible guidance.",
+      "limitations": "Guest Change method route blocked by Chromium; unequal guest split not assessed.",
+      "findings": [
+        "UX-006",
+        "UX-008"
+      ]
+    },
+    {
+      "id": "J06",
+      "title": "Inspect / correct",
+      "health": "Mixed; wayfinding and small controls",
+      "actions": "Inspect \u2192 Edit \u2192 Cancel; review status \u2192 History",
+      "screenshot": "06-inspect",
+      "observation": "Facts are chunked, exact shares visible, cancellation works; status destination is surprising.",
+      "limitations": "No correction submitted in this audit; retained earlier engineering tests are not new UX evidence.",
+      "findings": [
+        "UX-007",
+        "UX-009",
+        "UX-011"
+      ]
+    },
+    {
+      "id": "J07",
+      "title": "Review / agree / issue",
+      "health": "Good main task; minor duplicate completion action",
+      "actions": "Reviewer fixture \u2192 review \u2192 Something off \u2192 Cancel \u2192 Looks right \u2192 reviewed \u2192 group",
+      "screenshot": "07-reviewed",
+      "observation": "Clear agree/issue alternatives and truthful all-reviewed receipt; duplicate Back to group choices.",
+      "limitations": "Issue submission/reply/reset not replayed; actor fixture toolbar excluded from product scoring.",
+      "findings": []
+    },
+    {
+      "id": "J08",
+      "title": "Group Home",
+      "health": "Good sampled task hierarchy",
+      "actions": "Saved expense \u2192 Group Home; change reviewer actor",
+      "screenshot": "08-group-home",
+      "observation": "Own next action changes with actor, balances and recent item grouped; no second fixture expense store used.",
+      "limitations": "Larger queues and disputed expenses not sampled here.",
+      "findings": []
+    },
+    {
+      "id": "J09",
+      "title": "Manage people",
+      "health": "Good sampled membership list",
+      "actions": "Group People \u2192 member list \u2192 Invite someone",
+      "screenshot": "09-members-loaded",
+      "observation": "Identity/role grouping and focused Invite action are clear.",
+      "limitations": "Role edits, removal and cross-group member history not exercised.",
+      "findings": []
+    },
+    {
+      "id": "J10",
+      "title": "Overall position",
+      "health": "Good sampled summary",
+      "actions": "View balances \u2192 Back to balances \u2192 People / Groups",
+      "screenshot": "10-overall",
+      "observation": "Net, owe and owed totals distinguished; group rows trace the underlying scope.",
+      "limitations": "Multiple currencies, larger groups and mixed directions not sampled.",
+      "findings": [
+        "UX-003"
+      ]
+    },
+    {
+      "id": "J11",
+      "title": "Settle up",
+      "health": "Good sampled scope explanation",
+      "actions": "Select person in group \u2192 Settle amount \u2192 preparation",
+      "screenshot": "11-selected-group",
+      "observation": "Person, group and currency stay visible; full amount and selected source are inspectable.",
+      "limitations": "Partial amount and multi-group combinations not replayed; sign convention warrants user testing.",
+      "findings": []
+    },
+    {
+      "id": "J12",
+      "title": "Complete settlement",
+      "health": "Good unknown-result safety; review visibility question",
+      "actions": "Continue \u2192 inert TWINT handoff \u2192 simulated unknown \u2192 recovery",
+      "screenshot": "12-unknown",
+      "observation": "Unknown is explicit and prevents success claims; recovery returns to same payment.",
+      "limitations": "No funds, external app or real receipt; terminal/partial completion not sampled; fixture changes viewport.",
+      "findings": []
+    },
+    {
+      "id": "J13",
+      "title": "Request money",
+      "health": "Good sampled composition",
+      "actions": "Person owed \u2192 Request payment \u2192 request composition",
+      "screenshot": "13-request-loaded",
+      "observation": "Amount, person, optional note and covered scope grouped; request/payment distinction concise.",
+      "limitations": "Sending, delivery, cancellation and recipient follow-through not exercised.",
+      "findings": []
+    },
+    {
+      "id": "J14",
+      "title": "Receive money",
+      "health": "Good empty-state handoff",
+      "actions": "Receive money \u2192 missing receiving details",
+      "screenshot": "14-receive-empty",
+      "observation": "One useful next step and concise non-requirement of wallet/bank connection.",
+      "limitations": "Populated receiving details and share flow not exercised.",
+      "findings": []
+    },
+    {
+      "id": "J15",
+      "title": "Settlement history",
+      "health": "Needs layout repair",
+      "actions": "Open payment history with no payments",
+      "screenshot": "15-history",
+      "observation": "Read-only meaning is explicit, but empty-state sentence wraps one word per line.",
+      "limitations": "Populated records and all filters not exercised.",
+      "findings": [
+        "UX-002"
+      ]
+    },
+    {
+      "id": "J16",
+      "title": "Savings group",
+      "health": "Needs validation and layout repair",
+      "actions": "Create goal without date \u2192 advance twice \u2192 late error \u2192 Back twice \u2192 fix \u2192 create \u2192 home",
+      "screenshot": "16-late-validation",
+      "observation": "Draft survives Back; required date error appears two steps away from its field.",
+      "limitations": "Only self-member, individual holding and CHF sampled; shared custody not exercised.",
+      "findings": [
+        "UX-001",
+        "UX-002"
+      ]
+    },
+    {
+      "id": "J17",
+      "title": "Contribute / withdraw",
+      "health": "Good sampled review; copy needs polish",
+      "actions": "Add money \u2192 CHF10 \u2192 review contribution",
+      "screenshot": "17-review",
+      "observation": "Exact before/after and group scope are clear at review.",
+      "limitations": "Submission, withdrawal and external confirmation not exercised.",
+      "findings": [
+        "UX-004"
+      ]
+    },
+    {
+      "id": "J18",
+      "title": "Activity / notifications",
+      "health": "Good sampled separation",
+      "actions": "Activity \u2192 Notifications \u2192 Back to Activity",
+      "screenshot": "18-activity",
+      "observation": "Expense event opens a clear record; unread is distinguished from unresolved.",
+      "limitations": "Read-all, many events and failed refresh not sampled.",
+      "findings": [
+        "UX-004"
+      ]
+    },
+    {
+      "id": "J19",
+      "title": "Insights",
+      "health": "Mixed; technical prose",
+      "actions": "Insights overview from actual CHF20 expense",
+      "screenshot": "19-insights",
+      "observation": "Sparse history is disclosed without fabricating a trend; supporting explanation is technical.",
+      "limitations": "Trend comprehension, many groups and period switching not measured.",
+      "findings": [
+        "UX-004"
+      ]
+    },
+    {
+      "id": "J20",
+      "title": "Payment methods",
+      "health": "Mixed; form and hierarchy polish",
+      "actions": "Empty methods \u2192 Bank transfer form \u2192 Cancel",
+      "screenshot": "20-method-form",
+      "observation": "Visible field labels are helpful; four competing Add choices and tiny Cancel need polish.",
+      "limitations": "No real receiving details entered; save, preference and validation outcomes not exercised.",
+      "findings": [
+        "UX-009"
+      ]
+    },
+    {
+      "id": "J21",
+      "title": "Wallet / crypto",
+      "health": "Needs copy simplification",
+      "actions": "Account \u2192 Wallet disconnected",
+      "screenshot": "21-wallet",
+      "observation": "Disconnected state is truthful; repeated simulation/authority explanations bury task.",
+      "limitations": "No provider, connection, signing, balance or fee action executed.",
+      "findings": [
+        "UX-004"
+      ]
+    },
+    {
+      "id": "J22",
+      "title": "QR flows",
+      "health": "Needs task-state simplification",
+      "actions": "Scan QR initial screen",
+      "screenshot": "22-qr",
+      "observation": "Explicit permission/action separation, but initial Rescan and fixture references add choices.",
+      "limitations": "No camera permission, scan or QR payload tested.",
+      "findings": [
+        "UX-004",
+        "UX-012"
+      ]
+    },
+    {
+      "id": "J23",
+      "title": "Import",
+      "health": "Mixed; navigation inconsistency",
+      "actions": "Import entry from journey menu",
+      "screenshot": "23-import",
+      "observation": "Separate new group meaning is concise; visible bottom navigation differs in behavior and labels across families.",
+      "limitations": "No package uploaded; format/mapping/identity/conflict/apply flows not exercised.",
+      "findings": [
+        "UX-003"
+      ]
+    },
+    {
+      "id": "J24",
+      "title": "Export / portability",
+      "health": "Needs progressive disclosure",
+      "actions": "Prepare account export \u2192 exact snapshot preview",
+      "screenshot": "24-preview",
+      "observation": "Scope/counts appear before export; raw identifiers and hashes overwhelm the preview.",
+      "limitations": "No final artifact generated/downloaded; export completeness not tested by this UX audit.",
+      "findings": [
+        "UX-003",
+        "UX-004"
+      ]
+    },
+    {
+      "id": "J25",
+      "title": "Storage / recovery",
+      "health": "Mixed; plain-language opportunity",
+      "actions": "Open storage and recovery entry",
+      "screenshot": "25-storage",
+      "observation": "Browser-local limitation disclosed; backup/recovery/sync choices separated.",
+      "limitations": "No backup, restore or sync operation executed.",
+      "findings": [
+        "UX-003",
+        "UX-004"
+      ]
+    },
+    {
+      "id": "J26",
+      "title": "Group lifecycle",
+      "health": "Mixed; list/action proximity",
+      "actions": "All groups \u2192 UX audit group settings",
+      "screenshot": "26-settings",
+      "observation": "History/lifecycle separation retained; group choices sit far below explanation with little row affordance.",
+      "limitations": "No archive, transfer, leave or destructive action executed.",
+      "findings": [
+        "UX-003",
+        "UX-004"
+      ]
+    },
+    {
+      "id": "J27",
+      "title": "Account / preferences",
+      "health": "Needs copy and navigation polish",
+      "actions": "Guest account \u2192 verified local Entry fixture \u2192 Profile",
+      "screenshot": "27-profile",
+      "observation": "Identity truth retained, but ordinary settings foreground engineering terms.",
+      "limitations": "Fixture session is synthetic; no real auth, name edit, deletion or preference change.",
+      "findings": [
+        "UX-003",
+        "UX-004"
+      ]
+    },
+    {
+      "id": "J28",
+      "title": "Failure / recovery",
+      "health": "Safe sampled unknown; copy needs polish",
+      "actions": "Payment Recovery options \u2192 Return to owning journey",
+      "screenshot": "28-recovery",
+      "observation": "Same operation/payment is preserved; unknown accepted amount remains CHF0; no replacement fabricated.",
+      "limitations": "Other offline/conflict/save-failure owner types not replayed.",
+      "findings": [
+        "UX-003",
+        "UX-004"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "UX-001",
+      "priority": "P2",
+      "certainty": "Confirmed interaction",
+      "journeys": [
+        "J16"
+      ],
+      "principles": [
+        "Cognitive load",
+        "Proximity",
+        "Peak-end"
+      ],
+      "title": "Required Savings date is validated two steps late",
+      "evidence": "Leave target date blank at step1; choose people; continue; Review group at step3 reports Choose a target date. Back twice to correct it.",
+      "recommendation": "Validate required goal fields on Choose people, mark requirements, and focus the date error beside its field. Preserve draft and final authoritative validation.",
+      "screenshots": [
+        "16-late-validation"
+      ],
+      "authority_boundary": "Integration behavior correction; check C1 allows earlier validation, no new product rule."
+    },
+    {
+      "id": "UX-002",
+      "priority": "P2",
+      "certainty": "Confirmed rendered layout",
+      "journeys": [
+        "J15",
+        "J16"
+      ],
+      "principles": [
+        "Cognitive load",
+        "Proximity"
+      ],
+      "title": "Empty-state text is constrained to a narrow column",
+      "evidence": "Payment history and Savings Recent render ordinary sentences as a one-word vertical stack inside a wide card.",
+      "recommendation": "Give empty-state prose its full card width; avoid inheriting icon/text/action grid columns; retain exact semantic copy.",
+      "screenshots": [
+        "15-history",
+        "16-home"
+      ],
+      "authority_boundary": "CSS integration repair; compare the same empty states against approved source layouts."
+    },
+    {
+      "id": "UX-003",
+      "priority": "P2",
+      "certainty": "Confirmed cross-screen inconsistency",
+      "journeys": [
+        "J10",
+        "J23",
+        "J24",
+        "J25",
+        "J26",
+        "J27",
+        "J28"
+      ],
+      "principles": [
+        "Jakob",
+        "Cognitive load"
+      ],
+      "title": "Bottom navigation changes composition across families",
+      "evidence": "Core uses Pots/People/Add/Activity/You; account/data/lifecycle use Pots/Groups/Add/People/You. Import displays a footer with non-actionable text in the AX tree. Recovery links intentionally route through an owner boundary.",
+      "recommendation": "Keep approved destinations/permissions, but resolve a consistent integrated navigation contract; unavailable destinations must look unavailable and explain why. Never make blocked actions silently successful.",
+      "screenshots": [
+        "10-overall",
+        "23-import",
+        "24-export",
+        "27-account",
+        "28-recovery"
+      ],
+      "authority_boundary": "Cross-Golden/C1 product decision may be needed for navigation composition; record separately before changing frozen sources."
+    },
+    {
+      "id": "UX-004",
+      "priority": "P2",
+      "certainty": "Confirmed content burden; usability impact inferred",
+      "journeys": [
+        "J17",
+        "J18",
+        "J19",
+        "J21",
+        "J22",
+        "J24",
+        "J25",
+        "J26",
+        "J27",
+        "J28"
+      ],
+      "principles": [
+        "Cognitive load",
+        "Hick",
+        "Peak-end"
+      ],
+      "title": "Engineering concepts dominate ordinary task copy",
+      "evidence": "Profile discusses cryptographic identity/personhood; Wallet repeats inert fixture/no signing disclaimers; export shows long source hashes, participant IDs and unverified-export-reference as primary review facts.",
+      "recommendation": "Use one concise prototype notice; put detailed provenance/authority diagnostics behind Details. Translate owner truth into current status and Return to payment. Keep all meaningful safety and limitation disclosures.",
+      "screenshots": [
+        "27-profile",
+        "21-wallet",
+        "24-preview",
+        "28-recovery"
+      ],
+      "authority_boundary": "Copy/progressive disclosure needs comparison with approved copy and documented post-Golden impacts; no guardrail weakening."
+    },
+    {
+      "id": "UX-005",
+      "priority": "P2",
+      "certainty": "Confirmed choice layout; overload inferred",
+      "journeys": [
+        "J02"
+      ],
+      "principles": [
+        "Hick",
+        "Cognitive load",
+        "Jakob"
+      ],
+      "title": "Empty Home exposes many secondary destinations",
+      "evidence": "Eight destination buttons under the first-group task use dashed pale styling similar to unavailable controls.",
+      "recommendation": "Prioritize Start group; collect secondary tasks into predictable navigation or a labelled More section. Enabled secondary controls should look enabled.",
+      "screenshots": [
+        "02-home-empty"
+      ],
+      "authority_boundary": "Hierarchy change needs bounded Golden-impact review; do not remove supported journeys."
+    },
+    {
+      "id": "UX-006",
+      "priority": "P2",
+      "certainty": "Confirmed navigation",
+      "journeys": [
+        "J05",
+        "J02",
+        "J08"
+      ],
+      "principles": [
+        "Jakob",
+        "Peak-end"
+      ],
+      "title": "Guest expense Back to group lands on Home",
+      "evidence": "After saving UX audit dinner, Back to group opens the Home list; Open UX audit group is another required action.",
+      "recommendation": "Return to the newly affected group, or accurately label the Home destination. Preserve the canonical group selection.",
+      "screenshots": [
+        "05-expense-added",
+        "02-back-to-group-lands-home"
+      ],
+      "authority_boundary": "Integration route fix; preserve the accepted group-home meaning."
+    },
+    {
+      "id": "UX-007",
+      "priority": "P3",
+      "certainty": "Confirmed route; intentional permissions",
+      "journeys": [
+        "J06",
+        "J07"
+      ],
+      "principles": [
+        "Jakob",
+        "Cognitive load"
+      ],
+      "title": "Review status routes an unassigned owner to History",
+      "evidence": "The 0 of1 reviewed / Status row opens History twice, including a semantic-label click. Source gate-b/app.js routes unassigned actors to history intentionally; owner is not eligible to agree as reviewer.",
+      "recommendation": "Offer a read-only review-status summary or label the History destination clearly. Do not let owners manufacture another participant review.",
+      "screenshots": [
+        "06-inspect",
+        "06-history"
+      ],
+      "authority_boundary": "Read-only status presentation; permission behavior is correct, not a security defect."
+    },
+    {
+      "id": "UX-008",
+      "priority": "P2",
+      "certainty": "Confirmed visual affordance",
+      "journeys": [
+        "J05"
+      ],
+      "principles": [
+        "Cognitive load",
+        "Jakob"
+      ],
+      "title": "Blank expense fields lack visible task labels",
+      "evidence": "Amount and description have accessible names, but blank visible lines provide little guidance about what to type.",
+      "recommendation": "Retain accessible labels and add persistent visible Amount/Description labels or approved hints that survive input.",
+      "screenshots": [
+        "05-expense-entry"
+      ],
+      "authority_boundary": "Compare against approved Golden; visible-copy addition needs bounded review."
+    },
+    {
+      "id": "UX-009",
+      "priority": "P3",
+      "certainty": "Measured affordance risk",
+      "journeys": [
+        "J06",
+        "J20"
+      ],
+      "principles": [
+        "Fitts",
+        "Cognitive load"
+      ],
+      "title": "Small secondary targets and type",
+      "evidence": "Inspect See all measured32\u00d711CSSpx with10px type; form Cancel396\u00d734 with9px type. Main actions are large; Back is36\u00d736. Some targets are measured in expanded menus.",
+      "recommendation": "Increase secondary hit area and readable type while keeping visual hierarchy. Check neighboring target spacing and actual touch behavior.",
+      "screenshots": [
+        "06-inspect",
+        "20-method-form"
+      ],
+      "authority_boundary": "CSS/target repair; no blanket WCAG violation asserted from dimensions alone."
+    },
+    {
+      "id": "UX-010",
+      "priority": "P3",
+      "certainty": "Confirmed local precursor layout",
+      "journeys": [
+        "J04"
+      ],
+      "principles": [
+        "Proximity",
+        "Fitts",
+        "Cognitive load"
+      ],
+      "title": "Local add-person panel sits below the success screen",
+      "evidence": "Gate A create confirmation remains above injected person form; Done is near/under fixed actions until scrolling. Actual J04 invite screen is much clearer.",
+      "recommendation": "Focus the local-person panel and ensure Done stays visible; reuse approved Invite layout only where semantics match.",
+      "screenshots": [
+        "04-add-people",
+        "04-invite"
+      ],
+      "authority_boundary": "Integration layout repair; local named person is not a verified remote membership."
+    },
+    {
+      "id": "UX-011",
+      "priority": "P3",
+      "certainty": "Confirmed copy",
+      "journeys": [
+        "J06"
+      ],
+      "principles": [
+        "Cognitive load",
+        "Jakob"
+      ],
+      "title": "Expense history shows raw timestamps/action names",
+      "evidence": "History displays create and an ISO timestamp instead of a readable event/date. Activity already has more readable timestamps.",
+      "recommendation": "Render Created expense and local date/time; retain exact timestamp in Details.",
+      "screenshots": [
+        "06-history"
+      ],
+      "authority_boundary": "Presentation-only; history bytes and lineage stay unchanged."
+    },
+    {
+      "id": "UX-012",
+      "priority": "P3",
+      "certainty": "Confirmed initial choices",
+      "journeys": [
+        "J22"
+      ],
+      "principles": [
+        "Hick",
+        "Jakob",
+        "Cognitive load"
+      ],
+      "title": "Rescan and local-reference checks appear before the first scan",
+      "evidence": "Initial QR screen mixes Scan, Check reference, Rescan and Return account. Local fixture explanation is shown in ordinary mode.",
+      "recommendation": "Show Rescan after a result; separate the prototype reference tool from the normal scanner path, retaining explicit simulation disclosure.",
+      "screenshots": [
+        "22-qr"
+      ],
+      "authority_boundary": "State-dependent presentation; no camera permission or external payload was exercised."
+    }
+  ],
+  "observations_and_limits": [
+    "Browser route limitation: guest Split equally / Change method rendered chrome-error://chromewebdata and This page has been blocked by Chromium. One parent reload recovered the draft. This is not a site-served bot challenge, not a semantic validator failure and not a assessed split-method UX state.",
+    "Fixture-only visibility question: J12 Continue entered a review screen scrolled down so amount/recipient were above the visible viewport. Yellow test controls reduce usable height. Reproduce in normal mode before treating it as a shipped scroll-reset defect.",
+    "Comprehension hypothesis: person position is positive when owed on the summary but shows negative terms in its How it adds up calculation. Test understanding before changing any approved mathematical sign convention.",
+    "Minor polish: reviewed receipt has two identical Back to group actions. Avoid duplicate equivalent choices where the source-approved train/footer distinction no longer matters.",
+    "Session caveat: verified local Entry fixture is a synthetic capability precondition; Home still showing Guest is not evidence about real authenticated account behavior."
+  ],
+  "excluded_captures": {
+    "09-people": "Transient blank navigation frame; loaded replacement captured",
+    "13-request": "Transient blank navigation frame; loaded replacement captured"
+  },
+  "scope": "No code, frozen authority, schema, deployment or user data changed. Only disposable browser-local synthetic audit data.",
+  "completed_claim": "28/28 families sampled; all alternate states not tested; no universal PASS verdict."
+}
