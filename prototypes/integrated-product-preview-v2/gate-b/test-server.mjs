@@ -17,6 +17,11 @@ export async function serve(root, port = 0, { cleanIndex = false } = {}) {
       const pathname = decodeURIComponent(
         new URL(req.url, "http://localhost").pathname,
       );
+      // The disposable preview has no origin-root icon; satisfy Chromium's probe.
+      if (pathname === "/favicon.ico") {
+        res.writeHead(204, { "Cache-Control": "no-store" }).end();
+        return;
+      }
       if (cleanIndex && pathname.endsWith('/index.html')) {
         const url = new URL(req.url, 'http://localhost');
         res.writeHead(302, { Location: pathname.slice(0, -'index.html'.length) + url.search }).end();
