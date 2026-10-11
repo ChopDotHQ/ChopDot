@@ -1,0 +1,18 @@
+{
+  "tool": "cloud_environment.environment_status",
+  "observations_current": true,
+  "provider": "cloud",
+  "capabilities": [],
+  "network_policy_state": "enforced",
+  "development_preview_url_tool_available": false,
+  "direct_zip_export_tool_available": false,
+  "delivery_mechanism": "ZIP committed to owned GitHub branch evidence directory",
+  "sites_operations": 0,
+  "source_sha": "4b29bfac000f3c7639cbfde8de081fc06ba13afe",
+  "source_tree": "1d1f4c8f07ca9c198a425c172146e2bd32322f4c",
+  "full_audit_rerun": false,
+  "delivery_smoke_exit": 0,
+  "packager_exit": 0,
+  "extracted_launch_verification_exit": 0,
+  "capture_attempt_1": "Harness hidden duplicate heading locator error; corrected without product changes; failed log retained"
+}

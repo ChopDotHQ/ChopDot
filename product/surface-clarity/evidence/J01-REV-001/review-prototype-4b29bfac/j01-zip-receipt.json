@@ -1,0 +1,11 @@
+{
+  "archive_file": "ChopDot-J01-review-4b29bfac.zip",
+  "archive_sha256": "14b32849ccc0792258e217f9cc934e4db92425b0e3fceee326c85a7ce6cd8fbd",
+  "archive_bytes": 1578808,
+  "zip_integrity_pass": true,
+  "all_extracted_files_match": true,
+  "source_sha": "4b29bfac000f3c7639cbfde8de081fc06ba13afe",
+  "source_tree": "1d1f4c8f07ca9c198a425c172146e2bd32322f4c",
+  "unmodified_runtime_file_count": 264,
+  "screenshots": 18
+}

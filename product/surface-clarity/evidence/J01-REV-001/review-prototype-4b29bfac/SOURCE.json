@@ -1,0 +1,16 @@
+{
+  "source_sha": "4b29bfac000f3c7639cbfde8de081fc06ba13afe",
+  "source_tree": "1d1f4c8f07ca9c198a425c172146e2bd32322f4c",
+  "packager": "scripts/package-preview-v2-gate-b.mjs",
+  "package_file_count": 264,
+  "package_bytes_match_completed_exact_sha_validation": true,
+  "j01_sha256": "97f3da489c78cb842c354390b2e354397a6a6c3843228ec9928efebaf21089e8",
+  "launch_command": "python3 launch.py --port 8765",
+  "screenshots_source": "Exact 4b29 full runner plus same-byte Python-launcher capture",
+  "hosted_site_modified": false,
+  "user_accessible_development_preview_available": false,
+  "direct_artifact_export_available": false,
+  "delivery_fallback": "Owned branch repository ZIP and instructions",
+  "verification_kind": "DELIVERY_SMOKE_ONLY",
+  "j01_accepted": false
+}

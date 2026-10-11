@@ -1,0 +1,1336 @@
+{
+  "status": "PASS",
+  "command": [
+    "python3",
+    "launch.py",
+    "--port",
+    "18766"
+  ],
+  "cwd": "Extracted ChopDot-review-4b29bfac folder",
+  "launch_verification": "All264 runtime files HTTP200 with exact bytes; JS module MIME; favicon204",
+  "runtime_file_count": 264,
+  "source_sha": "4b29bfac000f3c7639cbfde8de081fc06ba13afe",
+  "public_preview_url": null,
+  "checks": [
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/GIVEN_WHEN_THEN.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/QA_SUMMARY.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/README.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_AND_AUTHORITY.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_INVENTORY.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/UI_TO_DOMAIN_EVENTS.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/VISUAL_QA.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/golden-validation.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/phase-c1-guest-v1-candidate.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/browser-tests.py",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/build.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/decision-history.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/entry.css",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/inherited.css",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/reference-home.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/reference-invite.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/test-model.cjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/test-subject-binding.cjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/ui.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/validation.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/visual-qa/browser-qa.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/02-home-orientation/VISUAL_QA.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/02-home-orientation/source/decision-history.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/02-home-orientation/spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/02-home-orientation/v1.4-golden.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/02-home-orientation/visual-qa/README.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/03-create-group/VISUAL_QA.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/03-create-group/source/decision-history.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/03-create-group/spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/03-create-group/v1-review.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/03-create-group/v2-golden-candidate.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/03-create-group/v2-golden.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/03-create-group/visual-qa/README.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/04-invite-join/VISUAL_QA.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/04-invite-join/phase-c1-guest-v1-candidate.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/04-invite-join/source/decision-history.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/04-invite-join/spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/04-invite-join/v1-golden-candidate.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/04-invite-join/v1-golden.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/04-invite-join/visual-qa/README.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/05-add-expense/STATE_INVENTORY.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/05-add-expense/VISUAL_QA.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/05-add-expense/source/README.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/05-add-expense/source/core.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/05-add-expense/source/decision-history.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/05-add-expense/source/styles.css",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/05-add-expense/spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/05-add-expense/v1-golden.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/05-add-expense/visual-qa/README.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/PROTOTYPE_USAGE.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/app.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/browser-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/README.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/app.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/authority/member-identity.contract.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/authority/schema-obligations.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/authority.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/browser-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/goldens/j03.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/goldens/j04-c1.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/goldens/j04.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/index.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/integration.css",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/model.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/model.test.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/recovery-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/run.sh",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/source-manifest.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/verify-sources.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/visual-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/demo.css",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/demo.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/demo.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/exact-money-browser-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/README.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/adapters.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/app.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j09-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j09.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j13-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j13.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j14-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j14.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j15-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j15.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j16-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j16.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j17-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j17.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j19-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j19.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j20-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j20.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j21-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j21.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j22-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j22.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j23-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j23.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j24-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j24-states.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j24.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j25-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j25-states.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j25.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j26-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j26-states.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/j26.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/authority/receive-qr.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/checksum.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/currency-seam.test.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/definition-view.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/extract-definition-states.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/index.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/insights.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/insights.test.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/integration.css",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/lifecycle-ui.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/lifecycle.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/lifecycle.test.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/model.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/model.test.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/portability-ui.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/portability.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/portability.test.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/qa-continuity.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/qa-data-lifecycle.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/qa-demo.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/qa-history.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/qa-people.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/qa-savings.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/qa-wallet-qr.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/qr-ui.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/qr.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/qr.test.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/render-09.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/render-13.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/render-14.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/run.sh",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/savings-ui.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/savings.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/savings.test.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/source-manifest.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/verify-sources.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/wallet-ui.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/wallet.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/expansion/wallet.test.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/README.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/app.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/browser-launch.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/browser-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/contract/hardening-lib.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/contract/semantic-core.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/goldens/j05.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/goldens/j06.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/goldens/j07.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/goldens/j08.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/guest-draft.test.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/index.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/integration.css",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/keyboard-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/model.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/model.test.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/property.test.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/recovery-browser-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/run-gate-a.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/run.sh",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/source-manifest.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/task-coverage.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/test-server.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/verify-sources.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-b/visual-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/README.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/app.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/browser-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/DECISION.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/REPORT.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/accepted-gate-b.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/authorization.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/reproduce.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/review/SOURCE-REVIEW.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/review/SOURCE-REVIEW.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/review/source-hashes.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/run.sh",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/source-hashes.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/source-results.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/source-run.log",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/authority/prototypes/experience-workbench/journeys/10-overall-position/spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/authority/prototypes/experience-workbench/journeys/11-settle-up/DECISIONS.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/authority/prototypes/experience-workbench/journeys/11-settle-up/GIVEN_WHEN_THEN.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/authority/prototypes/experience-workbench/journeys/11-settle-up/STATE_AND_AUTHORITY.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/authority/prototypes/experience-workbench/journeys/11-settle-up/spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/authority/prototypes/experience-workbench/journeys/12-complete-settlement/DECISIONS.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/authority/prototypes/experience-workbench/journeys/12-complete-settlement/GIVEN_WHEN_THEN.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/authority/prototypes/experience-workbench/journeys/12-complete-settlement/RETURN_CONTEXT_MAPPING.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/authority/prototypes/experience-workbench/journeys/12-complete-settlement/STATE_AND_AUTHORITY.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/authority/prototypes/experience-workbench/journeys/12-complete-settlement/source/continuity-model.cjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/authority/prototypes/experience-workbench/journeys/12-complete-settlement/source/continuity-ui.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/authority/prototypes/experience-workbench/journeys/12-complete-settlement/spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/schema/product-schema/composition-graph.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/schema/product-schema/gate-b-authority-oracle.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/schema/product-schema/product-decisions-v2.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decision-checkpoint/sources/schema/product-schema/semantic-core.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/decisions/GC-SETTLEMENT-INTENT-01.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/fixtures.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/goldens/j10.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/goldens/j11.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/goldens/j12.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/index.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/integration.css",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/ledger.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/model.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/model.test.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/recovery-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/run.sh",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/source-manifest.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/verify-sources.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-c/visual-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/README.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/app.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/authority/approval-18-v1.1.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/authority/approval-27-v1.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/authority/approval-28-v1.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/authority/j18-EDGE_CASES.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/authority/j18-STATE_INVENTORY.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/authority/j18-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/authority/j27-EDGE_CASES.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/authority/j27-STATE_INVENTORY.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/authority/j27-phase-c1-consumer-contract.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/authority/j27-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/authority/j28-EDGE_CASES.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/authority/j28-STATE_INVENTORY.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/authority/j28-spec.md",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/browser-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/generate-definitions.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/goldens/j18.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/goldens/j27.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/goldens/j28.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/index.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/integration.css",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/j27-definitions.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/j28-definitions.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/model.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/model.test.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/recovery-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/run.sh",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/source-manifest.json",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/verify-sources.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/gate-d/visual-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/index.html",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/j01-browser-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/j01-surface.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/money-boundary-browser-qa.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/money-v1.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/prototype-route.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/prototype-writer.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/session-guard.js",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/styles.css",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/test-runner.mjs",
+      "status": 200,
+      "bytes_match": true
+    },
+    {
+      "path": "prototypes/integrated-product-preview-v2/validate.mjs",
+      "status": 200,
+      "bytes_match": true
+    }
+  ]
+}
