@@ -1,0 +1,444 @@
+{
+  "format_version": "1.0.0",
+  "record_id": "J02-BOUNDED-SURFACE-REVIEW-2026-10-11",
+  "journey": "J02",
+  "framework_version": "1.0.0",
+  "status": "partial_review_findings_open",
+  "date": "2026-10-11",
+  "reviewer": "Implementation owner; direct cloud-browser walkthrough; not independent review or user study",
+  "source_binding": {
+    "schema_commit": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "schema_tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+    "golden_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+    "golden_tree": "cb424dafedff066fed433e106eb4468bec985d98",
+    "hosting": {
+      "project_id": "appgprj_6abeef79b7308191ba28f35d4fa246ce",
+      "version_id": "appgprj_6abeef79b7308191ba28f35d4fa246ce~appgver_bca6e3f100388191a83009df177f5b59",
+      "version_number": 13,
+      "source_commit": "3c33539b2a25ac5d26a05b444b78c1eff06d1d7d",
+      "archive_storage": {
+        "archive_format": "tar",
+        "sediment_file_id": "file_000000006dd0820ab32f3852783cd47a",
+        "content_hash": "sha256:065588d9295256fb3ec6a2656ff539817861376f3f6dcf39934f817369ec88d6",
+        "size_bytes": 4833280,
+        "file_count": 266
+      },
+      "deployment_id": "appgdep_6ac91d1071ac81919b8219235b081ab8"
+    },
+    "github_source_inspected": "bd464571c578bbaf04bf208e14e2a7bc631a7263",
+    "github_implementation_executed": null,
+    "runtime_digest": null,
+    "identity_note": "Sites source commit is hosting-source metadata, not verified as a ChopDotHQ/ChopDot Git commit. A read of that SHA from GitHub did not resolve. Hosted archive hash is metadata; deployed bytes were not independently downloaded/hashed. No results are transferred to 4b29bfac or bd464571."
+  },
+  "scope": {
+    "task": "First-use empty guest Home, primary handoff/native Back, People/Activity tabs and unavailable Insights return",
+    "actors": [
+      "Existing local self in guest mode; no new real identity"
+    ],
+    "states": [
+      "front door",
+      "guest empty Home",
+      "group creation entry without submission",
+      "raw Golden after native Back",
+      "guest Insights boundary",
+      "missing-group fallback",
+      "empty Activity"
+    ],
+    "viewport": {
+      "browser": {
+        "width": 1363,
+        "height": 936
+      },
+      "embedded": {
+        "width": 428,
+        "height": 878
+      }
+    },
+    "canonical_viewports_executed": [],
+    "business_record_changes": "None submitted. Guest-entry navigation updates local entry state through existing UI; business store was not reset, overwritten, cleared or seeded.",
+    "external_operations": "None"
+  },
+  "schema_trace": {
+    "projection": {
+      "id": "02",
+      "name": "Home / Orientation",
+      "kind": "read_projection",
+      "owns_operations": [],
+      "participates_operations": [],
+      "renders_views": [
+        "view.home"
+      ],
+      "emits_contexts": [
+        "ctx.group",
+        "ctx.expense_draft",
+        "ctx.position",
+        "ctx.settlement",
+        "ctx.savings",
+        "ctx.account"
+      ],
+      "recovery": null,
+      "notes": [],
+      "entry_contexts_any": [
+        "ctx.identity"
+      ],
+      "ambient_contexts_required": [
+        "ctx.identity"
+      ],
+      "effect_contexts_required": []
+    },
+    "view": {
+      "id": "view.home",
+      "name": "HomeView",
+      "derived_from": [
+        "activity.attention",
+        "group.group",
+        "position.position",
+        "identity.session"
+      ],
+      "source_journeys": [
+        "02"
+      ],
+      "sources": [
+        "J02"
+      ],
+      "rules": [
+        "Attention-first and group-first.",
+        "Offline/stale state labeled."
+      ]
+    },
+    "certified_task_ids": [],
+    "pieces": [
+      {
+        "piece_id": "J02/state/home",
+        "journey": "02",
+        "state": "home",
+        "piece": "home",
+        "piece_type": "state",
+        "classification": "PRODUCT_REQUIREMENT",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/02-home-orientation/v1.4-golden.html"
+        ],
+        "justification": "Approved product state required by the Golden/state mapping.",
+        "mapping_confidence": "high"
+      },
+      {
+        "piece_id": "J02/home/action/pots@none",
+        "journey": "02",
+        "state": "home",
+        "piece": "Pots",
+        "piece_type": "visible_action",
+        "classification": "EXTERNAL_HANDOFF",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons.html"
+        ],
+        "justification": "Explicit single-surface extraction exemption classifies root affordances as navigation/handoffs, not domain writes.",
+        "mapping_confidence": "derived",
+        "domain_event": null,
+        "target": null,
+        "source_event": null
+      },
+      {
+        "piece_id": "J02/home/action/people@none",
+        "journey": "02",
+        "state": "home",
+        "piece": "People",
+        "piece_type": "visible_action",
+        "classification": "EXTERNAL_HANDOFF",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons.html"
+        ],
+        "justification": "Explicit single-surface extraction exemption classifies root affordances as navigation/handoffs, not domain writes.",
+        "mapping_confidence": "derived",
+        "domain_event": null,
+        "target": null,
+        "source_event": null
+      },
+      {
+        "piece_id": "J02/home/action/activity@none",
+        "journey": "02",
+        "state": "home",
+        "piece": "Activity",
+        "piece_type": "visible_action",
+        "classification": "EXTERNAL_HANDOFF",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/02-home-orientation/v1.4-inherited-icons.html"
+        ],
+        "justification": "Explicit single-surface extraction exemption classifies root affordances as navigation/handoffs, not domain writes.",
+        "mapping_confidence": "derived",
+        "domain_event": null,
+        "target": null,
+        "source_event": null
+      }
+    ],
+    "authority_sources": [
+      {
+        "id": "J02",
+        "commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+        "path": "prototypes/experience-workbench/journeys/02-home-orientation/spec.md",
+        "git_blob": "40f7ff742bd457d6b6f08cf60cb7e386d9bb666c"
+      },
+      {
+        "id": "J02-D01",
+        "commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+        "path": "prototypes/experience-workbench/journeys/02-home-orientation/spec.md",
+        "anchor": "J02-D01",
+        "git_blob": "40f7ff742bd457d6b6f08cf60cb7e386d9bb666c"
+      }
+    ],
+    "note": "The schema provides read-projection and handoff references. Empty schema_refs and no J02 certified task are retained. No broad governing-law failure or schema verifier-chain result is claimed."
+  },
+  "cases": [
+    {
+      "id": "SC-J02-B01",
+      "result": "pass",
+      "task": "Guest entry -> first-use Home",
+      "expected": "Guest identity and empty local group state are visible.",
+      "observed": "Guest; Start your first split.; No groups yet.; Start locally. Share when you’re ready."
+    },
+    {
+      "id": "SC-J02-B02",
+      "result": "pass",
+      "task": "Inspect actual enabled state of Home controls",
+      "expected": "DOM enabled state is recorded separately from appearance.",
+      "observed": "Start a group plus eight secondary buttons: disabled=false, aria-disabled absent. Pale dashed secondary styling observed; whether it confuses users is untested."
+    },
+    {
+      "id": "SC-J02-B03",
+      "result": "pass",
+      "task": "Start a group handoff",
+      "expected": "Open the creation task without creating a group.",
+      "observed": "New group; Group name textbox; Currency Group balance CHF; Create group. No fields filled or submission made."
+    },
+    {
+      "id": "SC-J02-B04",
+      "result": "fail",
+      "task": "Native browser Back from group creation",
+      "expected": "Return to the same guest empty Home rather than sample fixture facts.",
+      "observed": "Twice showed raw Golden: DP, 2 things need you, Zurich Weekend/Apartment/Ski Trip, +CHF 132.20 and Connected wallet 14.82 DOT. This was not a populated local group/account fixture.",
+      "reproductions": 2
+    },
+    {
+      "id": "SC-J02-B05",
+      "result": "pass",
+      "task": "Reload after unexpected Back state",
+      "expected": "Restore the safe local guest projection.",
+      "observed": "Guest; Start your first split.; No groups yet. Verified after both reproductions."
+    },
+    {
+      "id": "SC-J02-B06",
+      "result": "pass",
+      "task": "Home -> Insights with empty guest state",
+      "expected": "Do not reveal private account records.",
+      "observed": "Sign in through Entry before opening private records.; Return to Group Home. No private records shown."
+    },
+    {
+      "id": "SC-J02-B07",
+      "result": "fail",
+      "task": "Unavailable Insights -> offered return",
+      "expected": "Provide a truthful exit for an actor who has no group.",
+      "observed": "Return to Group Home opened missing-group fallback: Create a local group in the accepted Gate A preview first.; Open Gate A. Following Open Gate A reached enabled front-door controls; eventual exit works but the first return names a nonexistent group and exposes internal gate terminology."
+    },
+    {
+      "id": "SC-J02-B08",
+      "result": "fail",
+      "task": "Home People tab",
+      "expected": "Open the People owner or explain an unavailable route.",
+      "observed": "Click changed iframe URL to a # fragment; same empty Home remained. No People destination or unavailability explanation appeared. Current GitHub app.js also has no People case in the J02 Activity/You/Account/Notifications dispatch; source corroboration is not current-candidate browser execution."
+    },
+    {
+      "id": "SC-J02-B09",
+      "result": "pass",
+      "task": "Home Activity tab",
+      "expected": "Open activity with truthful empty state.",
+      "observed": "Activity; Needs attention · 0; No activity yet. Changes to your expenses and payments will appear here."
+    },
+    {
+      "id": "SC-J02-B10",
+      "result": "fail",
+      "task": "Activity Pots tab -> root return",
+      "expected": "Return to Home for a guest without a group.",
+      "observed": "Opened gate-b/#page=group with missing-group fallback and Open Gate A rather than Home."
+    },
+    {
+      "id": "SC-J02-B11",
+      "result": "pass",
+      "task": "Follow fallback exit and restore original Home",
+      "expected": "End with operable guest entry and the original empty local state.",
+      "observed": "Open Gate A -> front door -> Continue as guest -> original empty Home. Final reload restored Guest / No groups yet. No business record submission, deletion, account verification, payment, signing or provider interaction."
+    }
+  ],
+  "findings": [
+    {
+      "id": "SC-J02-001",
+      "priority": "P2",
+      "certainty": "Confirmed rendered transition on Sites v13",
+      "status": "open",
+      "disposition": null,
+      "checks": [
+        "truth",
+        "orientation",
+        "continuity"
+      ],
+      "title": "Native Back exposes raw Golden sample facts instead of guest Home",
+      "cases": [
+        "SC-J02-B04",
+        "SC-J02-B05"
+      ],
+      "piece_ids": [
+        "J02/state/home"
+      ],
+      "schema_view": "view.home",
+      "operation": null,
+      "operation_note": "J02 is a read projection and this experiment performed no domain write. This is a displayed-state/integration defect, not demonstrated payment execution or semantic-verifier bypass.",
+      "source_refs": [
+        "J02",
+        "J02-D01"
+      ],
+      "recommendation": "Reapply the current canonical Home projection on restored child navigation and preserve the originating guest/account mode. Add a regression for native Back from Start a group to empty Home. Retest on the actual repair candidate, including both canonical viewports.",
+      "authority_boundary": "Preserve accepted Home hierarchy, canonical local state and frozen Golden bytes; do not replace business data with a second fixture store."
+    },
+    {
+      "id": "SC-J02-002",
+      "priority": "P2",
+      "certainty": "Confirmed no-op route on Sites v13; current-source dispatch omission corroborates",
+      "status": "open",
+      "disposition": null,
+      "checks": [
+        "controls",
+        "orientation"
+      ],
+      "title": "Home People tab has no owning destination or unavailable explanation",
+      "cases": [
+        "SC-J02-B08"
+      ],
+      "piece_ids": [
+        "J02/home/action/people@none"
+      ],
+      "schema_view": "view.home",
+      "operation": null,
+      "source_refs": [
+        "J02"
+      ],
+      "recommendation": "Connect the existing People owner using the actual actor/group context, or expose the source-supported boundary when prerequisites are missing. Do not make up a new People feature.",
+      "authority_boundary": "Frozen J02 explicitly lists People among root exits. Its piece is an EXTERNAL_HANDOFF with empty schema_refs; no new domain operation should be inferred."
+    },
+    {
+      "id": "SC-J02-003",
+      "priority": "P2",
+      "certainty": "Confirmed empty-guest return mismatch on Sites v13",
+      "status": "open",
+      "disposition": null,
+      "checks": [
+        "orientation",
+        "recovery",
+        "continuity"
+      ],
+      "title": "Root and unavailable-route returns target Group Home without a group",
+      "cases": [
+        "SC-J02-B07",
+        "SC-J02-B10",
+        "SC-J02-B11"
+      ],
+      "piece_ids": [
+        "J02/home/action/pots@none",
+        "J02/home/action/activity@none"
+      ],
+      "schema_view": "view.home",
+      "operation": null,
+      "source_refs": [
+        "J02"
+      ],
+      "recommendation": "Keep root Pots/Home distinct from a selected Group Home. When no group exists, return to real Home; retain appropriate source-backed unavailable-path guidance without Gate A/B vocabulary.",
+      "authority_boundary": "Changing shared return dispatch affects J18/J19/J28 too; scope the patch to existing owner/context routing and retest these touched transitions."
+    }
+  ],
+  "prior_findings": [
+    {
+      "id": "UX-005",
+      "observation": "Eight enabled secondary destination buttons still use pale dashed styling. Start a group remains visually primary.",
+      "outcome": "layout_reproduced_human_confusion_unassessed",
+      "decision": "TEST before hierarchy redesign; improve enabled-state distinction if demonstrated. Preserve every supported destination.",
+      "related_cases": [
+        "SC-J02-B01",
+        "SC-J02-B02"
+      ]
+    },
+    {
+      "id": "UX-006",
+      "outcome": "not_executed",
+      "reason": "No expense was created or saved in this bounded audit; the guest expense success -> Group Home case was not retested."
+    }
+  ],
+  "check_results": [
+    {
+      "id": "truth",
+      "result": "fail",
+      "cases": [
+        "SC-J02-B04"
+      ],
+      "scope": "Raw sample facts after Back, not real provider capability testing."
+    },
+    {
+      "id": "orientation",
+      "result": "fail",
+      "cases": [
+        "SC-J02-B04",
+        "SC-J02-B07",
+        "SC-J02-B10"
+      ]
+    },
+    {
+      "id": "consequence",
+      "result": "unassessed",
+      "reason": "No business commitment made or neutral human consequence-prediction task."
+    },
+    {
+      "id": "effort",
+      "result": "unassessed",
+      "reason": "Choice confusion remains a hypothesis; no cold participant test."
+    },
+    {
+      "id": "controls",
+      "result": "fail",
+      "cases": [
+        "SC-J02-B08"
+      ],
+      "scope": "Bounded pointer/navigation checks only."
+    },
+    {
+      "id": "continuity",
+      "result": "fail",
+      "cases": [
+        "SC-J02-B04",
+        "SC-J02-B10"
+      ]
+    },
+    {
+      "id": "recovery",
+      "result": "fail",
+      "cases": [
+        "SC-J02-B07"
+      ],
+      "scope": "Eventual exit exists; first offered owner/destination mismatches empty guest context."
+    },
+    {
+      "id": "finish",
+      "result": "unassessed",
+      "reason": "No completed business task, canonical visual comparison or comprehension study."
+    }
+  ],
+  "limits": [
+    "Partial audit, not completion of J02 or all 28 journeys.",
+    "Current repaired candidate browser execution remains unavailable in this run; existing hosted version was reviewed explicitly.",
+    "No canonical 393x852 / 430x890 comparisons, large groups, populated local attention state, actor/counterpart changes, offline/stale/loading, full keyboard/assistive technology or real account/provider paths tested.",
+    "No independent review, user study, test-code execution, exit-code logs, full schema verifier chain or hosted CI run executed here.",
+    "Historical J02.json/findings.json retain their bindings/status. These new observations are not inserted into a falsely fresh ready record.",
+    "Screenshots were used for internal visual inspection; durable handoff uses text observations and exact reproduction paths. No screenshot attachment is claimed.",
+    "Existing root local executor limitation was not repeatedly retried. No deployment, schedule, frozen-tag/source change, runtime edit or protected merge performed."
+  ],
+  "next_action": "Owner repairs demonstrated navigation/context defects in isolated current candidate, executes bounded regressions and canonical viewport checks there, then obtains required separate review/user acceptance. UX-005 hierarchy hypothesis needs a neutral comprehension test before a product hierarchy change."
+}
