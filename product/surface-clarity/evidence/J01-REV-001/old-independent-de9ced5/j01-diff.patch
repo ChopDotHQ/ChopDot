@@ -1,0 +1,686 @@
+diff --git a/product/surface-clarity/evidence/J01-repair-2026-10-10/REPORT.md b/product/surface-clarity/evidence/J01-repair-2026-10-10/REPORT.md
+new file mode 100644
+index 00000000..719da32f
+--- /dev/null
++++ b/product/surface-clarity/evidence/J01-repair-2026-10-10/REPORT.md
+@@ -0,0 +1,134 @@
++# J01 bounded integration repair
++
++Proposal based on the committed battle test `6dd36a2278881879caa6e9c5f727fdd168d9d571`
++(tree `a18626e957ccee202e17adaa1e24072746f5932e`). This reuses the audit's
++findings and sources. It is not independent clearance, human comprehension
++evidence or approval of a new product design.
++
++## Repair and existing authority
++
++SC-J01-001: the integrated wrapper now places the public synthetic code `123456`
++beside code entry, explains that no email is sent, and exposes separate simulated
++wallet outcomes beside the pending result. Source event handlers still consume
++their own issued, request-bound evidence. Checking again does not mint authority.
++Resend and ready copy identify simulation; no provider, wallet, real account,
++signing or funds are introduced. Reviewer fixture panels remain hidden.
++
++SC-J01-002: account-entry Back returns to the incoming guest account boundary,
++normal front door or actual canonical invitation/account-link owner. The old
++marketing welcome is not an integrated exit. Cancelling clears only entry intent
++and unloads the old verification document; saved business history remains.
++
++SC-J01-003: existing authority supplies the bounded behavior; no new product
++decision is needed. Frozen `ctx.entry` requires intended destination/invite
++preservation. `session.enter` says sign-in preserves original destination/invite
++context and does not join or authorize payment. J01-D01 preserves destination
++through interruptions; J01-D02 requires a new verification epoch after reload.
++The approved front-door decision preserves local work and invite context.
++Therefore only the flow/method is retained in the URL, alongside the existing
++canonical membership return context. Reload reopens the corresponding fresh
++email/wallet step and explicitly asks for fresh verification. Email values, OTP,
++pending requests and provider evidence are not persisted for this repair.
++S1-issued email/wallet results are rejected by the S2 ordinary result controls.
++
++Frozen schema `5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013`, tree
++`ce5b82d008dfa2f48e714607e30fdb6839b8305c`, and Golden/C1 authority
++`4ba456e6595330e4ca8e21366e0d827f17e10881`, tree
++`cb424dafedff066fed433e106eb4468bec985d98`, remain unchanged. J01 is regenerated
++normally by the existing packager and retains accepted SHA-256
++`97f3da489c78cb842c354390b2e354397a6a6c3843228ec9928efebaf21089e8`.
++The source model, Golden HTML, schema/tag and production files are not edited.
++
++## Changed files
++
++- `prototypes/integrated-product-preview-v2/app.js`: safe integration routing,
++  incoming Back, intent-preserving fresh restart and decoration installation.
++- `prototypes/integrated-product-preview-v2/j01-surface.js`: prototype-specific
++  truthful instructions and controls, keeping verification in the sealed source.
++- `prototypes/integrated-product-preview-v2/j01-browser-qa.mjs`: isolated browser
++  regressions with stable J01-R IDs and canonical viewport captures.
++- `scripts/surface-clarity.test.mjs`: disposable method-unit fixtures use the
++  declared historical implementation; live changed-runtime evidence must remain
++  stale. All original 18 cases are retained; no readiness check is weakened.
++- This report and `run.sh`: reusable local execution receipt/reproducer.
++
++## Executed checks
++
++Node v24.19.0; Playwright and Chromium version are recorded by the runner.
++Local Chromium used here: 153.0.8010.0. Exact commands/exits and raw suite logs
++are retained in the engineering evidence output.
++
++| Suite | Result |
++|---|---|
++| Current J01 model | 50 checks, exit 0 |
++| Current subject/request binding model | 163 checks, exit 0 |
++| Surface Clarity method regressions | 18 tests, exit 0 |
++| New integrated J01 browser regression | 53 checks, exit 0 |
++| Existing Gate A browser, exact-money and range/boundary suites | All three exit 0 |
++| Existing create/join browser | 31 checks, exit 0 |
++| Existing create/join recovery browser | 16 checks, exit 0 |
++| Existing Gate D recovery browser | 11 checks, exit 0 |
++
++The J01 browser suite operates real rendered controls in fresh browser contexts
++at 393×852 and 430×890. It covers guest first-use/keyboard/reload, account boundary
++Back/cancel/reopen, incorrect code, fresh restart, prior-proof replay rejection,
++final conversion preserving exact canonical history, returning account (no name
++step), context-preserving legacy and canonical invitation entry, wallet
++unknown/declined/verified/expired and recovery. Contextual entry alone creates no
++member. Existing create/join tests exercise counterpart consent, scoped stable
++Participant, account linkage and accepted expense history.
++
++Some recovery tests inject explicit source-supported synthetic preconditions
++(offline, expired, reauthentication, load failure, wallet expiry), then operate
++the real visible recovery controls. They are not claims of real network/provider
++failure reproduction. No borrowed model PASS is relabeled browser PASS.
++
++Earlier new-harness attempts are retained separately as failed development runs:
++they exposed a wrong converted-label expectation after reload, incorrect locator
++callback argument binding, an ambiguous Back selector and an incorrect fixture
++destination expectation. Only the corrected final execution supports the repair.
++
++## Clarity readiness and retained limitations
++
++Runtime bytes changed, so prior clarity records/evidence are stale. The actual
++checker must reject them; this repair does not reset bindings, mark findings
++fixed in the live register, or mark J01 cleared. The replacement exact-version
++surface review and independent engineering review belong to the parent owner.
++
++Canonical screenshots are available for review; capture and overflow checks are
++not pixel-perfect Golden comparison or full accessibility qualification.
++Keyboard coverage includes the guest primary action, not every focus transition.
++No independent reviewer or unfamiliar-person comprehension study ran here.
++Hosted Actions and a newly served hosted preview were not executed by this worker.
++
++After completed local conversion, an ordinary full reload retains accepted work
++and the local account-created record but does not resurrect a current verified
++session; the existing host presents guest Home. This existing limitation is
++retained and explicitly tested; no auth proof is restored merely to preserve a
++label. Legacy `entry=invite` remains an approved reference-view handoff, while
++actual canonical invitations are tested through create/join. Neither path is
++remote sharing or real authentication.
++
++The historical standalone subject-binding browser script has an obsolete exact
++predecessor-hash precondition and a build that replaces its input. It is not run
++against frozen source. Current source model checks and the new ordinary-path
++integrated replay regressions are identified separately above.
++
++## One-command reproduction
++
++Prerequisites: Git with the evidence lineage and both pinned authority objects,
++Node, Playwright in `CHOPDOT_TEST_NODE_MODULES` (or the checkout's node_modules),
++and installed Chromium or `CHOPDOT_CHROMIUM_EXECUTABLE`.
++
++```bash
++CHOPDOT_TEST_NODE_MODULES=/absolute/path/to/node_modules \
++CHOPDOT_CHROMIUM_EXECUTABLE=/absolute/path/to/chromium \
++bash product/surface-clarity/evidence/J01-repair-2026-10-10/run.sh
++```
++
++The runner archives committed HEAD into its own temporary source directory,
++packages a separate preview, runs the checks and retains logs/screenshots in the
++printed evidence directory. Cleanup removes only its created source/preview;
++`KEEP_J01_WORK=1` retains them. It does not reset/clean a user's checkout, touch
++browser storage, use real credentials or push. Finalization/publication and
++separate exact-version review are the parent's next actions.
+diff --git a/product/surface-clarity/evidence/J01-repair-2026-10-10/run.sh b/product/surface-clarity/evidence/J01-repair-2026-10-10/run.sh
+new file mode 100755
+index 00000000..7d0307dc
+--- /dev/null
++++ b/product/surface-clarity/evidence/J01-repair-2026-10-10/run.sh
+@@ -0,0 +1,56 @@
++#!/usr/bin/env bash
++set -euo pipefail
++repo=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
++deps=${CHOPDOT_TEST_NODE_MODULES:-"$repo/node_modules"}
++if [[ ! -f "$deps/playwright/package.json" ]]; then
++  echo 'Missing prerequisite: Playwright in CHOPDOT_TEST_NODE_MODULES, with an installed Chromium or CHOPDOT_CHROMIUM_EXECUTABLE.' >&2
++  exit 3
++fi
++deps=$(realpath "$deps")
++root=$(mktemp -d "${TMPDIR:-/tmp}/chopdot-j01-repair.XXXXXXXX")
++mkdir -p "$root/source" "$root/evidence"
++trap 'if [[ "${KEEP_J01_WORK:-0}" != 1 ]]; then rm -rf -- "$root/source" "$root/preview"; fi' EXIT
++git -C "$repo" archive HEAD | tar -x -C "$root/source"
++ln -s "$deps" "$root/source/node_modules"
++gitdir=$(git -C "$repo" rev-parse --absolute-git-dir)
++printf 'gitdir: %s\n' "$gitdir" > "$root/source/.git"
++cd "$root/source"
++printf 'Evidence directory: %s\n' "$root/evidence"
++printf 'base_sha=%s\nbase_tree=%s\nnode=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" "$(node --version)" > "$root/evidence/version.txt"
++run() {
++  local name=$1; shift
++  printf '%q ' "$@" >> "$root/evidence/commands.txt"; printf '\n' >> "$root/evidence/commands.txt"
++  set +e
++  "$@" > "$root/evidence/$name.log" 2>&1
++  local code=$?
++  set -e
++  printf '%s exit=%s\n' "$name" "$code" | tee -a "$root/evidence/commands.txt"
++  if [[ "$code" != 0 ]]; then tail -50 "$root/evidence/$name.log"; return "$code"; fi
++}
++run package node scripts/package-preview-v2-gate-b.mjs "$root/preview"
++export PREVIEW_ROOT="$root/preview"
++run model node prototypes/experience-workbench/journeys/01-enter-chopdot/source/test-model.cjs
++run subject-binding node prototypes/experience-workbench/journeys/01-enter-chopdot/source/test-subject-binding.cjs
++run framework-tests node --test scripts/surface-clarity.test.mjs
++export EVIDENCE_DIR="$root/evidence/j01"
++run j01-browser node prototypes/integrated-product-preview-v2/j01-browser-qa.mjs
++export EVIDENCE_DIR="$root/evidence/gate-a"
++run gate-a node prototypes/integrated-product-preview-v2/gate-b/run-gate-a.mjs
++export EVIDENCE_DIR="$root/evidence/create-join"
++run create-join node prototypes/integrated-product-preview-v2/create-join/browser-qa.mjs
++export EVIDENCE_DIR="$root/evidence/create-join-recovery"
++run create-join-recovery node prototypes/integrated-product-preview-v2/create-join/recovery-qa.mjs
++export EVIDENCE_DIR="$root/evidence/gate-d-recovery"
++run gate-d-recovery node prototypes/integrated-product-preview-v2/gate-d/recovery-qa.mjs
++# The old live review records must be invalidated by these changed runtime bytes.
++# A nonzero check is expected here; no baseline/readiness bindings are reset.
++set +e
++node scripts/surface-clarity.mjs check > "$root/evidence/clarity-stale.log" 2>&1
++clarity_code=$?
++set -e
++printf 'clarity-stale exit=%s (expected stale)\n' "$clarity_code" >> "$root/evidence/commands.txt"
++if [[ "$clarity_code" != 1 ]] || ! grep -q 'stale runtime' "$root/evidence/clarity-stale.log"; then
++  echo 'Old clarity evidence was unexpectedly accepted or checker failed for another reason.' >&2
++  exit 1
++fi
++echo "Local engineering checks passed; existing Surface Clarity records remain stale/incomplete. Evidence: $root/evidence"
+diff --git a/prototypes/integrated-product-preview-v2/app.js b/prototypes/integrated-product-preview-v2/app.js
+index 53fd1a04..1bc47fb5 100644
+--- a/prototypes/integrated-product-preview-v2/app.js
++++ b/prototypes/integrated-product-preview-v2/app.js
+@@ -5,6 +5,7 @@ import {repository as accountRepository} from './gate-d/model.js';
+ import { transition as commitExpense, recoverableDrafts, guestDraftView, putGuestDraft, savedDraft, upgrade as upgradePrototype } from './gate-b/model.js';
+ const schemaCore = await fetch('./gate-b/contract/semantic-core.json').then(response => { if (!response.ok) throw new Error('Frozen schema contract unavailable.'); return response.json(); });
+ import { requirePrototypeWriter, assertPrototypeWriter } from './prototype-writer.js';
++import { installEntrySurface } from './j01-surface.js';
+ await requirePrototypeWriter();
+ import {
+   allocationView,
+@@ -41,6 +42,24 @@ let currentFlow = 'front-door';
+ let homeMode = 'account';
+ let monitorTimer = null;
+ let lastEntryState = null;
++let resumedEntry = false;
++
++// Only routing intent is durable in the URL. Never serialize auth proof, codes,
++// subjects, pending requests or model state to recover an interrupted entry.
++function entryIntent(flow, method = '') {
++  const url = new URL(location.href);
++  for (const key of ['home', 'guestExpense', 'gateB', 'gateBRoute', 'gateC', 'gateD', 'expansion', 'createJoin']) url.searchParams.delete(key);
++  url.searchParams.set('entry', flow);
++  if (method) url.searchParams.set('entryMethod', method); else url.searchParams.delete('entryMethod');
++  history.replaceState(null, '', url);
++}
++
++function clearEntryIntent() {
++  const url = new URL(location.href);
++  for (const key of ['entry', 'entryMethod']) url.searchParams.delete(key);
++  history.replaceState(null, '', url);
++  resumedEntry = false;
++}
+ 
+ function productModeCss() {
+   return `
+@@ -116,6 +135,8 @@ function showFrame() {
+ 
+ function showFrontDoor() {
+   stopMonitor();
++  clearEntryIntent();
++  frame.src = 'about:blank';
+   currentJourney = 'J01';
+   currentFlow = 'front-door';
+   homeMode = 'account';
+@@ -125,6 +146,8 @@ function showFrontDoor() {
+ 
+ function showAccountWall() {
+   stopMonitor();
++  clearEntryIntent();
++  frame.src = 'about:blank';
+   currentJourney = 'ACCOUNT_BOUNDARY';
+   currentFlow = 'guest-share-boundary';
+   hideHostSurfaces();
+@@ -147,7 +170,7 @@ function openHome(entryState = lastEntryState, mode = 'account') {
+   currentFlow = mode;
+   showFrame();
+   const url = new URL(location.href);
+-  for (const key of ['guestExpense','gateB','gateBRoute','gateC','gateD','expansion','createJoin']) url.searchParams.delete(key);
++  for (const key of ['guestExpense','gateB','gateBRoute','gateC','gateD','expansion','createJoin','entry','entryMethod']) url.searchParams.delete(key);
+   url.searchParams.set('home','1'); history.replaceState(null,'',url);
+   frame.src = SOURCES.j02;
+ }
+@@ -190,13 +213,15 @@ function openGuestExpense() {
+   frame.src = SOURCES.j05;
+ }
+ 
+-function openAuth(flow = 'create') {
++function openAuth(flow = 'create', { resumed = false, method = 'email' } = {}) {
+   stopMonitor();
++  resumedEntry = resumed;
++  entryIntent(flow, method);
+   currentJourney = 'J01';
+   currentFlow = flow;
+   homeMode = 'account';
+   showFrame();
+-  frame.src = `${SOURCES.j01}#welcome`;
++  frame.src = `${SOURCES.j01}#${method}`;
+ }
+ 
+ function watchGoldenEntry() {
+@@ -211,7 +236,7 @@ function watchGoldenEntry() {
+     if (state.route === 'home-reference' && state.verified) {
+       try { accountRepository(localStorage,assertPrototypeWriter).commit({type:'entry'},'entry-verified'); } catch(error) { stopMonitor(); const p=document.createElement('p');p.textContent=error.message;frame.contentDocument.body.append(p);return; }
+       const membershipReturn=sessionStorage.getItem('chopdot.membership.entry-return');
+-      if(membershipReturn){const r=JSON.parse(membershipReturn);sessionStorage.removeItem('chopdot.membership.entry-return');window.ChopDotEntryPrecondition={verified:true,participantId:r.participantId,invite:r.invite,subject:state.verifiedSubject,request:state.verifiedRequest};openCreateJoin('#'+new URLSearchParams({page:r.page,...(r.invite?{invite:r.invite}:{})}));return;}
++      if(membershipReturn){const r=JSON.parse(membershipReturn);sessionStorage.removeItem('chopdot.membership.entry-return');clearEntryIntent();window.ChopDotEntryPrecondition={verified:true,participantId:r.participantId,invite:r.invite,subject:state.verifiedSubject,request:state.verifiedRequest};openCreateJoin('#'+new URLSearchParams({page:r.page,...(r.invite?{invite:r.invite}:{})}));return;}
+       const convertingGuest = currentFlow === 'convert-create' || currentFlow === 'convert-signin';
+       if (convertingGuest) {
+         saveGuestState({ accountCreated: true });
+@@ -1070,15 +1095,33 @@ frame.addEventListener('load', () => {
+   }
+ 
+   enterAuthFormIfNeeded(doc);
+-  if (currentJourney === 'J01') watchGoldenEntry();
++  if (currentJourney === 'J01') {
++    installEntrySurface(doc, {
++      resumed: resumedEntry,
++      onMethod: method => entryIntent(currentFlow, method),
++      onExit: () => {
++        const membershipReturn = sessionStorage.getItem('chopdot.membership.entry-return');
++        if (membershipReturn) {
++          const intent = JSON.parse(membershipReturn);
++          sessionStorage.removeItem('chopdot.membership.entry-return');
++          clearEntryIntent();
++          openCreateJoin('#' + new URLSearchParams({ page: intent.page, ...(intent.invite ? { invite: intent.invite } : {}) }));
++        } else if (['convert-create', 'convert-signin'].includes(currentFlow)) showAccountWall();
++        else showFrontDoor();
++      },
++    });
++    watchGoldenEntry();
++  }
+ });
+ 
+-function openInvite(mode = 'account') {
++function openInvite(mode = 'account', { resumed = false, method = '' } = {}) {
+   stopMonitor();
++  resumedEntry = resumed;
+   currentJourney = 'J01';
+   currentFlow = mode === 'guest' ? 'guest-invite' : 'invite';
++  entryIntent(currentFlow, method);
+   showFrame();
+-  frame.src = mode === 'guest' ? `${SOURCES.j01GuestInvite}#invite` : `${SOURCES.j01}#invite`;
++  frame.src = mode === 'guest' ? `${SOURCES.j01GuestInvite}#invite` : `${SOURCES.j01}#${method ? method + '/invite' : 'invite'}`;
+ }
+ 
+ guestEntry.addEventListener('click', openGuestHome);
+@@ -1117,8 +1160,8 @@ else if (params.has('gateC')) openGateC(params.get('gateC'));
+ else if (params.has('gateB') && loadGuestState().group) openGateB(params.get('gateBRoute')||'');
+ else if(params.has('guestExpense')&&loadGuestState().group)openGuestExpense();
+ else if(params.has('home')&&loadGuestState().enteredAt&&!['signed-out','expired'].includes(loadGuestState().gateD?.session?.status))returnToLocalHome();
+-else if (entryMode === 'signin')openAuth('signin');
+-else if (entryMode === 'invite') openInvite('account');
++else if (['create', 'signin', 'convert-create', 'convert-signin'].includes(entryMode))openAuth(entryMode, { resumed: true, method: params.get('entryMethod') === 'wallet' ? 'wallet' : 'email' });
++else if (entryMode === 'invite') openInvite('account', { resumed: params.has('entryMethod'), method: ['email','wallet'].includes(params.get('entryMethod')) ? params.get('entryMethod') : '' });
+ else if (entryMode === 'guest-invite') openInvite('guest');
+ else showFrontDoor();
+ 
+diff --git a/prototypes/integrated-product-preview-v2/j01-browser-qa.mjs b/prototypes/integrated-product-preview-v2/j01-browser-qa.mjs
+new file mode 100644
+index 00000000..30a30659
+--- /dev/null
++++ b/prototypes/integrated-product-preview-v2/j01-browser-qa.mjs
+@@ -0,0 +1,231 @@
++import './gate-b/browser-launch.mjs';
++import { chromium } from 'playwright';
++import assert from 'node:assert/strict';
++import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
++import { serve } from './gate-b/test-server.mjs';
++import { upgrade, transition, newDraft } from './gate-b/model.js';
++import { upgrade as account } from './gate-d/model.js';
++import { transition as membershipTransition, upgrade as membershipUpgrade } from './create-join/model.js';
++
++const out = process.env.EVIDENCE_DIR || '/tmp/chopdot-j01-browser';
++mkdirSync(out, { recursive: true });
++const host = await serve(process.env.PREVIEW_ROOT);
++const browser = await chromium.launch({ headless: true });
++const report = { status: 'RUNNING', browser: browser.version(), checks: [], screenshots: [], errors: [], limitations: [
++  'Local automated browser evidence; not a hosted Actions result, independent review or user comprehension study.',
++  'Authentication and wallet results are public synthetic fixtures. No real provider, signing, remote invitation or account is created.',
++  'Legacy entry=invite uses the approved reference invitation, not a new canonical membership operation.',
++  'Recovery cases explicitly inject source-supported synthetic preconditions before operating visible recovery controls.'
++] };
++let context, page;
++const frame = () => page.frameLocator('#product-frame');
++const button = name => frame().getByRole('button', { name, exact: true }).click();
++const check = (id, fn) => { fn(); report.checks.push({ id, status: 'PASS' }); };
++const shot = async name => { const path = `${out}/${name}.png`; await page.screenshot({ path }); report.screenshots.push(path); };
++const state = () => page.evaluate(() => window.ChopDotPreviewV2.getGuestState());
++const core = JSON.parse(readFileSync(new URL('./gate-b/contract/semantic-core.json', import.meta.url)));
++let seed = upgrade({ group: { id: 'local', name: 'Local test group', currency: 'CHF' }, people: [{ id: 'alex', name: 'Alex' }], expenses: [], accountCreated: false });
++const draft = { ...newDraft(seed), amountText: '12.01', description: 'Preserved local lunch' };
++seed = account(transition(seed, { type: 'create', id: draft.id, operationId: draft.operationId, actor: 'self', draft }, core));
++async function fresh(viewport, query = '', saved = null, actor = 'self') {
++  if (context) await context.close();
++  context = await browser.newContext({ viewport });
++  if (saved) await context.addInitScript(({ s, actor }) => { if (!localStorage.getItem('chopdot.preview-v2.guest')) { localStorage.setItem('chopdot.preview-v2.guest', JSON.stringify(s)); sessionStorage.setItem('chopdot.membership.actor', actor); } }, { s: saved, actor });
++  page = await context.newPage(); page.setDefaultTimeout(10000);
++  page.on('pageerror', error => report.errors.push(error.message));
++  await page.goto(`${host.base}/prototypes/integrated-product-preview-v2/index.html${query}`);
++  await page.waitForFunction(() => window.ChopDotPreviewV2);
++}
++async function email(address = 'dev@example.com') {
++  await frame().getByLabel('Email', { exact: true }).fill(address);
++  await button('Send code');
++  await frame().getByLabel('6-digit code').waitFor();
++}
++async function verified(address = 'dev@example.com') {
++  await email(address);
++  await frame().getByLabel('6-digit code').fill('123456'); await button('Continue');
++  if (address !== 'dev@example.com') { await frame().getByLabel('Your name').fill('Sam'); await button('Continue'); }
++  await frame().locator('#entry-screen[data-state="ready"]').waitFor();
++}
++async function home(mode = 'guest') {
++  await frame().locator(`body[data-preview-mode="${mode}"]`).waitFor();
++}
++try {
++  for (const viewport of [{ width: 393, height: 852 }, { width: 430, height: 890 }]) {
++    const v = viewport.width;
++    await fresh(viewport);
++    await page.getByRole('button', { name: 'Continue as guest', exact: true }).waitFor();
++    await shot(`front-door-${v}`);
++    await page.keyboard.press('Tab');
++    const focus = await page.evaluate(() => document.activeElement.id);
++    check(`J01-R02-${v}-keyboard-target`, () => assert.equal(focus, 'guest-entry'));
++    await page.keyboard.press('Enter'); await home();
++    await frame().getByRole('heading', { name: 'Start your first split.', exact: true }).waitFor();
++    await page.reload(); await home();
++    check(`J01-R03-${v}-fresh-guest-and-reload`, () => assert.ok(page.url().includes('home=1')));
++
++    await fresh(viewport);
++    await page.getByRole('button', { name: 'Create account', exact: true }).click();
++    await frame().getByLabel('Email', { exact: true }).waitFor();
++    await frame().getByText('Prototype only. No email is sent. Use an example email.', { exact: true }).waitFor();
++    await button('Back');
++    await page.getByRole('button', { name: 'Continue as guest', exact: true }).waitFor();
++    check(`J01-R04-${v}-normal-back`, () => assert.equal(new URL(page.url()).searchParams.has('entry'), false));
++
++    await fresh(viewport, '', seed);
++    await page.getByRole('button', { name: 'Continue as guest', exact: true }).click(); await home();
++    const before = await state();
++    await button('Invite someone'); await page.locator('#account-wall-create').click();
++    await frame().getByLabel('Email', { exact: true }).waitFor(); await button('Back');
++    await page.locator('#account-wall').waitFor({ state: 'visible' });
++    await page.locator('#account-wall-cancel').click(); await home();
++    const cancelled = await state();
++    check(`J01-R05-${v}-boundary-back-cancel`, () => assert.deepEqual(cancelled.expenses, before.expenses));
++    await button('Invite someone'); await page.locator('#account-wall-create').click();
++    await email('sam@example.com');
++    await frame().getByText('Prototype only. Enter 123456 to continue. No email was sent.', { exact: true }).waitFor();
++    await shot(`code-${v}`);
++    await page.goBack(); await frame().getByLabel('Email', { exact: true }).waitFor();
++    await email('sam@example.com');
++    check(`J01-R20-${v}-native-back`, () => assert.equal(new URL(page.url()).searchParams.get('entry'), 'convert-create'));
++    await frame().getByLabel('6-digit code').fill('000000'); await button('Continue');
++    await frame().getByText('That code does not match. Try again.', { exact: true }).waitFor();
++    const incorrect = await state();
++    check(`J01-R06-${v}-incorrect-code-no-conversion`, () => assert.equal(incorrect.accountCreated, false));
++    const old = await frame().locator('body').evaluate(() => ({ epoch: window.EntryDemo.get().verificationEpoch, evidence: window.EntryDemo.emailProviderEvidence() }));
++    await page.reload(); await frame().getByLabel('Email', { exact: true }).waitFor();
++    await frame().getByText('Sign-in restarted. Request a fresh code or approval. Your saved work and incoming destination stay.', { exact: true }).waitFor();
++    const restarted = await frame().locator('body').evaluate(() => window.EntryDemo.get());
++    check(`J01-R07-${v}-fresh-restart-intent`, () => {
++      assert.notEqual(restarted.verificationEpoch, old.epoch); assert.equal(restarted.email, '');
++      assert.equal(restarted.verified, false); assert.equal(restarted.pendingRequest, null);
++      assert.equal(new URL(page.url()).searchParams.get('entry'), 'convert-create');
++    });
++    await email('sam@example.com');
++    await frame().locator('body').evaluate((node, evidence) => window.EntryDemo.deliverEmailProviderEvidence(evidence), old.evidence);
++    await frame().getByLabel('6-digit code').fill('123456'); await button('Continue');
++    await frame().getByLabel('Email', { exact: true }).waitFor();
++    const denied = await state();
++    check(`J01-R08-${v}-prior-proof-rejected`, () => assert.equal(denied.accountCreated, false));
++    await verified('sam@example.com');
++    const ready = await state();
++    check(`J01-R09-${v}-ready-not-converted`, () => assert.equal(ready.accountCreated, false));
++    await button('Open ChopDot'); await home('converted');
++    const after = await state();
++    check(`J01-R10-${v}-conversion-preserves-work`, () => {
++      assert.equal(after.accountCreated, true); assert.deepEqual(after.people, before.people); assert.deepEqual(after.expenses, before.expenses); assert.deepEqual(after.group, before.group);
++    });
++    await shot(`converted-${v}`); await page.reload(); await home();
++    const reloaded = await state();
++    check(`J01-R19-${v}-reload-preserves-work-not-session-proof`, () => {
++      assert.equal(reloaded.accountCreated, true); assert.deepEqual(reloaded.expenses, before.expenses);
++    });
++
++    await fresh(viewport, '?entry=signin');
++    await frame().getByLabel('Email', { exact: true }).waitFor();
++    await verified(); await frame().getByText('Welcome back.', { exact: true }).waitFor();
++    const returning = await frame().locator('body').evaluate(() => window.EntryDemo.get());
++    check(`J01-R11-${v}-returning-no-name-step`, () => assert.equal(returning.isNew, false));
++    await button('Open ChopDot');
++    await page.waitForFunction(() => window.ChopDotPreviewV2?.getCurrentJourney() === 'J02');
++
++    await fresh(viewport, '?entry=invite');
++    await button('Continue with email'); await email(); await page.reload();
++    await frame().getByLabel('Email', { exact: true }).waitFor();
++    await button('Back'); await frame().getByText('Your invite is waiting.', { exact: true }).waitFor();
++    check(`J01-R12-${v}-invite-back-reload`, () => assert.equal(new URL(page.url()).searchParams.get('entry'), 'invite'));
++    await button('Continue with email'); await verified();
++    await frame().getByText('You have not joined yet.', { exact: true }).waitFor();
++    const inviteState = await frame().locator('body').evaluate(() => window.EntryDemo.get());
++    check(`J01-R13-${v}-invite-readiness-not-join`, () => { assert.equal(inviteState.destination, 'invite'); assert.equal(inviteState.joined, false); });
++    await button('Continue to invite'); await frame().getByTitle('Invite reference').waitFor();
++
++    await fresh(viewport);
++    await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await button('Use a wallet instead');
++    await button('Everyday Account ending 9Kq');
++    await frame().getByRole('group', { name: 'Simulated wallet results' }).waitFor();
++    await shot(`wallet-${v}`);
++    const walletS1 = await frame().locator('body').evaluate(() => window.EntryDemo.walletProviderEvidence());
++    await page.reload(); await frame().getByText('Choose a demo account.', { exact: true }).waitFor();
++    await button('Everyday Account ending 9Kq');
++    const walletS2 = await frame().locator('body').evaluate(() => window.EntryDemo.walletProviderEvidence());
++    await frame().locator('body').evaluate((node, evidence) => window.EntryDemo.deliverWalletProviderEvidence(evidence), walletS1);
++    await button('Simulate verified approval');
++    const replay = await frame().locator('body').evaluate(() => window.EntryDemo.get());
++    check(`J01-R21-${v}-wallet-restart-stale-proof`, () => { assert.notEqual(walletS1.epoch, walletS2.epoch); assert.equal(replay.verified, false); assert.equal(replay.route, 'approval-waiting'); });
++    await frame().locator('body').evaluate((node, evidence) => window.EntryDemo.deliverWalletProviderEvidence(evidence), walletS2);
++    await button('Check again');
++    const pending = await frame().locator('body').evaluate(() => window.EntryDemo.get());
++    check(`J01-R14-${v}-refresh-not-proof`, () => assert.equal(pending.verified, false));
++    await button('Simulate unknown result'); await frame().getByText('Result still unknown.', { exact: true }).waitFor();
++    await button('Cancel'); await frame().getByText('Choose a demo account.', { exact: true }).waitFor();
++    await button('Everyday Account ending 9Kq'); await button('Simulate declined approval');
++    await frame().getByText('Sign-in declined.', { exact: true }).waitFor();
++    await button('Try again'); await button('Simulate verified approval');
++    await frame().locator('#entry-screen[data-state="ready"]').waitFor();
++    const wallet = await frame().locator('body').evaluate(() => window.EntryDemo.get());
++    check(`J01-R15-${v}-wallet-outcomes-discoverable`, () => { assert.equal(wallet.verified, true); assert.equal(wallet.method, 'wallet'); });
++
++    const membership = membershipUpgrade(account({ group: { id: 'invite-group', name: 'Contextual group', currency: 'CHF', membershipManaged: true }, groups: [{ id: 'invite-group', name: 'Contextual group', currency: 'CHF', membershipManaged: true }], people: [], expenses: [], accountCreated: true }));
++    const invited = membershipTransition(membership, { type: 'invite', actor: 'self', operationId: 'j01-context-invite', id: 'j01-invite', name: 'Sam' });
++    await fresh(viewport, '?createJoin=' + encodeURIComponent('page=account&invite=j01-invite'), invited, 'visitor');
++    await button('Join with account'); await frame().getByLabel('Email', { exact: true }).waitFor(); await button('Back');
++    await frame().getByRole('button', { name: 'Join with account', exact: true }).waitFor();
++    const backed = await state();
++    check(`J01-R22-${v}-canonical-invite-back`, () => { assert.equal(backed.people.length, 0); assert.equal(backed.membership.invitations[0].id, 'j01-invite'); assert.ok(page.url().includes('j01-invite')); });
++    await button('Join with account'); await email(); await page.reload();
++    await frame().getByLabel('Email', { exact: true }).waitFor(); await verified(); await button('Open ChopDot');
++    await frame().getByRole('button', { name: 'Join with account', exact: true }).waitFor();
++    const awaitingConsent = await state();
++    check(`J01-R23-${v}-canonical-invite-reload-entry-not-consent`, () => { assert.equal(awaitingConsent.people.length, 0); assert.equal(awaitingConsent.membership.invitations[0].status, 'pending'); assert.ok(page.url().includes('j01-invite')); });
++
++    await fresh(viewport, '?entry=signin');
++    await frame().getByLabel('Email', { exact: true }).waitFor();
++    for (const fixture of ['offline', 'expired', 'reauth']) {
++      await frame().locator('body').evaluate((node, name) => window.EntryDemo.fixture(name), fixture);
++      if (fixture === 'offline') {
++        await frame().getByText('You’re offline.', { exact: true }).waitFor(); await button('Try again');
++        await frame().getByText('You’re offline.', { exact: true }).waitFor(); await frame().locator('[data-action="BACK_TO_EMAIL"]').click();
++        await frame().getByLabel('Email', { exact: true }).waitFor();
++      } else if (fixture === 'expired') {
++        await frame().getByLabel('6-digit code').fill('123456'); await button('Continue');
++        await frame().getByText('This code expired. Request a new one.', { exact: true }).waitFor();
++        await button('Send a new code');
++      } else {
++        await frame().getByText('Welcome back.', { exact: true }).waitFor(); await button('Continue with email');
++        await frame().getByLabel('Email', { exact: true }).waitFor();
++      }
++      const recovered = await frame().locator('body').evaluate(() => window.EntryDemo.get());
++      check(`J01-R16-${v}-${fixture}-recovery-controls`, () => { assert.equal(recovered.verified, false); assert.equal(recovered.destination, fixture === 'expired' ? 'home' : 'invite'); });
++    }
++    await email('other@example.com');
++    await frame().getByLabel('6-digit code').fill('123456'); await button('Continue');
++    await frame().getByText('Use your original sign-in.', { exact: true }).waitFor();
++    const wrong = await frame().locator('body').evaluate(() => window.EntryDemo.get());
++    check(`J01-R24-${v}-wrong-account-denied`, () => assert.equal(wrong.verified, false));
++    await button('Use another email'); await frame().getByLabel('Email', { exact: true }).waitFor();
++    await frame().locator('body').evaluate(() => window.EntryDemo.dispatch('NAVIGATE', { route: 'load-error' }));
++    await frame().getByText('Couldn’t finish signing in.', { exact: true }).waitFor(); await button('Try again');
++    await frame().getByLabel('Email', { exact: true }).waitFor();
++    const loadRetry = await frame().locator('body').evaluate(() => window.EntryDemo.get());
++    check(`J01-R25-${v}-load-error-safe-retry`, () => { assert.equal(loadRetry.verified, false); assert.equal(loadRetry.destination, 'invite'); });
++    await button('Use a wallet instead'); await button('Everyday Account ending 9Kq');
++    await frame().locator('body').evaluate(() => window.EntryDemo.dispatch('APPROVAL_RESULT', window.EntryModel.walletApprovalResult(window.EntryDemo.walletProviderEvidence(), 'expired')));
++    await frame().getByText('Request expired.', { exact: true }).waitFor(); await button('Try again');
++    await button('Cancel'); await frame().getByText('Choose a demo account.', { exact: true }).waitFor();
++    const expiredWallet = await frame().locator('body').evaluate(() => window.EntryDemo.get());
++    check(`J01-R26-${v}-expired-wallet-cancel`, () => { assert.equal(expiredWallet.verified, false); assert.equal(expiredWallet.destination, 'invite'); });
++    const overflow = await frame().locator('html').evaluate(node => node.scrollWidth > innerWidth);
++    check(`J01-R17-${v}-horizontal-layout`, () => assert.equal(overflow, false));
++  }
++  check('J01-R18-browser-health', () => assert.deepEqual(report.errors, []));
++  report.status = 'PASS';
++} catch (error) {
++  report.status = 'FAIL'; report.error = error.stack; process.exitCode = 1;
++  if (page) { report.failureURL = page.url(); report.failureText = await frame().locator('body').innerText().catch(() => 'Frame unavailable'); }
++  if (page) await shot('failure').catch(() => {}); console.error(error);
++} finally {
++  writeFileSync(`${out}/results.json`, JSON.stringify(report, null, 2));
++  console.log(JSON.stringify({ status: report.status, checks: report.checks.length, error: report.error }));
++  await browser.close(); await host.close();
++}
+diff --git a/prototypes/integrated-product-preview-v2/j01-surface.js b/prototypes/integrated-product-preview-v2/j01-surface.js
+new file mode 100644
+index 00000000..de2e818e
+--- /dev/null
++++ b/prototypes/integrated-product-preview-v2/j01-surface.js
+@@ -0,0 +1,62 @@
++// Integration-only presentation. The sealed J01 model owns verification evidence.
++export function installEntrySurface(doc, { resumed = false, onExit, onMethod }) {
++  const screen = doc.getElementById('entry-screen');
++  if (!screen) return;
++  const text = (selector, value) => {
++    const node = screen.querySelector(selector);
++    if (node && node.textContent !== value) node.textContent = value;
++  };
++  function decorate() {
++    const route = screen.dataset.state;
++    if (route === 'welcome' && screen.dataset.destination !== 'invite') { onExit(); return; }
++    if (['email', 'wallet'].includes(route)) onMethod(route);
++    if (route === 'email') text('#email-help', 'Prototype only. No email is sent. Use an example email.');
++    if (route === 'code') {
++      text('.header-title b', 'Email sign-in');
++      const email = doc.defaultView.EntryDemo?.get()?.email || '';
++      text('.entry-lead', `Prototype code for ${email}.`);
++      if (screen.querySelector('.entry-notice')?.textContent === 'New code sent. Use the latest one.') text('.entry-notice', 'New prototype code ready. Use 123456.');
++    }
++    if (route === 'wallet') {
++      text('.entry-heading', 'Choose a demo account.');
++      text('.entry-lead', 'Prototype sign-in only. No wallet connects or signs.');
++      text('.entry-quiet', 'Choose an account to try a simulated approval.');
++    }
++    if (['approval-waiting', 'approval-unknown'].includes(route)) {
++      text('.entry-heading', route === 'approval-waiting' ? 'Try a wallet result.' : 'Result still unknown.');
++      text('.entry-lead', 'No wallet approval is requested. Choose a simulated result below.');
++    }
++    if (route === 'ready') text('.header-title b', 'Prototype sign-in');
++    const main = screen.querySelector('.app-content');
++    if (!main || main.querySelector('.entry-prototype-note')) return;
++    const message = route === 'code' ? 'Prototype only. Enter 123456 to continue. No email was sent.'
++      : route === 'ready' ? 'Simulated sign-in. No real account was created.'
++      : resumed && ['email', 'wallet', 'invite'].includes(route) ? 'Sign-in restarted. Request a fresh code or approval. Your saved work and incoming destination stay.' : '';
++    if (message) {
++      const note = doc.createElement('p');
++      note.className = 'entry-quiet entry-prototype-note';
++      note.setAttribute('role', 'status'); note.textContent = message;
++      const form = main.querySelector('form');
++      if (form) form.before(note); else main.append(note);
++    }
++    if (['approval-waiting', 'approval-unknown'].includes(route) && !main.querySelector('.entry-prototype-results')) {
++      const results = doc.createElement('div'); results.className = 'entry-prototype-results';
++      results.setAttribute('role', 'group'); results.setAttribute('aria-label', 'Simulated wallet results');
++      for (const [value, label] of [['approved', 'Simulate verified approval'], ['declined', 'Simulate declined approval'], ['unknown', 'Simulate unknown result']]) {
++        const button = doc.createElement('button'); button.type = 'button';
++        button.className = 'entry-testbtn'; button.dataset.demoResult = value; button.textContent = label;
++        results.append(button);
++      }
++      main.append(results);
++    }
++  }
++  doc.addEventListener('click', event => {
++    const button = event.target.closest('[data-action="GO"][data-route="welcome"], [data-action="START_OVER"]');
++    if (!button || screen.dataset.destination === 'invite') return;
++    event.preventDefault(); event.stopImmediatePropagation(); onExit();
++  }, true);
++  const observer = new doc.defaultView.MutationObserver(decorate);
++  observer.observe(screen, { childList: true, subtree: true });
++  decorate();
++  doc.defaultView.addEventListener('pagehide', () => observer.disconnect(), { once: true });
++}
+diff --git a/scripts/surface-clarity.test.mjs b/scripts/surface-clarity.test.mjs
+index cf5d6485..5b5b9672 100644
+--- a/scripts/surface-clarity.test.mjs
++++ b/scripts/surface-clarity.test.mjs
+@@ -19,6 +19,20 @@ function fixture(t, live = false) {
+   // Git access is read-only in the tested functions; mutations target copied files.
+   const gitdir = execFileSync('git', ['rev-parse', '--absolute-git-dir'], { cwd: source, encoding: 'utf8' }).trim();
+   fs.writeFileSync(path.join(root, '.git'), `gitdir: ${gitdir}\n`);
++  // Method unit fixtures use the explicitly recorded historical implementation,
++  // not the evolving application or generated local QA output. This is confined
++  // to this disposable directory; it never rebinds a live review record.
++  if (!live) {
++    const policy = JSON.parse(fs.readFileSync(path.join(root, base, 'policy.json')));
++    for (const relative of policy.runtime_roots) {
++      fs.rmSync(path.join(root, relative), { recursive: true, force: true });
++      const paths = execFileSync('git', ['ls-tree', '-r', '--name-only', policy.inherited_audit.implementation_sha, '--', relative], { cwd: source, encoding: 'utf8' }).trim().split('\n').filter(Boolean);
++      for (const p of paths) {
++        fs.mkdirSync(path.dirname(path.join(root, p)), { recursive: true });
++        fs.writeFileSync(path.join(root, p), execFileSync('git', ['show', `${policy.inherited_audit.implementation_sha}:${p}`], { cwd: source, maxBuffer: 32 * 1024 * 1024 }));
++      }
++    }
++  }
+   // Unit cases start from pending obligations, independent of accumulated audits.
+   // Only disposable test files are changed; live coverage is tested separately.
+   if (!live) for (const name of fs.readdirSync(path.join(root, base, 'journeys'))) {
+@@ -125,9 +139,12 @@ test('frozen authority tree mismatch stops the check', t => {
+   const root = fixture(t); change(root, `${base}/policy.json`, p => { p.schema_tree = '0000000000000000000000000000000000000000'; });
+   assert.throws(() => validate(root), /Frozen tree mismatch/);
+ });
+-test('live J01 failures and unexecuted paths remain incomplete with valid bookkeeping', t => {
++test('live J01 failures remain incomplete and changed runtime evidence remains stale', t => {
+   const root = fixture(t, true), r = validate(root), record = read(root, j01);
+-  assert.deepEqual(r.errors, []);
++  if (record.binding.runtime_digest !== context(root).binding.runtime_digest) {
++    assert.ok(r.errors.includes('J01: stale runtime/registry/authority binding'));
++    assert.ok(r.errors.some(e => e.startsWith('J01: stale evidence ')));
++  } else assert.deepEqual(r.errors, []);
+   assert.equal(r.readiness, 'INCOMPLETE');
+   for (const x of [...record.checks, ...record.scenarios].filter(x => ['fail', 'unassessed'].includes(x.result))) {
+     assert.ok(r.blockers.includes(`J01: ${x.id} ${x.result}`));

@@ -1,0 +1,20 @@
+Evidence directory: /tmp/chopdot-j01-repair.LHTojw9Q/evidence
+package exit=0
+model exit=0
+subject-binding exit=0
+framework-tests exit=1
+✖ scripts/surface-clarity.test.mjs (121.159366ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 126.712296
+
+✖ failing tests:
+
+test at scripts/surface-clarity.test.mjs:1:1
+✖ scripts/surface-clarity.test.mjs (121.159366ms)
+  'test failed'

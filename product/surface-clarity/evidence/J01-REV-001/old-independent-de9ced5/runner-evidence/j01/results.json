@@ -1,0 +1,235 @@
+{
+  "status": "PASS",
+  "browser": "154.0.8037.57",
+  "checks": [
+    {
+      "id": "J01-R02-393-keyboard-target",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R03-393-fresh-guest-and-reload",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R04-393-normal-back",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R05-393-boundary-back-cancel",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R20-393-native-back",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R06-393-incorrect-code-no-conversion",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R07-393-fresh-restart-intent",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R08-393-prior-proof-rejected",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R09-393-ready-not-converted",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R10-393-conversion-preserves-work",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R19-393-reload-preserves-work-not-session-proof",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R11-393-returning-no-name-step",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R12-393-invite-back-reload",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R13-393-invite-readiness-not-join",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R21-393-wallet-restart-stale-proof",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R14-393-refresh-not-proof",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R15-393-wallet-outcomes-discoverable",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R22-393-canonical-invite-back",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R23-393-canonical-invite-reload-entry-not-consent",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R16-393-offline-recovery-controls",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R16-393-expired-recovery-controls",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R16-393-reauth-recovery-controls",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R24-393-wrong-account-denied",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R25-393-load-error-safe-retry",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R26-393-expired-wallet-cancel",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R17-393-horizontal-layout",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R02-430-keyboard-target",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R03-430-fresh-guest-and-reload",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R04-430-normal-back",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R05-430-boundary-back-cancel",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R20-430-native-back",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R06-430-incorrect-code-no-conversion",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R07-430-fresh-restart-intent",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R08-430-prior-proof-rejected",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R09-430-ready-not-converted",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R10-430-conversion-preserves-work",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R19-430-reload-preserves-work-not-session-proof",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R11-430-returning-no-name-step",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R12-430-invite-back-reload",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R13-430-invite-readiness-not-join",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R21-430-wallet-restart-stale-proof",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R14-430-refresh-not-proof",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R15-430-wallet-outcomes-discoverable",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R22-430-canonical-invite-back",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R23-430-canonical-invite-reload-entry-not-consent",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R16-430-offline-recovery-controls",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R16-430-expired-recovery-controls",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R16-430-reauth-recovery-controls",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R24-430-wrong-account-denied",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R25-430-load-error-safe-retry",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R26-430-expired-wallet-cancel",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R17-430-horizontal-layout",
+      "status": "PASS"
+    },
+    {
+      "id": "J01-R18-browser-health",
+      "status": "PASS"
+    }
+  ],
+  "screenshots": [
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/j01/front-door-393.png",
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/j01/code-393.png",
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/j01/converted-393.png",
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/j01/wallet-393.png",
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/j01/front-door-430.png",
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/j01/code-430.png",
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/j01/converted-430.png",
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/j01/wallet-430.png"
+  ],
+  "errors": [],
+  "limitations": [
+    "Local automated browser evidence; not a hosted Actions result, independent review or user comprehension study.",
+    "Authentication and wallet results are public synthetic fixtures. No real provider, signing, remote invitation or account is created.",
+    "Legacy entry=invite uses the approved reference invitation, not a new canonical membership operation.",
+    "Recovery cases explicitly inject source-supported synthetic preconditions before operating visible recovery controls."
+  ]
+}

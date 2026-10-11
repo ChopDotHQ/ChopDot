@@ -1,0 +1,27 @@
+Evidence directory: /tmp/chopdot-j01-repair.bC2Mz4K7/evidence
+package exit=0
+model exit=0
+subject-binding exit=0
+framework-tests exit=0
+j01-browser exit=0
+gate-a exit=0
+create-join exit=1
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   'Failed to load resource: the server responded with a status of 404 (Not Found)'
++ ]
+- []
+
+    at file:///tmp/chopdot-j01-repair.bC2Mz4K7/source/prototypes/integrated-product-preview-v2/create-join/browser-qa.mjs:25:43
+    at check (file:///tmp/chopdot-j01-repair.bC2Mz4K7/source/prototypes/integrated-product-preview-v2/create-join/browser-qa.mjs:7:155)
+    at file:///tmp/chopdot-j01-repair.bC2Mz4K7/source/prototypes/integrated-product-preview-v2/create-join/browser-qa.mjs:25:2 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: [Array],
+  expected: [],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+{"status":"FAIL","checks":30,"error":"AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ [\n+   'Failed to load resource: the server responded with a status of 404 (Not Found)'\n+ ]\n- []\n\n    at file:///tmp/chopdot-j01-repair.bC2Mz4K7/source/prototypes/integrated-product-preview-v2/create-join/browser-qa.mjs:25:43\n    at check (file:///tmp/chopdot-j01-repair.bC2Mz4K7/source/prototypes/integrated-product-preview-v2/create-join/browser-qa.mjs:7:155)\n    at file:///tmp/chopdot-j01-repair.bC2Mz4K7/source/prototypes/integrated-product-preview-v2/create-join/browser-qa.mjs:25:2"}

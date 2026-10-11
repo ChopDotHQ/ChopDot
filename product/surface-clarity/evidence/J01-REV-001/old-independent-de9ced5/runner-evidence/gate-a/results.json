@@ -1,0 +1,32 @@
+[
+  {
+    "file": "browser-qa.mjs",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "--import",
+      "/tmp/chopdot-j01-repair.bC2Mz4K7/source/prototypes/integrated-product-preview-v2/gate-b/browser-launch.mjs",
+      "/tmp/chopdot-j01-repair.bC2Mz4K7/source/prototypes/integrated-product-preview-v2/browser-qa.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "file": "exact-money-browser-qa.mjs",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "--import",
+      "/tmp/chopdot-j01-repair.bC2Mz4K7/source/prototypes/integrated-product-preview-v2/gate-b/browser-launch.mjs",
+      "/tmp/chopdot-j01-repair.bC2Mz4K7/source/prototypes/integrated-product-preview-v2/exact-money-browser-qa.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "file": "money-boundary-browser-qa.mjs",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "--import",
+      "/tmp/chopdot-j01-repair.bC2Mz4K7/source/prototypes/integrated-product-preview-v2/gate-b/browser-launch.mjs",
+      "/tmp/chopdot-j01-repair.bC2Mz4K7/source/prototypes/integrated-product-preview-v2/money-boundary-browser-qa.mjs"
+    ],
+    "exitCode": 0
+  }
+]

@@ -1,0 +1,26 @@
+✔ all registered journeys have coherent records; imported samples are not readiness (426.307629ms)
+✔ missing current journey cannot shrink coverage (411.819151ms)
+✔ future registered journey is counted and init remains pending without new authority (502.588747ms)
+✔ init refuses existing records and unregistered journey IDs (499.317657ms)
+✔ runtime edit invalidates bindings without resetting them (450.205376ms)
+✔ docs-only changes retain runtime binding (428.122913ms)
+✔ invented certified task mapping is rejected (430.47812ms)
+✔ a pass needs steps, an expectation and referenced evidence (450.535232ms)
+✔ not applicable cannot silently replace unexecuted checks (421.775925ms)
+✔ bounded supported check is allowed without clearing unrelated paths (818.010079ms)
+✔ failed command cannot support pass (878.913949ms)
+✔ changed artifact bytes invalidate evidence (882.297084ms)
+✔ artifact paths cannot escape the disposable evidence root (1045.418168ms)
+✔ borrowed available commit cannot attest different runtime bytes (598.943426ms)
+✔ fixed finding requires linked evidence and current runtime disposition (575.987632ms)
+✔ historical result bytes cannot be silently reclassified (616.183132ms)
+✔ frozen authority tree mismatch stops the check (499.396079ms)
+✔ live J01 failures remain incomplete and changed runtime evidence remains stale (588.489847ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10582.392576

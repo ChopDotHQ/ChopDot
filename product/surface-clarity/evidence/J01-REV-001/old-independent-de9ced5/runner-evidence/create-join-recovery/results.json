@@ -1,0 +1,80 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "CJ-R01-offline-local-create-explicit",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R02-offline-invite-no-participant",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R03-expired-precondition-no-membership",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R04-linked-route-cannot-invent-result",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R04-pending-route-cannot-invent-result",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R04-unknown-route-cannot-invent-result",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R05-mismatch-preserves-participant",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R05-cancelled-preserves-participant",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R06-pre-effect-distinct-from-readback",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R07-reopen-reselects-existing-group",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R07b-already-joined-reselects-without-new-proof",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R08-entry-alone-does-not-join",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R08-account-entry-does-not-join-before-consent-binding",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R09-already-joined-reopens-same-member",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R10-next-group-distinct-no-name-merge",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-R11-browser-health",
+      "status": "PASS"
+    }
+  ],
+  "consoleErrors": [],
+  "screenshots": [
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/create-join-recovery/offline-created.png",
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/create-join-recovery/offline-invite.png",
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/create-join-recovery/expired.png",
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/create-join-recovery/mismatch.png",
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/create-join-recovery/cancelled.png",
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/create-join-recovery/known-pre-effect-failure.png",
+    "/tmp/chopdot-j01-repair.bC2Mz4K7/evidence/create-join-recovery/account-join.png"
+  ],
+  "scope": "Fresh isolated browser contexts; known external/precondition records seeded explicitly, all subsequent operations use visible controls."
+}

@@ -1,0 +1,513 @@
+✖ all registered journeys have coherent records; imported samples are not readiness (19.809202ms)
+✖ missing current journey cannot shrink coverage (8.211981ms)
+✖ future registered journey is counted and init remains pending without new authority (9.067505ms)
+✖ init refuses existing records and unregistered journey IDs (9.391076ms)
+✖ runtime edit invalidates bindings without resetting them (8.917551ms)
+✖ docs-only changes retain runtime binding (8.13079ms)
+✖ invented certified task mapping is rejected (9.290057ms)
+✖ a pass needs steps, an expectation and referenced evidence (8.989348ms)
+✖ not applicable cannot silently replace unexecuted checks (9.234193ms)
+✖ bounded supported check is allowed without clearing unrelated paths (9.253432ms)
+✖ failed command cannot support pass (8.301604ms)
+✖ changed artifact bytes invalidate evidence (7.085693ms)
+✖ artifact paths cannot escape the disposable evidence root (7.873145ms)
+✖ borrowed available commit cannot attest different runtime bytes (7.501733ms)
+✖ fixed finding requires linked evidence and current runtime disposition (7.636173ms)
+✖ historical result bytes cannot be silently reclassified (8.212942ms)
+✖ frozen authority tree mismatch stops the check (8.759226ms)
+✖ live J01 failures remain incomplete and changed runtime evidence remains stale (9.383315ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 0
+ℹ fail 18
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 171.007728
+
+✖ failing tests:
+
+test at scripts/surface-clarity.test.mjs:59:1
+✖ all registered journeys have coherent records; imported samples are not readiness (19.809202ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:60:22)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 979,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:65:1
+✖ missing current journey cannot shrink coverage (8.211981ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:66:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 980,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:69:1
+✖ future registered journey is counted and init remains pending without new authority (9.067505ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:70:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 981,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:77:1
+✖ init refuses existing records and unregistered journey IDs (9.391076ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:78:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 982,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:82:1
+✖ runtime edit invalidates bindings without resetting them (8.917551ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:83:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 983,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:86:1
+✖ docs-only changes retain runtime binding (8.13079ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:87:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 984,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:90:1
+✖ invented certified task mapping is rejected (9.290057ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:91:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 985,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:94:1
+✖ a pass needs steps, an expectation and referenced evidence (8.989348ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:95:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 986,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:98:1
+✖ not applicable cannot silently replace unexecuted checks (9.234193ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:99:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 987,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:102:1
+✖ bounded supported check is allowed without clearing unrelated paths (9.253432ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:103:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 988,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:108:1
+✖ failed command cannot support pass (8.301604ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:109:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 989,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:114:1
+✖ changed artifact bytes invalidate evidence (7.085693ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:115:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 990,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:119:1
+✖ artifact paths cannot escape the disposable evidence root (7.873145ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:120:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 991,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:124:1
+✖ borrowed available commit cannot attest different runtime bytes (7.501733ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:125:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 992,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:130:1
+✖ fixed finding requires linked evidence and current runtime disposition (7.636173ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:131:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 993,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:134:1
+✖ historical result bytes cannot be silently reclassified (8.212942ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:135:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 994,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:138:1
+✖ frozen authority tree mismatch stops the check (8.759226ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:139:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 995,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }
+
+test at scripts/surface-clarity.test.mjs:142:1
+✖ live J01 failures remain incomplete and changed runtime evidence remains stale (9.383315ms)
+  <ref *1> Error: spawnSync git EPERM
+      at Object.spawnSync (node:internal/child_process:1160:20)
+      at spawnSync (node:child_process:928:24)
+      at execFileSync (node:child_process:971:15)
+      at fixture (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:20:18)
+      at TestContext.<anonymous> (file:///workspace/work/j01-candidate/scripts/surface-clarity.test.mjs:143:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12) {
+    errno: -1,
+    code: 'EPERM',
+    syscall: 'spawnSync git',
+    path: 'git',
+    spawnargs: [ 'rev-parse', '--absolute-git-dir' ],
+    error: [Circular *1],
+    status: 0,
+    signal: null,
+    output: [ null, '/workspace/work/j01-candidate/.git\n', '' ],
+    pid: 996,
+    stdout: '/workspace/work/j01-candidate/.git\n',
+    stderr: ''
+  }

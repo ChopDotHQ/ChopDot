@@ -1,0 +1,11 @@
+Evidence directory: /tmp/chopdot-j01-repair.K6DjXaIA/evidence
+package exit=0
+model exit=0
+subject-binding exit=0
+framework-tests exit=0
+j01-browser exit=0
+gate-a exit=0
+create-join exit=0
+create-join-recovery exit=0
+gate-d-recovery exit=0
+Local engineering checks passed; existing Surface Clarity records remain stale/incomplete. Evidence: /tmp/chopdot-j01-repair.K6DjXaIA/evidence

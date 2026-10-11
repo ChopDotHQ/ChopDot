@@ -1,0 +1,51 @@
+{
+  "finding": "J01-REV-001",
+  "verification_kind": "IMPLEMENTATION_OWNER",
+  "independent_review": false,
+  "base_sha": "de9ced5d281ec906f8cd3056164f864528ca7573",
+  "base_tree": "7f6c85d0e298ae6e0833b9165efb551a61b5c883",
+  "tested_sha": "2cb499e5fa196de87c26d8d72ce2e5162af4b0d6",
+  "tested_tree": "b67bc010c39b352ec054d9124bc94df8f47d902a",
+  "implementation_files": [
+    "prototypes/integrated-product-preview-v2/gate-b/test-server.mjs"
+  ],
+  "fix": "Exact /favicon.ico localhost fixture request returns empty uncached HTTP204",
+  "old": {
+    "browser_passes": 372,
+    "browser_failures": 1,
+    "runner_exit": 1,
+    "receipt": "old-independent-de9ced5/REVIEW-RECEIPT.md",
+    "receipt_sha256": "7caa04c6f8eac398a0df4f4a20885a999f97d5f5facead2335d69f1386d33142"
+  },
+  "new": {
+    "browser_passes": 373,
+    "browser_failures": 0,
+    "model_checks": 213,
+    "framework_tests": 18,
+    "runner_exit": 0,
+    "clarity_checker_exit": 1,
+    "clarity_expected_stale": true,
+    "stage_counts": {
+      "j01": 53,
+      "gate_a": 118,
+      "exact_money": 84,
+      "boundary": 60,
+      "create_join": 31,
+      "create_join_recovery": 16,
+      "gate_d_recovery": 11
+    },
+    "http_checks": 10,
+    "http_exit": 0,
+    "deterministic_packaging": true,
+    "package_files": 264,
+    "authority_exit": 0
+  },
+  "j01_accepted": false,
+  "historical_clarity_bindings_refreshed": false,
+  "source_scope": "One fixture server file plus evidence only",
+  "limits": [
+    "Owner verification is not independent review",
+    "No hosted/CI or human comprehension/accessibility certification",
+    "Original de9ced5 review limits and dispositions unchanged"
+  ]
+}

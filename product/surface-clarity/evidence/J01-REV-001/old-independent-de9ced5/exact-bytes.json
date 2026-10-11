@@ -1,0 +1,38 @@
+[
+  {
+    "path": "product/surface-clarity/evidence/J01-repair-2026-10-10/REPORT.md",
+    "expected_git_blob": "719da32f6f0f75dec484311b6c99870b00bb162f",
+    "actual_git_blob": "719da32f6f0f75dec484311b6c99870b00bb162f",
+    "match": true
+  },
+  {
+    "path": "product/surface-clarity/evidence/J01-repair-2026-10-10/run.sh",
+    "expected_git_blob": "7d0307dc28f0c91e3a4770a435d0dda2d208c84f",
+    "actual_git_blob": "7d0307dc28f0c91e3a4770a435d0dda2d208c84f",
+    "match": true
+  },
+  {
+    "path": "prototypes/integrated-product-preview-v2/app.js",
+    "expected_git_blob": "1bc47fb50121f062a11ee158d9dae1d9297aff0f",
+    "actual_git_blob": "1bc47fb50121f062a11ee158d9dae1d9297aff0f",
+    "match": true
+  },
+  {
+    "path": "prototypes/integrated-product-preview-v2/j01-browser-qa.mjs",
+    "expected_git_blob": "30a30659cb82c4b587d09dea82a228fee71c3828",
+    "actual_git_blob": "30a30659cb82c4b587d09dea82a228fee71c3828",
+    "match": true
+  },
+  {
+    "path": "prototypes/integrated-product-preview-v2/j01-surface.js",
+    "expected_git_blob": "de2e818e4bfda74eeb8ab1e6ea55c6f7f9c7b3be",
+    "actual_git_blob": "de2e818e4bfda74eeb8ab1e6ea55c6f7f9c7b3be",
+    "match": true
+  },
+  {
+    "path": "scripts/surface-clarity.test.mjs",
+    "expected_git_blob": "5b5b96726ad4a5107aeafc2ce3dad4e2d364466a",
+    "actual_git_blob": "5b5b96726ad4a5107aeafc2ce3dad4e2d364466a",
+    "match": true
+  }
+]

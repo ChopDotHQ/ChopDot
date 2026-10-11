@@ -1,0 +1,217 @@
+{
+  "status": "PASS",
+  "sha": "2cb499e5fa196de87c26d8d72ce2e5162af4b0d6",
+  "tree": "b67bc010c39b352ec054d9124bc94df8f47d902a",
+  "changed_files": [
+    "prototypes/integrated-product-preview-v2/gate-b/test-server.mjs"
+  ],
+  "authority": [
+    {
+      "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+      "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c"
+    },
+    {
+      "sha": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "tree": "cb424dafedff066fed433e106eb4468bec985d98"
+    }
+  ],
+  "unchanged_blobs": [
+    {
+      "path": "prototypes/integrated-product-preview-v2/create-join/browser-qa.mjs",
+      "base_blob": "e26211d724ad51839bf3fc29ba53fc9c9dd886d2",
+      "successor_blob": "e26211d724ad51839bf3fc29ba53fc9c9dd886d2"
+    },
+    {
+      "path": "product/surface-clarity/findings.json",
+      "base_blob": "5f37a58879e73780df58d675e455f10545cea45b",
+      "successor_blob": "5f37a58879e73780df58d675e455f10545cea45b"
+    },
+    {
+      "path": "product/surface-clarity/journeys/J01.json",
+      "base_blob": "0fcddc5e862b1a1cce752ed45c81f7a84e488a30",
+      "successor_blob": "0fcddc5e862b1a1cce752ed45c81f7a84e488a30"
+    },
+    {
+      "path": "product/surface-clarity/policy.json",
+      "base_blob": "515a2fe497ba06b22d8de1f45f68741c88e6f3a9",
+      "successor_blob": "515a2fe497ba06b22d8de1f45f68741c88e6f3a9"
+    },
+    {
+      "path": "scripts/package-preview-v2-gate-b.mjs",
+      "base_blob": "396918f6ac0f5823bdd08320a12bbde5a1dc58a4",
+      "successor_blob": "396918f6ac0f5823bdd08320a12bbde5a1dc58a4"
+    },
+    {
+      "path": "product/surface-clarity/evidence/J01-repair-2026-10-10/run.sh",
+      "base_blob": "7d0307dc28f0c91e3a4770a435d0dda2d208c84f",
+      "successor_blob": "7d0307dc28f0c91e3a4770a435d0dda2d208c84f"
+    }
+  ],
+  "package_file_count": 264,
+  "deterministic_packaging": true,
+  "j01_sha256": "97f3da489c78cb842c354390b2e354397a6a6c3843228ec9928efebaf21089e8",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-only",
+        "de9ced5d281ec906f8cd3056164f864528ca7573",
+        "2cb499e5fa196de87c26d8d72ce2e5162af4b0d6"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013^{tree}"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "4ba456e6595330e4ca8e21366e0d827f17e10881^{tree}"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "de9ced5d281ec906f8cd3056164f864528ca7573:prototypes/integrated-product-preview-v2/create-join/browser-qa.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "2cb499e5fa196de87c26d8d72ce2e5162af4b0d6:prototypes/integrated-product-preview-v2/create-join/browser-qa.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "de9ced5d281ec906f8cd3056164f864528ca7573:product/surface-clarity/findings.json"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "2cb499e5fa196de87c26d8d72ce2e5162af4b0d6:product/surface-clarity/findings.json"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "de9ced5d281ec906f8cd3056164f864528ca7573:product/surface-clarity/journeys/J01.json"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "2cb499e5fa196de87c26d8d72ce2e5162af4b0d6:product/surface-clarity/journeys/J01.json"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "de9ced5d281ec906f8cd3056164f864528ca7573:product/surface-clarity/policy.json"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "2cb499e5fa196de87c26d8d72ce2e5162af4b0d6:product/surface-clarity/policy.json"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "de9ced5d281ec906f8cd3056164f864528ca7573:scripts/package-preview-v2-gate-b.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "2cb499e5fa196de87c26d8d72ce2e5162af4b0d6:scripts/package-preview-v2-gate-b.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "de9ced5d281ec906f8cd3056164f864528ca7573:product/surface-clarity/evidence/J01-repair-2026-10-10/run.sh"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "2cb499e5fa196de87c26d8d72ce2e5162af4b0d6:product/surface-clarity/evidence/J01-repair-2026-10-10/run.sh"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "node",
+        "scripts/package-preview-v2-gate-b.mjs",
+        "/tmp/j01-favicon-pack-j2d2lwwm/a"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "node",
+        "scripts/package-preview-v2-gate-b.mjs",
+        "/tmp/j01-favicon-pack-j2d2lwwm/b"
+      ],
+      "exit_code": 0
+    }
+  ]
+}

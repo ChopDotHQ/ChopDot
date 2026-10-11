@@ -1,0 +1,65 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "cleanIndex": false,
+      "path": "/favicon.ico",
+      "status": 204,
+      "passed": true
+    },
+    {
+      "cleanIndex": false,
+      "path": "/favicon.ico?browser=probe",
+      "status": 204,
+      "passed": true
+    },
+    {
+      "cleanIndex": false,
+      "path": "/missing-j01-fixture.js",
+      "status": 404,
+      "passed": true
+    },
+    {
+      "cleanIndex": false,
+      "path": "/%2e%2e%2foutside",
+      "status": 403,
+      "passed": true
+    },
+    {
+      "cleanIndex": false,
+      "path": "/prototypes/integrated-product-preview-v2/index.html",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "cleanIndex": true,
+      "path": "/favicon.ico",
+      "status": 204,
+      "passed": true
+    },
+    {
+      "cleanIndex": true,
+      "path": "/favicon.ico?browser=probe",
+      "status": 204,
+      "passed": true
+    },
+    {
+      "cleanIndex": true,
+      "path": "/missing-j01-fixture.js",
+      "status": 404,
+      "passed": true
+    },
+    {
+      "cleanIndex": true,
+      "path": "/%2e%2e%2foutside",
+      "status": 403,
+      "passed": true
+    },
+    {
+      "cleanIndex": true,
+      "path": "/prototypes/integrated-product-preview-v2/index.html",
+      "status": 302,
+      "passed": true
+    }
+  ]
+}
