@@ -1,0 +1,984 @@
+{
+  "format_version": "1.0.0",
+  "record_id": "J01-SCHEMA-TRACE-2026-10-11",
+  "created_date": "2026-10-11",
+  "repository": "ChopDotHQ/ChopDot",
+  "journey": "J01",
+  "status": "trace_registered_repair_awaiting_user_acceptance",
+  "scope": "Trace of the three existing J01 Surface Clarity repairs alongside frozen Product Schema V1. No schema/model/tag revision, new product rule, certification or acceptance.",
+  "schema_baseline": {
+    "tag": "product-schema-v1",
+    "commit": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+    "files": [
+      {
+        "path": "product-schema/V1_USAGE_GUIDE.md",
+        "git_blob": "34733a62b90ab23f9381fe4bee514f4a4203ca3c"
+      },
+      {
+        "path": "product-schema/composition-graph.json",
+        "git_blob": "7b3bb328ee8b5cd9e1012e19c642a7b3e7d8c45a"
+      },
+      {
+        "path": "product-schema/generated/reconstruction-pieces.json",
+        "git_blob": "90bb8db53b8f75176a24457d5380bbf354920205"
+      },
+      {
+        "path": "product-schema/semantic-core.json",
+        "git_blob": "5820481119313bdd1fb63afb48ecc519a0b54fd0"
+      },
+      {
+        "path": "product-schema/task-paths-v1.json",
+        "git_blob": "17e7917e5b52046709c18a3c7c0de373072a4b8b"
+      }
+    ]
+  },
+  "product_authority": {
+    "commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+    "tree": "cb424dafedff066fed433e106eb4468bec985d98"
+  },
+  "implementation": {
+    "commit": "4b29bfac000f3c7639cbfde8de081fc06ba13afe",
+    "tree": "1d1f4c8f07ca9c198a425c172146e2bd32322f4c",
+    "independently_reviewed_repair_commit": "de9ced5d281ec906f8cd3056164f864528ca7573",
+    "owner_tested_tooling_commit": "2cb499e5fa196de87c26d8d72ce2e5162af4b0d6",
+    "publication_parent": "902d3c1ab1ae54573540b650bced48062be0f2f1",
+    "publication_parent_tree": "5527d772c3418b3b63fb753e10a09a3b368f69ab",
+    "runtime_digest_sha256": "582bbd4a87d986c952f900f94c53d5f56f6751f9cc3764760be59fd16f4d52d3",
+    "runtime_file_count": 164
+  },
+  "authority_sources": [
+    {
+      "id": "J01",
+      "commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/spec.md",
+      "git_blob": "30597b1bff8b1d21dc5c4117a28a8de7d05b9bbb"
+    },
+    {
+      "id": "C1_IDENTITY",
+      "commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "path": "prototypes/experience-workbench/contracts/phase-c1/member-identity.contract.json",
+      "git_blob": "176fdaeb0845e842ff747b597119fb7f7756d918"
+    },
+    {
+      "id": "POST_J28",
+      "commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "path": "prototypes/experience-workbench/shared/POST_J28_PRODUCT_DECISIONS.md",
+      "git_blob": "3663e320c2cbb9354340acfeb622e6da85c4952f"
+    },
+    {
+      "id": "J01-D01",
+      "commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/decision-history.md",
+      "git_blob": "c727d7e450269d678cfa53ddb4cf9f6eef0f4387",
+      "anchor": "J01-D01",
+      "meaning": "Entry destination/invite context survives interruptions and method changes; sign-in remains distinct from joining/payment."
+    },
+    {
+      "id": "J01-D02",
+      "commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "path": "prototypes/experience-workbench/journeys/01-enter-chopdot/source/decision-history.md",
+      "git_blob": "c727d7e450269d678cfa53ddb4cf9f6eef0f4387",
+      "anchor": "J01-D02",
+      "meaning": "Restart/reload uses a fresh epoch; results are bound to issued request identity and cannot authorize another attempt."
+    },
+    {
+      "id": "J01-FRONT-DOOR",
+      "commit": "8548313791e4ef7b436ee742cd18c1fa48d74eeb",
+      "path": "docs/integrated-preview-v2/J01_ENTRY_FRONT_DOOR_DECISION.md",
+      "git_blob": "d5704c40b1cbe806f8d2f77e1f818098efd6e26a",
+      "meaning": "Accepted Gate A contains the selected bounded guest/front-door/account-boundary composition.",
+      "historical_status_note": "The decision file preserves its earlier 'Gate A remains unaccepted' header. This record does not rewrite that historical header or create new acceptance."
+    }
+  ],
+  "schema_relationships": {
+    "journey_projection": {
+      "id": "01",
+      "name": "Enter ChopDot",
+      "kind": "entry_effect",
+      "owns_operations": [
+        "session.enter"
+      ],
+      "participates_operations": [
+        "participant.link_account",
+        "preferences.update"
+      ],
+      "renders_views": [],
+      "emits_contexts": [
+        "ctx.identity",
+        "ctx.entry"
+      ],
+      "recovery": {
+        "cross_cutting_owner": "28",
+        "context": "ctx.recovery"
+      },
+      "notes": [
+        "Phase C1 participant/account linking is an approved overlay; the base entry journey still keeps sign-in distinct from joining/payment."
+      ],
+      "entry_contexts_any": [
+        "ctx.entry"
+      ],
+      "ambient_contexts_required": [],
+      "effect_contexts_required": []
+    },
+    "context_snapshots": [
+      {
+        "id": "ctx.entry",
+        "name": "Entry intent",
+        "objects": [
+          "identity.session",
+          "group.invitation"
+        ],
+        "preserves": [
+          "intended destination",
+          "invite identity when present"
+        ],
+        "laws": [
+          "LAW-OP-03"
+        ]
+      },
+      {
+        "id": "ctx.identity",
+        "name": "Identity/session",
+        "objects": [
+          "identity.participant",
+          "identity.account",
+          "identity.session",
+          "identity.guest_capability"
+        ],
+        "preserves": [
+          "participant identity",
+          "session/account distinction",
+          "capability scope"
+        ],
+        "laws": [
+          "LAW-ID-01",
+          "LAW-ID-02",
+          "LAW-ID-03",
+          "LAW-AUTH-01"
+        ]
+      }
+    ],
+    "operation_snapshots": [
+      {
+        "id": "session.enter",
+        "name": "Enter / authenticate",
+        "owner": "identity.session",
+        "changes": [
+          "identity.session"
+        ],
+        "source_journeys": [
+          "01"
+        ],
+        "sources": [
+          "J01"
+        ],
+        "rules": [
+          "Sign-in preserves original destination/invite context.",
+          "Sign-in does not join a group or authorize payment."
+        ],
+        "safety_class": "identity"
+      },
+      {
+        "id": "participant.link_account",
+        "name": "Link Participant to account",
+        "owner": "identity.participant",
+        "changes": [
+          "identity.participant",
+          "identity.account"
+        ],
+        "source_journeys": [
+          "01",
+          "04",
+          "27"
+        ],
+        "sources": [
+          "C1_IDENTITY",
+          "POST_J28"
+        ],
+        "rules": [
+          "Preserve participant_id and historical references.",
+          "Binding is staged; mismatch/collision remains unresolved.",
+          "Account-only capabilities appear only after durable verified binding."
+        ],
+        "safety_class": "identity",
+        "reads": [
+          "identity.participant",
+          "identity.account",
+          "identity.guest_capability",
+          "operation.identity",
+          "operation.outcome"
+        ]
+      }
+    ],
+    "relevant_law_snapshots": [
+      {
+        "id": "LAW-ID-01",
+        "name": "Participant identity survives account linking",
+        "applies_to": [
+          "identity.participant",
+          "identity.account"
+        ],
+        "rule": "Link/upgrade preserves the same group-scoped participant_id and every historical expense/split/history/export/recovery reference.",
+        "sources": [
+          "C1_IDENTITY",
+          "POST_J28"
+        ],
+        "safety_class": "identity",
+        "constraint": {
+          "kind": "stable_participant_identity",
+          "participant_id_stable": true,
+          "account_link_replaces_participant": false,
+          "historical_reference_rewrite": false
+        },
+        "machine_checkable": true
+      },
+      {
+        "id": "LAW-AUTH-01",
+        "name": "Presentation/preferences are not authority",
+        "applies_to": [
+          "account.preferences",
+          "payment.destination",
+          "wallet.session",
+          "notification.delivery"
+        ],
+        "rule": "A saved preference, destination, notification or wallet connection does not itself create payment/signing/group/identity-provider authority.",
+        "sources": [
+          "DESIGN",
+          "J20",
+          "J21",
+          "J27"
+        ],
+        "safety_class": "authority",
+        "constraint": {
+          "kind": "presentation_not_authority",
+          "presentation_preference_creates_authority": false,
+          "authority_domains": [
+            "payment",
+            "signing",
+            "group",
+            "identity_provider"
+          ]
+        },
+        "machine_checkable": true
+      },
+      {
+        "id": "LAW-OP-03",
+        "name": "Navigation is not evidence",
+        "applies_to": [
+          "operation.outcome",
+          "recovery.context"
+        ],
+        "rule": "Back, reload, route changes or time alone never convert unknown/pending state into success, failure, cancellation or receipt.",
+        "sources": [
+          "J28",
+          "J12",
+          "J14"
+        ],
+        "safety_class": "recovery_replay",
+        "constraint": {
+          "kind": "navigation_not_evidence",
+          "evidence_from_navigation": false,
+          "prohibited_inference_sources": [
+            "back",
+            "reload",
+            "route_change",
+            "time_alone"
+          ]
+        },
+        "machine_checkable": true
+      }
+    ],
+    "certified_task_ids": [],
+    "task_scope_note": "Frozen V1 has no certified J01 task path. This record does not invent one.",
+    "piece_snapshots": [
+      {
+        "piece_id": "J01/approval-declined/action/check-again@refresh-approval",
+        "journey": "01",
+        "state": "approval-declined",
+        "piece": "Check again",
+        "piece_type": "visible_action",
+        "classification": "NAVIGATION_TRANSITION",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html"
+        ],
+        "justification": "Local source event changes reversible prototype/navigation state without canonical domain acceptance.",
+        "mapping_confidence": "derived",
+        "domain_event": null,
+        "target": null,
+        "source_event": "REFRESH_APPROVAL"
+      },
+      {
+        "piece_id": "J01/code/action/change-email@back-to-email",
+        "journey": "01",
+        "state": "code",
+        "piece": "Change email",
+        "piece_type": "visible_action",
+        "classification": "NAVIGATION_TRANSITION",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html"
+        ],
+        "justification": "Local source event changes reversible prototype/navigation state without canonical domain acceptance.",
+        "mapping_confidence": "derived",
+        "domain_event": null,
+        "target": null,
+        "source_event": "BACK_TO_EMAIL"
+      },
+      {
+        "piece_id": "J01/code/action/continue@none",
+        "journey": "01",
+        "state": "code",
+        "piece": "Continue",
+        "piece_type": "visible_action",
+        "classification": "DOMAIN_OPERATION",
+        "schema_refs": [
+          "session.enter"
+        ],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html"
+        ],
+        "justification": "Visible control has no verified navigation, handoff, reviewer, recovery, system-progression, or semantic-operation binding.",
+        "mapping_confidence": "derived",
+        "domain_event": null,
+        "target": null,
+        "source_event": null,
+        "operation_relation": "initiates",
+        "control_binding_id": "CTRL-J01-SESSION-VERIFY"
+      },
+      {
+        "piece_id": "J01/code/action/send-a-new-code@resend",
+        "journey": "01",
+        "state": "code",
+        "piece": "Send a new code",
+        "piece_type": "visible_action",
+        "classification": "EXTERNAL_HANDOFF",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html"
+        ],
+        "justification": "Local source event crosses into a provider/system boundary.",
+        "mapping_confidence": "derived",
+        "domain_event": null,
+        "target": null,
+        "source_event": "RESEND"
+      },
+      {
+        "piece_id": "J01/code/field/code",
+        "journey": "01",
+        "state": "code",
+        "piece": "000000",
+        "piece_type": "field",
+        "classification": "DRAFT_FIELD",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html"
+        ],
+        "justification": "Field recovered from a frozen switch-rendered Golden state.",
+        "mapping_confidence": "source_recovered"
+      },
+      {
+        "piece_id": "J01/email/action/send-code@none",
+        "journey": "01",
+        "state": "email",
+        "piece": "Send code",
+        "piece_type": "visible_action",
+        "classification": "EXTERNAL_HANDOFF",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html"
+        ],
+        "justification": "Sign-in code request crosses to the identity provider boundary.",
+        "mapping_confidence": "derived",
+        "domain_event": null,
+        "target": null,
+        "source_event": null
+      },
+      {
+        "piece_id": "J01/email/field/email",
+        "journey": "01",
+        "state": "email",
+        "piece": "you@example.com",
+        "piece_type": "field",
+        "classification": "DRAFT_FIELD",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html"
+        ],
+        "justification": "Field recovered from a frozen switch-rendered Golden state.",
+        "mapping_confidence": "source_recovered"
+      },
+      {
+        "piece_id": "J01/invite-reference/action/test-result-approval-declined@none",
+        "journey": "01",
+        "state": "invite-reference",
+        "piece": "Test result: approval declined",
+        "piece_type": "visible_action",
+        "classification": "REVIEW_DEMO_CHROME",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html"
+        ],
+        "justification": "Prototype/reviewer control; does not create product-domain authority.",
+        "mapping_confidence": "derived",
+        "domain_event": null,
+        "target": null,
+        "source_event": null
+      },
+      {
+        "piece_id": "J01/invite-reference/action/test-result-approval-verified@none",
+        "journey": "01",
+        "state": "invite-reference",
+        "piece": "Test result: approval verified",
+        "piece_type": "visible_action",
+        "classification": "REVIEW_DEMO_CHROME",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html"
+        ],
+        "justification": "Prototype/reviewer control; does not create product-domain authority.",
+        "mapping_confidence": "derived",
+        "domain_event": null,
+        "target": null,
+        "source_event": null
+      },
+      {
+        "piece_id": "J01/invite-reference/action/test-result-unknown@none",
+        "journey": "01",
+        "state": "invite-reference",
+        "piece": "Test result: unknown",
+        "piece_type": "visible_action",
+        "classification": "REVIEW_DEMO_CHROME",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html"
+        ],
+        "justification": "Prototype/reviewer control; does not create product-domain authority.",
+        "mapping_confidence": "derived",
+        "domain_event": null,
+        "target": null,
+        "source_event": null
+      },
+      {
+        "piece_id": "J01/invite/action/not-now@start-over",
+        "journey": "01",
+        "state": "invite",
+        "piece": "Not now",
+        "piece_type": "visible_action",
+        "classification": "NAVIGATION_TRANSITION",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html"
+        ],
+        "justification": "Local source event changes reversible prototype/navigation state without canonical domain acceptance.",
+        "mapping_confidence": "derived",
+        "domain_event": null,
+        "target": null,
+        "source_event": "START_OVER"
+      },
+      {
+        "piece_id": "J01/state/approval-declined",
+        "journey": "01",
+        "state": "approval-declined",
+        "piece": "approval-declined",
+        "piece_type": "state",
+        "classification": "RECOVERY_BEHAVIOR",
+        "schema_refs": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04",
+          "LAW-ID-01"
+        ],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_INVENTORY.md",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs"
+        ],
+        "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
+        "mapping_confidence": "high"
+      },
+      {
+        "piece_id": "J01/state/approval-expired",
+        "journey": "01",
+        "state": "approval-expired",
+        "piece": "approval-expired",
+        "piece_type": "state",
+        "classification": "RECOVERY_BEHAVIOR",
+        "schema_refs": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04",
+          "LAW-ID-01"
+        ],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_INVENTORY.md",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs"
+        ],
+        "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
+        "mapping_confidence": "high"
+      },
+      {
+        "piece_id": "J01/state/approval-unknown",
+        "journey": "01",
+        "state": "approval-unknown",
+        "piece": "approval-unknown",
+        "piece_type": "state",
+        "classification": "RECOVERY_BEHAVIOR",
+        "schema_refs": [
+          "LAW-OP-01",
+          "LAW-OP-02",
+          "LAW-OP-03",
+          "LAW-OP-04",
+          "LAW-ID-01"
+        ],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_INVENTORY.md",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs"
+        ],
+        "justification": "Failure, uncertainty, stale/offline, or recovery state preserved by Golden authority.",
+        "mapping_confidence": "high"
+      },
+      {
+        "piece_id": "J01/state/approval-waiting",
+        "journey": "01",
+        "state": "approval-waiting",
+        "piece": "approval-waiting",
+        "piece_type": "state",
+        "classification": "PRODUCT_REQUIREMENT",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_INVENTORY.md",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs"
+        ],
+        "justification": "Approved product state required by the Golden/state mapping.",
+        "mapping_confidence": "high"
+      },
+      {
+        "piece_id": "J01/state/code",
+        "journey": "01",
+        "state": "code",
+        "piece": "code",
+        "piece_type": "state",
+        "classification": "PRODUCT_REQUIREMENT",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_INVENTORY.md",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs"
+        ],
+        "justification": "Approved product state required by the Golden/state mapping.",
+        "mapping_confidence": "high"
+      },
+      {
+        "piece_id": "J01/state/email",
+        "journey": "01",
+        "state": "email",
+        "piece": "email",
+        "piece_type": "state",
+        "classification": "PRODUCT_REQUIREMENT",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_INVENTORY.md",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs"
+        ],
+        "justification": "Approved product state required by the Golden/state mapping.",
+        "mapping_confidence": "high"
+      },
+      {
+        "piece_id": "J01/state/invite",
+        "journey": "01",
+        "state": "invite",
+        "piece": "invite",
+        "piece_type": "state",
+        "classification": "PRODUCT_REQUIREMENT",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_INVENTORY.md",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs"
+        ],
+        "justification": "Approved product state required by the Golden/state mapping.",
+        "mapping_confidence": "high"
+      },
+      {
+        "piece_id": "J01/state/ready",
+        "journey": "01",
+        "state": "ready",
+        "piece": "ready",
+        "piece_type": "state",
+        "classification": "PRODUCT_REQUIREMENT",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_INVENTORY.md",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs"
+        ],
+        "justification": "Approved product state required by the Golden/state mapping.",
+        "mapping_confidence": "high"
+      },
+      {
+        "piece_id": "J01/state/wallet",
+        "journey": "01",
+        "state": "wallet",
+        "piece": "wallet",
+        "piece_type": "state",
+        "classification": "PRODUCT_REQUIREMENT",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_INVENTORY.md",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs"
+        ],
+        "justification": "Approved product state required by the Golden/state mapping.",
+        "mapping_confidence": "high"
+      },
+      {
+        "piece_id": "J01/state/welcome",
+        "journey": "01",
+        "state": "welcome",
+        "piece": "welcome",
+        "piece_type": "state",
+        "classification": "PRODUCT_REQUIREMENT",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/STATE_INVENTORY.md",
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/source/model.cjs"
+        ],
+        "justification": "Approved product state required by the Golden/state mapping.",
+        "mapping_confidence": "high"
+      },
+      {
+        "piece_id": "J01/wallet/action/use-email-instead@email",
+        "journey": "01",
+        "state": "wallet",
+        "piece": "Use email instead",
+        "piece_type": "visible_action",
+        "classification": "NAVIGATION_TRANSITION",
+        "schema_refs": [],
+        "authority_refs": [
+          "prototypes/experience-workbench/journeys/01-enter-chopdot/v1-candidate.html"
+        ],
+        "justification": "Local source event changes reversible prototype/navigation state without canonical domain acceptance.",
+        "mapping_confidence": "derived",
+        "domain_event": null,
+        "target": null,
+        "source_event": "EMAIL"
+      }
+    ],
+    "applicability_note": "Frozen references/classifications are copied exactly. Empty schema_refs remain authority-accounted, not executable bindings. Related recovery-law references are not proof that every law applies to each sign-in state; the per-finding applicability explains only the obligations used."
+  },
+  "findings": [
+    {
+      "id": "SC-J01-001",
+      "surface_clarity_checks": [
+        "truth",
+        "recovery"
+      ],
+      "classification": "prototype_fixture_clarity",
+      "problem": "Ordinary email and wallet paths looked like real external handoffs but hid the local completion fixtures.",
+      "correction": "Make synthetic code and wallet outcomes visible; state that no email, wallet connection or approval request is sent. Keep issued request-bound evidence and Check again without authority.",
+      "product_contract_change": false,
+      "piece_ids": [
+        "J01/state/email",
+        "J01/state/code",
+        "J01/state/wallet",
+        "J01/state/approval-waiting",
+        "J01/state/approval-unknown",
+        "J01/state/approval-declined",
+        "J01/state/approval-expired",
+        "J01/email/action/send-code@none",
+        "J01/code/action/send-a-new-code@resend",
+        "J01/code/action/continue@none",
+        "J01/approval-declined/action/check-again@refresh-approval",
+        "J01/invite-reference/action/test-result-approval-verified@none",
+        "J01/invite-reference/action/test-result-approval-declined@none",
+        "J01/invite-reference/action/test-result-unknown@none"
+      ],
+      "operation_ids": [
+        "session.enter"
+      ],
+      "context_ids": [
+        "ctx.entry",
+        "ctx.identity"
+      ],
+      "law_applicability": [
+        {
+          "id": "LAW-OP-03",
+          "reason": "Refresh/navigation does not verify a pending or unknown result."
+        },
+        {
+          "id": "LAW-AUTH-01",
+          "reason": "Simulation disclosure and wallet presentation do not confer external-provider or signing authority; retained invariant, not a new real-provider integration."
+        }
+      ],
+      "source_ids": [
+        "J01",
+        "J01-D02"
+      ],
+      "implementation_files": [
+        "prototypes/integrated-product-preview-v2/j01-surface.js"
+      ],
+      "wrapper_elements": [
+        {
+          "locator": ".entry-prototype-note[role=\"status\"]",
+          "state": "code",
+          "frozen_piece_id": null,
+          "reason": "New presentation annotation on an existing state."
+        },
+        {
+          "locator": ".entry-prototype-results[aria-label=\"Simulated wallet results\"] [data-demo-result]",
+          "state": "approval-waiting / approval-unknown",
+          "frozen_piece_id": null,
+          "reason": "Runtime-only simulation controls; analogous frozen review-demo controls are referenced above, not claimed to be the same controls."
+        }
+      ],
+      "test_ids": [
+        "J01-R14-393-refresh-not-proof",
+        "J01-R14-430-refresh-not-proof",
+        "J01-R15-393-wallet-outcomes-discoverable",
+        "J01-R15-430-wallet-outcomes-discoverable",
+        "J01-R21-393-wallet-restart-stale-proof",
+        "J01-R21-430-wallet-restart-stale-proof"
+      ],
+      "extra_assertions": [
+        "j01-browser-qa.mjs waits for visible 'Use prototype code 123456' and the Simulated wallet results group; these assertions do not have separate check IDs."
+      ],
+      "review_disposition": "Separate de9ced5 review supports repair for exercised public code and wallet paths. Declined/expired wording retains less local simulation disclosure than pending; retained presentation limitation.",
+      "unexecuted": [
+        "Human comprehension study",
+        "Real email/wallet/provider behavior"
+      ]
+    },
+    {
+      "id": "SC-J01-002",
+      "surface_clarity_checks": [
+        "orientation",
+        "continuity"
+      ],
+      "classification": "existing_contract_navigation_correction",
+      "problem": "Header Back during guest conversion led to an older welcome screen without the appropriate return to local work.",
+      "correction": "Return normal entry to the front door, guest conversion to its account boundary, and canonical membership entry to its actual owner. Preserve local work and invite/participant context.",
+      "product_contract_change": false,
+      "piece_ids": [
+        "J01/state/email",
+        "J01/state/invite",
+        "J01/state/welcome",
+        "J01/invite/action/not-now@start-over",
+        "J01/code/action/change-email@back-to-email",
+        "J01/wallet/action/use-email-instead@email"
+      ],
+      "operation_ids": [
+        "session.enter",
+        "participant.link_account"
+      ],
+      "context_ids": [
+        "ctx.entry",
+        "ctx.identity"
+      ],
+      "law_applicability": [
+        {
+          "id": "LAW-OP-03",
+          "reason": "Back cannot synthesize verification, join consent or a completed account link."
+        },
+        {
+          "id": "LAW-ID-01",
+          "reason": "When returning to a membership/account-link owner, Participant identity and historical references remain stable."
+        }
+      ],
+      "source_ids": [
+        "J01",
+        "C1_IDENTITY",
+        "POST_J28",
+        "J01-D01",
+        "J01-FRONT-DOOR"
+      ],
+      "implementation_files": [
+        "prototypes/integrated-product-preview-v2/app.js",
+        "prototypes/integrated-product-preview-v2/j01-surface.js"
+      ],
+      "wrapper_elements": [
+        {
+          "locator": "[data-action=\"GO\"][data-route=\"welcome\"] / [data-action=\"START_OVER\"] interception in installEntrySurface; openAuth onExit owner routing",
+          "state": "email / invitation / guest conversion",
+          "frozen_piece_id": null,
+          "reason": "The affected integrated header Back control and account-wall wrapper have no exact V1 reconstruction piece ID. Existing state and nearby navigation controls are trace anchors, not replacements for missing inventory IDs."
+        }
+      ],
+      "test_ids": [
+        "J01-R04-393-normal-back",
+        "J01-R04-430-normal-back",
+        "J01-R05-393-boundary-back-cancel",
+        "J01-R05-430-boundary-back-cancel",
+        "J01-R12-393-invite-back-reload",
+        "J01-R12-430-invite-back-reload",
+        "J01-R20-393-native-back",
+        "J01-R20-430-native-back",
+        "J01-R22-393-canonical-invite-back",
+        "J01-R22-430-canonical-invite-back"
+      ],
+      "extra_assertions": [],
+      "review_disposition": "Separate de9ced5 review exercised normal, guest, legacy-invite and canonical-invite Back. Account-link-specific Back was source-inspected, not a dedicated independent browser case.",
+      "unexecuted": [
+        "Dedicated account-link-specific Back browser case"
+      ]
+    },
+    {
+      "id": "SC-J01-003",
+      "surface_clarity_checks": [
+        "continuity"
+      ],
+      "classification": "existing_contract_intent_preservation_correction",
+      "problem": "Reload preserved local business work but lost conversion/invite intent without explaining a safe verification restart.",
+      "correction": "Retain allowlisted flow/method URL intent and the existing canonical return context. Recreate a fresh verification epoch, discard prior code/email/proof/pending authority, explain restart, and reject S1 results in S2.",
+      "product_contract_change": false,
+      "piece_ids": [
+        "J01/state/email",
+        "J01/state/code",
+        "J01/state/wallet",
+        "J01/state/invite",
+        "J01/state/ready",
+        "J01/code/action/continue@none",
+        "J01/code/field/code",
+        "J01/email/field/email"
+      ],
+      "operation_ids": [
+        "session.enter",
+        "participant.link_account"
+      ],
+      "context_ids": [
+        "ctx.entry",
+        "ctx.identity"
+      ],
+      "law_applicability": [
+        {
+          "id": "LAW-OP-03",
+          "reason": "Reload preserves intent, not successful verification or join consent."
+        },
+        {
+          "id": "LAW-ID-01",
+          "reason": "Account conversion must preserve the existing Participant and historical business records; no replacement identity is inferred from a route."
+        }
+      ],
+      "source_ids": [
+        "J01",
+        "C1_IDENTITY",
+        "J01-D01",
+        "J01-D02",
+        "J01-FRONT-DOOR"
+      ],
+      "implementation_files": [
+        "prototypes/integrated-product-preview-v2/app.js",
+        "prototypes/integrated-product-preview-v2/j01-surface.js"
+      ],
+      "wrapper_elements": [
+        {
+          "locator": "entryIntent / openAuth / openInvite; URL entry and entryMethod; pre-existing sessionStorage chopdot.membership.entry-return",
+          "state": "same-tab interrupted entry",
+          "frozen_piece_id": null,
+          "reason": "Integrated intent routing is outside the frozen Golden piece inventory."
+        },
+        {
+          "locator": ".entry-prototype-note[role=\"status\"]",
+          "state": "resumed email / wallet / invite",
+          "frozen_piece_id": null,
+          "reason": "New safe-restart explanation on existing states."
+        }
+      ],
+      "test_ids": [
+        "J01-R07-393-fresh-restart-intent",
+        "J01-R07-430-fresh-restart-intent",
+        "J01-R08-393-prior-proof-rejected",
+        "J01-R08-430-prior-proof-rejected",
+        "J01-R10-393-conversion-preserves-work",
+        "J01-R10-430-conversion-preserves-work",
+        "J01-R12-393-invite-back-reload",
+        "J01-R12-430-invite-back-reload",
+        "J01-R13-393-invite-readiness-not-join",
+        "J01-R13-430-invite-readiness-not-join",
+        "J01-R19-393-reload-preserves-work-not-session-proof",
+        "J01-R19-430-reload-preserves-work-not-session-proof",
+        "J01-R21-393-wallet-restart-stale-proof",
+        "J01-R21-430-wallet-restart-stale-proof",
+        "J01-R23-393-canonical-invite-reload-entry-not-consent",
+        "J01-R23-430-canonical-invite-reload-entry-not-consent"
+      ],
+      "extra_assertions": [],
+      "review_disposition": "Separate de9ced5 review supports bounded same-tab reload and stale-result rejection. Owner retest retained these tests after the test-server favicon correction.",
+      "unexecuted": [
+        "New-tab/full-browser-session restoration of canonical sessionStorage context",
+        "Restoration of a current verified session after completed-conversion reload"
+      ]
+    }
+  ],
+  "evidence": {
+    "commit": "902d3c1ab1ae54573540b650bced48062be0f2f1",
+    "independent_review": {
+      "path": "product/surface-clarity/evidence/J01-REV-001/old-independent-de9ced5/REVIEW-RECEIPT.md",
+      "reviewed_commit": "de9ced5d281ec906f8cd3056164f864528ca7573",
+      "git_blob": "dd0b2d15b42505ab2599e4068e71117762d1297b",
+      "independent": true,
+      "scope": "J01 repair source and bounded rendered paths; original runner 372 passes and one favicon failure. The reviewer did not review the later favicon fix or this new trace record."
+    },
+    "owner_verification": {
+      "receipt_path": "product/surface-clarity/evidence/J01-REV-001/receipt.json",
+      "receipt_git_blob": "4350693e6274abe916fe873f28ea27681480bea2",
+      "tested_commit": "2cb499e5fa196de87c26d8d72ce2e5162af4b0d6",
+      "independent": false,
+      "browser_passes": 373,
+      "browser_failures": 0,
+      "j01_browser_checks": 53,
+      "model_checks": 213,
+      "framework_tests": 18,
+      "runner_exit": 0,
+      "clarity_checker_exit": 1,
+      "clarity_status": "INCOMPLETE: historical runtime/evidence bindings remain stale",
+      "j01_results_path": "product/surface-clarity/evidence/J01-REV-001/new-owner-2cb499e5/j01/results.json",
+      "j01_results_git_blob": "b7ef862777bce90f5f256f31235b8dc3bf9500ae",
+      "commands_path": "product/surface-clarity/evidence/J01-REV-001/new-owner-2cb499e5/commands.txt",
+      "viewports": [
+        {
+          "width": 393,
+          "height": 852
+        },
+        {
+          "width": 430,
+          "height": 890
+        }
+      ]
+    },
+    "review_delivery": {
+      "readme_path": "product/surface-clarity/evidence/J01-REV-001/review-prototype-4b29bfac/README.md",
+      "zip_path": "product/surface-clarity/evidence/J01-REV-001/review-prototype-4b29bfac/ChopDot-J01-review-4b29bfac.zip",
+      "zip_sha256": "14b32849ccc0792258e217f9cc934e4db92425b0e3fceee326c85a7ce6cd8fbd",
+      "runtime_commit": "4b29bfac000f3c7639cbfde8de081fc06ba13afe"
+    },
+    "trace_validation": "validation.json; reference checks only, not a fresh browser run or schema verifier-chain execution"
+  },
+  "auxiliary_infrastructure": {
+    "finding_id": "J01-REV-001",
+    "file": "prototypes/integrated-product-preview-v2/gate-b/test-server.mjs",
+    "change": "Exact /favicon.ico fixture request returns empty uncached HTTP 204; health assertions retained.",
+    "product_schema_mapping": null,
+    "reason": "Local test fixture repair, not a product control or domain operation."
+  },
+  "retained_limits": [
+    "J01 repairs remain proposals awaiting user acceptance; the conversation authorized this trace record, not acceptance.",
+    "Historical findings.json and journeys/J01.json retain their exact old evidence bindings/status; no readiness ledger or denominators were reset.",
+    "J01 has no certified V1 task path. Several affected integrated wrapper controls have no frozen piece ID; null is explicit, not an invented mapping.",
+    "No new independent review of this trace record or later favicon tooling correction.",
+    "No new local browser/schema-chain execution performed for this documentation-only record; prior exact-version evidence is reused with its scope.",
+    "Previously diagnosed hosted CI failure on 4b29bfac: Vitest discovery treats scripts/surface-clarity.test.mjs (node:test) as a Vitest suite and reports 'No test suite found'. This trace record does not repair it or claim CI clearance.",
+    "Hosted preview still uses earlier runtime; the downloadable exact-version package is the repaired review surface.",
+    "New-tab/full-session intent restoration, dedicated account-link Back, comprehensive accessibility, pixel Golden certification and human comprehension remain unverified.",
+    "Completed-conversion reload retains local accountCreated/business work but does not restore a current verified session; no production authentication/storage/provider behavior is claimed.",
+    "Other 27 journeys and remaining finding families are not cleared."
+  ]
+}

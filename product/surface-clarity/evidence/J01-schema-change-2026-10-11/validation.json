@@ -1,0 +1,176 @@
+{
+  "format_version": "1.0.0",
+  "record_id": "J01-SCHEMA-TRACE-2026-10-11",
+  "validated_date": "2026-10-11",
+  "status": "PASS",
+  "verification_kind": "IMPLEMENTATION_OWNER_REFERENCE_VALIDATION",
+  "independent_review": false,
+  "method": "GitHub read-only Git object/file retrieval plus JavaScript assertions against immutable fetched schema, authority, runtime and existing results. No shell/browser tests or full schema-chain execution in this docs-only update.",
+  "publication_parent": "902d3c1ab1ae54573540b650bced48062be0f2f1",
+  "checks": [
+    {
+      "id": "frozen-schema-commit-tree",
+      "status": "PASS",
+      "details": {
+        "tag": "product-schema-v1",
+        "commit": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+        "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+        "files": [
+          {
+            "path": "product-schema/V1_USAGE_GUIDE.md",
+            "git_blob": "34733a62b90ab23f9381fe4bee514f4a4203ca3c"
+          },
+          {
+            "path": "product-schema/composition-graph.json",
+            "git_blob": "7b3bb328ee8b5cd9e1012e19c642a7b3e7d8c45a"
+          },
+          {
+            "path": "product-schema/generated/reconstruction-pieces.json",
+            "git_blob": "90bb8db53b8f75176a24457d5380bbf354920205"
+          },
+          {
+            "path": "product-schema/semantic-core.json",
+            "git_blob": "5820481119313bdd1fb63afb48ecc519a0b54fd0"
+          },
+          {
+            "path": "product-schema/task-paths-v1.json",
+            "git_blob": "17e7917e5b52046709c18a3c7c0de373072a4b8b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "frozen-product-authority-commit-tree",
+      "status": "PASS",
+      "details": {
+        "commit": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+        "tree": "cb424dafedff066fed433e106eb4468bec985d98"
+      }
+    },
+    {
+      "id": "live-branch-publication-parent",
+      "status": "PASS",
+      "details": "902d3c1ab1ae54573540b650bced48062be0f2f1"
+    },
+    {
+      "id": "complete-tree-inputs",
+      "status": "PASS",
+      "details": "All five recursive inventories are nontruncated."
+    },
+    {
+      "id": "finding-identifiers",
+      "status": "PASS",
+      "details": [
+        "SC-J01-001",
+        "SC-J01-002",
+        "SC-J01-003"
+      ]
+    },
+    {
+      "id": "surface-clarity-check-identifiers",
+      "status": "PASS",
+      "details": [
+        "truth",
+        "recovery",
+        "orientation",
+        "continuity"
+      ]
+    },
+    {
+      "id": "piece-identifiers-and-exact-snapshots",
+      "status": "PASS",
+      "details": {
+        "count": 22
+      }
+    },
+    {
+      "id": "piece-authority-paths",
+      "status": "PASS",
+      "details": "Every cited piece authority path exists at frozen Golden commit."
+    },
+    {
+      "id": "operations-contexts-laws",
+      "status": "PASS",
+      "details": "Each actual semantic ID resolves in the pinned source model; applicability text is owner interpretation."
+    },
+    {
+      "id": "authority-source-blobs",
+      "status": "PASS",
+      "details": {
+        "count": 6
+      }
+    },
+    {
+      "id": "decision-anchors",
+      "status": "PASS",
+      "details": "Decision-history source read at frozen Golden commit."
+    },
+    {
+      "id": "no-certified-J01-task",
+      "status": "PASS",
+      "details": "Absence is retained; no certified task was added."
+    },
+    {
+      "id": "cited-browser-case-outcomes",
+      "status": "PASS",
+      "details": {
+        "count": 28,
+        "resultsGitBlob": "b7ef862777bce90f5f256f31235b8dc3bf9500ae",
+        "totalJ01Checks": 53
+      }
+    },
+    {
+      "id": "runtime-source-files",
+      "status": "PASS",
+      "details": {
+        "files": [
+          "prototypes/integrated-product-preview-v2/j01-surface.js",
+          "prototypes/integrated-product-preview-v2/app.js"
+        ]
+      }
+    },
+    {
+      "id": "owner-test-source-equals-delivered-source",
+      "status": "PASS",
+      "details": [
+        {
+          "path": "prototypes/integrated-product-preview-v2/j01-surface.js",
+          "git_blob": "de2e818e4bfda74eeb8ab1e6ea55c6f7f9c7b3be"
+        },
+        {
+          "path": "prototypes/integrated-product-preview-v2/app.js",
+          "git_blob": "1bc47fb50121f062a11ee158d9dae1d9297aff0f"
+        },
+        {
+          "path": "prototypes/integrated-product-preview-v2/j01-browser-qa.mjs",
+          "git_blob": "30a30659cb82c4b587d09dea82a228fee71c3828"
+        }
+      ]
+    },
+    {
+      "id": "evidence-paths-at-publication-parent",
+      "status": "PASS",
+      "details": {
+        "count": 6
+      }
+    },
+    {
+      "id": "wrapper-locators-source-inspection",
+      "status": "PASS",
+      "details": "Runtime-only wrappers are explicit null piece mappings; no new frozen ID is fabricated."
+    },
+    {
+      "id": "record-json-roundtrip",
+      "status": "PASS",
+      "details": "Format is JSON; not introduced as an executable schema validator."
+    }
+  ],
+  "not_verified": [
+    "Fresh browser execution",
+    "Full local schema verification chain",
+    "Hosted CI clearance",
+    "Human acceptance",
+    "Completeness of frozen wrapper inventory",
+    "Semantic correctness of every prose applicability inference"
+  ]
+}
