@@ -56,11 +56,11 @@ try {
     await click('Add expense');
     await f().getByLabel('Amount',{exact:true}).fill('12.01');
     await f().getByLabel('Description',{exact:true}).fill('J02 dinner');
-    await f().locator('#entry').getByRole('link',{name:'Save expense',exact:true}).click();
+    await f().locator('#entry').getByRole('link',{name:'Add expense',exact:true}).click();
     await f().locator('#success').getByRole('link',{name:'Back to group',exact:true}).click();
     await f().locator('.header-title').getByText('J02 weekend',{exact:true}).waitFor();
     assert.equal((await state()).expenses.length,1);
-    assert.equal((await state()).expenses[0].money.minorUnits,'1201');
+    assert.equal((await state()).expenses[0].allocation.total.minorUnits,'1201');
     await shot('expense-return-group-'+w);
     await f().locator('[href="#home-handoff"][aria-label="Back"]').click(); await home();
     populated=await state(); await shot('home-after-expense-'+w);

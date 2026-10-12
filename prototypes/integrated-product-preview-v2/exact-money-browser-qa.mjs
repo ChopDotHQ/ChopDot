@@ -193,6 +193,9 @@ try {
       await snapshot(page, `gate-a-exact-money-receipt-${label}`);
 
       await product(page).locator('#success').getByRole('link', { name: 'Back to group', exact: true }).click();
+      await product(page).locator('[data-golden="active"]').waitFor();
+      check(`${label}: receipt returns to the owning Group Home`, await page.evaluate(() => window.ChopDotPreviewV2.getCurrentJourney()), 'GATE_B');
+      await product(page).locator('[href="#home-handoff"][aria-label="Back"]').click();
       await atHome(page);
       await page.reload({ waitUntil: 'networkidle' });
       await atHome(page);
