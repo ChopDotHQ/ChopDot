@@ -372,11 +372,16 @@ function group() {
     };
     list.append(row);
   }
+  const openInvites = () => {
+    if (state.group.archived) { note('Restore this group before inviting people.', true); return; }
+    location.href = `../create-join/index.html${fixtureMode ? '?fixtures=1' : ''}#page=invite`;
+  };
+  action('[href="#invite-handoff"]', openInvites);
   if (!expenses.length) {
     list.append(element("p", "caption", "Add an expense or invite people."));
     for (const [label, go] of [
       ["Add expense", () => openEditor()],
-      ["Invite people", () => {location.href=`../create-join/index.html${fixtureMode?'?fixtures=1':''}#page=invite`}],
+      ["Invite people", openInvites],
     ]) {
       const a = element(
         "a",
