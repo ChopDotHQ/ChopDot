@@ -1,0 +1,4 @@
+Command: cua.createBrowserTab("cdp", "http://127.0.0.1:4173/prototypes/integrated-product-preview-v2/index.html")
+Browser reported net::ERR_CONNECTION_REFUSED.
+The preview server was running in the execution container; the separate cloud browser cannot reach its loopback address.
+No rendered product screen or interaction was obtained.

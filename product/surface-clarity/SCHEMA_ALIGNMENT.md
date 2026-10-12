@@ -15,3 +15,11 @@ owner/operation/context/laws, actual change and exact proof. Mark missing mappin
 explicitly. Do not copy operation definitions or claim universal semantic closure.
 Frozen files/tags/manifests are unchanged. Any necessary new domain meaning goes
 in a versioned successor proposal, not a silent edit to V1.
+
+## Cloud preflight limit (2026-10-12)
+
+J05–J28: implementation/control/state/owner correspondence remains unresolved
+for this continuation; no rendered assessment or certification performed. Existing
+source bindings are retained, without promoting them to browser proof. Capability
+blocker is documented in `evidence/cloud-preflight-2026-10-12/REPORT.md`.
+Frozen Schema V1 and Golden/C1 are unchanged; no successor semantics proposed.

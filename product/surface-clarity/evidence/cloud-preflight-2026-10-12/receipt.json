@@ -1,0 +1,35 @@
+{
+  "dispatch_sha": "424216ff94c2c7477348bb74a9155094af0512c0",
+  "status": "BLOCKED_BEFORE_J05",
+  "acceptance": null,
+  "artifacts": [
+    {
+      "path": "product/surface-clarity/evidence/cloud-preflight-2026-10-12/REPORT.md",
+      "sha256": "11a08ed3cf3a367ad538bfdcc79e3119b1b1543ac26958836e3842da01076f50"
+    },
+    {
+      "path": "product/surface-clarity/evidence/cloud-preflight-2026-10-12/browser-install.log",
+      "sha256": "d50017b8fca40f9246459a9da4c43639312cc96cfb734943e495aa62f238109f"
+    },
+    {
+      "path": "product/surface-clarity/evidence/cloud-preflight-2026-10-12/browser-launch.log",
+      "sha256": "c357a614a34926534a45ef0aca22648f5a6784e486e5d965608d3e41150c0930"
+    },
+    {
+      "path": "product/surface-clarity/evidence/cloud-preflight-2026-10-12/cloud-browser.log",
+      "sha256": "af7be51a9332dea86c9b5ead37c10dc4457f00297c3220487d08b31e1b46efe6"
+    },
+    {
+      "path": "product/surface-clarity/evidence/cloud-preflight-2026-10-12/package.log",
+      "sha256": "b9dd8ba940e5cc041a72b409fb2a88b45d98e43af634d575631c0f4564fdb724"
+    },
+    {
+      "path": "product/surface-clarity/evidence/cloud-preflight-2026-10-12/preview-http.log",
+      "sha256": "85525cfc38abeb0c4c1469cd936b7328dc12f89d09c257f6b978050be2d478b6"
+    },
+    {
+      "path": "product/surface-clarity/evidence/cloud-preflight-2026-10-12/remote-and-runtime.log",
+      "sha256": "a81c7b91be47aa31d161aa119dd2243c82329d625d48f7c4123b40ca291391a8"
+    }
+  ]
+}

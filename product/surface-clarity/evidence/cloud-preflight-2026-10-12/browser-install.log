@@ -1,0 +1,5 @@
+Command: node node_modules/playwright/cli.js install chromium
+Actual exit code: 1
+Official download https://cdn.playwright.dev/builds/cft/151.0.7922.34/linux64/chrome-linux64.zip failed five attempts: End of central directory record signature not found. Either not a zip file, or file is truncated.
+Follow-up curl -IL: HTTP 200; content-type text/html; content-length 195 (not a browser ZIP).
+This is a diagnostic summary of the observed tool output, not the raw installer transcript.

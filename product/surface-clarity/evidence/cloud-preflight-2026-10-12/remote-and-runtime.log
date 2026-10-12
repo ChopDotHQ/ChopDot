@@ -1,0 +1,7 @@
+checkout HEAD: 424216ff94c2c7477348bb74a9155094af0512c0
+remote refs/heads/codex/surface-clarity-cloud-2026-10-12: 424216ff94c2c7477348bb74a9155094af0512c0
+origin: https://github.com/ChopDotHQ/ChopDot.git
+initial working tree: clean
+continuation branch: codex/surface-clarity-continuation-2026-10-12
+Node: v24.19.0
+Browser executable search: none installed

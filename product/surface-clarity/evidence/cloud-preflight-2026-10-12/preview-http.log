@@ -1,0 +1,5 @@
+Existing packager: node scripts/package-preview-v2-gate-b.mjs /workspace/scratch/04eed0285c55/chopdot-cloud-preview
+Exit: 0; full package output: package.log
+Existing serve() helper HTTP probe: http://127.0.0.1:38985/prototypes/integrated-product-preview-v2/index.html
+status: 200; response length: 2444 characters
+HTTP serving is verified; rendered preview access is not.
