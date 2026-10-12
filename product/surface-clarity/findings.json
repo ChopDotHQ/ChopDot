@@ -480,5 +480,29 @@
       "runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479"
     },
     "inherited_from": "evidence/J02-bounded-review-2026-10-11/REPORT.md"
+  },
+  {
+    "id": "SC-J03-001",
+    "priority": "P2",
+    "certainty": "Confirmed normal-UI interaction and persisted result",
+    "journeys": [
+      "J03"
+    ],
+    "principles": [
+      "Consequence",
+      "Continuity",
+      "Truth"
+    ],
+    "title": "Guest currency selection creates the group before explicit Create",
+    "evidence": "Home Start a group -> enter name -> Currency -> EUR immediately shows Group created; reload Home retains EUR group. No Create group click.",
+    "recommendation": "Update only the canonical creation draft on currency choice and return to entry; require explicit Create for group mutation; preserve existing records and guest/account boundaries.",
+    "authority_boundary": "Integration correction to J03-D01 and the existing creation-owner selection/commit distinction; preserve frozen Golden/C1 and schema.",
+    "status": "open",
+    "disposition": null,
+    "observed_implementation_sha": "c59073cf7efbb48521c0dbd88952fe1b045fa2af",
+    "observed_runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479",
+    "evidence_ids": [
+      "J03-BROWSER-20261012"
+    ]
   }
 ]

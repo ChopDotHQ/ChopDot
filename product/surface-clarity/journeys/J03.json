@@ -4,11 +4,11 @@
   "name": "Create a Group",
   "binding": {
     "registry_digest": "f5b46bc031ea2235484ebd492e09540bfde23dca1e774591c71b3fa5c18efbda",
-    "runtime_digest": "b73554f66065ce545675ebe56dd0baf79b3fb426b24d724628a7ef30dd4801ab",
+    "runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479",
     "schema_commit": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
     "golden_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881"
   },
-  "status": "not_reviewed",
+  "status": "in_progress",
   "source_binding": {
     "status": "frozen_mapping_available",
     "registry_spec": "journeys/03-create-group/spec.md",
@@ -40,14 +40,35 @@
     "note": "Related laws are a navigation aid, not an assertion that every law applies in every state. Inspect composition units and approved later impacts too."
   },
   "scope": {
-    "tasks": [],
-    "states": [],
-    "actors": [],
-    "incoming_routes": [],
-    "return_routes": [],
-    "viewports": [],
-    "fixtures": [],
-    "limitations": []
+    "tasks": [
+      "Guest create-group currency selection versus explicit creation"
+    ],
+    "states": [
+      "empty guest Home",
+      "creation entry",
+      "EUR currency choice",
+      "created success",
+      "reload Home"
+    ],
+    "actors": [
+      "self/local guest"
+    ],
+    "incoming_routes": [
+      "Home Start a group"
+    ],
+    "return_routes": [
+      "reload to Home"
+    ],
+    "viewports": [
+      "393x852"
+    ],
+    "fixtures": [
+      "Isolated origin 4190, local sample J03 currency review"
+    ],
+    "limitations": [
+      "Partial review stopped at confirmed premature creation; user acceptance pending.",
+      "USD same source handler, not live replayed; account/offline/error states and downstream exits not reviewed."
+    ]
   },
   "checks": [
     {
@@ -68,10 +89,15 @@
     },
     {
       "id": "consequence",
-      "result": "unassessed",
-      "expectation": "",
-      "steps": [],
-      "evidence_ids": [],
+      "result": "fail",
+      "expectation": "Currency selection edits a draft; explicit Create commits the group.",
+      "steps": [
+        "Start a group; enter name; Currency -> EUR without clicking Create",
+        "Observe Group created; reload; observe saved group on Home"
+      ],
+      "evidence_ids": [
+        "J03-BROWSER-20261012"
+      ],
       "reason": ""
     },
     {
@@ -189,11 +215,45 @@
       "reason": ""
     }
   ],
-  "decisions": [],
+  "decisions": [
+    {
+      "surface": "J03 guest currency choice -> creation success",
+      "piece_id": "J03 frozen currency/success control mapping not yet individually resolved; source paths cited in review report",
+      "operation": "group.create",
+      "decision": "CORRECT",
+      "observation": "Choosing EUR commits the local group before explicit Create.",
+      "prediction": "Selection remains reversible; Create is the sole commit action.",
+      "tradeoff": "Requires returning to entry before creation.",
+      "authority_boundary": "Preserve J03-D01 and frozen sources; no new group or currency rule.",
+      "success_evidence": "Pending bounded repair authorization and focused proof",
+      "result": "proposal only; no runtime change"
+    }
+  ],
   "hypotheses": [],
   "additional_authority": [],
-  "evidence": [],
-  "finding_ids": [],
+  "evidence": [
+    {
+      "id": "J03-BROWSER-20261012",
+      "kind": "BROWSER",
+      "implementation_sha": "c59073cf7efbb48521c0dbd88952fe1b045fa2af",
+      "runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479",
+      "scope": "Isolated guest J03 at 393x852: Home Start a group, name J03 currency review, Currency -> EUR (without Create group), success-eur, reload -> Home persists EUR group. Partial review; no other roles, failure/offline or whole-journey qualification.",
+      "environment": "Codex in-app browser, loopback port 4190, unchanged tested c59073cf package, separate local origin from accepted J02 review data; self review.",
+      "artifacts": [
+        {
+          "path": "product/surface-clarity/evidence/J03-review-2026-10-12/eur-created-without-create.jpg",
+          "sha256": "7ac49f44b5b9d16c7e55c22b0662ce9c72833bccaeb7885de6af6574b5b484e2"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J03-review-2026-10-12/home-persisted-eur.jpg",
+          "sha256": "17676b01eab7d2050b4515376f2df279df53c09ce49c3e5c2cc10c9aef634a2b"
+        }
+      ]
+    }
+  ],
+  "finding_ids": [
+    "SC-J03-001"
+  ],
   "historical_sample": {
     "source": "historical-audit/results.json",
     "implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a",

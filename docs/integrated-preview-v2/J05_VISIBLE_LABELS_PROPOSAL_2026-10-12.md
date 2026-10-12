@@ -1,6 +1,6 @@
 # J05 — persistent expense field labels (proposal only)
 
-Status: PROPOSED; no repair implementation authorized or performed.
+Status: PARKED; review proceeds J03 → J04 → J05. No repair implementation authorized or performed.
 Source: accepted runtime c59073cf, reviewed in the live local preview on 2026-10-12.
 Finding: existing UX-008, visibly reconfirmed on the empty Add expense screen.
 
