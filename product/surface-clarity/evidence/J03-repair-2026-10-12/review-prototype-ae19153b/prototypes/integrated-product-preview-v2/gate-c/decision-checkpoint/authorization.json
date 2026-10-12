@@ -1,0 +1,18 @@
+{
+  "scope": "Gate C integrated prototype only: J10, J11, J12",
+  "authorization": "User replied Yes please to May I proceed with Gate C integrated-prototype implementation only?",
+  "accepted_gate_b_sha": "28775726dc06b1823e231d50b4d84080a07530fb",
+  "accepted_gate_b_tree": "6923d6cd23e8f5136410b9fbdd2e1483f0970763",
+  "schema_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "schema_tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c",
+  "authority_sha": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "exclusions": [
+    "Gate D",
+    "real funds or signing",
+    "production storage/authentication",
+    "provider selection",
+    "protected merge/deployment",
+    "changes to frozen schema/Golden/C1"
+  ],
+  "product_decision": "GC-SOURCE-PARTIAL-ATTRIBUTION-01 remains UNDECIDED"
+}

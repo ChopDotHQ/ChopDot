@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "candidate_sha256": "383170c06d4e6bc4d6b658664fff6ae0f2eb003cf202ca5e8f8617fb06ae8f46",
+  "states": 17,
+  "model_assertions": 43,
+  "browser_scenarios": 18,
+  "state_layout_checks": 34,
+  "inherited_css_unchanged": true,
+  "all_golden_locks_pass": true,
+  "journey_12_golden_number": 10,
+  "current_journey": "01",
+  "review_status": "review-pending",
+  "typography_note": "TYPO-01 deferred",
+  "limitations": "Simulated auth and inline Chromium render. No real provider/backend/hosting validation."
+}

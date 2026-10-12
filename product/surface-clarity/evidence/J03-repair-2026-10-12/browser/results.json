@@ -1,0 +1,222 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "393-CHF-root-back-forward-draft",
+      "result": "pass"
+    },
+    {
+      "id": "393-CHF-existing-handoffs",
+      "result": "pass"
+    },
+    {
+      "id": "393-CHF-choice-not-creation",
+      "result": "pass"
+    },
+    {
+      "id": "393-CHF-reload-draft",
+      "result": "pass"
+    },
+    {
+      "id": "393-CHF-picker-back",
+      "result": "pass"
+    },
+    {
+      "id": "393-CHF-native-back-forward",
+      "result": "pass"
+    },
+    {
+      "id": "393-CHF-explicit-create-preserves-records",
+      "result": "pass"
+    },
+    {
+      "id": "393-CHF-success-reload-no-duplicate",
+      "result": "pass"
+    },
+    {
+      "id": "393-CHF-expense-group-home-return",
+      "result": "pass"
+    },
+    {
+      "id": "393-EUR-root-back-forward-draft",
+      "result": "pass"
+    },
+    {
+      "id": "393-EUR-existing-handoffs",
+      "result": "pass"
+    },
+    {
+      "id": "393-EUR-choice-not-creation",
+      "result": "pass"
+    },
+    {
+      "id": "393-EUR-reload-draft",
+      "result": "pass"
+    },
+    {
+      "id": "393-EUR-picker-back",
+      "result": "pass"
+    },
+    {
+      "id": "393-EUR-native-back-forward",
+      "result": "pass"
+    },
+    {
+      "id": "393-EUR-explicit-create-preserves-records",
+      "result": "pass"
+    },
+    {
+      "id": "393-EUR-success-reload-no-duplicate",
+      "result": "pass"
+    },
+    {
+      "id": "393-EUR-expense-group-home-return",
+      "result": "pass"
+    },
+    {
+      "id": "393-USD-root-back-forward-draft",
+      "result": "pass"
+    },
+    {
+      "id": "393-USD-existing-handoffs",
+      "result": "pass"
+    },
+    {
+      "id": "393-USD-choice-not-creation",
+      "result": "pass"
+    },
+    {
+      "id": "393-USD-reload-draft",
+      "result": "pass"
+    },
+    {
+      "id": "393-USD-picker-back",
+      "result": "pass"
+    },
+    {
+      "id": "393-USD-native-back-forward",
+      "result": "pass"
+    },
+    {
+      "id": "393-USD-explicit-create-preserves-records",
+      "result": "pass"
+    },
+    {
+      "id": "393-USD-success-reload-no-duplicate",
+      "result": "pass"
+    },
+    {
+      "id": "393-USD-expense-group-home-return",
+      "result": "pass"
+    },
+    {
+      "id": "430-CHF-root-back-forward-draft",
+      "result": "pass"
+    },
+    {
+      "id": "430-CHF-existing-handoffs",
+      "result": "pass"
+    },
+    {
+      "id": "430-CHF-choice-not-creation",
+      "result": "pass"
+    },
+    {
+      "id": "430-CHF-reload-draft",
+      "result": "pass"
+    },
+    {
+      "id": "430-CHF-picker-back",
+      "result": "pass"
+    },
+    {
+      "id": "430-CHF-native-back-forward",
+      "result": "pass"
+    },
+    {
+      "id": "430-CHF-explicit-create-preserves-records",
+      "result": "pass"
+    },
+    {
+      "id": "430-CHF-success-reload-no-duplicate",
+      "result": "pass"
+    },
+    {
+      "id": "430-CHF-expense-group-home-return",
+      "result": "pass"
+    },
+    {
+      "id": "430-EUR-root-back-forward-draft",
+      "result": "pass"
+    },
+    {
+      "id": "430-EUR-existing-handoffs",
+      "result": "pass"
+    },
+    {
+      "id": "430-EUR-choice-not-creation",
+      "result": "pass"
+    },
+    {
+      "id": "430-EUR-reload-draft",
+      "result": "pass"
+    },
+    {
+      "id": "430-EUR-picker-back",
+      "result": "pass"
+    },
+    {
+      "id": "430-EUR-native-back-forward",
+      "result": "pass"
+    },
+    {
+      "id": "430-EUR-explicit-create-preserves-records",
+      "result": "pass"
+    },
+    {
+      "id": "430-EUR-success-reload-no-duplicate",
+      "result": "pass"
+    },
+    {
+      "id": "430-EUR-expense-group-home-return",
+      "result": "pass"
+    },
+    {
+      "id": "430-USD-root-back-forward-draft",
+      "result": "pass"
+    },
+    {
+      "id": "430-USD-existing-handoffs",
+      "result": "pass"
+    },
+    {
+      "id": "430-USD-choice-not-creation",
+      "result": "pass"
+    },
+    {
+      "id": "430-USD-reload-draft",
+      "result": "pass"
+    },
+    {
+      "id": "430-USD-picker-back",
+      "result": "pass"
+    },
+    {
+      "id": "430-USD-native-back-forward",
+      "result": "pass"
+    },
+    {
+      "id": "430-USD-explicit-create-preserves-records",
+      "result": "pass"
+    },
+    {
+      "id": "430-USD-success-reload-no-duplicate",
+      "result": "pass"
+    },
+    {
+      "id": "430-USD-expense-group-home-return",
+      "result": "pass"
+    }
+  ],
+  "errors": []
+}

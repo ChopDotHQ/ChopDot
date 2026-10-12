@@ -4,7 +4,7 @@
   "name": "Create a Group",
   "binding": {
     "registry_digest": "f5b46bc031ea2235484ebd492e09540bfde23dca1e774591c71b3fa5c18efbda",
-    "runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479",
+    "runtime_digest": "bc052a0d54a92b0a83801ad32e389a093be04972855b61a0c45c26d4525013bc",
     "schema_commit": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
     "golden_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881"
   },
@@ -45,10 +45,9 @@
     ],
     "states": [
       "empty guest Home",
-      "creation entry",
-      "EUR currency choice",
-      "created success",
-      "reload Home"
+      "creation draft CHF/EUR/USD",
+      "explicit success",
+      "saved-record Home/Group Home returns"
     ],
     "actors": [
       "self/local guest"
@@ -60,14 +59,15 @@
       "reload to Home"
     ],
     "viewports": [
-      "393x852"
+      "393x852",
+      "430x890"
     ],
     "fixtures": [
-      "Isolated origin 4190, local sample J03 currency review"
+      "Normal UI creates a retained group, local name and CHF 12.01 expense; then creates a distinct group"
     ],
     "limitations": [
-      "Partial review stopped at confirmed premature creation; user acceptance pending.",
-      "USD same source handler, not live replayed; account/offline/error states and downstream exits not reviewed."
+      "J03 repair locally verified and awaiting user review; account/offline/error paths and full J03 not qualified.",
+      "J04/J05 handoffs checked for compatibility only; those journeys are not reviewed."
     ]
   },
   "checks": [
@@ -89,14 +89,15 @@
     },
     {
       "id": "consequence",
-      "result": "fail",
-      "expectation": "Currency selection edits a draft; explicit Create commits the group.",
+      "result": "pass",
+      "expectation": "Currency selection changes only the draft; explicit Create commits once.",
       "steps": [
-        "Start a group; enter name; Currency -> EUR without clicking Create",
-        "Observe Group created; reload; observe saved group on Home"
+        "Choose CHF/EUR/USD; compare saved group/expenses/people before explicit Create",
+        "Back/Forward/reload draft; explicitly create; reload success and verify one added group",
+        "Verify old records preserved and correct expense/group/root returns"
       ],
       "evidence_ids": [
-        "J03-BROWSER-20261012"
+        "J03-BROWSER-REPAIR-20261012"
       ],
       "reason": ""
     },
@@ -225,28 +226,44 @@
       "prediction": "Selection remains reversible; Create is the sole commit action.",
       "tradeoff": "Requires returning to entry before creation.",
       "authority_boundary": "Preserve J03-D01 and frozen sources; no new group or currency rule.",
-      "success_evidence": "Pending bounded repair authorization and focused proof",
-      "result": "proposal only; no runtime change"
+      "success_evidence": "J03-BROWSER-REPAIR-20261012",
+      "result": "corrected at ae19153b; focused local proof passes; user review pending"
     }
   ],
   "hypotheses": [],
   "additional_authority": [],
   "evidence": [
     {
-      "id": "J03-BROWSER-20261012",
+      "id": "J03-BROWSER-REPAIR-20261012",
       "kind": "BROWSER",
-      "implementation_sha": "c59073cf7efbb48521c0dbd88952fe1b045fa2af",
-      "runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479",
-      "scope": "Isolated guest J03 at 393x852: Home Start a group, name J03 currency review, Currency -> EUR (without Create group), success-eur, reload -> Home persists EUR group. Partial review; no other roles, failure/offline or whole-journey qualification.",
-      "environment": "Codex in-app browser, loopback port 4190, unchanged tested c59073cf package, separate local origin from accepted J02 review data; self review.",
+      "implementation_sha": "ae19153b73661750852875fdda979f7f0828d529",
+      "runtime_digest": "bc052a0d54a92b0a83801ad32e389a093be04972855b61a0c45c26d4525013bc",
+      "scope": "54 focused normal-UI checks: CHF/EUR/USD at 393x852 and 430x890; draft selection without mutation, picker/root Back/Forward and reload, explicit create and success reload, prior group/people/exact expense preservation, existing local-name handoff and expense/Group Home/root return. Guest creation only; self-reviewed captures.",
+      "environment": "Installed Chrome with existing Playwright; unchanged frozen package sources; isolated fresh local browser contexts; no business-state seeding.",
+      "automated": true,
+      "command": "CHOPDOT_CHROMIUM_EXECUTABLE=\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" PREVIEW_ROOT=/tmp/chopdot-j03-repair-preview-07 EVIDENCE_DIR=/tmp/chopdot-j03-repair-proof-07 node prototypes/integrated-product-preview-v2/j03-browser-qa.mjs",
+      "exit_code": 0,
+      "log": "product/surface-clarity/evidence/J03-repair-2026-10-12/browser.log",
       "artifacts": [
         {
-          "path": "product/surface-clarity/evidence/J03-review-2026-10-12/eur-created-without-create.jpg",
-          "sha256": "7ac49f44b5b9d16c7e55c22b0662ce9c72833bccaeb7885de6af6574b5b484e2"
+          "path": "product/surface-clarity/evidence/J03-repair-2026-10-12/browser.log",
+          "sha256": "8ac3d8ce60d349344264f4d53e23775d12e39816a267a4b66f967ba94aa885f3"
         },
         {
-          "path": "product/surface-clarity/evidence/J03-review-2026-10-12/home-persisted-eur.jpg",
-          "sha256": "17676b01eab7d2050b4515376f2df279df53c09ce49c3e5c2cc10c9aef634a2b"
+          "path": "product/surface-clarity/evidence/J03-repair-2026-10-12/browser/results.json",
+          "sha256": "9439abee5ad3b2abebfdc1b1eba9eb7cf97b800db5252a9041f8a2f77c892dd4"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J03-repair-2026-10-12/browser/entry-EUR-393.png",
+          "sha256": "42f35ffc1aebec89f6c3af709a308ed3da915cd709ddeaa0928c095f3197b177"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J03-repair-2026-10-12/browser/success-EUR-393.png",
+          "sha256": "ff0b4386651392213af83edf158ef46eadb6f263d201f611971d08ceed280a9a"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J03-repair-2026-10-12/browser/home-EUR-430.png",
+          "sha256": "cd2b58528469472ccf26732993542e8d95338574f5d6fc79268428c73bf95ef2"
         }
       ]
     }
@@ -269,5 +286,25 @@
       "findings": []
     },
     "scope_note": "Imported historical sample only. Checks/scenarios remain unassessed; screenshots in original audit archive."
-  }
+  },
+  "historical_evidence": [
+    {
+      "id": "J03-BROWSER-20261012",
+      "kind": "BROWSER",
+      "implementation_sha": "c59073cf7efbb48521c0dbd88952fe1b045fa2af",
+      "runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479",
+      "scope": "Isolated guest J03 at 393x852: Home Start a group, name J03 currency review, Currency -> EUR (without Create group), success-eur, reload -> Home persists EUR group. Partial review; no other roles, failure/offline or whole-journey qualification.",
+      "environment": "Codex in-app browser, loopback port 4190, unchanged tested c59073cf package, separate local origin from accepted J02 review data; self review.",
+      "artifacts": [
+        {
+          "path": "product/surface-clarity/evidence/J03-review-2026-10-12/eur-created-without-create.jpg",
+          "sha256": "7ac49f44b5b9d16c7e55c22b0662ce9c72833bccaeb7885de6af6574b5b484e2"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J03-review-2026-10-12/home-persisted-eur.jpg",
+          "sha256": "17676b01eab7d2050b4515376f2df279df53c09ce49c3e5c2cc10c9aef634a2b"
+        }
+      ]
+    }
+  ]
 }

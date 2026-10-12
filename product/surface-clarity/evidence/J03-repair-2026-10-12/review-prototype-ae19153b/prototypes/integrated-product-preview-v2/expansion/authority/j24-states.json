@@ -1,0 +1,1876 @@
+{
+  "entry-account": [
+    "J24-S01",
+    "You · Portability",
+    "Take your data with you",
+    "Start an account-wide export without changing ChopDot.",
+    [
+      [
+        "Artifact",
+        "Not prepared"
+      ],
+      [
+        "Source records",
+        "Unchanged"
+      ]
+    ],
+    [
+      "accent",
+      "Export copies records. It does not delete, settle, share, sign, or move them."
+    ],
+    {
+      "label": "Start export",
+      "to": "scope-choice",
+      "kind": "accent",
+      "q": {
+        "scope": "account"
+      }
+    },
+    {
+      "label": "Return to account",
+      "to": "entry-account",
+      "kind": "ghost",
+      "q": {}
+    }
+  ],
+  "entry-group": [
+    "J24-S02",
+    "Lisbon Weekend · Group settings",
+    "Export this group",
+    "Prepare a portable copy of this exact group.",
+    [
+      [
+        "Scope",
+        "Lisbon Weekend"
+      ],
+      [
+        "Other groups",
+        "Not included"
+      ],
+      [
+        "Source records",
+        "Unchanged"
+      ]
+    ],
+    [
+      "accent",
+      "Group export does not claim ownership of another member’s private account data."
+    ],
+    {
+      "label": "Export this group",
+      "to": "scope-choice",
+      "kind": "accent",
+      "q": {
+        "scope": "group"
+      }
+    },
+    {
+      "label": "Return to group settings",
+      "to": "entry-group",
+      "kind": "ghost",
+      "q": {}
+    }
+  ],
+  "scope-choice": [
+    "J24-S03",
+    "Scope",
+    "Choose what this export covers",
+    "Scope stays visible and reversible until final confirmation.",
+    [
+      [
+        "Account-wide",
+        "Your authorized ChopDot records"
+      ],
+      [
+        "One group",
+        "Lisbon Weekend only"
+      ]
+    ],
+    [
+      "",
+      "Changing scope after preview requires a fresh snapshot."
+    ],
+    {
+      "label": "Use account-wide scope",
+      "to": "scope-account",
+      "kind": "accent",
+      "q": {
+        "scope": "account"
+      }
+    },
+    {
+      "label": "Use Lisbon Weekend only",
+      "to": "scope-group",
+      "kind": "ghost",
+      "q": {
+        "scope": "group"
+      }
+    }
+  ],
+  "scope-account": [
+    "J24-S04",
+    "Account-wide scope",
+    "My ChopDot data",
+    "Only records you are already authorized to view enter this scope.",
+    [
+      [
+        "Groups you can view",
+        "Included as portable history"
+      ],
+      [
+        "Other people’s private data",
+        "Excluded"
+      ],
+      [
+        "Secrets / raw receiving details",
+        "Excluded"
+      ]
+    ],
+    [
+      "",
+      "Account scope does not widen permissions."
+    ],
+    {
+      "label": "Review data classes",
+      "to": "data-classes",
+      "kind": "accent",
+      "q": {
+        "scope": "account"
+      }
+    },
+    {
+      "label": "Change scope",
+      "to": "scope-choice",
+      "kind": "ghost",
+      "q": {
+        "scope": "account"
+      }
+    },
+    {
+      "label": "Demo: no data",
+      "to": "no-data",
+      "kind": "link",
+      "q": {
+        "scope": "account"
+      }
+    },
+    null,
+    {
+      "label": "Demo: account too large",
+      "to": "oversized",
+      "kind": "link",
+      "q": {
+        "scope": "account"
+      }
+    }
+  ],
+  "scope-group": [
+    "J24-S05",
+    "One-group scope",
+    "Lisbon Weekend only",
+    "No other groups are silently pulled into this export.",
+    [
+      [
+        "Expenses / splits",
+        "Included as recorded"
+      ],
+      [
+        "Settlement history",
+        "Included as history"
+      ],
+      [
+        "Member private profiles",
+        "Excluded"
+      ]
+    ],
+    [
+      "",
+      "Group-visible context may travel; private account authority does not."
+    ],
+    {
+      "label": "Review data classes",
+      "to": "data-classes",
+      "kind": "accent",
+      "q": {
+        "scope": "group"
+      }
+    },
+    {
+      "label": "Change scope",
+      "to": "scope-choice",
+      "kind": "ghost",
+      "q": {
+        "scope": "group"
+      }
+    },
+    {
+      "label": "Demo: no data",
+      "to": "no-data",
+      "kind": "link",
+      "q": {
+        "scope": "group"
+      }
+    }
+  ],
+  "data-classes": [
+    "J24-S06",
+    "Data classes",
+    "Know what can leave ChopDot",
+    "Portable history stays separate from secrets and authority.",
+    [
+      [
+        "Groups / expenses / splits",
+        "Included"
+      ],
+      [
+        "Activity / settlement history",
+        "Included"
+      ],
+      [
+        "Money / status values",
+        "As recorded"
+      ],
+      [
+        "Credentials / signing material",
+        "Excluded"
+      ]
+    ],
+    [
+      "accent",
+      "Exported payment-looking records remain inert history, never payment or retry authority."
+    ],
+    {
+      "label": "Privacy rule",
+      "to": "sensitive-policy",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Package format",
+      "to": "format-info",
+      "kind": "ghost",
+      "q": {}
+    },
+    {
+      "label": "Demo: secret-like field",
+      "to": "secret-like-field-blocked",
+      "kind": "link",
+      "q": {}
+    }
+  ],
+  "sensitive-policy": [
+    "J24-S07",
+    "Privacy rule",
+    "Sensitive authority stays behind",
+    "V1 has no override for secrets or raw receiving details.",
+    [
+      [
+        "Private keys / seed phrases",
+        "Never export"
+      ],
+      [
+        "Session / provider credentials",
+        "Never export"
+      ],
+      [
+        "Wallet/session authority",
+        "Never serialize as authority"
+      ],
+      [
+        "Raw receiving details",
+        "Excluded from broad export"
+      ]
+    ],
+    [
+      "success",
+      "Labels and history may travel without turning into credentials."
+    ],
+    {
+      "label": "Continue safely",
+      "to": "format-info",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Back to data classes",
+      "to": "data-classes",
+      "kind": "ghost",
+      "q": {}
+    }
+  ],
+  "format-info": [
+    "J24-S08",
+    "Portable package",
+    "One package with a narrow claim",
+    "The artifact is explicit about schema, snapshot, exclusions and integrity limits.",
+    [
+      [
+        "Schema",
+        "chopdot-portable-v1"
+      ],
+      [
+        "Manifest",
+        "Scope + source versions + exclusions"
+      ],
+      [
+        "Checksum",
+        "Artifact bytes only"
+      ],
+      [
+        "Authenticity claim",
+        "None"
+      ]
+    ],
+    [
+      "",
+      "Checksum does not prove source-record authenticity, backup completeness, or finality."
+    ],
+    {
+      "label": "Prepare snapshot",
+      "to": "snapshot-preparing",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Back to data classes",
+      "to": "data-classes",
+      "kind": "ghost",
+      "q": {}
+    }
+  ],
+  "snapshot-preparing": [
+    "J24-S09",
+    "Read-only snapshot",
+    "Preparing preview facts",
+    "No artifact or destination effect has begun.",
+    [
+      [
+        "Scope",
+        "Current selected scope"
+      ],
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ],
+      [
+        "Product write",
+        "None"
+      ]
+    ],
+    [
+      "",
+      "Snapshot preparation is read-only."
+    ],
+    {
+      "label": "Demo: snapshot ready",
+      "to": "snapshot-ready",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Demo: offline",
+      "to": "offline-before-snapshot",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "progress"
+  ],
+  "snapshot-ready": [
+    "J24-S10",
+    "Snapshot fixed",
+    "Preview can now be reviewed",
+    "Exact source versions and scope are fixed for this preview.",
+    [
+      [
+        "Snapshot",
+        "SNAP-24-A"
+      ],
+      [
+        "Schema",
+        "chopdot-portable-v1"
+      ],
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ],
+      [
+        "Artifact",
+        "Not created"
+      ]
+    ],
+    [
+      "success",
+      "Changing scope or source version invalidates this preview."
+    ],
+    {
+      "label": "Preview export",
+      "to": "preview-summary",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Demo: partial omission",
+      "to": "partial-unsupported",
+      "kind": "ghost",
+      "q": {}
+    },
+    {
+      "label": "Demo: unresolved identity",
+      "to": "identity-unresolved",
+      "kind": "link",
+      "q": {}
+    }
+  ],
+  "no-data": [
+    "J24-S11",
+    "Empty scope",
+    "Nothing portable in this scope",
+    "No artifact action is available because there are no exportable records.",
+    [
+      [
+        "Artifact",
+        "None"
+      ],
+      [
+        "Source",
+        "Unchanged"
+      ]
+    ],
+    [
+      "",
+      "Choose another authorized scope or return."
+    ],
+    {
+      "label": "Change scope",
+      "to": "scope-choice",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Return",
+      "to": "entry-account",
+      "kind": "ghost",
+      "q": {}
+    }
+  ],
+  "offline-before-snapshot": [
+    "J24-S12",
+    "Connection unavailable",
+    "A fresh snapshot cannot be established",
+    "ChopDot does not claim the current export can be created.",
+    [
+      [
+        "Snapshot",
+        "Not current"
+      ],
+      [
+        "Artifact",
+        "None"
+      ],
+      [
+        "Source",
+        "Unchanged"
+      ]
+    ],
+    [
+      "warn",
+      "Recheck connectivity before previewing current data."
+    ],
+    {
+      "label": "Recheck snapshot",
+      "to": "snapshot-preparing",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Return to scope",
+      "to": "scope-choice",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "warn"
+  ],
+  "oversized": [
+    "J24-S13",
+    "Package limit",
+    "Account-wide export is too large for this V1 fixture",
+    "Nothing is silently truncated.",
+    [
+      [
+        "Artifact",
+        "None"
+      ],
+      [
+        "Recommended scope",
+        "One group"
+      ],
+      [
+        "Source",
+        "Unchanged"
+      ]
+    ],
+    [
+      "warn",
+      "Narrow scope instead of dropping older records invisibly."
+    ],
+    {
+      "label": "Use Lisbon Weekend",
+      "to": "scope-group",
+      "kind": "accent",
+      "q": {
+        "scope": "group"
+      }
+    },
+    {
+      "label": "Return",
+      "to": "scope-account",
+      "kind": "ghost",
+      "q": {
+        "scope": "account"
+      }
+    },
+    null,
+    "warn"
+  ],
+  "secret-like-field-blocked": [
+    "J24-S14",
+    "Safety block",
+    "Unexpected secret-like field found",
+    "Packaging stops instead of copying the field through.",
+    [
+      [
+        "Artifact",
+        "None"
+      ],
+      [
+        "Secret-like field",
+        "Blocked"
+      ],
+      [
+        "Source",
+        "Unchanged"
+      ]
+    ],
+    [
+      "danger",
+      "There is no V1 override to export credential-like material."
+    ],
+    {
+      "label": "Return to data review",
+      "to": "data-classes",
+      "kind": "accent",
+      "q": {}
+    },
+    null,
+    null,
+    "danger"
+  ],
+  "partial-unsupported": [
+    "J24-S15",
+    "Manifest warning",
+    "Some display-only fields will be omitted",
+    "Record meaning, balances and money/status facts stay unchanged.",
+    [
+      [
+        "Financial/history meaning",
+        "Unchanged"
+      ],
+      [
+        "Omission warning",
+        "Written to manifest"
+      ],
+      [
+        "Artifact",
+        "Not created"
+      ]
+    ],
+    [
+      "warn",
+      "Unsupported fields that would change record meaning cannot be silently omitted."
+    ],
+    {
+      "label": "Continue to preview",
+      "to": "preview-summary",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Cancel",
+      "to": "cancelled-before-confirmation",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "warn"
+  ],
+  "identity-unresolved": [
+    "J24-S16",
+    "Identity truth",
+    "One member link remains unresolved",
+    "Export preserves ambiguity instead of name-linking people.",
+    [
+      [
+        "Stable IDs",
+        "Preserved"
+      ],
+      [
+        "Display label",
+        "Preserved"
+      ],
+      [
+        "Name-only merge",
+        "Never"
+      ],
+      [
+        "Artifact",
+        "Not created"
+      ]
+    ],
+    [
+      "warn",
+      "A later import must revalidate identity; J24 does not promise round-trip identity proof."
+    ],
+    {
+      "label": "Continue to preview",
+      "to": "preview-summary",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Cancel",
+      "to": "cancelled-before-confirmation",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "warn"
+  ],
+  "preview-summary": [
+    "J24-S17",
+    "Read-only preview",
+    "Review the exact portable snapshot",
+    "No artifact exists yet.",
+    [
+      [
+        "Scope",
+        "Current explicit scope"
+      ],
+      [
+        "Snapshot",
+        "SNAP-24-A"
+      ],
+      [
+        "Schema",
+        "chopdot-portable-v1"
+      ],
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ]
+    ],
+    [
+      "",
+      "Money, asset, currency and status values remain as recorded."
+    ],
+    {
+      "label": "View preview details",
+      "to": "preview-details",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Demo: source changed",
+      "to": "stale-preview",
+      "kind": "ghost",
+      "q": {}
+    },
+    {
+      "label": "Cancel",
+      "to": "cancelled-before-confirmation",
+      "kind": "link",
+      "q": {}
+    }
+  ],
+  "preview-details": [
+    "J24-S18",
+    "Preview details",
+    "What this package will contain",
+    "Included, excluded and unresolved facts are visible before effect.",
+    [
+      [
+        "Portable records",
+        "Groups / expenses / splits / history"
+      ],
+      [
+        "Secrets / raw receiving details",
+        "Excluded"
+      ],
+      [
+        "Unresolved identities",
+        "Preserved explicitly"
+      ],
+      [
+        "Checksum claim",
+        "Artifact bytes only"
+      ]
+    ],
+    [
+      "success",
+      "Preview remains read-only."
+    ],
+    {
+      "label": "Final review",
+      "to": "ready-to-confirm",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Back to summary",
+      "to": "preview-summary",
+      "kind": "ghost",
+      "q": {}
+    }
+  ],
+  "stale-preview": [
+    "J24-S19",
+    "Preview invalidated",
+    "Source data changed after preview",
+    "The old confirmation cannot silently export a different snapshot.",
+    [
+      [
+        "Old snapshot",
+        "SNAP-24-A"
+      ],
+      [
+        "Current source",
+        "Newer version exists"
+      ],
+      [
+        "Create export",
+        "Blocked"
+      ]
+    ],
+    [
+      "warn",
+      "Refresh snapshot and review again."
+    ],
+    {
+      "label": "Refresh snapshot",
+      "to": "snapshot-preparing",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Cancel",
+      "to": "cancelled-before-confirmation",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "warn"
+  ],
+  "ready-to-confirm": [
+    "J24-S20",
+    "Final review",
+    "Ready to create the portable package",
+    "The first effect still has not begun.",
+    [
+      [
+        "Scope",
+        "Current explicit scope"
+      ],
+      [
+        "Snapshot",
+        "SNAP-24-A"
+      ],
+      [
+        "Schema",
+        "chopdot-portable-v1"
+      ],
+      [
+        "Destination intent",
+        "Package first; choose delivery later"
+      ],
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ]
+    ],
+    [
+      "accent",
+      "Create export starts artifact creation only. It does not save or share externally."
+    ],
+    {
+      "label": "Review Create export",
+      "to": "export-confirmation",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Cancel",
+      "to": "cancelled-before-confirmation",
+      "kind": "ghost",
+      "q": {}
+    },
+    {
+      "label": "Demo: existing exact artifact",
+      "to": "existing-export",
+      "kind": "link",
+      "q": {}
+    }
+  ],
+  "export-confirmation": [
+    "J24-S21",
+    "First-effect boundary",
+    "Create this export?",
+    "This exact operation is bound to scope + snapshot + schema + package-first destination intent.",
+    [
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ],
+      [
+        "Source mutation",
+        "None"
+      ],
+      [
+        "External delivery",
+        "None yet"
+      ]
+    ],
+    [
+      "",
+      "This is the first point where artifact creation may begin."
+    ],
+    {
+      "label": "Create export",
+      "to": "generating",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Cancel",
+      "to": "cancelled-before-confirmation",
+      "kind": "ghost",
+      "q": {}
+    }
+  ],
+  "cancelled-before-confirmation": [
+    "J24-S22",
+    "Cancelled safely",
+    "Nothing was created",
+    "The user stopped before the first artifact effect.",
+    [
+      [
+        "Artifact",
+        "None"
+      ],
+      [
+        "Destination effect",
+        "None"
+      ],
+      [
+        "Source",
+        "Unchanged"
+      ]
+    ],
+    [
+      "success",
+      "Return to the same scope or leave."
+    ],
+    {
+      "label": "Return to scope",
+      "to": "scope-choice",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Return to account",
+      "to": "entry-account",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "success"
+  ],
+  "existing-export": [
+    "J24-S23",
+    "Idempotency",
+    "This exact operation already has an artifact",
+    "Reuse it instead of silently generating a duplicate.",
+    [
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ],
+      [
+        "Artifact",
+        "PKG-24-A"
+      ],
+      [
+        "Generation",
+        "Not repeated"
+      ]
+    ],
+    [
+      "success",
+      "Existing exact artifact wins for the same operation."
+    ],
+    {
+      "label": "Use existing artifact",
+      "to": "package-ready",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Change scope",
+      "to": "scope-choice",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "success"
+  ],
+  "generating": [
+    "J24-S24",
+    "Creating export",
+    "Packaging the reviewed snapshot",
+    "No destination effect has started.",
+    [
+      [
+        "Scope",
+        "Current explicit scope"
+      ],
+      [
+        "Snapshot",
+        "SNAP-24-A"
+      ],
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ],
+      [
+        "External destination",
+        "None"
+      ]
+    ],
+    [
+      "",
+      "Duplicate generation is blocked while this exact operation is pending."
+    ],
+    {
+      "label": "Demo: package ready",
+      "to": "package-ready",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Demo: taking longer",
+      "to": "taking-longer",
+      "kind": "ghost",
+      "q": {}
+    },
+    {
+      "label": "More generation states",
+      "to": "leave-during-generation",
+      "kind": "link",
+      "q": {}
+    },
+    "progress",
+    {
+      "label": "Demo: known failure",
+      "to": "generation-failed-before-artifact",
+      "kind": "link",
+      "q": {}
+    }
+  ],
+  "taking-longer": [
+    "J24-S25",
+    "Still creating export",
+    "Taking longer is not failure",
+    "The same operation remains pending.",
+    [
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ],
+      [
+        "Artifact truth",
+        "Pending"
+      ],
+      [
+        "Blind retry",
+        "Blocked"
+      ]
+    ],
+    [
+      "warn",
+      "Wait or leave safely; do not start another generation."
+    ],
+    {
+      "label": "Keep waiting",
+      "to": "generating",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Leave safely",
+      "to": "leave-during-generation",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "warn",
+    {
+      "label": "Demo: stop export",
+      "to": "generation-cancel-requested",
+      "kind": "link",
+      "q": {}
+    }
+  ],
+  "leave-during-generation": [
+    "J24-S26",
+    "Leave safely",
+    "Leaving does not prove cancellation",
+    "The exact operation must be reconciled before any retry.",
+    [
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ],
+      [
+        "Artifact truth",
+        "Unknown until checked"
+      ],
+      [
+        "Retry",
+        "Blocked"
+      ]
+    ],
+    [
+      "warn",
+      "Navigation cannot rewrite pending work into failure or success."
+    ],
+    {
+      "label": "Check operation",
+      "to": "reconcile-generation",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Return without retry",
+      "to": "entry-account",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "warn",
+    {
+      "label": "Demo: outcome unknown",
+      "to": "generation-unknown",
+      "kind": "link",
+      "q": {}
+    }
+  ],
+  "generation-cancel-requested": [
+    "J24-S27",
+    "Stop requested",
+    "Future work will stop where possible",
+    "Already-created bytes cannot be claimed recalled or deleted.",
+    [
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ],
+      [
+        "Artifact truth",
+        "Must be verified"
+      ],
+      [
+        "Source",
+        "Unchanged"
+      ]
+    ],
+    [
+      "warn",
+      "A stop request is not yet a proven no-artifact result."
+    ],
+    {
+      "label": "Verify no artifact",
+      "to": "reconcile-generation",
+      "kind": "accent",
+      "q": {}
+    },
+    null,
+    null,
+    "warn"
+  ],
+  "generation-cancelled": [
+    "J24-S28",
+    "Generation stopped",
+    "Verified: no artifact exists for this operation",
+    "A fresh reviewed export may be started.",
+    [
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ],
+      [
+        "Artifact",
+        "None verified"
+      ],
+      [
+        "Source",
+        "Unchanged"
+      ]
+    ],
+    [
+      "success",
+      "No hidden package or external effect remains."
+    ],
+    {
+      "label": "Start fresh review",
+      "to": "scope-choice",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Return",
+      "to": "entry-account",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "success"
+  ],
+  "generation-failed-before-artifact": [
+    "J24-S29",
+    "Generation failed",
+    "Known failure occurred before artifact bytes existed",
+    "The same logical operation may retry safely.",
+    [
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ],
+      [
+        "Artifact",
+        "None verified"
+      ],
+      [
+        "Retry",
+        "Allowed for same operation"
+      ]
+    ],
+    [
+      "danger",
+      "Changing scope/snapshot/schema would require a fresh reviewed operation."
+    ],
+    {
+      "label": "Retry same operation",
+      "to": "generating",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Return",
+      "to": "ready-to-confirm",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "danger"
+  ],
+  "generation-unknown": [
+    "J24-S30",
+    "Outcome unknown",
+    "Neither success nor failure is established",
+    "Blind regeneration is blocked.",
+    [
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ],
+      [
+        "Artifact",
+        "Unknown"
+      ],
+      [
+        "Retry",
+        "Blocked"
+      ]
+    ],
+    [
+      "warn",
+      "Reconcile the exact operation first."
+    ],
+    {
+      "label": "Reconcile operation",
+      "to": "reconcile-generation",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Recovery boundary",
+      "to": "recovery-boundary",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "warn"
+  ],
+  "reconcile-generation": [
+    "J24-S31",
+    "Reconciling operation",
+    "Check whether this exact export artifact exists",
+    "No new generation starts during reconciliation.",
+    [
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ],
+      [
+        "Snapshot",
+        "SNAP-24-A"
+      ],
+      [
+        "New artifact creation",
+        "None"
+      ]
+    ],
+    [
+      "",
+      "Fixture outcomes are deterministic review states, not live backend proof."
+    ],
+    {
+      "label": "Demo: artifact found",
+      "to": "artifact-recovered",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Demo: no artifact",
+      "to": "no-artifact-safe-retry",
+      "kind": "ghost",
+      "q": {}
+    },
+    {
+      "label": "Demo: cannot reconcile",
+      "to": "recovery-boundary",
+      "kind": "link",
+      "q": {}
+    },
+    "progress",
+    {
+      "label": "Demo: cancelled verified",
+      "to": "generation-cancelled",
+      "kind": "link",
+      "q": {}
+    }
+  ],
+  "no-artifact-safe-retry": [
+    "J24-S32",
+    "Safe retry",
+    "Reconciliation proved no artifact exists",
+    "The same logical operation may regenerate.",
+    [
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ],
+      [
+        "Artifact",
+        "None verified"
+      ],
+      [
+        "Scope/snapshot",
+        "Unchanged"
+      ]
+    ],
+    [
+      "success",
+      "Retry is replay-safe only because no artifact was found."
+    ],
+    {
+      "label": "Retry same operation",
+      "to": "generating",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Cancel",
+      "to": "entry-account",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "success"
+  ],
+  "artifact-recovered": [
+    "J24-S33",
+    "Artifact recovered",
+    "Existing exact artifact found",
+    "Reuse it; do not regenerate the same operation.",
+    [
+      [
+        "Operation",
+        "EXP24-DEMO-A"
+      ],
+      [
+        "Artifact",
+        "PKG-24-A"
+      ],
+      [
+        "Generation",
+        "Not repeated"
+      ]
+    ],
+    [
+      "success",
+      "Recovered artifact preserves the original reviewed snapshot."
+    ],
+    {
+      "label": "Open artifact",
+      "to": "package-ready",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Return",
+      "to": "entry-account",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "success"
+  ],
+  "package-ready": [
+    "J24-S34",
+    "Package ready",
+    "Your portable package exists",
+    "No external save/share is implied yet.",
+    [
+      [
+        "Artifact",
+        "PKG-24-A"
+      ],
+      [
+        "Schema",
+        "chopdot-portable-v1"
+      ],
+      [
+        "Checksum",
+        "sha256:demo24…a1"
+      ],
+      [
+        "External destination",
+        "None yet"
+      ]
+    ],
+    [
+      "success",
+      "Checksum describes artifact-byte integrity only, not source authenticity or backup status."
+    ],
+    {
+      "label": "Choose destination",
+      "to": "choose-destination",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "View package facts",
+      "to": "format-info",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "success"
+  ],
+  "choose-destination": [
+    "J24-S35",
+    "Destination",
+    "Where should this artifact go next?",
+    "The package stays unchanged while destination intent changes.",
+    [
+      [
+        "Artifact",
+        "PKG-24-A"
+      ],
+      [
+        "Browser/device",
+        "Download request"
+      ],
+      [
+        "External app",
+        "OS share/save boundary"
+      ]
+    ],
+    [
+      "",
+      "Destination actions never regenerate the package."
+    ],
+    {
+      "label": "Download on this device",
+      "to": "browser-download-requested",
+      "kind": "accent",
+      "q": {
+        "dest": "download"
+      }
+    },
+    {
+      "label": "Share or save elsewhere",
+      "to": "share-sheet-opened",
+      "kind": "ghost",
+      "q": {
+        "dest": "external"
+      }
+    }
+  ],
+  "browser-download-requested": [
+    "J24-S36",
+    "Browser boundary",
+    "Download requested",
+    "ChopDot cannot claim final filesystem path or durable persistence.",
+    [
+      [
+        "Artifact",
+        "PKG-24-A"
+      ],
+      [
+        "Request",
+        "Sent to browser"
+      ],
+      [
+        "Final path",
+        "Not verified"
+      ]
+    ],
+    [
+      "warn",
+      "The browser/OS owns final local placement."
+    ],
+    {
+      "label": "View download result",
+      "to": "result-download",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Demo: unavailable",
+      "to": "download-unavailable",
+      "kind": "ghost",
+      "q": {}
+    },
+    {
+      "label": "System boundary",
+      "to": "system-file-boundary",
+      "kind": "link",
+      "q": {}
+    },
+    "warn"
+  ],
+  "download-unavailable": [
+    "J24-S37",
+    "Download unavailable",
+    "The device/browser cannot accept this download",
+    "The package remains ready in ChopDot.",
+    [
+      [
+        "Artifact",
+        "PKG-24-A"
+      ],
+      [
+        "External effect",
+        "None confirmed"
+      ],
+      [
+        "Package",
+        "Still ready"
+      ]
+    ],
+    [
+      "warn",
+      "Choose another destination without regenerating the package."
+    ],
+    {
+      "label": "Choose another destination",
+      "to": "choose-destination",
+      "kind": "accent",
+      "q": {}
+    },
+    null,
+    null,
+    "warn"
+  ],
+  "share-sheet-opened": [
+    "J24-S38",
+    "External system boundary",
+    "Share / save sheet opened",
+    "Opening the sheet is not delivery success.",
+    [
+      [
+        "Artifact",
+        "PKG-24-A"
+      ],
+      [
+        "Destination attempt",
+        "DEL-24-X"
+      ],
+      [
+        "Outcome",
+        "Not known"
+      ]
+    ],
+    [
+      "warn",
+      "The external app/system owns the result from here."
+    ],
+    {
+      "label": "Demo: cancel",
+      "to": "share-cancelled",
+      "kind": "ghost",
+      "q": {}
+    },
+    {
+      "label": "Demo: return unknown",
+      "to": "share-return-unknown",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Demo: provider confirms save",
+      "to": "external-save-confirmed",
+      "kind": "link",
+      "q": {}
+    },
+    "boundary"
+  ],
+  "share-cancelled": [
+    "J24-S39",
+    "External handoff cancelled",
+    "No delivery is claimed",
+    "The package remains ready and unchanged.",
+    [
+      [
+        "Artifact",
+        "PKG-24-A"
+      ],
+      [
+        "Destination result",
+        "Cancelled"
+      ],
+      [
+        "Regeneration",
+        "Not needed"
+      ]
+    ],
+    [
+      "success",
+      "Try the same artifact again or return."
+    ],
+    {
+      "label": "Try same artifact again",
+      "to": "share-sheet-opened",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Return to package",
+      "to": "package-ready",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "success"
+  ],
+  "share-return-unknown": [
+    "J24-S40",
+    "External outcome unknown",
+    "Returning from the sheet is not success",
+    "Duplicate delivery is blocked until destination status is checked.",
+    [
+      [
+        "Artifact",
+        "PKG-24-A"
+      ],
+      [
+        "Destination attempt",
+        "DEL-24-X"
+      ],
+      [
+        "Outcome",
+        "Unknown"
+      ]
+    ],
+    [
+      "warn",
+      "Reconcile destination truth before another delivery attempt."
+    ],
+    {
+      "label": "Reconcile destination",
+      "to": "destination-reconciling",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Recovery boundary",
+      "to": "recovery-boundary",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "warn"
+  ],
+  "destination-reconciling": [
+    "J24-S41",
+    "Reconciling destination",
+    "Check this exact delivery attempt",
+    "The package is not regenerated.",
+    [
+      [
+        "Artifact",
+        "PKG-24-A"
+      ],
+      [
+        "Destination attempt",
+        "DEL-24-X"
+      ],
+      [
+        "New delivery",
+        "Blocked while checking"
+      ]
+    ],
+    [
+      "",
+      "Fixture outcomes are review-only and not live provider evidence."
+    ],
+    {
+      "label": "Demo: saved",
+      "to": "external-save-confirmed",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Demo: not saved",
+      "to": "destination-not-saved",
+      "kind": "ghost",
+      "q": {}
+    },
+    {
+      "label": "Demo: unresolved",
+      "to": "recovery-boundary",
+      "kind": "link",
+      "q": {}
+    },
+    "progress"
+  ],
+  "destination-not-saved": [
+    "J24-S42",
+    "Safe delivery retry",
+    "Reconciliation proved no external save",
+    "The same artifact may be delivered again.",
+    [
+      [
+        "Artifact",
+        "PKG-24-A"
+      ],
+      [
+        "Destination result",
+        "Not saved"
+      ],
+      [
+        "Package regeneration",
+        "Not needed"
+      ]
+    ],
+    [
+      "success",
+      "Retry delivery only; do not rebuild the export."
+    ],
+    {
+      "label": "Retry same artifact",
+      "to": "share-sheet-opened",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Return to package",
+      "to": "package-ready",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "success"
+  ],
+  "external-save-confirmed": [
+    "J24-S43",
+    "Fixture external result",
+    "Provider fixture reports saved copy",
+    "This is a destination fact only, not live provider proof.",
+    [
+      [
+        "Artifact",
+        "PKG-24-A"
+      ],
+      [
+        "Destination result",
+        "Saved · fixture"
+      ],
+      [
+        "Source authenticity",
+        "Not proven"
+      ],
+      [
+        "Backup completeness",
+        "Not proven"
+      ]
+    ],
+    [
+      "success",
+      "The prototype does not claim real cloud/storage execution."
+    ],
+    {
+      "label": "View external result",
+      "to": "result-external",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "Return to package",
+      "to": "package-ready",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "success"
+  ],
+  "result-download": [
+    "J24-S44",
+    "Export result",
+    "Package created · download requested",
+    "Final local path or persistence is not verified by ChopDot.",
+    [
+      [
+        "Artifact",
+        "PKG-24-A"
+      ],
+      [
+        "Browser request",
+        "Sent"
+      ],
+      [
+        "Source records",
+        "Unchanged"
+      ]
+    ],
+    [
+      "success",
+      "You retained a portable artifact without granting it new authority."
+    ],
+    {
+      "label": "Return to account",
+      "to": "entry-account",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "System file boundary",
+      "to": "system-file-boundary",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "success"
+  ],
+  "result-external": [
+    "J24-S45",
+    "Export result",
+    "Package created · external save fixture confirmed",
+    "No live delivery or source-authenticity proof is claimed.",
+    [
+      [
+        "Artifact",
+        "PKG-24-A"
+      ],
+      [
+        "External result",
+        "Saved · fixture"
+      ],
+      [
+        "Source records",
+        "Unchanged"
+      ]
+    ],
+    [
+      "success",
+      "Destination success does not turn this artifact into backup, payment, signing, or recovery authority."
+    ],
+    {
+      "label": "Return to account",
+      "to": "entry-account",
+      "kind": "accent",
+      "q": {}
+    },
+    {
+      "label": "External app boundary",
+      "to": "external-app-boundary",
+      "kind": "ghost",
+      "q": {}
+    },
+    null,
+    "success"
+  ],
+  "system-file-boundary": {
+    "boundary": true,
+    "code": "J24-B01",
+    "owner": "Browser / operating system",
+    "title": "Final local placement is outside J24",
+    "lead": "ChopDot can request a download/save but cannot invent where bytes ultimately landed.",
+    "primary": {
+      "label": "Return to download result",
+      "to": "result-download",
+      "kind": "primary",
+      "q": {}
+    },
+    "notice": [
+      "",
+      "This boundary preserves honest filesystem/storage claims."
+    ]
+  },
+  "external-app-boundary": {
+    "boundary": true,
+    "code": "J24-B02",
+    "owner": "OS share sheet / external provider",
+    "title": "External delivery is owned outside ChopDot",
+    "lead": "Returning from a share/save sheet is not success unless a provider/system result says so.",
+    "primary": {
+      "label": "Return to package",
+      "to": "package-ready",
+      "kind": "primary",
+      "q": {}
+    },
+    "notice": [
+      "",
+      "J24 never creates persistent external access permissions in this prototype."
+    ]
+  },
+  "recovery-boundary": {
+    "boundary": true,
+    "code": "J24-B03",
+    "owner": "Journey 28 · Things Go Wrong / Recovery",
+    "title": "Unresolved truth stops here",
+    "lead": "Exact operation/snapshot/artifact context is carried forward without blind retry authority.",
+    "primary": {
+      "label": "Return to safe export entry",
+      "to": "entry-account",
+      "kind": "primary",
+      "q": {}
+    },
+    "notice": [
+      "danger",
+      "No invented success, failure, regeneration, or redelivery is allowed here."
+    ]
+  }
+}

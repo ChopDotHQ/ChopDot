@@ -497,8 +497,14 @@
     "evidence": "Home Start a group -> enter name -> Currency -> EUR immediately shows Group created; reload Home retains EUR group. No Create group click.",
     "recommendation": "Update only the canonical creation draft on currency choice and return to entry; require explicit Create for group mutation; preserve existing records and guest/account boundaries.",
     "authority_boundary": "Integration correction to J03-D01 and the existing creation-owner selection/commit distinction; preserve frozen Golden/C1 and schema.",
-    "status": "open",
-    "disposition": null,
+    "status": "fixed",
+    "disposition": {
+      "rationale": "Guest currency choice retains canonical creation draft and returns to entry; existing owner creates once only on explicit Create. Reload, prior records and existing handoffs pass the focused normal-UI checks.",
+      "runtime_digest": "bc052a0d54a92b0a83801ad32e389a093be04972855b61a0c45c26d4525013bc",
+      "evidence_ids": [
+        "J03-BROWSER-REPAIR-20261012"
+      ]
+    },
     "observed_implementation_sha": "c59073cf7efbb48521c0dbd88952fe1b045fa2af",
     "observed_runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479",
     "evidence_ids": [

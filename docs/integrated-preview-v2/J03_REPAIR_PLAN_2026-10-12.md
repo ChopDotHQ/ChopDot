@@ -19,3 +19,7 @@ preserved prior records, success exits and Home/Group Home returns. Inspect actu
 screens and show working preview. Record unrelated baseline failures only.
 Docs: update J03/finding and brief result. No wiki/ADR required for this wrapper
 integration repair; no frozen files changed. Stop for user review before J04.
+
+Completion checkpoint: ae19153b implements the bounded guest repair. 54 focused
+normal-UI checks pass at both approved mobile sizes. Actual screens inspected;
+see J03-repair-2026-10-12/REPORT.md. User acceptance pending; stop before J04.

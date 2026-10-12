@@ -1,0 +1,10 @@
+{
+  "implementation_sha": "ae19153b73661750852875fdda979f7f0828d529",
+  "binding": {
+    "registry_digest": "f5b46bc031ea2235484ebd492e09540bfde23dca1e774591c71b3fa5c18efbda",
+    "runtime_digest": "bc052a0d54a92b0a83801ad32e389a093be04972855b61a0c45c26d4525013bc",
+    "schema_commit": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+    "golden_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881"
+  },
+  "runtime_file_count": 166
+}

@@ -54,3 +54,8 @@ bash prototypes/integrated-product-preview-v2/expansion/run.sh
 Requires Python 3, Node 24+, Playwright 1.62.1 and Chromium. The runner archives committed HEAD into its own temporary directory and writes command/exit logs outside the checkout. It does not reset or clean your checkout. Mobile viewport simulation is not actual iPhone Safari or Android hardware qualification. Authentication, shared server storage, real funds/signing/providers, production security and multi-device synchronization are not implemented or qualified.
 
 The user accepted the earlier implementation at `d6c85f9e53a3dbb66795c13cb41d6153f68a68f0`. Subsequent demo polish does not change that immutable acceptance record or imply acceptance of unseen successor bytes.
+
+J03 guest creation at ae19153b retains the name/currency draft through selection
+and reload; only Create group commits. Its 54 focused checks and reviewed screens
+are in product/surface-clarity/evidence/J03-repair-2026-10-12/REPORT.md. User review
+is pending; J04 work has not started and J05 remains parked.
