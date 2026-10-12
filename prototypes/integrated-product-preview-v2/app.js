@@ -1090,6 +1090,11 @@ frame.addEventListener('load', () => {
     stopMonitor();currentJourney='J03';currentFlow='guest-local-create';
   }else if(child.pathname===sourcePath('j05')){
     stopMonitor();currentJourney='J05';currentFlow='guest-local-expense';
+  }else if(child.pathname===sourcePath('j01')){
+    if(currentJourney!=='J01')currentFlow=doc.documentElement.dataset.entryFlow||'signin';
+    currentJourney='J01';doc.documentElement.dataset.entryFlow=currentFlow;
+  }else if(child.pathname===sourcePath('j01GuestInvite')){
+    currentJourney='J01';currentFlow='guest-invite';
   }else{
     const owner=['gate-b','gate-c','gate-d','expansion','create-join'].find(owner=>child.pathname===new URL('./'+owner+'/index.html',location.href).pathname||child.pathname===new URL('./'+owner+'/',location.href).pathname);
     if(owner){stopMonitor();currentJourney=owner==='expansion'?'STAGE_5':owner==='create-join'?'J04':'GATE_B';currentFlow=owner+'-local';return;}
@@ -1189,7 +1194,7 @@ else if (params.has('gateD'))openGateD(params.get('gateD'));
 else if (params.has('gateC')) openGateC(params.get('gateC'));
 else if (params.has('gateB') && loadGuestState().group) openGateB(params.get('gateBRoute')||'');
 else if(params.has('guestExpense')&&loadGuestState().group)openGuestExpense();
-else if(params.has('home')&&loadGuestState().enteredAt&&!['signed-out','expired'].includes(loadGuestState().gateD?.session?.status))returnToLocalHome();
+else if(params.has('home')&&!['signed-out','expired'].includes(loadGuestState().gateD?.session?.status))returnToLocalHome();
 else if (['create', 'signin', 'convert-create', 'convert-signin'].includes(entryMode))openAuth(entryMode, { resumed: true, method: params.get('entryMethod') === 'wallet' ? 'wallet' : 'email' });
 else if (entryMode === 'invite') openInvite('account', { resumed: params.has('entryMethod'), method: ['email','wallet'].includes(params.get('entryMethod')) ? params.get('entryMethod') : '' });
 else if (entryMode === 'guest-invite') openInvite('guest');
