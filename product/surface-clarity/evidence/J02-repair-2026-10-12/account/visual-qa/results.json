@@ -1,0 +1,119 @@
+{
+  "status": "PASS",
+  "pairs": [
+    {
+      "j": "j18",
+      "state": "activity",
+      "width": 393,
+      "height": 852,
+      "integrated": "/tmp/chopdot-j02-verified-account/visual-qa/j18-activity-393-integrated.png",
+      "golden": "/tmp/chopdot-j02-verified-account/visual-qa/j18-activity-393-golden.png",
+      "metrics": {
+        "width": 393,
+        "overflow": false,
+        "heading": "Activity",
+        "controls": 12
+      }
+    },
+    {
+      "j": "j27",
+      "state": "account-overview",
+      "width": 393,
+      "height": 852,
+      "integrated": "/tmp/chopdot-j02-verified-account/visual-qa/j27-account-overview-393-integrated.png",
+      "golden": "/tmp/chopdot-j02-verified-account/visual-qa/j27-account-overview-393-golden.png",
+      "metrics": {
+        "width": 393,
+        "overflow": false,
+        "heading": "Account & preferences",
+        "controls": 18
+      }
+    },
+    {
+      "j": "j27",
+      "state": "profile-edit",
+      "width": 393,
+      "height": 852,
+      "integrated": "/tmp/chopdot-j02-verified-account/visual-qa/j27-profile-edit-393-integrated.png",
+      "golden": "/tmp/chopdot-j02-verified-account/visual-qa/j27-profile-edit-393-golden.png",
+      "metrics": {
+        "width": 393,
+        "overflow": false,
+        "heading": "Edit display name",
+        "controls": 8
+      }
+    },
+    {
+      "j": "j28",
+      "state": "read-failed",
+      "width": 393,
+      "height": 852,
+      "integrated": "/tmp/chopdot-j02-verified-account/visual-qa/j28-read-failed-393-integrated.png",
+      "golden": "/tmp/chopdot-j02-verified-account/visual-qa/j28-read-failed-393-golden.png",
+      "metrics": {
+        "width": 393,
+        "overflow": false,
+        "heading": "No operation was started",
+        "controls": 9
+      }
+    },
+    {
+      "j": "j18",
+      "state": "activity",
+      "width": 430,
+      "height": 890,
+      "integrated": "/tmp/chopdot-j02-verified-account/visual-qa/j18-activity-430-integrated.png",
+      "golden": "/tmp/chopdot-j02-verified-account/visual-qa/j18-activity-430-golden.png",
+      "metrics": {
+        "width": 430,
+        "overflow": false,
+        "heading": "Activity",
+        "controls": 12
+      }
+    },
+    {
+      "j": "j27",
+      "state": "account-overview",
+      "width": 430,
+      "height": 890,
+      "integrated": "/tmp/chopdot-j02-verified-account/visual-qa/j27-account-overview-430-integrated.png",
+      "golden": "/tmp/chopdot-j02-verified-account/visual-qa/j27-account-overview-430-golden.png",
+      "metrics": {
+        "width": 430,
+        "overflow": false,
+        "heading": "Account & preferences",
+        "controls": 18
+      }
+    },
+    {
+      "j": "j27",
+      "state": "profile-edit",
+      "width": 430,
+      "height": 890,
+      "integrated": "/tmp/chopdot-j02-verified-account/visual-qa/j27-profile-edit-430-integrated.png",
+      "golden": "/tmp/chopdot-j02-verified-account/visual-qa/j27-profile-edit-430-golden.png",
+      "metrics": {
+        "width": 430,
+        "overflow": false,
+        "heading": "Edit display name",
+        "controls": 8
+      }
+    },
+    {
+      "j": "j28",
+      "state": "read-failed",
+      "width": 430,
+      "height": 890,
+      "integrated": "/tmp/chopdot-j02-verified-account/visual-qa/j28-read-failed-430-integrated.png",
+      "golden": "/tmp/chopdot-j02-verified-account/visual-qa/j28-read-failed-430-golden.png",
+      "metrics": {
+        "width": 430,
+        "overflow": false,
+        "heading": "No operation was started",
+        "controls": 9
+      }
+    }
+  ],
+  "errors": [],
+  "scope": "Approved Golden layout and control hierarchy at393x852 and430x890; dynamic records differ deliberately. Screenshots require human/agent visual inspection; no pixel-identical claim."
+}

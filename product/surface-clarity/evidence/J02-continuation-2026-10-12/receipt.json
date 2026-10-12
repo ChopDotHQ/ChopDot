@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-12",
+  "status": "CONTEXT_RECOVERED_NOT_UI_VERIFIED",
+  "pins": {
+    "start": {
+      "sha": "dfa8ed82c0b3d583eb9ec0521b9465fb31d17dec",
+      "tree": "61ed79fb83fd050dfd6b5f68b4b1408fe77273e3"
+    },
+    "schema": {
+      "sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+      "tree": "ce5b82d008dfa2f48e714607e30fdb6839b8305c"
+    },
+    "golden": {
+      "sha": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+      "tree": "cb424dafedff066fed433e106eb4468bec985d98"
+    }
+  },
+  "checks": [
+    {
+      "command": [
+        "node",
+        "scripts/surface-clarity.mjs",
+        "context"
+      ],
+      "exit_code": 0,
+      "log": "product/surface-clarity/evidence/J02-continuation-2026-10-12/context.log",
+      "sha256": "ffd405273b8b54b389592af704f55d3a365227cd6f97daa1a1c7766cd53fa218"
+    },
+    {
+      "command": [
+        "node",
+        "scripts/surface-clarity.mjs",
+        "check"
+      ],
+      "exit_code": 1,
+      "log": "product/surface-clarity/evidence/J02-continuation-2026-10-12/check.log",
+      "sha256": "b1fe9e75c5c0d1863c98f0dc76d384718c9af8dd531b1ad47a2ab5cf3765b4e4"
+    }
+  ],
+  "sources": [
+    {
+      "path": "docs/integrated-preview-v2/J02_CONTINUATION_2026-10-12.md",
+      "sha256": "dd8c80e5fac746a00c3d0cd81003046ae886eed9dc0df1358b61fc5e90e91819"
+    },
+    {
+      "path": "product/surface-clarity/FRAMEWORK.md",
+      "sha256": "f646e0a446a8f8bea88cc72355a88129a8f7ee8beb8008d16c99e0e4d9683de5"
+    },
+    {
+      "path": "product/surface-clarity/JOURNEY_PLAYBOOK.md",
+      "sha256": "6df34204d3101328ca63838adbfb35d2c82142ad998b1a44215ac00650231878"
+    },
+    {
+      "path": "product/surface-clarity/evidence/J02-recovery-2026-10-11/CHECKPOINT.md",
+      "sha256": "bfc89215925e453b418100d25ca3be45837c9920ee5afe35219df234c9943dbd"
+    },
+    {
+      "path": "product/surface-clarity/evidence/J02-bounded-review-2026-10-11/REPORT.md",
+      "sha256": "2149b2886f086bfe37f14d51e906dde06c8c1e7eb807b9d8ecf214aa937c2f48"
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/02-home-orientation/spec.md",
+      "sha256": "b9891838c6bb74b2cb1430c7d15f6aad70c2248355a282ae0c18fb5e2b207e27"
+    },
+    {
+      "path": "docs/integrated-preview-v2/J01_ENTRY_FRONT_DOOR_DECISION.md",
+      "sha256": "3459a34eedb7cba60d2fefafaedf433d7c477e71e610a0229799b1556f370043"
+    },
+    {
+      "path": "product/surface-clarity/evidence/J01-schema-change-2026-10-11/README.md",
+      "sha256": "5f146d898836a65368352927abd51c1ff5f223f6f486042c7f80b93de6c0bec6"
+    }
+  ],
+  "limits": [
+    "Recent chats only; older messages did not load.",
+    "No runtime edit, browser repair test, independent review, CI or deployment in this continuation.",
+    "Historical framework evidence may be stale; check exit is reported without rebinding."
+  ],
+  "baseline_result": {
+    "errors": 31,
+    "readiness": "INCOMPLETE",
+    "runtime_digest": "fc2b9ef37d6c6e6956c08c750a3be62a9a545295c3b2d1f1ac0428689184c705"
+  }
+}

@@ -136,8 +136,14 @@
       "02-home-empty"
     ],
     "authority_boundary": "Hierarchy change needs bounded Golden-impact review; do not remove supported journeys.",
-    "status": "open",
-    "disposition": null,
+    "status": "fixed",
+    "disposition": {
+      "rationale": "Home tools relocated to their existing owners; enabled routes preserved and actual first viewports reviewed. Bounded local result; human acceptance remains pending.",
+      "evidence_ids": [
+        "J02-BROWSER-20261012"
+      ],
+      "runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479"
+    },
     "inherited_from": "historical-audit/results.json",
     "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
   },
@@ -162,8 +168,14 @@
       "02-back-to-group-lands-home"
     ],
     "authority_boundary": "Integration route fix; preserve the accepted group-home meaning.",
-    "status": "open",
-    "disposition": null,
+    "status": "fixed",
+    "disposition": {
+      "rationale": "Saved guest expense now returns to the affected Group Home; the full expense/group/Home sequence is exercised at both mobile sizes and desktop. Bounded local result; human acceptance remains pending.",
+      "evidence_ids": [
+        "J02-BROWSER-20261012"
+      ],
+      "runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479"
+    },
     "inherited_from": "historical-audit/results.json",
     "observed_implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a"
   },
@@ -393,5 +405,80 @@
     "evidence_ids": [
       "J01-BROWSER-20261010"
     ]
+  },
+  {
+    "id": "SC-J02-001",
+    "priority": "P2",
+    "certainty": "Historical bounded observation; current UI regression",
+    "journeys": [
+      "J02"
+    ],
+    "principles": [
+      "Truth",
+      "Continuity",
+      "Recovery"
+    ],
+    "title": "Native Back restores canonical Home",
+    "evidence": "See J02-bounded-review-2026-10-11 and current repair results; original hosted observations are not current implementation clearance.",
+    "authority_boundary": "Navigation/presentation only; no new domain authority.",
+    "status": "fixed",
+    "disposition": {
+      "rationale": "Browser history restores canonical Home and dispatches the actual loaded owner. Bounded local result; human acceptance remains pending.",
+      "evidence_ids": [
+        "J02-BROWSER-20261012"
+      ],
+      "runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479"
+    },
+    "inherited_from": "evidence/J02-bounded-review-2026-10-11/REPORT.md"
+  },
+  {
+    "id": "SC-J02-002",
+    "priority": "P2",
+    "certainty": "Historical bounded observation; current UI regression",
+    "journeys": [
+      "J02"
+    ],
+    "principles": [
+      "Truth",
+      "Continuity",
+      "Recovery"
+    ],
+    "title": "People destination and safe return",
+    "evidence": "See J02-bounded-review-2026-10-11 and current repair results; original hosted observations are not current implementation clearance.",
+    "authority_boundary": "Navigation/presentation only; no new domain authority.",
+    "status": "fixed",
+    "disposition": {
+      "rationale": "People reaches the existing directory or a truthful guest boundary with a root exit. Bounded local result; human acceptance remains pending.",
+      "evidence_ids": [
+        "J02-BROWSER-20261012"
+      ],
+      "runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479"
+    },
+    "inherited_from": "evidence/J02-bounded-review-2026-10-11/REPORT.md"
+  },
+  {
+    "id": "SC-J02-003",
+    "priority": "P2",
+    "certainty": "Historical bounded observation; current UI regression",
+    "journeys": [
+      "J02"
+    ],
+    "principles": [
+      "Truth",
+      "Continuity",
+      "Recovery"
+    ],
+    "title": "Root Home versus selected Group Home return",
+    "evidence": "See J02-bounded-review-2026-10-11 and current repair results; original hosted observations are not current implementation clearance.",
+    "authority_boundary": "Navigation/presentation only; no new domain authority.",
+    "status": "fixed",
+    "disposition": {
+      "rationale": "Root returns and explicit group returns preserve their separate destinations and first-entry choice. Bounded local result; human acceptance remains pending.",
+      "evidence_ids": [
+        "J02-BROWSER-20261012"
+      ],
+      "runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479"
+    },
+    "inherited_from": "evidence/J02-bounded-review-2026-10-11/REPORT.md"
   }
 ]

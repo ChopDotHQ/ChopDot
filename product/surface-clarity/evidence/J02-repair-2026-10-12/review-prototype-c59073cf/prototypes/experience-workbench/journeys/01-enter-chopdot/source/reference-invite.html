@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ChopDot — Invite / Join V1</title>
+<style>
+:root{
+  --bg:#f7f7f8;--surface:#fff;--surface2:#f0f0f2;--ink:#111113;--secondary:#66666d;--muted:#929299;
+  --border:#e6e6e9;--accent:#e6007a;--accent-soft:#fde9f3;--success:#17a66b;--warning:#8a5b00;--warning-soft:#fff5db;
+  --danger:#a23f45;--danger-soft:#fff0f1;--shadow:0 1px 2px rgba(0,0,0,.025),0 10px 28px rgba(0,0,0,.05);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#ececef;color:var(--ink);font-family:var(--font)}
+a{text-decoration:none;color:inherit}button,input{font:inherit}
+.lab{height:100vh;height:100dvh;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:28px;padding:28px;overflow:hidden}
+.stage{min-height:0;display:flex;justify-content:center;align-items:stretch;overflow:hidden}
+.device{width:min(430px,100%);height:100%;max-height:890px;border-radius:34px;overflow:hidden;background:var(--bg);border:1px solid rgba(0,0,0,.12);box-shadow:0 30px 75px rgba(0,0,0,.17);position:relative}
+.screen{position:absolute;inset:0;display:none;grid-template-rows:auto minmax(0,1fr) auto;background:var(--bg);overflow:hidden}
+.screen:target{display:grid}body:not(:has(.screen:target)) #invite{display:grid}
+.header{padding:calc(15px + env(safe-area-inset-top)) 16px 12px;display:grid;grid-template-columns:36px minmax(0,1fr) 36px;align-items:center;gap:10px;background:rgba(247,247,248,.98);border-bottom:1px solid rgba(0,0,0,.04);z-index:5}
+.header.brand-head{grid-template-columns:minmax(0,1fr) 36px}.brand{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:770}.mark{width:26px;height:26px;border-radius:50%;background:var(--accent);position:relative;overflow:hidden;flex:none}.mark:after{content:"";position:absolute;left:-5px;right:-5px;top:11px;height:4px;background:#fff;transform:rotate(-35deg)}
+.back,.ghost{width:36px;height:36px;border-radius:11px;display:grid;place-items:center}.back{background:var(--surface);border:1px solid var(--border)}.ghost{visibility:hidden}.header-title{text-align:center;font-size:13px;font-weight:700}.avatar{width:29px;height:29px;border-radius:50%;background:#151515;color:white;display:grid;place-items:center;font-size:10px;font-weight:750;justify-self:end}.icon{width:18px;height:18px;display:block}
+.content{min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:22px 20px 24px;display:flex;flex-direction:column;gap:18px}.content>*{flex:0 0 auto}
+.footer{background:rgba(247,247,248,.98);border-top:1px solid rgba(0,0,0,.04);padding:10px 16px calc(12px + env(safe-area-inset-bottom));z-index:5}.footer-stack{display:grid;gap:8px}.btn{min-height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:730}.btn.primary{background:#111;color:#fff}.btn.secondary{background:var(--surface);border:1px solid var(--border);color:var(--ink)}.btn.text{min-height:32px;color:var(--secondary);font-size:11px;font-weight:600}.btn.disabled{background:#e5e5e8;color:#8d8d93;pointer-events:none}
+.title{font-size:30px;line-height:1.06;letter-spacing:-.045em;font-weight:800;margin:0}.lead{font-size:13px;line-height:1.45;color:var(--secondary);margin:7px 0 0;max-width:320px}.section-label{font-size:11px;color:var(--secondary);margin:2px 2px -8px}.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}
+.action-row{padding:14px 15px;display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:11px;align-items:center}.action-icon{width:36px;height:36px;border-radius:12px;background:var(--surface2);display:grid;place-items:center}.action-icon.pink{background:var(--accent-soft);color:var(--accent)}.action-title{font-size:13px;font-weight:700}.action-meta{font-size:11px;color:var(--secondary);margin-top:2px}.chev{width:16px;height:16px;color:var(--muted)}
+.input-card{padding:15px}.input-label{font-size:11px;color:var(--secondary);margin-bottom:7px}.input-line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}.name-input{width:100%;border:0;border-bottom:1.5px solid #cacacf;background:transparent;padding:7px 0 10px;font-size:20px;font-weight:700;outline:0}.mini-btn{padding:8px 10px;border-radius:10px;background:#111;color:white;font-size:11px;font-weight:700}
+.member-list{overflow:hidden}.member{padding:12px 15px;display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;border-top:1px solid var(--border)}.member:first-child{border-top:0}.person-avatar{width:34px;height:34px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;font-size:10px;font-weight:750}.person-avatar.dark{background:#151515;color:#fff}.person-name{font-size:13px;font-weight:700}.person-meta{font-size:11px;color:var(--secondary);margin-top:1px}.status{font-size:11px;font-weight:700}.status.pending{color:var(--accent)}.status.muted{color:var(--secondary)}
+.invite-card{padding:17px}.invite-kicker{font-size:11px;color:var(--secondary)}.invite-name{font-size:22px;letter-spacing:-.035em;font-weight:780;margin-top:3px}.invite-by{font-size:12px;color:var(--secondary);margin-top:4px}.invite-stats{margin-top:15px;padding-top:13px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat span{display:block;font-size:10px;color:var(--secondary)}.stat b{display:block;font-size:14px;margin-top:2px}.people-stack{display:flex;margin-top:14px}.stack-avatar{width:32px;height:32px;border-radius:50%;background:var(--surface2);border:2px solid var(--surface);display:grid;place-items:center;font-size:9px;font-weight:750;margin-left:-7px}.stack-avatar:first-child{margin-left:0}.stack-avatar.dark{background:#151515;color:white}
+.success-mark{width:46px;height:46px;border-radius:50%;background:#e7f7ef;color:var(--success);display:grid;place-items:center}.success-mark .icon{width:22px;height:22px}.success-title{font-size:29px;line-height:1.06;letter-spacing:-.045em;font-weight:800;margin:0}.success-sub{font-size:13px;line-height:1.45;color:var(--secondary);margin:7px 0 0}.joined-card{padding:16px}.joined-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px}.joined-name{font-size:15px;font-weight:740}.joined-meta{font-size:11px;color:var(--secondary);margin-top:3px}.joined-state{font-size:12px;font-weight:700}.joined-grid{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:10px}.joined-grid span{display:block;font-size:10px;color:var(--secondary)}.joined-grid b{display:block;font-size:13px;margin-top:2px}
+.banner{padding:11px 13px;border-radius:14px;font-size:11px;line-height:1.45}.banner.warn{background:var(--warning-soft);color:#6d4b0a;border:1px solid #ecd7a4}.banner.error{background:var(--danger-soft);color:#8d3035;border:1px solid #efc5c8}.quiet{padding:13px 14px;border-radius:14px;background:var(--surface2);font-size:11px;line-height:1.45;color:var(--secondary)}
+.labpanel{height:100%;overflow:auto;background:#151516;color:white;border-radius:22px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.18)}.labpanel h2{font-size:17px;margin:0 0 5px}.labpanel p{font-size:12px;line-height:1.5;color:#b9b9bf;margin:0}.labsec{margin-top:16px;padding-top:14px;border-top:1px solid #303034}.lablabel{font-size:10px;color:#929299;text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px}.labbtn{display:block;width:100%;border:1px solid #37373a;background:#222225;color:white;border-radius:12px;padding:10px 12px;margin-top:7px;font-size:11px}.note{font-size:11px;line-height:1.5;color:#a9a9af}.pass{color:#bcebd4}.gap{color:#f4d69a}
+@media(max-width:860px){.lab{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;display:block;padding:0;overflow:hidden}.labpanel{display:none}.stage{position:absolute;inset:0}.device{position:absolute;inset:0;width:100%;height:100%;max-height:none;border:0;border-radius:0;box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="lab"><div class="stage"><div class="device">
+
+<!-- INVITER SIDE -->
+<section class="screen" id="invite">
+  <header class="header"><a class="back" href="#invite-done" aria-label="Back"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a><div class="header-title">Geneva Weekend</div><span class="ghost"></span></header>
+  <main class="content">
+    <div><h1 class="title">Invite people.</h1><p class="lead">Share a link or add them.</p></div>
+    <a class="card action-row" href="#share"><span class="action-icon pink"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07.07l2-2a5 5 0 0 0-7.07-7.07l-1.15 1.15"/><path d="M14 11a5 5 0 0 0-7.07-.07l-2 2A5 5 0 0 0 12 20l1.15-1.15"/></svg></span><div><div class="action-title">Share group link</div><div class="action-meta">One link for this group</div></div><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a>
+    <a class="card action-row" href="#add-person"><span class="action-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></span><div><div class="action-title">Add someone</div><div class="action-meta">Name, email or handle</div></div><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></a>
+    <div class="section-label">People</div>
+    <section class="card member-list"><div class="member"><span class="person-avatar dark">DP</span><div><div class="person-name">You</div><div class="person-meta">Owner</div></div><span class="status muted">Joined</span></div></section>
+  </main>
+  <footer class="footer"><a class="btn primary" href="#invite-done">Done</a></footer>
+</section>
+
+<section class="screen" id="share">
+  <header class="header"><a class="back" href="#invite"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a><div class="header-title">Share invite</div><span class="ghost"></span></header>
+  <main class="content">
+    <div><h1 class="title">Share this link.</h1><p class="lead">Geneva Weekend</p></div>
+    <section class="card invite-card"><div class="invite-kicker">Group invite</div><div class="invite-name">chopdot.app/join/geneva</div><div class="invite-by">Same invite for everyone.</div></section>
+    <div class="quiet">Expenses stay private until they join.</div>
+  </main>
+  <footer class="footer"><a class="btn primary" href="#invite-sent"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>Share invite</a></footer>
+</section>
+
+<section class="screen" id="add-person">
+  <header class="header"><a class="back" href="#invite"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a><div class="header-title">Add someone</div><span class="ghost"></span></header>
+  <main class="content">
+    <div><h1 class="title">Add someone.</h1><p class="lead">Name, email or handle.</p></div>
+    <section class="card input-card"><div class="input-label">Person</div><div class="input-line"><input class="name-input" value="Jeanine" aria-label="Person"><a class="mini-btn" href="#person-added">Add</a></div></section>
+  </main>
+  <footer class="footer"><a class="btn secondary" href="#invite">Cancel</a></footer>
+</section>
+
+<section class="screen" id="person-added">
+  <header class="header"><a class="back" href="#invite"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a><div class="header-title">Geneva Weekend</div><span class="ghost"></span></header>
+  <main class="content">
+    <div><h1 class="title">Invite sent.</h1><p class="lead">Jeanine can join when ready.</p></div>
+    <section class="card member-list"><div class="member"><span class="person-avatar dark">DP</span><div><div class="person-name">You</div><div class="person-meta">Owner</div></div><span class="status muted">Joined</span></div><div class="member"><span class="person-avatar">JA</span><div><div class="person-name">Jeanine</div><div class="person-meta">Invite sent</div></div><span class="status pending">Pending</span></div></section>
+  </main>
+  <footer class="footer"><div class="footer-stack"><a class="btn primary" href="#invite">Invite someone else</a><a class="btn secondary" href="#invite-done">Done</a></div></footer>
+</section>
+
+<section class="screen" id="invite-sent">
+  <header class="header"><a class="back" href="#invite"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a><div class="header-title">Invite shared</div><span class="ghost"></span></header>
+  <main class="content"><span class="success-mark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span><div><h1 class="success-title">Invite shared.</h1><p class="success-sub">They can join when ready.</p></div></main>
+  <footer class="footer"><a class="btn primary" href="#invite-done">Done</a></footer>
+</section>
+
+<section class="screen" id="invite-done">
+  <header class="header"><span class="ghost"></span><div class="header-title">Geneva Weekend</div><span class="ghost"></span></header>
+  <main class="content"><span class="success-mark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span><div><h1 class="success-title">Invites sent.</h1><p class="success-sub">You can keep going.</p></div><section class="card member-list"><div class="member"><span class="person-avatar dark">DP</span><div><div class="person-name">You</div><div class="person-meta">Owner</div></div><span class="status muted">Joined</span></div><div class="member"><span class="person-avatar">JA</span><div><div class="person-name">Jeanine</div><div class="person-meta">Invite sent</div></div><span class="status pending">Pending</span></div></section></main>
+  <footer class="footer"><div class="footer-stack"><a class="btn primary" href="#group-handoff">Open group</a><a class="btn secondary" href="#invite">Invite more</a></div></footer>
+</section>
+
+<!-- JOINER SIDE -->
+<section class="screen" id="join">
+  <header class="header brand-head"><div class="brand"><span class="mark"></span><span>ChopDot</span></div><span class="avatar">JA</span></header>
+  <main class="content">
+    <div><h1 class="title">Devinson invited you.</h1><p class="lead">Geneva Weekend</p></div>
+    <section class="card invite-card"><div class="invite-kicker">You’re joining</div><div class="invite-name">Geneva Weekend</div><div class="invite-by">Invited by Devinson</div><div class="people-stack"><span class="stack-avatar dark">DP</span><span class="stack-avatar">M</span><span class="stack-avatar">S</span></div><div class="invite-stats"><div class="stat"><span>People</span><b>3</b></div><div class="stat"><span>Currency</span><b>CHF</b></div></div></section>
+    <div class="quiet">Expenses stay private until you join.</div>
+  </main>
+  <footer class="footer"><div class="footer-stack"><a class="btn primary" href="#joined">Join group</a><a class="btn text" href="#not-now">Not now</a></div></footer>
+</section>
+
+<section class="screen" id="joined">
+  <header class="header brand-head"><div class="brand"><span class="mark"></span><span>ChopDot</span></div><span class="avatar">JA</span></header>
+  <main class="content"><span class="success-mark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span><div><h1 class="success-title">You’re in.</h1><p class="success-sub">Geneva Weekend</p></div><section class="card joined-card"><div class="joined-top"><div><div class="joined-name">Geneva Weekend</div><div class="joined-meta">4 people · CHF</div></div><div class="joined-state">Ready</div></div><div class="joined-grid"><div><span>Your balance</span><b>CHF 0.00</b></div><div><span>Expenses</span><b>0</b></div></div></section></main>
+  <footer class="footer"><a class="btn primary" href="#group-handoff">Open group</a></footer>
+</section>
+
+<section class="screen" id="not-now">
+  <header class="header brand-head"><div class="brand"><span class="mark"></span><span>ChopDot</span></div><span class="avatar">JA</span></header>
+  <main class="content"><div><h1 class="title">Not joined.</h1><p class="lead">The invite is still here.</p></div></main>
+  <footer class="footer"><div class="footer-stack"><a class="btn primary" href="#join">View invite</a><a class="btn text" href="#closed">Close</a></div></footer>
+</section>
+
+<section class="screen" id="expired">
+  <header class="header brand-head"><div class="brand"><span class="mark"></span><span>ChopDot</span></div><span class="avatar">JA</span></header>
+  <main class="content"><div class="banner error"><b>Invite expired.</b></div><div><h1 class="title">Ask for a new one.</h1><p class="lead">Geneva Weekend</p></div></main>
+  <footer class="footer"><a class="btn secondary" href="#join">Back</a></footer>
+</section>
+
+<section class="screen" id="already">
+  <header class="header brand-head"><div class="brand"><span class="mark"></span><span>ChopDot</span></div><span class="avatar">JA</span></header>
+  <main class="content"><span class="success-mark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span><div><h1 class="success-title">You’re already in.</h1><p class="success-sub">Geneva Weekend</p></div></main>
+  <footer class="footer"><a class="btn primary" href="#group-handoff">Open group</a></footer>
+</section>
+
+<section class="screen" id="offline">
+  <header class="header brand-head"><div class="brand"><span class="mark"></span><span>ChopDot</span></div><span class="avatar">JA</span></header>
+  <main class="content"><div class="banner warn"><b>Offline.</b> You can view the invite now.</div><div><h1 class="title">Geneva Weekend</h1><p class="lead">Join when you’re back online.</p></div><section class="card invite-card"><div class="invite-by">Invited by Devinson</div><div class="invite-stats"><div class="stat"><span>People</span><b>3</b></div><div class="stat"><span>Currency</span><b>CHF</b></div></div></section></main>
+  <footer class="footer"><span class="btn disabled">Join group</span></footer>
+</section>
+
+<!-- TERMINAL / HANDOFF STATES -->
+<section class="screen" id="group-handoff"><header class="header"><a class="back" href="#joined"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a><div class="header-title">Next journey</div><span class="ghost"></span></header><main class="content"><div><h1 class="title">Open group.</h1><p class="lead">Journey 08 starts here.</p></div><div class="quiet">Invite / Join ends cleanly. Group Home owns what happens next.</div></main><footer class="footer"><a class="btn secondary" href="#join">Back</a></footer></section>
+<section class="screen" id="closed"><header class="header brand-head"><div class="brand"><span class="mark"></span><span>ChopDot</span></div><span class="avatar">JA</span></header><main class="content"><div><h1 class="title">Invite closed.</h1></div></main><footer class="footer"><a class="btn secondary" href="#join">Open again</a></footer></section>
+
+</div></div>
+<aside class="labpanel"><h2>Journey 04 — Invite / Join V1</h2><p>Two sides of one experience, inherited from Home V1.4 and Create Group V2.</p><div class="labsec"><div class="lablabel">Inviter side</div><a class="labbtn" href="#invite">1. Invite people</a><a class="labbtn" href="#share">2A. Share link</a><a class="labbtn" href="#add-person">2B. Add someone</a><a class="labbtn" href="#person-added">3. Pending invite</a><a class="labbtn" href="#invite-done">4. Done</a></div><div class="labsec"><div class="lablabel">Joiner side</div><a class="labbtn" href="#join">1. Open invite</a><a class="labbtn" href="#joined">2. Joined</a><a class="labbtn" href="#not-now">Not now</a></div><div class="labsec"><div class="lablabel">Edge states</div><a class="labbtn" href="#expired">Expired</a><a class="labbtn" href="#already">Already joined</a><a class="labbtn" href="#offline">Offline</a></div><div class="labsec"><div class="lablabel">Prototype rules</div><div class="note"><span class="pass">✓ No wallet or chain language</span><br><br><span class="pass">✓ Invitee sees group-level context only</span><br><br><span class="pass">✓ Expense details stay hidden before join</span><br><br><span class="pass">✓ Explicit Join / Not now exits</span><br><br><span class="pass">✓ Join lands in Group Home handoff</span></div></div><div class="labsec"><div class="lablabel">Review question</div><div class="note"><span class="gap">Does this feel like inviting people into a shared space — not onboarding them into financial software?</span></div></div></aside>
+</div>
+</body>
+</html>

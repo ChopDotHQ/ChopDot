@@ -1,0 +1,87 @@
+[
+  {
+    "name": "syntax-app",
+    "command": [
+      "node",
+      "--check",
+      "prototypes/integrated-product-preview-v2/app.js"
+    ],
+    "exit_code": 0,
+    "log": "syntax-app.log"
+  },
+  {
+    "name": "syntax-expansion",
+    "command": [
+      "node",
+      "--check",
+      "prototypes/integrated-product-preview-v2/expansion/app.js"
+    ],
+    "exit_code": 0,
+    "log": "syntax-expansion.log"
+  },
+  {
+    "name": "syntax-account",
+    "command": [
+      "node",
+      "--check",
+      "prototypes/integrated-product-preview-v2/gate-d/app.js"
+    ],
+    "exit_code": 0,
+    "log": "syntax-account.log"
+  },
+  {
+    "name": "framework",
+    "command": [
+      "node",
+      "--test",
+      "scripts/surface-clarity.test.mjs"
+    ],
+    "exit_code": 0,
+    "log": "framework.log"
+  },
+  {
+    "name": "gate-b-sources",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-b/verify-sources.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-b-sources.log"
+  },
+  {
+    "name": "gate-c-sources",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-c/verify-sources.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-c-sources.log"
+  },
+  {
+    "name": "gate-d-sources",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-d/verify-sources.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-d-sources.log"
+  },
+  {
+    "name": "create-join-sources",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/create-join/verify-sources.mjs"
+    ],
+    "exit_code": 0,
+    "log": "create-join-sources.log"
+  },
+  {
+    "name": "expansion-sources",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/verify-sources.mjs"
+    ],
+    "exit_code": 0,
+    "log": "expansion-sources.log"
+  }
+]

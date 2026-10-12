@@ -4,7 +4,7 @@
   "name": "Group Home",
   "binding": {
     "registry_digest": "f5b46bc031ea2235484ebd492e09540bfde23dca1e774591c71b3fa5c18efbda",
-    "runtime_digest": "b73554f66065ce545675ebe56dd0baf79b3fb426b24d724628a7ef30dd4801ab",
+    "runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479",
     "schema_commit": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
     "golden_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881"
   },
@@ -62,7 +62,9 @@
     "return_routes": [],
     "viewports": [],
     "fixtures": [],
-    "limitations": []
+    "limitations": [
+      "Only UX-006 return evidence is attached from the J02 repair; this journey remains unreviewed."
+    ]
   },
   "checks": [
     {
@@ -207,7 +209,50 @@
   "decisions": [],
   "hypotheses": [],
   "additional_authority": [],
-  "evidence": [],
+  "evidence": [
+    {
+      "id": "J02-BROWSER-20261012",
+      "kind": "BROWSER",
+      "implementation_sha": "c59073cf7efbb48521c0dbd88952fe1b045fa2af",
+      "runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479",
+      "scope": "Bounded J02 repair and UX-006 return: 78 normal-UI checks at two mobile sizes and desktop; source-aware history, root/group navigation, guest/account boundaries and retained destinations. Owner screenshot inspection, not independent review or human comprehension.",
+      "environment": "Local Chrome; public synthetic code/account; one writable tab per origin; no real auth/providers/funds.",
+      "automated": true,
+      "command": "CHOPDOT_CHROMIUM_EXECUTABLE=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome PREVIEW_ROOT=/tmp/chopdot-j02-ready-review EVIDENCE_DIR=/tmp/chopdot-j02-ready-proof node prototypes/integrated-product-preview-v2/j02-browser-qa.mjs",
+      "exit_code": 0,
+      "log": "product/surface-clarity/evidence/J02-repair-2026-10-12/j02.log",
+      "artifacts": [
+        {
+          "path": "product/surface-clarity/evidence/J02-repair-2026-10-12/j02.log",
+          "sha256": "06b4fa7586c16461c3ad62d178fd328b411d5e8d2be74784f694813caec43cb6"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J02-repair-2026-10-12/j02/results.json",
+          "sha256": "1ac4fe5e653eb13f932e5e08a12dfe0ed0f7fadac01cc584bb1f59dd867e2ec3"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J02-repair-2026-10-12/j02/empty-home-393.png",
+          "sha256": "13dcb2c66c2659c39cf8693b36f09a75ac142ddf97ea42ec7b84f200f2834517"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J02-repair-2026-10-12/j02/home-after-expense-430.png",
+          "sha256": "c53383abff24e4e5be60160178bb3383b5ced70828d6b1b63c5adefcf1b1ecbc"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J02-repair-2026-10-12/j02/expense-return-group-430.png",
+          "sha256": "7ad6271d46058bb7b6389de4d9ea301967c5ecf60c7b885f40281ce274b97764"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J02-repair-2026-10-12/j02/you-393.png",
+          "sha256": "c39d3b5f0c1e59c740a06e18b602e2286c9645fbd115d7e0c592e28d7ff39472"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J02-repair-2026-10-12/j02/account-you-430.png",
+          "sha256": "08e81f4412081afd5b6b84e22a578fe62bd6f2105567af3505b185848996ad98"
+        }
+      ]
+    }
+  ],
   "finding_ids": [
     "UX-006"
   ],

@@ -1,0 +1,29 @@
+[
+  {
+    "name": "browser-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-d/browser-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "browser-qa.log"
+  },
+  {
+    "name": "recovery-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-d/recovery-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "recovery-qa.log"
+  },
+  {
+    "name": "visual-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-d/visual-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "visual-qa.log"
+  }
+]

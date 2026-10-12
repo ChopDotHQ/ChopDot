@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "checks": [
+    "393 creation draft reload",
+    "393 create no money or participant fabrication",
+    "393 waiting/unknown/reload preserve one exact operation",
+    "393 same-operation retry and confirmed projection",
+    "393 own exact withdrawal after confirmation only",
+    "430 creation draft reload",
+    "430 create no money or participant fabrication",
+    "430 waiting/unknown/reload preserve one exact operation",
+    "430 same-operation retry and confirmed projection",
+    "430 own exact withdrawal after confirmation only"
+  ],
+  "errors": []
+}

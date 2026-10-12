@@ -1,0 +1,106 @@
+{
+  "status": "PASS",
+  "browser": "155.0.8059.39",
+  "flow": "Activity → owner → Account drafts/save/reconcile → signout → Entry",
+  "checks": [
+    {
+      "id": "GD-HOST-002-empty-root-returns-directly-to-entry",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-HOST-003-guest-home-reloads-without-reentry",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-HOST-004-root-navigation-grants-no-account",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B01-page-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B02-mark-read-preserves-owners",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B03-read-persists",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B04-empty-payments",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B05-opens-owning-expense",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B06-draft-reload-unaccepted",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B07-profile-preserves-business",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B08-preview-not-saved",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B09-cancel-restores-appearance",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B10-accepted-appearance-reloads",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B11-system-permission-separate",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B12-unknown-reload-same-operation",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B13-no-effect-retry-one-new-operation",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B14-deletion-real-prerequisites",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B15-signout-preserves-business",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B16-direct-link-session-guard",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-SEC-001-Gate-B-direct-link-blocked",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B17-no-horizontal-overflow",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-B18-browser-health",
+      "status": "PASS"
+    }
+  ],
+  "consoleErrors": [],
+  "screenshots": [
+    "/tmp/chopdot-j02-verified-account/browser-qa/notifications-393.png",
+    "/tmp/chopdot-j02-verified-account/browser-qa/profile-saved-393.png",
+    "/tmp/chopdot-j02-verified-account/browser-qa/dark-saved-393.png",
+    "/tmp/chopdot-j02-verified-account/browser-qa/offline-393.png",
+    "/tmp/chopdot-j02-verified-account/browser-qa/unknown-recovery-393.png",
+    "/tmp/chopdot-j02-verified-account/browser-qa/deletion-blocked-393.png",
+    "/tmp/chopdot-j02-verified-account/browser-qa/activity-430.png",
+    "/tmp/chopdot-j02-verified-account/browser-qa/account-430.png"
+  ]
+}

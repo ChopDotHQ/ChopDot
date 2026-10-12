@@ -1,0 +1,396 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "J02-R01-393",
+      "scope": "empty Home hierarchy and truthful records",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R02-393",
+      "scope": "native Back restores canonical Home",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R03-393",
+      "scope": "Forward installs the group owner and creates one local group",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R04-393",
+      "scope": "populated Home retains local group and visible mobile navigation",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R04b-393",
+      "scope": "UX-006 receipt returns to affected Group Home; Home retains exact expense",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R05-393",
+      "scope": "guest People truthful boundary and root return",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R06-393",
+      "scope": "Activity Pots returns to root Home with a selected group",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R07-393",
+      "scope": "Insights capability boundary has a root exit",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-393-Savings",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-393-All groups / archived",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-393-Payment methods",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-393-Wallet",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-393-Scan QR",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-393-Import / export",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-393-Storage & recovery",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R09-393",
+      "scope": "selected Group Home native Back/Forward and reload retain owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R10-393",
+      "scope": "synthetic account conversion retains local work and canonical Home",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R11-393",
+      "scope": "account People directory and root exit",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R12-393",
+      "scope": "active Insights Pots uses root Home rather than selected Group Home",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-393-Savings",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-393-All groups / archived",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-393-Payment methods",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-393-Wallet",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-393-Scan QR",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-393-Import / export",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-393-Storage & recovery",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R01-430",
+      "scope": "empty Home hierarchy and truthful records",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R02-430",
+      "scope": "native Back restores canonical Home",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R03-430",
+      "scope": "Forward installs the group owner and creates one local group",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R04-430",
+      "scope": "populated Home retains local group and visible mobile navigation",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R04b-430",
+      "scope": "UX-006 receipt returns to affected Group Home; Home retains exact expense",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R05-430",
+      "scope": "guest People truthful boundary and root return",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R06-430",
+      "scope": "Activity Pots returns to root Home with a selected group",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R07-430",
+      "scope": "Insights capability boundary has a root exit",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-430-Savings",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-430-All groups / archived",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-430-Payment methods",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-430-Wallet",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-430-Scan QR",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-430-Import / export",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-430-Storage & recovery",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R09-430",
+      "scope": "selected Group Home native Back/Forward and reload retain owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R10-430",
+      "scope": "synthetic account conversion retains local work and canonical Home",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R11-430",
+      "scope": "account People directory and root exit",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R12-430",
+      "scope": "active Insights Pots uses root Home rather than selected Group Home",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-430-Savings",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-430-All groups / archived",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-430-Payment methods",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-430-Wallet",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-430-Scan QR",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-430-Import / export",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-430-Storage & recovery",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R01-1440",
+      "scope": "empty Home hierarchy and truthful records",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R02-1440",
+      "scope": "native Back restores canonical Home",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R03-1440",
+      "scope": "Forward installs the group owner and creates one local group",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R04-1440",
+      "scope": "populated Home retains local group and visible mobile navigation",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R04b-1440",
+      "scope": "UX-006 receipt returns to affected Group Home; Home retains exact expense",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R05-1440",
+      "scope": "guest People truthful boundary and root return",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R06-1440",
+      "scope": "Activity Pots returns to root Home with a selected group",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R07-1440",
+      "scope": "Insights capability boundary has a root exit",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-1440-Savings",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-1440-All groups / archived",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-1440-Payment methods",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-1440-Wallet",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-1440-Scan QR",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-1440-Import / export",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R08-1440-Storage & recovery",
+      "scope": "retained destination and safe capability boundary",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R09-1440",
+      "scope": "selected Group Home native Back/Forward and reload retain owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R10-1440",
+      "scope": "synthetic account conversion retains local work and canonical Home",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R11-1440",
+      "scope": "account People directory and root exit",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R12-1440",
+      "scope": "active Insights Pots uses root Home rather than selected Group Home",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-1440-Savings",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-1440-All groups / archived",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-1440-Payment methods",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-1440-Wallet",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-1440-Scan QR",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-1440-Import / export",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    },
+    {
+      "id": "J02-R13-1440-Storage & recovery",
+      "scope": "active retained tool and native Back to its owner",
+      "result": "pass"
+    }
+  ],
+  "errors": []
+}

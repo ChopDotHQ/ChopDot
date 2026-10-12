@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "checks": [
+    "393 exact preview/unknown/reload/same retry/download artifact boundary",
+    "393 actual file inspection/self decision/new group confirmation/reload preserves current history and unverified identity",
+    "393 lifecycle rename/default/reload/archive/restore preserve old exact MoneyV1 and attribution",
+    "393 account ownership prerequisite routes to actual active blocker rather than selected archived group",
+    "430 exact preview/unknown/reload/same retry/download artifact boundary",
+    "430 actual file inspection/self decision/new group confirmation/reload preserves current history and unverified identity",
+    "430 lifecycle rename/default/reload/archive/restore preserve old exact MoneyV1 and attribution",
+    "430 account ownership prerequisite routes to actual active blocker rather than selected archived group"
+  ],
+  "errors": []
+}

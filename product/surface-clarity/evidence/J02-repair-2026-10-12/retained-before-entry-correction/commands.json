@@ -1,0 +1,241 @@
+[
+  {
+    "name": "gate-b-models",
+    "command": [
+      "node",
+      "--test",
+      "prototypes/integrated-product-preview-v2/gate-b/guest-draft.test.mjs",
+      "prototypes/integrated-product-preview-v2/gate-b/model.test.mjs",
+      "prototypes/integrated-product-preview-v2/gate-b/property.test.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-b-models.log"
+  },
+  {
+    "name": "gate-b-browser-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-b/browser-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-b-browser-qa.log"
+  },
+  {
+    "name": "gate-b-recovery-browser-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-b/recovery-browser-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-b-recovery-browser-qa.log"
+  },
+  {
+    "name": "gate-b-keyboard-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-b/keyboard-qa.mjs"
+    ],
+    "exit_code": 1,
+    "log": "gate-b-keyboard-qa.log"
+  },
+  {
+    "name": "gate-b-visual-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-b/visual-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-b-visual-qa.log"
+  },
+  {
+    "name": "gate-c-models",
+    "command": [
+      "node",
+      "--test",
+      "prototypes/integrated-product-preview-v2/gate-c/model.test.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-c-models.log"
+  },
+  {
+    "name": "gate-c-browser-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-c/browser-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-c-browser-qa.log"
+  },
+  {
+    "name": "gate-c-recovery-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-c/recovery-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-c-recovery-qa.log"
+  },
+  {
+    "name": "gate-c-visual-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-c/visual-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-c-visual-qa.log"
+  },
+  {
+    "name": "gate-d-models",
+    "command": [
+      "node",
+      "--test",
+      "prototypes/integrated-product-preview-v2/gate-d/model.test.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-d-models.log"
+  },
+  {
+    "name": "gate-d-browser-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-d/browser-qa.mjs"
+    ],
+    "exit_code": 1,
+    "log": "gate-d-browser-qa.log"
+  },
+  {
+    "name": "gate-d-recovery-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-d/recovery-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-d-recovery-qa.log"
+  },
+  {
+    "name": "gate-d-visual-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-d/visual-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-d-visual-qa.log"
+  },
+  {
+    "name": "create-join-models",
+    "command": [
+      "node",
+      "--test",
+      "prototypes/integrated-product-preview-v2/create-join/model.test.mjs"
+    ],
+    "exit_code": 0,
+    "log": "create-join-models.log"
+  },
+  {
+    "name": "create-join-browser-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/create-join/browser-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "create-join-browser-qa.log"
+  },
+  {
+    "name": "create-join-recovery-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/create-join/recovery-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "create-join-recovery-qa.log"
+  },
+  {
+    "name": "create-join-visual-qa",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/create-join/visual-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "create-join-visual-qa.log"
+  },
+  {
+    "name": "expansion-models",
+    "command": [
+      "node",
+      "--test",
+      "prototypes/integrated-product-preview-v2/expansion/currency-seam.test.mjs",
+      "prototypes/integrated-product-preview-v2/expansion/insights.test.mjs",
+      "prototypes/integrated-product-preview-v2/expansion/lifecycle.test.mjs",
+      "prototypes/integrated-product-preview-v2/expansion/model.test.mjs",
+      "prototypes/integrated-product-preview-v2/expansion/portability.test.mjs",
+      "prototypes/integrated-product-preview-v2/expansion/qr.test.mjs",
+      "prototypes/integrated-product-preview-v2/expansion/savings.test.mjs",
+      "prototypes/integrated-product-preview-v2/expansion/wallet.test.mjs"
+    ],
+    "exit_code": 0,
+    "log": "expansion-models.log"
+  },
+  {
+    "name": "expansion-qa-people",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/qa-people.mjs"
+    ],
+    "exit_code": 0,
+    "log": "expansion-qa-people.log"
+  },
+  {
+    "name": "expansion-qa-savings",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/qa-savings.mjs"
+    ],
+    "exit_code": 0,
+    "log": "expansion-qa-savings.log"
+  },
+  {
+    "name": "expansion-qa-wallet-qr",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/qa-wallet-qr.mjs"
+    ],
+    "exit_code": 0,
+    "log": "expansion-qa-wallet-qr.log"
+  },
+  {
+    "name": "expansion-qa-data-lifecycle",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/qa-data-lifecycle.mjs"
+    ],
+    "exit_code": 0,
+    "log": "expansion-qa-data-lifecycle.log"
+  },
+  {
+    "name": "expansion-qa-continuity",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/qa-continuity.mjs"
+    ],
+    "exit_code": 0,
+    "log": "expansion-qa-continuity.log"
+  },
+  {
+    "name": "expansion-qa-demo",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/qa-demo.mjs"
+    ],
+    "exit_code": 1,
+    "log": "expansion-qa-demo.log"
+  },
+  {
+    "name": "expansion-qa-history",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/qa-history.mjs"
+    ],
+    "exit_code": 0,
+    "log": "expansion-qa-history.log"
+  }
+]

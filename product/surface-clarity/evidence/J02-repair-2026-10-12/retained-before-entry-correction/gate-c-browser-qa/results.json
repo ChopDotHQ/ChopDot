@@ -1,0 +1,124 @@
+{
+  "status": "PASS",
+  "browser": "155.0.8059.39",
+  "reason": "Browser plugin not available; existing Playwright runtime used",
+  "precondition": "Explicit verified local Entry/session fixture; actual Entry UI is exercised separately by retained Gate A",
+  "flow": "Position → group/person scope → full/partial payment → simulated receipt → updated balances and record",
+  "checks": [
+    {
+      "id": "group-full-page-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "payer-refresh-is-pure",
+      "status": "PASS"
+    },
+    {
+      "id": "reload-retains-payment",
+      "status": "PASS"
+    },
+    {
+      "id": "recipient-not-yet",
+      "status": "PASS"
+    },
+    {
+      "id": "group-full-scope",
+      "status": "PASS"
+    },
+    {
+      "id": "cleared-group-row-is-square",
+      "status": "PASS"
+    },
+    {
+      "id": "mixed-group-row-omits-cleared-counterparty",
+      "status": "PASS"
+    },
+    {
+      "id": "saved-record-canonical-amount",
+      "status": "PASS"
+    },
+    {
+      "id": "group-home-shared-state",
+      "status": "PASS"
+    },
+    {
+      "id": "person-full-page-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "received-not-closed",
+      "status": "PASS"
+    },
+    {
+      "id": "person-full-two-source-applications",
+      "status": "PASS"
+    },
+    {
+      "id": "partial-offset-page-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "lower-receipt-confirmed-only",
+      "status": "PASS"
+    },
+    {
+      "id": "new-remainder-payment-linked",
+      "status": "PASS"
+    },
+    {
+      "id": "partial-keep-offset-page-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "keep-credit-choice-preserved",
+      "status": "PASS"
+    },
+    {
+      "id": "verified-reversal-recorded",
+      "status": "PASS"
+    },
+    {
+      "id": "recovery-page-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "unknown-has-no-retry-action",
+      "status": "PASS"
+    },
+    {
+      "id": "recovery-reuses-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "wallet-page-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "wallet-handoff-reaches-owning-family",
+      "status": "PASS"
+    },
+    {
+      "id": "wallet-request-not-authorization",
+      "status": "PASS"
+    },
+    {
+      "id": "wallet-exact-result",
+      "status": "PASS"
+    },
+    {
+      "id": "record-retrieval-does-not-undo-effect",
+      "status": "PASS"
+    },
+    {
+      "id": "console-health",
+      "status": "PASS"
+    }
+  ],
+  "consoleErrors": [],
+  "screenshots": [
+    "/tmp/chopdot-j02-final-regressions/gate-c-browser-qa/group-full-record.png",
+    "/tmp/chopdot-j02-final-regressions/gate-c-browser-qa/person-full-complete.png",
+    "/tmp/chopdot-j02-final-regressions/gate-c-browser-qa/partial-complete.png",
+    "/tmp/chopdot-j02-final-regressions/gate-c-browser-qa/recovered-review.png"
+  ]
+}

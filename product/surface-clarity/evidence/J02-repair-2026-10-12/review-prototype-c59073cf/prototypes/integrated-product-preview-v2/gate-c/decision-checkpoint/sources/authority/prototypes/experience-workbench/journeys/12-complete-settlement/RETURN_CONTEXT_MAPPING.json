@@ -1,0 +1,37 @@
+{
+  "version": "v1.1",
+  "payment_context": [
+    "payment_id",
+    "payer",
+    "recipient",
+    "original_currency",
+    "selected_method",
+    "source_items",
+    "accepted_result",
+    "viewer"
+  ],
+  "shared_routes": [
+    "position",
+    "position-updated",
+    "position-partial",
+    "position-partial-different",
+    "position-reopened",
+    "payment-details",
+    "history-handoff",
+    "j11-handoff",
+    "support-handoff",
+    "saved-record",
+    "saved-record-partial"
+  ],
+  "refresh_policy": "read accepted state; no mutation, role change or execution",
+  "retry_policy": "unknown -> recovery only; scope-matched verified not-executed result -> one eligible retry",
+  "result_amounts_minor": {
+    "twint_complete": 0,
+    "bank_complete": 0,
+    "cash_complete": 0,
+    "wallet_complete": 0,
+    "partial20": 3430,
+    "different40": 1430,
+    "wallet_reversed": 5430
+  }
+}

@@ -1,0 +1,148 @@
+{
+  "status": "PASS",
+  "browser": "155.0.8059.39",
+  "checks": [
+    {
+      "id": "CJ-B01-393-draft-reload",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B02-393-failure-preserves-accepted",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B03-393-unique-group-history",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B04-393-pending-not-member",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B05-393-not-now-no-membership",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B06-393-direct-private-route-denied",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B07-393-consent-before-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B08-393-durable-scoped-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B09-393-guest-expense-canonical",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B10-393-reload-does-not-restore-write-authority",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B11-393-recovery-same-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B12-393-entry-not-binding-completion",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B13-393-same-link-readback-no-effect",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B14-393-binding-preserves-ledger",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B15-393-no-horizontal-overflow",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B01-430-draft-reload",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B02-430-failure-preserves-accepted",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B03-430-unique-group-history",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B04-430-pending-not-member",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B05-430-not-now-no-membership",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B06-430-direct-private-route-denied",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B07-430-consent-before-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B08-430-durable-scoped-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B09-430-guest-expense-canonical",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B10-430-reload-does-not-restore-write-authority",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B11-430-recovery-same-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B12-430-entry-not-binding-completion",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B13-430-same-link-readback-no-effect",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B14-430-binding-preserves-ledger",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B15-430-no-horizontal-overflow",
+      "status": "PASS"
+    },
+    {
+      "id": "CJ-B16-browser-health",
+      "status": "PASS"
+    }
+  ],
+  "consoleErrors": [],
+  "screenshots": [
+    "/tmp/chopdot-j02-final-regressions/create-join-browser-qa/created-393.png",
+    "/tmp/chopdot-j02-final-regressions/create-join-browser-qa/pending-393.png",
+    "/tmp/chopdot-j02-final-regressions/create-join-browser-qa/prejoin-393.png",
+    "/tmp/chopdot-j02-final-regressions/create-join-browser-qa/guest-joined-393.png",
+    "/tmp/chopdot-j02-final-regressions/create-join-browser-qa/group-refresh-393.png",
+    "/tmp/chopdot-j02-final-regressions/create-join-browser-qa/link-unknown-393.png",
+    "/tmp/chopdot-j02-final-regressions/create-join-browser-qa/linked-393.png",
+    "/tmp/chopdot-j02-final-regressions/create-join-browser-qa/created-430.png",
+    "/tmp/chopdot-j02-final-regressions/create-join-browser-qa/pending-430.png",
+    "/tmp/chopdot-j02-final-regressions/create-join-browser-qa/prejoin-430.png",
+    "/tmp/chopdot-j02-final-regressions/create-join-browser-qa/guest-joined-430.png",
+    "/tmp/chopdot-j02-final-regressions/create-join-browser-qa/group-refresh-430.png",
+    "/tmp/chopdot-j02-final-regressions/create-join-browser-qa/link-unknown-430.png",
+    "/tmp/chopdot-j02-final-regressions/create-join-browser-qa/linked-430.png"
+  ],
+  "scope": "J03/J04 actual UI, local participant proof and external binding fixtures; no real auth, remote invitations or settlement execution"
+}

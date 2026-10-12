@@ -1,0 +1,1004 @@
+{
+  "status": "PASS",
+  "browser": "155.0.8059.39",
+  "comparisons": [
+    {
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "journey": "j10",
+      "screen": "people",
+      "product": "393-j10-people-product.png",
+      "golden": "393-j10-people-golden.png",
+      "actual": [
+        {
+          "selector": ".root-header",
+          "left": 0,
+          "top": 0,
+          "width": 393,
+          "height": 62,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.96)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".position-card",
+          "left": 16,
+          "top": 135.078125,
+          "width": 361,
+          "height": 173.265625,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".segmented",
+          "left": 16,
+          "top": 517.609375,
+          "width": 361,
+          "height": 44,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(233, 233, 237)",
+          "radius": "13px"
+        },
+        {
+          "selector": ".people-list",
+          "left": 16,
+          "top": 605.609375,
+          "width": 361,
+          "height": 202,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".app-footer",
+          "left": 0,
+          "top": 773,
+          "width": 393,
+          "height": 79,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.96)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".root-header",
+          "left": 0,
+          "top": 0,
+          "width": 393,
+          "height": 62,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.96)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".position-card",
+          "left": 16,
+          "top": 135.078125,
+          "width": 361,
+          "height": 173.265625,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".segmented",
+          "left": 16,
+          "top": 320.34375,
+          "width": 361,
+          "height": 44,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(233, 233, 237)",
+          "radius": "13px"
+        },
+        {
+          "selector": ".people-list",
+          "left": 16,
+          "top": 408.34375,
+          "width": 361,
+          "height": 135,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".app-footer",
+          "left": 0,
+          "top": 773,
+          "width": 393,
+          "height": 79,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.96)",
+          "radius": "0px"
+        }
+      ],
+      "styleChecks": 20,
+      "differences": "Canonical names, extra EUR card, exact payment IDs/history, and explicitly reviewed source applications replace fixture values."
+    },
+    {
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "journey": "j11",
+      "screen": "settle",
+      "product": "393-j11-settle-product.png",
+      "golden": "393-j11-settle-golden.png",
+      "actual": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 393,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".settle-hero",
+          "left": 16,
+          "top": 107,
+          "width": 361,
+          "height": 199.59375,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".ready-card",
+          "left": 16,
+          "top": 318.59375,
+          "width": 361,
+          "height": 66,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 734,
+          "width": 393,
+          "height": 118,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 393,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".settle-hero",
+          "left": 16,
+          "top": 107,
+          "width": 361,
+          "height": 199.59375,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".ready-card",
+          "left": 16,
+          "top": 318.59375,
+          "width": 361,
+          "height": 66,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 734,
+          "width": 393,
+          "height": 118,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "styleChecks": 16,
+      "differences": "Canonical names, extra EUR card, exact payment IDs/history, and explicitly reviewed source applications replace fixture values."
+    },
+    {
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "journey": "j11",
+      "screen": "amount",
+      "product": "393-j11-amount-product.png",
+      "golden": "393-j11-amount-golden.png",
+      "actual": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 393,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".amount-edit",
+          "left": 16,
+          "top": 76,
+          "width": 361,
+          "height": 174,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".amount-actions",
+          "left": 32,
+          "top": 196,
+          "width": 329,
+          "height": 36,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 783,
+          "width": 393,
+          "height": 69,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 393,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".amount-edit",
+          "left": 16,
+          "top": 76,
+          "width": 361,
+          "height": 174,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".amount-actions",
+          "left": 32,
+          "top": 196,
+          "width": 329,
+          "height": 36,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 783,
+          "width": 393,
+          "height": 69,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "styleChecks": 16,
+      "differences": "Canonical names, extra EUR card, exact payment IDs/history, and explicitly reviewed source applications replace fixture values."
+    },
+    {
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "journey": "j12",
+      "screen": "payment-complete",
+      "product": "393-j12-payment-complete-product.png",
+      "golden": "393-j12-payment-complete-golden.png",
+      "actual": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 393,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".payment-status-card",
+          "left": 16,
+          "top": 76,
+          "width": 361,
+          "height": 216.5,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 685,
+          "width": 393,
+          "height": 167,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 393,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".payment-status-card",
+          "left": 16,
+          "top": 76,
+          "width": 361,
+          "height": 216.5,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 734,
+          "width": 393,
+          "height": 118,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "styleChecks": 12,
+      "differences": "Canonical names, extra EUR card, exact payment IDs/history, and explicitly reviewed source applications replace fixture values."
+    },
+    {
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "journey": "j12",
+      "screen": "saved-record",
+      "product": "393-j12-saved-record-product.png",
+      "golden": "393-j12-saved-record-golden.png",
+      "actual": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 393,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".record-card",
+          "left": 16,
+          "top": 76,
+          "width": 361,
+          "height": 417.5,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 734,
+          "width": 393,
+          "height": 118,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 393,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".record-card",
+          "left": 16,
+          "top": 76,
+          "width": 361,
+          "height": 350,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 734,
+          "width": 393,
+          "height": 118,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "styleChecks": 12,
+      "differences": "Canonical names, extra EUR card, exact payment IDs/history, and explicitly reviewed source applications replace fixture values."
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 890
+      },
+      "journey": "j10",
+      "screen": "people",
+      "product": "430-j10-people-product.png",
+      "golden": "430-j10-people-golden.png",
+      "actual": [
+        {
+          "selector": ".root-header",
+          "left": 0,
+          "top": 0,
+          "width": 430,
+          "height": 62,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.96)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".position-card",
+          "left": 16,
+          "top": 135.078125,
+          "width": 398,
+          "height": 173.265625,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".segmented",
+          "left": 16,
+          "top": 517.609375,
+          "width": 398,
+          "height": 44,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(233, 233, 237)",
+          "radius": "13px"
+        },
+        {
+          "selector": ".people-list",
+          "left": 16,
+          "top": 605.609375,
+          "width": 398,
+          "height": 202,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".app-footer",
+          "left": 0,
+          "top": 811,
+          "width": 430,
+          "height": 79,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.96)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".root-header",
+          "left": 0,
+          "top": 0,
+          "width": 430,
+          "height": 62,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.96)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".position-card",
+          "left": 16,
+          "top": 135.078125,
+          "width": 398,
+          "height": 173.265625,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".segmented",
+          "left": 16,
+          "top": 320.34375,
+          "width": 398,
+          "height": 44,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(233, 233, 237)",
+          "radius": "13px"
+        },
+        {
+          "selector": ".people-list",
+          "left": 16,
+          "top": 408.34375,
+          "width": 398,
+          "height": 135,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".app-footer",
+          "left": 0,
+          "top": 811,
+          "width": 430,
+          "height": 79,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.96)",
+          "radius": "0px"
+        }
+      ],
+      "styleChecks": 20,
+      "differences": "Canonical names, extra EUR card, exact payment IDs/history, and explicitly reviewed source applications replace fixture values."
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 890
+      },
+      "journey": "j11",
+      "screen": "settle",
+      "product": "430-j11-settle-product.png",
+      "golden": "430-j11-settle-golden.png",
+      "actual": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 430,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".settle-hero",
+          "left": 16,
+          "top": 107,
+          "width": 398,
+          "height": 199.59375,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".ready-card",
+          "left": 16,
+          "top": 318.59375,
+          "width": 398,
+          "height": 66,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 772,
+          "width": 430,
+          "height": 118,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 430,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".settle-hero",
+          "left": 16,
+          "top": 107,
+          "width": 398,
+          "height": 199.59375,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".ready-card",
+          "left": 16,
+          "top": 318.59375,
+          "width": 398,
+          "height": 66,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 772,
+          "width": 430,
+          "height": 118,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "styleChecks": 16,
+      "differences": "Canonical names, extra EUR card, exact payment IDs/history, and explicitly reviewed source applications replace fixture values."
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 890
+      },
+      "journey": "j11",
+      "screen": "amount",
+      "product": "430-j11-amount-product.png",
+      "golden": "430-j11-amount-golden.png",
+      "actual": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 430,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".amount-edit",
+          "left": 16,
+          "top": 76,
+          "width": 398,
+          "height": 174,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".amount-actions",
+          "left": 32,
+          "top": 196,
+          "width": 366,
+          "height": 36,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 821,
+          "width": 430,
+          "height": 69,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 430,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".amount-edit",
+          "left": 16,
+          "top": 76,
+          "width": 398,
+          "height": 174,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".amount-actions",
+          "left": 32,
+          "top": 196,
+          "width": 366,
+          "height": 36,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 821,
+          "width": 430,
+          "height": 69,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "styleChecks": 16,
+      "differences": "Canonical names, extra EUR card, exact payment IDs/history, and explicitly reviewed source applications replace fixture values."
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 890
+      },
+      "journey": "j12",
+      "screen": "payment-complete",
+      "product": "430-j12-payment-complete-product.png",
+      "golden": "430-j12-payment-complete-golden.png",
+      "actual": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 430,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".payment-status-card",
+          "left": 16,
+          "top": 76,
+          "width": 398,
+          "height": 216.5,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 723,
+          "width": 430,
+          "height": 167,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 430,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".payment-status-card",
+          "left": 16,
+          "top": 76,
+          "width": 398,
+          "height": 216.5,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 772,
+          "width": 430,
+          "height": 118,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "styleChecks": 12,
+      "differences": "Canonical names, extra EUR card, exact payment IDs/history, and explicitly reviewed source applications replace fixture values."
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 890
+      },
+      "journey": "j12",
+      "screen": "saved-record",
+      "product": "430-j12-saved-record-product.png",
+      "golden": "430-j12-saved-record-golden.png",
+      "actual": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 430,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".record-card",
+          "left": 16,
+          "top": 76,
+          "width": 398,
+          "height": 403,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 772,
+          "width": 430,
+          "height": 118,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".detail-header",
+          "left": 0,
+          "top": 0,
+          "width": 430,
+          "height": 60,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.97)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".record-card",
+          "left": 16,
+          "top": 76,
+          "width": 398,
+          "height": 350,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".focus-footer",
+          "left": 0,
+          "top": 772,
+          "width": 430,
+          "height": 118,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(255, 255, 255, 0.97)",
+          "radius": "0px"
+        }
+      ],
+      "styleChecks": 12,
+      "differences": "Canonical names, extra EUR card, exact payment IDs/history, and explicitly reviewed source applications replace fixture values."
+    }
+  ],
+  "errors": [],
+  "scope": "Frozen Golden and live canonical-state DOM at established393/430 viewports. Style/hierarchy checks and review screenshots, not pixel equality. Added source/allocation controls follow GC-SETTLEMENT-INTENT-01."
+}

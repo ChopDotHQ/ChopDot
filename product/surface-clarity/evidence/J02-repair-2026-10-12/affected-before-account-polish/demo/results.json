@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Entry controls wait for the frozen contract and event handlers before accepting a click",
+    "393 guest reload restores editor with one canonical draft",
+    "393 guest and integrated editor share changes through real navigation",
+    "393 reset requires consent and preserves unrelated storage",
+    "393 reset returns to an empty real local state",
+    "430 guest reload restores editor with one canonical draft",
+    "430 guest and integrated editor share changes through real navigation",
+    "430 reset requires consent and preserves unrelated storage",
+    "430 reset returns to an empty real local state",
+    "1440 guest reload restores editor with one canonical draft",
+    "1440 guest and integrated editor share changes through real navigation",
+    "1440 reset requires consent and preserves unrelated storage",
+    "1440 reset returns to an empty real local state"
+  ],
+  "errors": []
+}

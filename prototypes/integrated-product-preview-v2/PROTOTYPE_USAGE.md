@@ -19,7 +19,20 @@ Choose a new output directory; packaging refuses an existing directory. Open `ht
 2. Add an expense. Change the payer and included people. Go Back, reopen, and reload before saving. Inspect the saved expense and its exact allocation.
 3. Open a group to inspect/correct an expense and review its history. Use the explicit test controls for other Participants, failure/retry, review reset and issue lifecycle. Test controls are reached from the demo guide and hidden by default.
 4. Visit People to inspect a person's position, a selected group's debt or the scoped settlement route. Selection matters: a net total does not erase individual unresolved items. Settlement and savings finality use simulated external preconditions only.
-5. From Home explore Savings, Insights, group settings, payment methods, wallet/QR boundaries, Import / export, and Storage & recovery. These remain bounded local simulations.
+5. Use **You** for Savings, archived groups, payment methods, Wallet, Scan QR,
+   Import / export and Storage & recovery; use **Activity → Insights** for spending
+   views. **Your groups → See all** opens group browsing. Guest-only capability
+   boundaries explain the limitation and offer a safe return. These remain bounded
+   local simulations; navigation never grants account or payment authority.
+
+Home, People and the root tabs preserve the current actor's records through Back,
+Forward and reload. An empty entry context returns directly to the front door;
+an entered guest returns to their Home. Explicit group actions retain Group Home.
+The J02 successor is locally verified and awaiting user review; see
+`product/surface-clarity/evidence/J02-repair-2026-10-12/REPORT.md`. Its retained
+keyboard-fixture failure and global stale review records are documented there.
+Use Surface Clarity as one repair → focused verification → show result → user
+feedback; keep verification proportional to the change.
 
 There is one local record: `chopdot.preview-v2.guest`. Home projects accepted records; it has no parallel outcome fixture store. Guest equal-split controls and the integrated expense editor share a canonical draft. Exact/shares, existing-expense corrections, and drafts with selected dates/receipts stay with the integrated editor. Existing guest/integrated draft collisions are preserved under recovered drafts. Open the demo guide to swap the recovered and active drafts; neither becomes an accepted expense until saved.
 

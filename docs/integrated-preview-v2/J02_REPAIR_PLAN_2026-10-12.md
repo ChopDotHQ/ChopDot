@@ -73,3 +73,13 @@ Documentation impact: J02 record/findings, schema trace, usage and continuation
 status must be updated. No wiki/ADR update needed for this bounded prototype repair.
 CI discovery conflict remains separate unless this repair requires a test config
 change. Local proof does not clear CI, hosted, devices or human acceptance.
+
+## Completed bounded scope / review stop
+
+The shared UX-006 dependency is corrected: GIVEN a saved guest expense receipt,
+WHEN Back to group is chosen, THEN its affected Group Home opens; subsequent Home
+return preserves the saved CHF 12.01 expense. This does not review all J05/J08.
+Runtime `c59073cf` passed 78 focused checks and final retained Gate A checks.
+The user's final scope replaces step 4's broad run with only relevant verification;
+unrelated baseline failures are recorded, not investigated. See J02 repair REPORT.
+Stop now for user review; no additional journey, testing or evidence-tool expansion.

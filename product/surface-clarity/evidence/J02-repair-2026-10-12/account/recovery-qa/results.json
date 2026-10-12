@@ -1,0 +1,50 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "GD-R01-stale-payment-routes-current-owner",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-REC-002-payment-back-returns-owner",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-SEC-004-actual-remainder-row",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-R02-accepted-partial-row",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-R03-stale-save-preserves-newer",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-R04-known-failure-not-accepted",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-REC-002-profile-back-account",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-REC-004-export-boundary-reachable",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-R05-read-failure-retry-owner",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-R06-typed-prototype-deletion",
+      "status": "PASS"
+    },
+    {
+      "id": "GD-R07-browser-health",
+      "status": "PASS"
+    }
+  ],
+  "errors": []
+}

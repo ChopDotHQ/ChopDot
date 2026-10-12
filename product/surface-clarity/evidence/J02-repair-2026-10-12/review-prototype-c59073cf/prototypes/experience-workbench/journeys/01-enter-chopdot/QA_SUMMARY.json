@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "candidate_sha256": "383170c06d4e6bc4d6b658664fff6ae0f2eb003cf202ca5e8f8617fb06ae8f46",
+  "states": 17,
+  "model_checks": 43,
+  "browser_scenarios": 18,
+  "layout_checks": 34,
+  "page_errors": [],
+  "css_source": "Journey 12 V1.1 approved artifact, first style block",
+  "inherited_css_sha256": "7fdf48665ca5e823ac98752df0cf7fe5a106484f9738113d9c730018d3d6f2d2",
+  "existing_goldens_changed": false,
+  "typography_note": "TYPO-01 deferred; no shared typography edits",
+  "prototype_only": true,
+  "status": "review-pending"
+}

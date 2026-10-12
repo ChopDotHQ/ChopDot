@@ -1,0 +1,38 @@
+[
+  {
+    "name": "gate-d-browser",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-d/browser-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-d-browser.log"
+  },
+  {
+    "name": "demo",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/qa-demo.mjs"
+    ],
+    "exit_code": 0,
+    "log": "demo.log"
+  },
+  {
+    "name": "j01-browser",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/j01-browser-qa.mjs"
+    ],
+    "exit_code": 0,
+    "log": "j01-browser.log"
+  },
+  {
+    "name": "gate-a",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/gate-b/run-gate-a.mjs"
+    ],
+    "exit_code": 0,
+    "log": "gate-a.log"
+  }
+]

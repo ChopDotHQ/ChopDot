@@ -1,6 +1,6 @@
 # J02 Home repair — continuation in Codex, 2026-10-12
 
-Status: CONTEXT_RECOVERED; implementation and exact-version browser clearance still pending.
+Status: LOCAL_REPAIR_VERIFIED; awaiting user review. Historical recovery context below is preserved.
 Owner: current Codex chat. User request: continue here and recover the considerations before proceeding.
 
 ## Goal and lane
@@ -167,3 +167,15 @@ journey bindings and the three historical J01 evidence records; readiness is
 INCOMPLETE. No binding or evidence was refreshed. See
 `product/surface-clarity/evidence/J02-continuation-2026-10-12/receipt.json` and
 its raw logs. No runtime change or fresh browser/CI clearance occurred here.
+
+## Current review checkpoint
+
+Runtime `c59073cf` completes the bounded repair, including UX-006 expense receipt
+return to its affected Group Home. 78 focused checks pass at the two approved
+mobile sizes and desktop. See the current J02 repair REPORT for screenshots,
+exact subject and the recorded unrelated baseline keyboard fixture failure.
+
+The user superseded the broad retained-run plan with proportional verification:
+one repair → focused verification → show result → user feedback. No more journeys,
+broader tests or additional evidence tooling before review. User acceptance remains
+pending; original checkout and all completed local work are preserved.

@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "checks": [
+    "393 request from existing exact sources",
+    "393 withdrawal retained debt",
+    "393 private share is not payment",
+    "393 stop share retained payment ledger",
+    "430 request from existing exact sources",
+    "430 withdrawal retained debt",
+    "430 private share is not payment",
+    "430 stop share retained payment ledger"
+  ],
+  "errors": []
+}

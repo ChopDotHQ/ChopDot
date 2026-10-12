@@ -1,0 +1,117 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "bank-copy-demo-details",
+      "status": "PASS"
+    },
+    {
+      "id": "dynamic-Bank transfer-recipient-amount",
+      "status": "PASS"
+    },
+    {
+      "id": "complete-Bank transfer",
+      "status": "PASS"
+    },
+    {
+      "id": "dynamic-Cash-recipient-amount",
+      "status": "PASS"
+    },
+    {
+      "id": "complete-Cash",
+      "status": "PASS"
+    },
+    {
+      "id": "dynamic-PayPal-recipient-amount",
+      "status": "PASS"
+    },
+    {
+      "id": "complete-PayPal",
+      "status": "PASS"
+    },
+    {
+      "id": "EUR-shortcut-and-partial",
+      "status": "PASS"
+    },
+    {
+      "id": "invalid-allocation-preview-cleared",
+      "status": "PASS"
+    },
+    {
+      "id": "GC-REV-001-live-custom-allocation-preview",
+      "status": "PASS"
+    },
+    {
+      "id": "GC-REV-002-recipient-directions",
+      "status": "PASS"
+    },
+    {
+      "id": "source-selection-reload-continuity",
+      "status": "PASS"
+    },
+    {
+      "id": "failed-prepare-retry-preserves-draft-identity",
+      "status": "PASS"
+    },
+    {
+      "id": "GC-SEC-003-external-positive-recovery-browser",
+      "status": "PASS"
+    },
+    {
+      "id": "no-method-explicit-request-boundary",
+      "status": "PASS"
+    },
+    {
+      "id": "wallet-precondition-wallet-connect",
+      "status": "PASS"
+    },
+    {
+      "id": "wallet-precondition-wallet-wrong",
+      "status": "PASS"
+    },
+    {
+      "id": "wallet-precondition-invalid-address",
+      "status": "PASS"
+    },
+    {
+      "id": "wallet-precondition-insufficient",
+      "status": "PASS"
+    },
+    {
+      "id": "wallet-precondition-fee-unavailable",
+      "status": "PASS"
+    },
+    {
+      "id": "wallet-cancelled-safe-retry",
+      "status": "PASS"
+    },
+    {
+      "id": "wallet-expired-safe-retry",
+      "status": "PASS"
+    },
+    {
+      "id": "keyboard-offset-focus-retained-visible",
+      "status": "PASS"
+    },
+    {
+      "id": "outer-host-reload-restores-exact-payment",
+      "status": "PASS"
+    },
+    {
+      "id": "post-send-J07-issue-blocks-receipt",
+      "status": "PASS"
+    },
+    {
+      "id": "issue-withdrawal-resumes-original-payment",
+      "status": "PASS"
+    },
+    {
+      "id": "console-health",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "browser": "155.0.8059.39",
+  "precondition": "Explicit verified local Entry/session fixture; actual Entry UI exercised separately by Gate A",
+  "scope": "Alternate methods, explicit source allocation, recovery controls, keyboard state and outer-host continuity"
+}

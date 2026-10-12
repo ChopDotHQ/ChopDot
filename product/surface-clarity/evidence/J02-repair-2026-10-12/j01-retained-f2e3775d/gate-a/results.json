@@ -1,0 +1,32 @@
+[
+  {
+    "file": "browser-qa.mjs",
+    "command": [
+      "/opt/homebrew/Cellar/node/24.1.0/bin/node",
+      "--import",
+      "/private/var/folders/dl/3pjhbbbj3ds7cbjn0ff89fvh0000gn/T/chopdot-j01-repair.EYfQeVyK/source/prototypes/integrated-product-preview-v2/gate-b/browser-launch.mjs",
+      "/private/var/folders/dl/3pjhbbbj3ds7cbjn0ff89fvh0000gn/T/chopdot-j01-repair.EYfQeVyK/source/prototypes/integrated-product-preview-v2/browser-qa.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "file": "exact-money-browser-qa.mjs",
+    "command": [
+      "/opt/homebrew/Cellar/node/24.1.0/bin/node",
+      "--import",
+      "/private/var/folders/dl/3pjhbbbj3ds7cbjn0ff89fvh0000gn/T/chopdot-j01-repair.EYfQeVyK/source/prototypes/integrated-product-preview-v2/gate-b/browser-launch.mjs",
+      "/private/var/folders/dl/3pjhbbbj3ds7cbjn0ff89fvh0000gn/T/chopdot-j01-repair.EYfQeVyK/source/prototypes/integrated-product-preview-v2/exact-money-browser-qa.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "file": "money-boundary-browser-qa.mjs",
+    "command": [
+      "/opt/homebrew/Cellar/node/24.1.0/bin/node",
+      "--import",
+      "/private/var/folders/dl/3pjhbbbj3ds7cbjn0ff89fvh0000gn/T/chopdot-j01-repair.EYfQeVyK/source/prototypes/integrated-product-preview-v2/gate-b/browser-launch.mjs",
+      "/private/var/folders/dl/3pjhbbbj3ds7cbjn0ff89fvh0000gn/T/chopdot-j01-repair.EYfQeVyK/source/prototypes/integrated-product-preview-v2/money-boundary-browser-qa.mjs"
+    ],
+    "exitCode": 0
+  }
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "name": "qa-people",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/qa-people.mjs"
+    ],
+    "exit_code": 0,
+    "log": "qa-people.log"
+  },
+  {
+    "name": "qa-savings",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/qa-savings.mjs"
+    ],
+    "exit_code": 0,
+    "log": "qa-savings.log"
+  },
+  {
+    "name": "qa-wallet-qr",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/qa-wallet-qr.mjs"
+    ],
+    "exit_code": 0,
+    "log": "qa-wallet-qr.log"
+  },
+  {
+    "name": "qa-data-lifecycle",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/qa-data-lifecycle.mjs"
+    ],
+    "exit_code": 0,
+    "log": "qa-data-lifecycle.log"
+  },
+  {
+    "name": "qa-continuity",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/qa-continuity.mjs"
+    ],
+    "exit_code": 0,
+    "log": "qa-continuity.log"
+  },
+  {
+    "name": "qa-history",
+    "command": [
+      "node",
+      "prototypes/integrated-product-preview-v2/expansion/qa-history.mjs"
+    ],
+    "exit_code": 0,
+    "log": "qa-history.log"
+  }
+]

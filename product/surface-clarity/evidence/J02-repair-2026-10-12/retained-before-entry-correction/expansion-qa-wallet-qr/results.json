@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "checks": [
+    "393 caller/connect/signature/submission recovery retains exact operation and no invented central result",
+    "393 explicit exact finality handoff reaches owning received status, before closure",
+    "393 explicit simulated camera permission denial/reload/unavailable/retry preserves caller and no action",
+    "393 QR recognizes exact existing person and owner handoff is read only",
+    "393 unsupported external input stays inert and is discarded",
+    "430 caller/connect/signature/submission recovery retains exact operation and no invented central result",
+    "430 explicit exact finality handoff reaches owning received status, before closure",
+    "430 explicit simulated camera permission denial/reload/unavailable/retry preserves caller and no action",
+    "430 QR recognizes exact existing person and owner handoff is read only",
+    "430 unsupported external input stays inert and is discarded"
+  ],
+  "errors": []
+}

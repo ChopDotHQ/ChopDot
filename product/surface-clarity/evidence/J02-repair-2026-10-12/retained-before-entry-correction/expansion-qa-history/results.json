@@ -1,0 +1,226 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "HISTORY-LAW-outgoing-prepared-393",
+      "state": "outgoing-prepared",
+      "width": 393,
+      "label": "Payment to Jeanine",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-outgoing-started-393",
+      "state": "outgoing-started",
+      "width": 393,
+      "label": "Payment to Jeanine",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-outgoing-sent-393",
+      "state": "outgoing-sent",
+      "width": 393,
+      "label": "Payment to Jeanine",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-outgoing-unknown-393",
+      "state": "outgoing-unknown",
+      "width": 393,
+      "label": "Payment to Jeanine",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-outgoing-cancelled-393",
+      "state": "outgoing-cancelled",
+      "width": 393,
+      "label": "Payment to Jeanine",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-outgoing-closed-393",
+      "state": "outgoing-closed",
+      "width": 393,
+      "label": "You paid Jeanine",
+      "confirmed": "7430",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-incoming-prepared-393",
+      "state": "incoming-prepared",
+      "width": 393,
+      "label": "Payment from Marc",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-incoming-started-393",
+      "state": "incoming-started",
+      "width": 393,
+      "label": "Payment from Marc",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-incoming-sent-393",
+      "state": "incoming-sent",
+      "width": 393,
+      "label": "Payment from Marc",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-incoming-unknown-393",
+      "state": "incoming-unknown",
+      "width": 393,
+      "label": "Payment from Marc",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-incoming-cancelled-393",
+      "state": "incoming-cancelled",
+      "width": 393,
+      "label": "Payment from Marc",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-incoming-closed-393",
+      "state": "incoming-closed",
+      "width": 393,
+      "label": "Marc paid you",
+      "confirmed": "2000",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-outgoing-prepared-430",
+      "state": "outgoing-prepared",
+      "width": 430,
+      "label": "Payment to Jeanine",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-outgoing-started-430",
+      "state": "outgoing-started",
+      "width": 430,
+      "label": "Payment to Jeanine",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-outgoing-sent-430",
+      "state": "outgoing-sent",
+      "width": 430,
+      "label": "Payment to Jeanine",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-outgoing-unknown-430",
+      "state": "outgoing-unknown",
+      "width": 430,
+      "label": "Payment to Jeanine",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-outgoing-cancelled-430",
+      "state": "outgoing-cancelled",
+      "width": 430,
+      "label": "Payment to Jeanine",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-outgoing-closed-430",
+      "state": "outgoing-closed",
+      "width": 430,
+      "label": "You paid Jeanine",
+      "confirmed": "7430",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-incoming-prepared-430",
+      "state": "incoming-prepared",
+      "width": 430,
+      "label": "Payment from Marc",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-incoming-started-430",
+      "state": "incoming-started",
+      "width": 430,
+      "label": "Payment from Marc",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-incoming-sent-430",
+      "state": "incoming-sent",
+      "width": 430,
+      "label": "Payment from Marc",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-incoming-unknown-430",
+      "state": "incoming-unknown",
+      "width": 430,
+      "label": "Payment from Marc",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-incoming-cancelled-430",
+      "state": "incoming-cancelled",
+      "width": 430,
+      "label": "Payment from Marc",
+      "confirmed": "0",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "id": "HISTORY-LAW-incoming-closed-430",
+      "state": "incoming-closed",
+      "width": 430,
+      "label": "Marc paid you",
+      "confirmed": "2000",
+      "ledgerUnchanged": true,
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "laws": [
+    "LAW-PAY-02",
+    "DESIGN-status-copy"
+  ]
+}

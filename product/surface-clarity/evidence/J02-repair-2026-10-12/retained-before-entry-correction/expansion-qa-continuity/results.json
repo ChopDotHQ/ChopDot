@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "checks": [
+    "index.html 393 immediate rename reload retains the exact draft and route without asynchronous messages",
+    "index.html 393 stale hash, foreign window and wrong owner cannot replace the current route",
+    "index.html 393 rename control uses the approved full-width rounded field and remains keyboard reachable",
+    "index.html 430 immediate rename reload retains the exact draft and route without asynchronous messages",
+    "index.html 430 stale hash, foreign window and wrong owner cannot replace the current route",
+    "index.html 430 rename control uses the approved full-width rounded field and remains keyboard reachable",
+    "index.html 1440 immediate rename reload retains the exact draft and route without asynchronous messages",
+    "index.html 1440 stale hash, foreign window and wrong owner cannot replace the current route",
+    "index.html 1440 rename control uses the approved full-width rounded field and remains keyboard reachable",
+    "directory 393 immediate rename reload retains the exact draft and route without asynchronous messages",
+    "directory 393 stale hash, foreign window and wrong owner cannot replace the current route",
+    "directory 393 rename control uses the approved full-width rounded field and remains keyboard reachable",
+    "directory 430 immediate rename reload retains the exact draft and route without asynchronous messages",
+    "directory 430 stale hash, foreign window and wrong owner cannot replace the current route",
+    "directory 430 rename control uses the approved full-width rounded field and remains keyboard reachable",
+    "directory 1440 immediate rename reload retains the exact draft and route without asynchronous messages",
+    "directory 1440 stale hash, foreign window and wrong owner cannot replace the current route",
+    "directory 1440 rename control uses the approved full-width rounded field and remains keyboard reachable"
+  ],
+  "errors": []
+}

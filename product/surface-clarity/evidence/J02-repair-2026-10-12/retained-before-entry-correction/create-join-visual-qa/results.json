@@ -1,0 +1,1523 @@
+{
+  "status": "PASS",
+  "comparisons": [
+    {
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "journey": "j03",
+      "state": "entry",
+      "actual": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 393,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 353,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 353,
+          "height": 66,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 393,
+          "height": 111,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 393,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 353,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 353,
+          "height": 66,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 393,
+          "height": 111,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "product": "393-j03-entry-product.png",
+      "golden": "393-j03-entry-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "journey": "j03",
+      "state": "currency",
+      "actual": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 393,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 353,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".choice",
+          "left": 20,
+          "width": 353,
+          "height": 61,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 393,
+          "height": 71,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 393,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 353,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".choice",
+          "left": 20,
+          "width": 353,
+          "height": 61,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 393,
+          "height": 71,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "product": "393-j03-currency-product.png",
+      "golden": "393-j03-currency-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "journey": "j03",
+      "state": "success",
+      "actual": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 393,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".success-title",
+          "left": 20,
+          "width": 353,
+          "height": 30.734375,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".group-card",
+          "left": 20,
+          "width": 353,
+          "height": 243.9375,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 393,
+          "height": 159,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 393,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".success-title",
+          "left": 20,
+          "width": 353,
+          "height": 30.734375,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".group-card",
+          "left": 20,
+          "width": 353,
+          "height": 243.9375,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 393,
+          "height": 127,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "product": "393-j03-success-product.png",
+      "golden": "393-j03-success-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "journey": "j04",
+      "state": "invite",
+      "actual": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 393,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 353,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".action-row",
+          "left": 20,
+          "width": 353,
+          "height": 66,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 393,
+          "height": 103,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 393,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 353,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".action-row",
+          "left": 20,
+          "width": 353,
+          "height": 66,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 393,
+          "height": 71,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "product": "393-j04-invite-product.png",
+      "golden": "393-j04-invite-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "journey": "j04",
+      "state": "join",
+      "actual": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 393,
+          "height": 57,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 353,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".invite-card",
+          "left": 20,
+          "width": 353,
+          "height": 171,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 393,
+          "height": 143,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 393,
+          "height": 57,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 353,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".invite-card",
+          "left": 20,
+          "width": 353,
+          "height": 203,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 393,
+          "height": 111,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "product": "393-j04-join-product.png",
+      "golden": "393-j04-join-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "journey": "j04-c1",
+      "state": "consent",
+      "actual": [
+        {
+          "selector": "h1",
+          "left": 20,
+          "width": 353,
+          "height": 71.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "700",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 353,
+          "height": 556.28125,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "400",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgb(255, 253, 248)",
+          "radius": "24px"
+        },
+        {
+          "selector": "button.primary",
+          "left": 41,
+          "width": 311,
+          "height": 50,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "760",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(24, 77, 56)",
+          "radius": "16px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": "h1",
+          "left": 20,
+          "width": 353,
+          "height": 71.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "700",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 353,
+          "height": 556.28125,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "400",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgb(255, 253, 248)",
+          "radius": "24px"
+        },
+        {
+          "selector": "button.primary",
+          "left": 41,
+          "width": 311,
+          "height": 50,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "760",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(24, 77, 56)",
+          "radius": "16px"
+        }
+      ],
+      "product": "393-j04-c1-consent-product.png",
+      "golden": "393-j04-c1-consent-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "journey": "j04-c1",
+      "state": "joined",
+      "actual": [
+        {
+          "selector": "h1",
+          "left": 20,
+          "width": 353,
+          "height": 71.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "700",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 353,
+          "height": 576.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "400",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgb(255, 253, 248)",
+          "radius": "24px"
+        },
+        {
+          "selector": "button.primary",
+          "left": 41,
+          "width": 311,
+          "height": 50,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "760",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(24, 77, 56)",
+          "radius": "16px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": "h1",
+          "left": 20,
+          "width": 353,
+          "height": 71.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "700",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 353,
+          "height": 518.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "400",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgb(255, 253, 248)",
+          "radius": "24px"
+        },
+        {
+          "selector": "button.primary",
+          "left": 41,
+          "width": 311,
+          "height": 50,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "760",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(24, 77, 56)",
+          "radius": "16px"
+        }
+      ],
+      "product": "393-j04-c1-joined-product.png",
+      "golden": "393-j04-c1-joined-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "journey": "j04-c1",
+      "state": "recovery",
+      "actual": [
+        {
+          "selector": "h1",
+          "left": 20,
+          "width": 353,
+          "height": 71.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "700",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 353,
+          "height": 228.21875,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "400",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgb(255, 253, 248)",
+          "radius": "24px"
+        },
+        {
+          "selector": "button.primary",
+          "left": 41,
+          "width": 311,
+          "height": 50,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "760",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(24, 77, 56)",
+          "radius": "16px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": "h1",
+          "left": 20,
+          "width": 353,
+          "height": 71.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "700",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 353,
+          "height": 265.90625,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "400",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgb(255, 253, 248)",
+          "radius": "24px"
+        },
+        {
+          "selector": "button.primary",
+          "left": 41,
+          "width": 311,
+          "height": 50,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "760",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(24, 77, 56)",
+          "radius": "16px"
+        }
+      ],
+      "product": "393-j04-c1-recovery-product.png",
+      "golden": "393-j04-c1-recovery-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 890
+      },
+      "journey": "j03",
+      "state": "entry",
+      "actual": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 430,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 390,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 390,
+          "height": 66,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 430,
+          "height": 111,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 430,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 390,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 390,
+          "height": 66,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 430,
+          "height": 111,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "product": "430-j03-entry-product.png",
+      "golden": "430-j03-entry-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 890
+      },
+      "journey": "j03",
+      "state": "currency",
+      "actual": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 430,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 390,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".choice",
+          "left": 20,
+          "width": 390,
+          "height": 61,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 430,
+          "height": 71,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 430,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 390,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".choice",
+          "left": 20,
+          "width": 390,
+          "height": 61,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 430,
+          "height": 71,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "product": "430-j03-currency-product.png",
+      "golden": "430-j03-currency-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 890
+      },
+      "journey": "j03",
+      "state": "success",
+      "actual": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 430,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".success-title",
+          "left": 20,
+          "width": 390,
+          "height": 30.734375,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".group-card",
+          "left": 20,
+          "width": 390,
+          "height": 243.9375,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 430,
+          "height": 159,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 430,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".success-title",
+          "left": 20,
+          "width": 390,
+          "height": 30.734375,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".group-card",
+          "left": 20,
+          "width": 390,
+          "height": 243.9375,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 430,
+          "height": 127,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "product": "430-j03-success-product.png",
+      "golden": "430-j03-success-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 890
+      },
+      "journey": "j04",
+      "state": "invite",
+      "actual": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 430,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 390,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".action-row",
+          "left": 20,
+          "width": 390,
+          "height": 66,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 430,
+          "height": 103,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 430,
+          "height": 64,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 390,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".action-row",
+          "left": 20,
+          "width": 390,
+          "height": 66,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 430,
+          "height": 71,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "product": "430-j04-invite-product.png",
+      "golden": "430-j04-invite-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 890
+      },
+      "journey": "j04",
+      "state": "join",
+      "actual": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 430,
+          "height": 57,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 390,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".invite-card",
+          "left": 20,
+          "width": 390,
+          "height": 171,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 430,
+          "height": 143,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": ".header",
+          "left": 0,
+          "width": 430,
+          "height": 57,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".title",
+          "left": 20,
+          "width": 390,
+          "height": 31.796875,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "800",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".invite-card",
+          "left": 20,
+          "width": 390,
+          "height": 203,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgb(255, 255, 255)",
+          "radius": "18px"
+        },
+        {
+          "selector": ".footer",
+          "left": 0,
+          "width": 430,
+          "height": 111,
+          "font": "-apple-system, \"system-ui\", \"Segoe UI\", Inter, Roboto, Helvetica, Arial, sans-serif",
+          "weight": "400",
+          "color": "rgb(17, 17, 19)",
+          "background": "rgba(247, 247, 248, 0.98)",
+          "radius": "0px"
+        }
+      ],
+      "product": "430-j04-join-product.png",
+      "golden": "430-j04-join-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 890
+      },
+      "journey": "j04-c1",
+      "state": "consent",
+      "actual": [
+        {
+          "selector": "h1",
+          "left": 20,
+          "width": 390,
+          "height": 71.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "700",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 390,
+          "height": 556.28125,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "400",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgb(255, 253, 248)",
+          "radius": "24px"
+        },
+        {
+          "selector": "button.primary",
+          "left": 41,
+          "width": 348,
+          "height": 50,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "760",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(24, 77, 56)",
+          "radius": "16px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": "h1",
+          "left": 20,
+          "width": 390,
+          "height": 71.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "700",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 390,
+          "height": 556.28125,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "400",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgb(255, 253, 248)",
+          "radius": "24px"
+        },
+        {
+          "selector": "button.primary",
+          "left": 41,
+          "width": 348,
+          "height": 50,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "760",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(24, 77, 56)",
+          "radius": "16px"
+        }
+      ],
+      "product": "430-j04-c1-consent-product.png",
+      "golden": "430-j04-c1-consent-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 890
+      },
+      "journey": "j04-c1",
+      "state": "joined",
+      "actual": [
+        {
+          "selector": "h1",
+          "left": 20,
+          "width": 390,
+          "height": 71.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "700",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 390,
+          "height": 576.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "400",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgb(255, 253, 248)",
+          "radius": "24px"
+        },
+        {
+          "selector": "button.primary",
+          "left": 41,
+          "width": 348,
+          "height": 50,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "760",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(24, 77, 56)",
+          "radius": "16px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": "h1",
+          "left": 20,
+          "width": 390,
+          "height": 71.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "700",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 390,
+          "height": 518.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "400",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgb(255, 253, 248)",
+          "radius": "24px"
+        },
+        {
+          "selector": "button.primary",
+          "left": 41,
+          "width": 348,
+          "height": 50,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "760",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(24, 77, 56)",
+          "radius": "16px"
+        }
+      ],
+      "product": "430-j04-c1-joined-product.png",
+      "golden": "430-j04-c1-joined-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 890
+      },
+      "journey": "j04-c1",
+      "state": "recovery",
+      "actual": [
+        {
+          "selector": "h1",
+          "left": 20,
+          "width": 390,
+          "height": 71.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "700",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 390,
+          "height": 228.21875,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "400",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgb(255, 253, 248)",
+          "radius": "24px"
+        },
+        {
+          "selector": "button.primary",
+          "left": 41,
+          "width": 348,
+          "height": 50,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "760",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(24, 77, 56)",
+          "radius": "16px"
+        }
+      ],
+      "expected": [
+        {
+          "selector": "h1",
+          "left": 20,
+          "width": 390,
+          "height": 71.375,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "700",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgba(0, 0, 0, 0)",
+          "radius": "0px"
+        },
+        {
+          "selector": ".card",
+          "left": 20,
+          "width": 390,
+          "height": 265.90625,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "400",
+          "color": "rgb(20, 36, 29)",
+          "background": "rgb(255, 253, 248)",
+          "radius": "24px"
+        },
+        {
+          "selector": "button.primary",
+          "left": 41,
+          "width": 348,
+          "height": 50,
+          "font": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+          "weight": "760",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(24, 77, 56)",
+          "radius": "16px"
+        }
+      ],
+      "product": "430-j04-c1-recovery-product.png",
+      "golden": "430-j04-c1-recovery-golden.png",
+      "dynamicFacts": "Names, money, counts, invitation state, Participant/link IDs and local fixture controls are canonical projections; static illustrative fixtures are not copied into state."
+    }
+  ],
+  "errors": [],
+  "scope": "Copied approved J03/J04/C1 sources versus live canonical projections, normal product mode; computed style/viewport checks plus screenshots, not pixel equality."
+}

@@ -1,0 +1,19 @@
+node scripts/package-preview-v2-gate-b.mjs /var/folders/dl/3pjhbbbj3ds7cbjn0ff89fvh0000gn/T//chopdot-j01-repair.EYfQeVyK/preview 
+package exit=0
+node prototypes/experience-workbench/journeys/01-enter-chopdot/source/test-model.cjs 
+model exit=0
+node prototypes/experience-workbench/journeys/01-enter-chopdot/source/test-subject-binding.cjs 
+subject-binding exit=0
+node --test scripts/surface-clarity.test.mjs 
+framework-tests exit=0
+node prototypes/integrated-product-preview-v2/j01-browser-qa.mjs 
+j01-browser exit=0
+node prototypes/integrated-product-preview-v2/gate-b/run-gate-a.mjs 
+gate-a exit=0
+node prototypes/integrated-product-preview-v2/create-join/browser-qa.mjs 
+create-join exit=0
+node prototypes/integrated-product-preview-v2/create-join/recovery-qa.mjs 
+create-join-recovery exit=0
+node prototypes/integrated-product-preview-v2/gate-d/recovery-qa.mjs 
+gate-d-recovery exit=0
+clarity-stale exit=1 (expected stale)
