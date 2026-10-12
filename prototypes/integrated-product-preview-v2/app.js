@@ -355,7 +355,7 @@ window.addEventListener('message', event => {
     const url=new URL(location.href);url.searchParams.delete('gateC');history.replaceState(null,'',url);
   }
 });
-function openGateB(hash='') {
+function openGateB(hash='#page=group') {
   stopMonitor();
   currentJourney = 'GATE_B';
   currentFlow = 'gate-b-local';
@@ -1194,7 +1194,7 @@ else if(params.has('createJoin'))openCreateJoin('#'+params.get('createJoin'));
 else if(currentActor()!=='self'&&entryMode!=='signin'&&!params.has('gateB')&&!params.has('gateC')&&!params.has('gateD'))openCreateJoin('#page=recovery');
 else if (params.has('gateD'))openGateD(params.get('gateD'));
 else if (params.has('gateC')) openGateC(params.get('gateC'));
-else if (params.has('gateB') && loadGuestState().group) openGateB(params.get('gateBRoute')||'');
+else if (params.has('gateB') && loadGuestState().group) openGateB(params.get('gateBRoute')||'#page=group');
 else if(params.has('guestExpense')&&loadGuestState().group)openGuestExpense();
 else if(params.has('home')&&loadGuestState().enteredAt&&!['signed-out','expired'].includes(loadGuestState().gateD?.session?.status))returnToLocalHome();
 else if (['create', 'signin', 'convert-create', 'convert-signin'].includes(entryMode))openAuth(entryMode, { resumed: true, method: params.get('entryMethod') === 'wallet' ? 'wallet' : 'email' });
