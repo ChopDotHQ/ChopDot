@@ -1,4 +1,4 @@
-import {groupMembers,membershipActive} from './create-join/model.js';
+import {groupMembers,membershipActive,repository as creationRepository} from './create-join/model.js';
 import {allGroups} from './gate-c/ledger.js';
 import {currentActor} from './create-join/authority.js';
 import {repository as accountRepository} from './gate-d/model.js';
@@ -189,11 +189,16 @@ function openGuestHome() {
   openHome(null, 'guest');
 }
 
-function openGuestCreateGroup() {
+function openGuestCreateGroup(reopen = false) {
+  reopen = reopen === true && !!loadGuestState().group;
   currentJourney = 'J03';
   currentFlow = 'guest-local-create';
   showFrame();
-  frame.src = `${SOURCES.j03}#entry`;
+  const url = new URL(location.href);
+  for (const key of ['home','guestExpense','gateB','gateBRoute','gateC','gateD','expansion','createJoin','entry','entryMethod']) url.searchParams.delete(key);
+  url.searchParams.set('guestCreate',reopen ? 'success' : '1'); history.replaceState(null,'',url);
+  const currency = loadGuestState().group?.currency || 'CHF';
+  frame.src = `${SOURCES.j03}#${reopen ? (currency === 'CHF' ? 'success' : 'success-' + currency.toLowerCase()) : 'entry'}`;
 }
 
 function openGuestExpense() {
@@ -413,7 +418,7 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
   } else {
     const expenseCount = state.expenses.filter(expense => !expense.deleted && (!state.gateC || expense.groupId === state.group.id)).length;
     const noun = expenseCount === 1 ? 'expense' : 'expenses';
-    const peopleCount = 1 + state.people.length;
+    const peopleCount = groupMembers(state).length;
     content.innerHTML = `
       <div><div class="eyebrow">${converted ? 'Account ready' : 'Saved locally'}</div><h1 class="hero">${converted ? 'Your work is still here.' : 'Keep going.'}</h1></div>
       <div class="section-head"><h2 class="h2">Your groups</h2></div>
@@ -621,7 +626,7 @@ function renderGuestGroupPeopleEditor(doc, screen) {
     if (!name) { input.focus(); return; }
     const current = loadGuestState();
     const id = `local-person-${Date.now()}`;
-    const people = [...current.people, { id, name, initials: initialsFor(name), localDraft: true }];
+    const people = [...current.people, { id, name, initials: initialsFor(name), localDraft: true, groupId: current.group.id }];
     const selectedParticipantIds = [...new Set([...(current.selectedParticipantIds || ['self']), id])];
     saveGuestState({ people, selectedParticipantIds });
     syncGuestGroupSuccess(doc);
@@ -645,7 +650,7 @@ function syncGuestGroupSuccess(doc) {
     if (successSub) successSub.textContent = 'Add people or add an expense.';
     const name = screen.querySelector('.group-name');
     if (name) name.textContent = state.group.name;
-    const peopleCount = 1 + state.people.length;
+    const peopleCount = groupMembers(state).length;
     const meta = screen.querySelector('.group-meta');
     if (meta) meta.textContent = `${state.group.currency} · ${peopleCount === 1 ? 'only you' : `${peopleCount} people`}`;
     const peopleStat = screen.querySelector('.group-state .state-item:first-child b');
@@ -675,44 +680,61 @@ function syncGuestGroupSuccess(doc) {
 }
 
 function applyGuestCreateGroupState(doc) {
-  if (!doc?.body) return;
-  let pendingCurrency = 'CHF';
-
-  const rememberGroup = (currency = pendingCurrency) => {
-    const input = doc.querySelector('#entry .name-input');
-    const name = String(input?.value || 'Untitled group').trim() || 'Untitled group';
-    pendingCurrency = currency;
-    saveGuestState({ group: { id: 'local-group-1', name, currency, shared: false } });
+  if (!doc?.body || currentActor() !== 'self') return;
+  const repo = creationRepository(localStorage, assertPrototypeWriter);
+  let draft = repo.read().membership.creation || {
+    id: crypto.randomUUID(), operationId: crypto.randomUUID(), name: '', currency: 'CHF',
+  };
+  let committed = frame.contentWindow.location.hash.startsWith('#success') && !!repo.read().group;
+  if (committed) draft = {...draft, name:repo.read().group.name, currency:repo.read().group.currency};
+  const input = doc.querySelector('#entry .name-input');
+  input.value = draft.name; input.maxLength = 80;
+  const retain = () => { draft.name = input.value; if (!committed) repo.saveCreation(draft); };
+  input.addEventListener('input', retain);
+  const project = () => {
+    const url = new URL(location.href); url.searchParams.set('guestCreate', frame.contentWindow.location.hash.startsWith('#success') ? 'success' : '1'); history.replaceState(null,'',url);
+    const pill = doc.querySelector('#entry .pill'); if (pill) pill.textContent = draft.currency;
+    const keep = doc.querySelector('#currency .footer a'); if (keep) keep.textContent = `Keep ${draft.currency}`;
+    for (const a of doc.querySelectorAll('#currency .choice')) {
+      const code = a.querySelector('.choice-title')?.textContent.trim();
+      a.classList.toggle('selected', code === draft.currency);
+      const check = a.querySelector('.check'); if (check) check.style.visibility = code === draft.currency ? 'visible' : 'hidden';
+    }
     syncGuestGroupSuccess(doc);
   };
-
-  syncGuestGroupSuccess(doc);
-
-  doc.addEventListener('click', (event) => {
-    const anchor = event.target.closest('a[href]');
-    if (!anchor) return;
+  doc.addEventListener('click', event => {
+    const anchor = event.target.closest('a[href]'); if (!anchor) return;
     const href = anchor.getAttribute('href');
-
-    if (href === '#success') rememberGroup('CHF');
-    if (href === '#success-eur') rememberGroup('EUR');
-    if (href === '#success-usd') rememberGroup('USD');
-
-    if (href === '#invite-handoff') {
+    const choice = anchor.closest('#currency') && anchor.querySelector('.choice-title')?.textContent.trim();
+    if (['CHF','EUR','USD'].includes(choice)) {
+      event.preventDefault(); draft.currency = choice; retain(); project();
+      frame.contentWindow.location.hash = 'entry'; return;
+    }
+    if (anchor.closest('#currency') && href === '#entry') {
+      event.preventDefault(); frame.contentWindow.location.hash = 'entry'; return;
+    }
+    if (href === '#success' && !anchor.closest('#currency')) {
       event.preventDefault();
-      rememberGroup(loadGuestState().group?.currency || pendingCurrency);
-      const screen = anchor.closest('.screen');
-      if (screen) renderGuestGroupPeopleEditor(doc, screen);
+      if (!committed) {
+        retain();
+        try { repo.commit({type:'create', ...draft, actor:'self'}); committed = true; }
+        catch (error) { input.setCustomValidity(error.message); input.reportValidity(); return; }
+      }
+      input.setCustomValidity(''); project();
+      frame.contentWindow.location.hash = draft.currency === 'CHF' ? 'success' : `success-${draft.currency.toLowerCase()}`;
       return;
     }
-
-    if (href === '#expense-handoff') {
+    if (committed && anchor.closest('[id^=success]') && href === '#currency') { event.preventDefault(); returnToLocalHome(); return; }
+    if (href === '#invite-handoff') {
       event.preventDefault();
-      rememberGroup(loadGuestState().group?.currency || pendingCurrency);
-      openGuestExpense();
+      const screen = anchor.closest('.screen'); if (screen) renderGuestGroupPeopleEditor(doc, screen);
+      return;
     }
+    if (href === '#expense-handoff') { event.preventDefault(); openGuestExpense(); }
   });
-
-  frame.contentWindow?.addEventListener('hashchange', () => syncGuestGroupSuccess(doc));
+  input.addEventListener('input', () => input.setCustomValidity(''));
+  frame.contentWindow.addEventListener('hashchange', project);
+  project();
 }
 
 function formatMoney(currency, value) {
@@ -729,7 +751,7 @@ function formatMoney(currency, value) {
 function localPeople(state = loadGuestState()) {
   return [
     { id: 'self', name: 'You', initials: 'Y', self: true },
-    ...state.people.map((person) => ({
+    ...groupMembers(state).filter(person => person.id !== 'self').map((person) => ({
       id: person.id,
       name: person.name,
       initials: person.initials || initialsFor(person.name),
@@ -800,7 +822,7 @@ function openLocalPersonEditor(doc, context) {
     }
     const state = loadGuestState();
     const id = `local-person-${Date.now()}`;
-    const nextPeople = [...state.people, { id, name, initials: initialsFor(name), localDraft: true }];
+    const nextPeople = [...state.people, { id, name, initials: initialsFor(name), localDraft: true, groupId: current.group.id }];
     const nextParticipants = Array.from(new Set([...(state.selectedParticipantIds || ['self']), id]));
     saveGuestState({
       people: nextPeople,
@@ -1090,6 +1112,7 @@ frame.addEventListener('load', () => {
     url.searchParams.set('home','1');history.replaceState(null,'',url);
   }else if(child.pathname===sourcePath('j03')){
     stopMonitor();currentJourney='J03';currentFlow='guest-local-create';
+    const url=new URL(location.href);url.searchParams.delete('home');url.searchParams.set('guestCreate',child.hash.startsWith('#success')?'success':'1');history.replaceState(null,'',url);
   }else if(child.pathname===sourcePath('j05')){
     stopMonitor();currentJourney='J05';currentFlow='guest-local-expense';
   }else if(child.pathname===sourcePath('j01')){
@@ -1195,6 +1218,7 @@ else if(currentActor()!=='self'&&entryMode!=='signin'&&!params.has('gateB')&&!pa
 else if (params.has('gateD'))openGateD(params.get('gateD'));
 else if (params.has('gateC')) openGateC(params.get('gateC'));
 else if (params.has('gateB') && loadGuestState().group) openGateB(params.get('gateBRoute')||'#page=group');
+else if(params.has('guestCreate'))openGuestCreateGroup(params.get('guestCreate') === 'success' && !!loadGuestState().group);
 else if(params.has('guestExpense')&&loadGuestState().group)openGuestExpense();
 else if(params.has('home')&&loadGuestState().enteredAt&&!['signed-out','expired'].includes(loadGuestState().gateD?.session?.status))returnToLocalHome();
 else if (['create', 'signin', 'convert-create', 'convert-signin'].includes(entryMode))openAuth(entryMode, { resumed: true, method: params.get('entryMethod') === 'wallet' ? 'wallet' : 'email' });
