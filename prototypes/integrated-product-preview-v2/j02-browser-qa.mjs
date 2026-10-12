@@ -65,7 +65,9 @@ try {
     await f().getByRole('button',{name:'Back to Home',exact:true}).waitFor(); await click('Back to Home'); await home();
     record('J02-R07-'+w,'Insights capability boundary has a root exit');
     await f().getByRole('link',{name:'You',exact:true}).click();
-    await f().getByRole('button',{name:'Payment methods',exact:true}).waitFor(); await shot('you-'+w);
+    await f().getByRole('button',{name:'Payment methods',exact:true}).waitFor();
+    assert.deepEqual(await f().locator('.tabbar .tab').allTextContents(),['Pots','People','Activity','You']);
+    await shot('you-'+w);
     for (const label of ['Savings','All groups / archived','Payment methods','Wallet','Scan QR','Import / export','Storage & recovery']) {
       await click(label); await f().getByRole('button',{name:'Back to Home',exact:true}).waitFor();
       await click('Back to Home'); await home();
