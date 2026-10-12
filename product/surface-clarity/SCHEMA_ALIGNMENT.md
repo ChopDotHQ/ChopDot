@@ -8,7 +8,7 @@ This is a living correspondence record, not a new schema authority or certified 
 |---|---|---|---|
 | J02 bounded Home | Navigation/presentation; no owned domain operation | Canonical Home, root/group/history routes and saved-expense Group Home return | J02 repair report; user accepted c59073cf |
 | J03 bounded creation | group.create; existing creation draft/owner | Currency choice edits draft; explicit Create commits once; records/returns preserved | J03 repair report; user accepted ae19153b; no certified J03 task path |
-| J04 approved repairs | Existing group.invite/group.join owners and guards; navigation creates no domain effect | Consistent Invite entry; local/prepared/joined status presentation; no domain/model change | J04 plan and current repair receipt; exact successor proof to be linked at checkpoint |
+| J04 approved repairs | Existing group.invite/group.join owners and guards; navigation creates no domain effect | Consistent Invite entry; local/prepared/joined status presentation; no domain/model change | J04 repair report, f8501fa7, 20 focused checks; no certified J04 task path |
 
 For each next journey append resolved source/state/control identifiers, applicable
 owner/operation/context/laws, actual change and exact proof. Mark missing mapping

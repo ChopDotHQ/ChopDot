@@ -4,7 +4,7 @@
   "name": "Invite / Join a Group",
   "binding": {
     "registry_digest": "f5b46bc031ea2235484ebd492e09540bfde23dca1e774591c71b3fa5c18efbda",
-    "runtime_digest": "bc052a0d54a92b0a83801ad32e389a093be04972855b61a0c45c26d4525013bc",
+    "runtime_digest": "bb6c1fda194caae39971fff6c974c32caa47eb43fee5adc84fa4637235bea29b",
     "schema_commit": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
     "golden_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881"
   },
@@ -80,44 +80,47 @@
       "reopened membership"
     ],
     "viewports": [
-      "393x852"
+      "393x852",
+      "430x890"
     ],
     "fixtures": [
       "Example email dev@example.com and public code 123456",
       "Labelled local recipient/inviter-session fixtures; no external sending"
     ],
     "limitations": [
-      "Partial actual-screen review; no J04 acceptance.",
-      "No expenses in sample; private-expense isolation not qualified. Expired/offline/account-backed join and full recovery not reviewed.",
-      "Historical UX-010 not reproduced with one added local name; larger lists unreviewed."
+      "Two approved fixes locally verified; broader J04/recovery and historical UX-010 larger lists remain unqualified.",
+      "Source/fixture/self-review proof, not real auth/delivery, independent review, device or hosted/CI clearance.",
+      "Direct create-join Entry/session-return path was not cleared by the approved fixes; final owner coverage uses the reviewed Home conversion path."
     ]
   },
   "checks": [
     {
       "id": "truth",
-      "result": "fail",
-      "expectation": "Invitation routes and status labels match the implemented owner and actual effects.",
+      "result": "pass",
+      "expectation": "Same invitation owner/context; truthful local/prepared/joined states.",
       "steps": [
-        "Compare header and empty-state Invite",
-        "Inspect Joined label on a locally added name without invitation/consent",
-        "Inspect Invite sent confirmation for a local-only pending invitation"
+        "Guest and authorized owner use header/empty Invite entries; assert unchanged saved records",
+        "Prepare named/link records; verify no membership on preparation or Not now",
+        "Explicit guest consent joins once; actual Joined retained and local names stay Local only",
+        "Verify owner/populated/archived returns and exact expense preservation; inspect actual screens"
       ],
       "evidence_ids": [
-        "J04-BROWSER-20261012"
+        "J04-BROWSER-REPAIR-20261012"
       ],
       "reason": ""
     },
     {
       "id": "orientation",
-      "result": "fail",
-      "expectation": "Invitation routes and status labels match the implemented owner and actual effects.",
+      "result": "pass",
+      "expectation": "Same invitation owner/context; truthful local/prepared/joined states.",
       "steps": [
-        "Compare header and empty-state Invite",
-        "Inspect Joined label on a locally added name without invitation/consent",
-        "Inspect Invite sent confirmation for a local-only pending invitation"
+        "Guest and authorized owner use header/empty Invite entries; assert unchanged saved records",
+        "Prepare named/link records; verify no membership on preparation or Not now",
+        "Explicit guest consent joins once; actual Joined retained and local names stay Local only",
+        "Verify owner/populated/archived returns and exact expense preservation; inspect actual screens"
       ],
       "evidence_ids": [
-        "J04-BROWSER-20261012"
+        "J04-BROWSER-REPAIR-20261012"
       ],
       "reason": ""
     },
@@ -254,13 +257,76 @@
       "prediction": "Both controls open the same invitation task.",
       "tradeoff": "Retain all owner/account and archived-group guards.",
       "authority_boundary": "No new domain effect or permission; frozen sources preserved.",
-      "success_evidence": "Pending first bounded repair authorization; status-label issue remains separate",
-      "result": "proposal only; no runtime change"
+      "success_evidence": "J04-BROWSER-REPAIR-20261012",
+      "result": "approved repairs implemented and locally verified at f8501fa7"
     }
   ],
   "hypotheses": [],
   "additional_authority": [],
   "evidence": [
+    {
+      "id": "J04-BROWSER-REPAIR-20261012",
+      "kind": "BROWSER",
+      "implementation_sha": "f8501fa713581057f68af62ab1bf5c55bcf3a2b9",
+      "runtime_digest": "bb6c1fda194caae39971fff6c974c32caa47eb43fee5adc84fa4637235bea29b",
+      "scope": "20 focused checks at 393x852 and 430x890: header/empty-state invitation routes, blocked guest and archived group, local/prepared/joined labels, named/link preparation and reload, Not now/explicit guest consent/join, Done/Group Home returns, preserved exact expense and visible confirmation heading. Actual screens self-reviewed.",
+      "environment": "Installed Chrome and existing Playwright; isolated normal UI creation; disclosed example Entry and local recipient/inviter fixtures; no external delivery.",
+      "automated": true,
+      "command": "CHOPDOT_CHROMIUM_EXECUTABLE=\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" PREVIEW_ROOT=/tmp/chopdot-j04-repair-preview-06 EVIDENCE_DIR=/tmp/chopdot-j04-repair-proof-06 node prototypes/integrated-product-preview-v2/j04-browser-qa.mjs",
+      "exit_code": 0,
+      "log": "product/surface-clarity/evidence/J04-repair-2026-10-12/browser.log",
+      "artifacts": [
+        {
+          "path": "product/surface-clarity/evidence/J04-repair-2026-10-12/browser.log",
+          "sha256": "c8c978e90c2aed95de886044ae242017ba9c63b1b2759f0215417a76f4d65f5d"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J04-repair-2026-10-12/browser/results.json",
+          "sha256": "b6f91e39a775c1642f48b9eede6dee7210e7e4d1bbf9cc0a28be734af145f3f8"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J04-repair-2026-10-12/browser/invite-local-status-393.png",
+          "sha256": "016f413d300bc3115d41503ecd47f9ad02e8a71031cb0b181f4a0ce9ce34fc24"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J04-repair-2026-10-12/browser/prepared-name-393.png",
+          "sha256": "09daab549ad6150d99db048a66e64bf38ff17e298a16cc1c564b64a2ebf8d95c"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J04-repair-2026-10-12/browser/joined-and-local-430.png",
+          "sha256": "7c17191acc26dd4af5bf942e3382e3055bb92bbff3edf8d6dd3396f75ed36add"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J04-repair-2026-10-12/browser/archived-boundary-430.png",
+          "sha256": "9bee1129a89a927c403fdb85bd75fa189d312da613259f075d8e0c0e0761804b"
+        }
+      ]
+    }
+  ],
+  "finding_ids": [
+    "UX-010",
+    "SC-J04-001",
+    "SC-J04-002"
+  ],
+  "historical_sample": {
+    "source": "historical-audit/results.json",
+    "implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a",
+    "method": "Single reviewer heuristic audit, current-run cloud Chrome interaction and screenshots; no independent usability panel or psychological performance study",
+    "sample": {
+      "id": "J04",
+      "title": "Invite / join",
+      "health": "Mixed; precursor layout issue",
+      "actions": "Add local person \u2192 Done; members \u2192 Invite \u2192 Share screen",
+      "screenshot": "04-invite",
+      "observation": "Actual invite screen groups link/person alternatives well; earlier local-person panel is buried.",
+      "limitations": "No invitation transmitted; remote join, claim and recovery not exercised.",
+      "findings": [
+        "UX-010"
+      ]
+    },
+    "scope_note": "Imported historical sample only. Checks/scenarios remain unassessed; screenshots in original audit archive."
+  },
+  "historical_evidence": [
     {
       "id": "J04-BROWSER-20261012",
       "kind": "BROWSER",
@@ -304,28 +370,10 @@
       ]
     }
   ],
-  "finding_ids": [
-    "UX-010",
-    "SC-J04-001",
-    "SC-J04-002"
-  ],
-  "historical_sample": {
-    "source": "historical-audit/results.json",
-    "implementation_sha": "3738c7307d8223d37bfd7d3cd8a51eadbf4b798a",
-    "method": "Single reviewer heuristic audit, current-run cloud Chrome interaction and screenshots; no independent usability panel or psychological performance study",
-    "sample": {
-      "id": "J04",
-      "title": "Invite / join",
-      "health": "Mixed; precursor layout issue",
-      "actions": "Add local person \u2192 Done; members \u2192 Invite \u2192 Share screen",
-      "screenshot": "04-invite",
-      "observation": "Actual invite screen groups link/person alternatives well; earlier local-person panel is buried.",
-      "limitations": "No invitation transmitted; remote join, claim and recovery not exercised.",
-      "findings": [
-        "UX-010"
-      ]
-    },
-    "scope_note": "Imported historical sample only. Checks/scenarios remain unassessed; screenshots in original audit archive."
-  },
-  "historical_evidence": []
+  "implementation_approval": {
+    "approved_by": "Devinson (user)",
+    "approved_on": "2026-10-12",
+    "reference": "Current chat: I approve J4 findings and repairs and commit.",
+    "scope": "SC-J04-001/002 implementation and commit; actual results are agent self-reviewed, not represented as direct human review of the new bytes."
+  }
 }

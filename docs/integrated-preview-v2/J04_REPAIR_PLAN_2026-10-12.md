@@ -27,3 +27,5 @@ the user's explicit delegated review/acceptance, labelled agent self-review.
 
 Actual-screen inspection found a clipped preparation heading after Add; reset
 focus/scroll on invitation screen transitions and verify the heading is visible.
+
+Result: f8501fa7 passes 20 focused checks and actual-screen review. See J04 repair receipt. Preserve direct Entry/session and historical larger-list limits; no blanket J04 qualification. Cloud contract/ledger prepared under user delegation.

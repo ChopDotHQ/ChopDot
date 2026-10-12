@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f7f7f8" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>ChopDot — Golden-faithful Preview V2</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="preview-stage">
+    <div class="stage-meta">
+      <span class="stage-pill">Prototype</span>
+      <span>Saved on this browser · <a href="./demo.html">Demo guide</a></span>
+    </div>
+    <section class="device" aria-label="ChopDot preview">
+      <section id="front-door" class="front-door" aria-label="Enter ChopDot">
+        <div class="front-brand">
+          <div class="front-wordmark" aria-label="ChopDot"><span class="front-mark" aria-hidden="true"></span><span>ChopDot</span></div>
+          <p class="front-tagline">Share &amp; chop.</p>
+        </div>
+        <div class="front-actions">
+          <button id="guest-entry" disabled class="front-button front-primary" type="button">Continue as guest</button>
+          <button id="create-account" disabled class="front-button front-secondary" type="button">Create account</button>
+          <p class="front-signin">Already have an account? <button id="sign-in" disabled class="front-link" type="button">Sign in</button></p>
+        </div>
+      </section>
+      <section id="account-wall" class="account-wall" aria-label="Create account to share" hidden>
+        <button id="account-wall-back" class="account-wall-back" type="button" aria-label="Back">←</button>
+        <div class="account-wall-copy">
+          <h1>Ready to share?</h1>
+          <p>Create your ChopDot account to invite people.</p>
+          <strong>Everything you've done stays.</strong>
+        </div>
+        <div class="front-actions">
+          <button id="account-wall-create" class="front-button front-primary" type="button">Create account</button>
+          <button id="account-wall-cancel" class="front-button front-secondary" type="button">Not now</button>
+          <p class="front-signin">Already have an account? <button id="account-wall-signin" class="front-link" type="button">Sign in</button></p>
+        </div>
+      </section>
+      <iframe id="product-frame" title="ChopDot" allow="clipboard-write" hidden></iframe>
+    </section>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

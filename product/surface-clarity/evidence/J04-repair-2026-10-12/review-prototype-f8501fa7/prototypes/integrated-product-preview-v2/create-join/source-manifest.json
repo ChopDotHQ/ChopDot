@@ -1,0 +1,23 @@
+{
+  "schemaSHA": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "authoritySHA": "4ba456e6595330e4ca8e21366e0d827f17e10881",
+  "acceptedParent": "4561912536a598ad27d9ca8d5a9a6dde99787894",
+  "sources": [
+    {
+      "path": "prototypes/experience-workbench/journeys/03-create-group/v2-golden-candidate.html",
+      "sha256": "416311c1772a1da1fbce0868aac8281a85f54b9e5e70e8762be4d06c1e5e4f11"
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/04-invite-join/v1-golden-candidate.html",
+      "sha256": "e909eb55109ec3d848568c0a6f617e8fa8398acd79697e5b2e7e0c7de942444b"
+    },
+    {
+      "path": "prototypes/experience-workbench/journeys/04-invite-join/phase-c1-guest-v1-candidate.html",
+      "sha256": "ce51fd7257637eaa3c731f114036ec1649d47af2252d739b4a3aab9efb3017a5"
+    },
+    {
+      "path": "prototypes/experience-workbench/contracts/phase-c1/member-identity.contract.json",
+      "sha256": "5a2cdbbf95b635e50f6563702077055bcdc20586c2badb0beab72042907cf8d0"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "393 guest blocked without effects",
+      "result": "pass"
+    },
+    {
+      "id": "393 header route and local status",
+      "result": "pass"
+    },
+    {
+      "id": "393 empty state same owner and returns",
+      "result": "pass"
+    },
+    {
+      "id": "393 pending preparation not joined or delivered",
+      "result": "pass"
+    },
+    {
+      "id": "393 prepared reload no duplicate",
+      "result": "pass"
+    },
+    {
+      "id": "393 link preparation truth",
+      "result": "pass"
+    },
+    {
+      "id": "393 explicit guest consent and group return",
+      "result": "pass"
+    },
+    {
+      "id": "393 actual joined status preserved",
+      "result": "pass"
+    },
+    {
+      "id": "393 populated header and returns preserve expense",
+      "result": "pass"
+    },
+    {
+      "id": "393 archived boundary preserved",
+      "result": "pass"
+    },
+    {
+      "id": "430 guest blocked without effects",
+      "result": "pass"
+    },
+    {
+      "id": "430 header route and local status",
+      "result": "pass"
+    },
+    {
+      "id": "430 empty state same owner and returns",
+      "result": "pass"
+    },
+    {
+      "id": "430 pending preparation not joined or delivered",
+      "result": "pass"
+    },
+    {
+      "id": "430 prepared reload no duplicate",
+      "result": "pass"
+    },
+    {
+      "id": "430 link preparation truth",
+      "result": "pass"
+    },
+    {
+      "id": "430 explicit guest consent and group return",
+      "result": "pass"
+    },
+    {
+      "id": "430 actual joined status preserved",
+      "result": "pass"
+    },
+    {
+      "id": "430 populated header and returns preserve expense",
+      "result": "pass"
+    },
+    {
+      "id": "430 archived boundary preserved",
+      "result": "pass"
+    }
+  ],
+  "errors": []
+}

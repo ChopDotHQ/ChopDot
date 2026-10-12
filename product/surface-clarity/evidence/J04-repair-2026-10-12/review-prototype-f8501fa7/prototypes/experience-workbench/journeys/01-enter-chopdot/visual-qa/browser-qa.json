@@ -1,0 +1,519 @@
+{
+  "ok": true,
+  "artifact_sha256": "383170c06d4e6bc4d6b658664fff6ae0f2eb003cf202ca5e8f8617fb06ae8f46",
+  "browser": "Playwright Chromium (Browser plugin not available)",
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "desktop": "1440x1000",
+  "scenarios": 18,
+  "layout_checks": 34,
+  "page_errors": [],
+  "checks": [
+    {
+      "name": "New email sign-in, code error, name, Home reference and browser Back",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Returning person skips profile",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Invite retained through authentication; no automatic join; return",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Expired code requires a new code",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Offline retry preserves invite without fake sign-in",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Wallet approval request and read-only refresh; verified test result",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Wallet rejection, new request, expiration and cancel",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Expired session rejects wrong identity without losing destination",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Protected destinations do not open when signed out",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "New email sign-in, code error, name, Home reference and browser Back",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Returning person skips profile",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Invite retained through authentication; no automatic join; return",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Expired code requires a new code",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Offline retry preserves invite without fake sign-in",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Wallet approval request and read-only refresh; verified test result",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Wallet rejection, new request, expiration and cancel",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Expired session rejects wrong identity without losing destination",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Protected destinations do not open when signed out",
+      "viewport": "430x890",
+      "passed": true
+    }
+  ],
+  "layouts": [
+    {
+      "state": "welcome",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "invite",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "email",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "code",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "profile",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "wallet",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "approval-waiting",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "approval-declined",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "approval-expired",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "approval-unknown",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "offline",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "session-expired",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "wrong-account",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "ready",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "load-error",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "home-reference",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "invite-reference",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "width": 393,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "welcome",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "invite",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "email",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "code",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "profile",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "wallet",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "approval-waiting",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "approval-declined",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "approval-expired",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "approval-unknown",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "offline",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "session-expired",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "wrong-account",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "ready",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "load-error",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "home-reference",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    },
+    {
+      "state": "invite-reference",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "width": 430,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "clipped": 0
+    }
+  ],
+  "screenshots": [
+    "welcome-393x852.png",
+    "email-393x852.png",
+    "code-393x852.png",
+    "invalid-code-393x852.png",
+    "profile-393x852.png",
+    "ready-new-393x852.png",
+    "ready-returning-393x852.png",
+    "invite-393x852.png",
+    "ready-invite-393x852.png",
+    "expired-code-393x852.png",
+    "offline-393x852.png",
+    "wallet-393x852.png",
+    "approval-waiting-393x852.png",
+    "approval-unknown-393x852.png",
+    "approval-declined-393x852.png",
+    "approval-expired-393x852.png",
+    "session-expired-393x852.png",
+    "wrong-account-393x852.png",
+    "welcome-430x890.png",
+    "email-430x890.png",
+    "code-430x890.png",
+    "invalid-code-430x890.png",
+    "profile-430x890.png",
+    "ready-new-430x890.png",
+    "ready-returning-430x890.png",
+    "invite-430x890.png",
+    "ready-invite-430x890.png",
+    "expired-code-430x890.png",
+    "offline-430x890.png",
+    "wallet-430x890.png",
+    "approval-waiting-430x890.png",
+    "approval-unknown-430x890.png",
+    "approval-declined-430x890.png",
+    "approval-expired-430x890.png",
+    "session-expired-430x890.png",
+    "wrong-account-430x890.png"
+  ]
+}

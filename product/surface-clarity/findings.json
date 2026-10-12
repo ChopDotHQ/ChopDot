@@ -526,8 +526,14 @@
     "title": "Header Invite retains an obsolete unsupported route",
     "evidence": "Header Invite opens unsupported boundary; empty-state Invite people opens the implemented owner.",
     "recommendation": "Wire the header to the existing invitation owner with same group and unchanged guards.",
-    "status": "open",
-    "disposition": null,
+    "status": "fixed",
+    "disposition": {
+      "rationale": "Both Invite entries reach existing owner with guards preserved; local/prepared/joined presentation reflects actual effects; focused UI and return checks pass.",
+      "runtime_digest": "bb6c1fda194caae39971fff6c974c32caa47eb43fee5adc84fa4637235bea29b",
+      "evidence_ids": [
+        "J04-BROWSER-REPAIR-20261012"
+      ]
+    },
     "observed_implementation_sha": "ae19153b73661750852875fdda979f7f0828d529",
     "observed_runtime_digest": "bc052a0d54a92b0a83801ad32e389a093be04972855b61a0c45c26d4525013bc",
     "evidence_ids": [
@@ -550,8 +556,14 @@
     "title": "Local status labels overstate membership and delivery",
     "evidence": "Local name without invitation/consent displays Joined; a local pending record displays Invite sent without external transmission.",
     "recommendation": "Distinguish local names, pending invitations and joined participants; describe local preparation without claiming external delivery.",
-    "status": "open",
-    "disposition": null,
+    "status": "fixed",
+    "disposition": {
+      "rationale": "Both Invite entries reach existing owner with guards preserved; local/prepared/joined presentation reflects actual effects; focused UI and return checks pass.",
+      "runtime_digest": "bb6c1fda194caae39971fff6c974c32caa47eb43fee5adc84fa4637235bea29b",
+      "evidence_ids": [
+        "J04-BROWSER-REPAIR-20261012"
+      ]
+    },
     "observed_implementation_sha": "ae19153b73661750852875fdda979f7f0828d529",
     "observed_runtime_digest": "bc052a0d54a92b0a83801ad32e389a093be04972855b61a0c45c26d4525013bc",
     "evidence_ids": [

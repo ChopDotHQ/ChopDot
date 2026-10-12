@@ -1,0 +1,3468 @@
+{
+  "settings-entry-owner": {
+    "code": "J26-S01",
+    "eyebrow": "Group Home · owner",
+    "title": "Manage Zurich Weekend",
+    "lead": "Current role and group version are checked before any lifecycle write.",
+    "facts": [
+      [
+        "Your role",
+        "Owner"
+      ],
+      [
+        "Group status",
+        "Active"
+      ],
+      [
+        "Current name",
+        "Zurich Weekend"
+      ],
+      [
+        "Future expense default",
+        "CHF"
+      ]
+    ],
+    "notice": "This settings surface cannot settle money, sign, pay, or widen another member’s authority.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Open settings",
+        "to": "settings-overview-owner",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Demo: loading",
+        "to": "settings-loading",
+        "kind": "ghost",
+        "q": {
+          "role": "owner"
+        }
+      },
+      {
+        "label": "Demo: offline",
+        "to": "settings-offline",
+        "kind": "link",
+        "q": {
+          "role": "owner"
+        }
+      },
+      {
+        "label": "Demo: load failed",
+        "to": "settings-load-failed",
+        "kind": "link",
+        "q": {
+          "role": "owner"
+        }
+      }
+    ],
+    "status": "",
+    "role": "",
+    "back": "group-home-boundary"
+  },
+  "settings-entry-member": {
+    "code": "J26-S02",
+    "eyebrow": "Group Home · member",
+    "title": "Manage your membership",
+    "lead": "Group-wide settings stay owner-controlled. You can inspect facts and leave when eligible.",
+    "facts": [
+      [
+        "Your role",
+        "Member"
+      ],
+      [
+        "Group status",
+        "Active"
+      ],
+      [
+        "Current name",
+        "Zurich Weekend"
+      ],
+      [
+        "Open items involving you",
+        "None in primary fixture"
+      ]
+    ],
+    "notice": "Being a member never grants owner, payment, wallet, or signing authority.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Open settings",
+        "to": "settings-overview-member",
+        "kind": "accent",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Demo: loading",
+        "to": "settings-loading",
+        "kind": "ghost",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Demo: offline",
+        "to": "settings-offline",
+        "kind": "link",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Demo: load failed",
+        "to": "settings-load-failed",
+        "kind": "link",
+        "q": {
+          "role": "member"
+        }
+      }
+    ],
+    "status": "",
+    "role": "member",
+    "back": "group-home-boundary"
+  },
+  "settings-loading": {
+    "code": "J26-S03",
+    "eyebrow": "Checking group truth",
+    "title": "Loading settings",
+    "lead": "Fresh role and group-version facts are required before writes are shown.",
+    "facts": [
+      [
+        "Cached role",
+        "Not authority"
+      ],
+      [
+        "Mutation",
+        "None"
+      ]
+    ],
+    "notice": "Wait for current facts; cached owner status cannot authorize a change.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Loaded as owner",
+        "to": "settings-overview-owner",
+        "kind": "accent",
+        "q": {
+          "role": "owner"
+        }
+      },
+      {
+        "label": "Loaded as member",
+        "to": "settings-overview-member",
+        "kind": "ghost",
+        "q": {
+          "role": "member"
+        }
+      }
+    ],
+    "status": "progress",
+    "role": "owner",
+    "back": "group-home-boundary"
+  },
+  "settings-offline": {
+    "code": "J26-S04",
+    "eyebrow": "Offline",
+    "title": "Saved settings are read-only",
+    "lead": "You can understand the last saved group facts, but lifecycle writes are unavailable.",
+    "facts": [
+      [
+        "Saved name",
+        "Zurich Weekend"
+      ],
+      [
+        "Saved role",
+        "May be stale"
+      ],
+      [
+        "Writes",
+        "Unavailable offline"
+      ]
+    ],
+    "notice": "Reconnect and refresh role/version truth before changing the group.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Reconnect and refresh",
+        "to": "settings-loading",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Return to Group Home",
+        "to": "group-home-boundary",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "group-home-boundary"
+  },
+  "settings-load-failed": {
+    "code": "J26-S05",
+    "eyebrow": "Could not refresh",
+    "title": "Settings are not current",
+    "lead": "The read failed before any lifecycle action began.",
+    "facts": [
+      [
+        "Group write",
+        "None"
+      ],
+      [
+        "Cached data",
+        "Not used as authority"
+      ]
+    ],
+    "notice": "Retry only reloads current facts. It does not retry a mutation.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Retry loading",
+        "to": "settings-loading",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Demo: access is gone",
+        "to": "group-unavailable",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Return to Group Home",
+        "to": "group-home-boundary",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "danger",
+    "role": "owner",
+    "back": "group-home-boundary"
+  },
+  "group-unavailable": {
+    "code": "J26-S06",
+    "eyebrow": "Access changed",
+    "title": "This group is no longer available",
+    "lead": "ChopDot will not re-open cached settings after current access is gone.",
+    "facts": [
+      [
+        "Group write",
+        "None"
+      ],
+      [
+        "Cached access",
+        "Not restored"
+      ]
+    ],
+    "notice": "Return Home. If this is unexpected, recovery belongs outside this settings screen.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Go Home",
+        "to": "home-boundary",
+        "kind": "accent",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "member",
+    "back": "home-boundary"
+  },
+  "settings-overview-owner": {
+    "code": "J26-S07",
+    "eyebrow": "Zurich Weekend · owner",
+    "title": "Group settings",
+    "lead": "Change group identity and lifecycle without changing its money history.",
+    "facts": [
+      [
+        "Name",
+        "Zurich Weekend"
+      ],
+      [
+        "Future expense default",
+        "CHF"
+      ],
+      [
+        "Status",
+        "Active"
+      ],
+      [
+        "Members",
+        "4 active"
+      ],
+      [
+        "Open group items",
+        "Present; archive allowed, delete not yet"
+      ]
+    ],
+    "notice": "Archive is organization state only. Delete, leave and ownership changes have separate safeguards.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Rename group",
+        "to": "rename-edit",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Change future default",
+        "to": "config-edit",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Archive group",
+        "to": "archive-review",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Transfer ownership",
+        "to": "transfer-review",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Review leaving",
+        "to": "leave-owner-blocked",
+        "kind": "link",
+        "q": {}
+      },
+      {
+        "label": "Demo: role changed",
+        "to": "permission-changed",
+        "kind": "link",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Demo: settings changed elsewhere",
+        "to": "stale-settings",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "",
+    "role": "owner",
+    "back": "group-home-boundary"
+  },
+  "settings-overview-member": {
+    "code": "J26-S08",
+    "eyebrow": "Zurich Weekend · member",
+    "title": "Group settings",
+    "lead": "Owner-controlled settings are visible as context; your own leave flow stays separate.",
+    "facts": [
+      [
+        "Name",
+        "Zurich Weekend"
+      ],
+      [
+        "Future expense default",
+        "CHF"
+      ],
+      [
+        "Owner",
+        "Dev fixture"
+      ],
+      [
+        "Your role",
+        "Member"
+      ]
+    ],
+    "notice": "You cannot rename, configure, archive, transfer ownership or delete this group.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Review leaving group",
+        "to": "leave-review",
+        "kind": "accent",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Return to Group Home",
+        "to": "group-home-boundary",
+        "kind": "ghost",
+        "q": {
+          "role": "member"
+        }
+      }
+    ],
+    "status": "",
+    "role": "member",
+    "back": "group-home-boundary"
+  },
+  "permission-changed": {
+    "code": "J26-S09",
+    "eyebrow": "Permission changed",
+    "title": "Your owner action stopped",
+    "lead": "Fresh group truth says you are now a member, so the stale owner action was not applied.",
+    "facts": [
+      [
+        "Previous role",
+        "Owner"
+      ],
+      [
+        "Current role",
+        "Member"
+      ],
+      [
+        "Attempted write",
+        "Not applied"
+      ]
+    ],
+    "notice": "Permission is checked again before the effect; intent never outranks current authority.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Continue as member",
+        "to": "settings-overview-member",
+        "kind": "accent",
+        "q": {
+          "role": "member",
+          "owner": "jeanine"
+        }
+      },
+      {
+        "label": "Return to Group Home",
+        "to": "group-home-boundary",
+        "kind": "ghost",
+        "q": {
+          "role": "member",
+          "owner": "jeanine"
+        }
+      }
+    ],
+    "status": "warn",
+    "role": "member",
+    "back": "group-home-boundary"
+  },
+  "stale-settings": {
+    "code": "J26-S10",
+    "eyebrow": "Group changed",
+    "title": "Review the latest settings",
+    "lead": "The group version changed elsewhere, so this screen cannot authorize a stale write.",
+    "facts": [
+      [
+        "Your draft",
+        "Kept as context"
+      ],
+      [
+        "Current version",
+        "Newer than this screen"
+      ],
+      [
+        "Write",
+        "Not attempted"
+      ]
+    ],
+    "notice": "Refresh before reviewing any mutation.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Refresh settings",
+        "to": "settings-overview-owner",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Return to Group Home",
+        "to": "group-home-boundary",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "group-home-boundary"
+  },
+  "rename-edit": {
+    "code": "J26-S11",
+    "eyebrow": "Group name",
+    "title": "Rename the group",
+    "lead": "Only the current display name changes. Stable identity and historical facts do not.",
+    "facts": [
+      [
+        "Current name",
+        "Zurich Weekend"
+      ],
+      [
+        "Draft name",
+        "Zurich Long Weekend"
+      ],
+      [
+        "History / balances",
+        "Unchanged"
+      ]
+    ],
+    "notice": "The demo draft is deterministic; production text entry is not claimed.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Review new name",
+        "to": "rename-review",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Demo: empty name",
+        "to": "rename-invalid",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Cancel",
+        "to": "rename-cancelled",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "rename-invalid": {
+    "code": "J26-S12",
+    "eyebrow": "Name needed",
+    "title": "Enter a group name",
+    "lead": "An empty or whitespace-only name cannot be reviewed or saved.",
+    "facts": [
+      [
+        "Write",
+        "Not attempted"
+      ],
+      [
+        "Current name",
+        "Zurich Weekend"
+      ]
+    ],
+    "notice": "Fix the draft; no lifecycle effect occurred.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Fix name",
+        "to": "rename-edit",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Cancel",
+        "to": "rename-cancelled",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "danger",
+    "role": "owner",
+    "back": "rename-edit"
+  },
+  "rename-review": {
+    "code": "J26-S13",
+    "eyebrow": "Review rename",
+    "title": "Zurich Weekend → Zurich Long Weekend",
+    "lead": "Confirm the exact display-name change before the first effect.",
+    "facts": [
+      [
+        "Stable group id",
+        "Unchanged fixture id"
+      ],
+      [
+        "Expense / balance history",
+        "Unchanged"
+      ],
+      [
+        "Group version",
+        "G26-V1"
+      ]
+    ],
+    "notice": "If role or version changes now, this review becomes stale.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Save name",
+        "to": "rename-saving",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Demo: concurrent rename",
+        "to": "rename-conflict",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Demo: role changed",
+        "to": "permission-changed",
+        "kind": "link",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Cancel",
+        "to": "rename-cancelled",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "",
+    "role": "owner",
+    "back": "rename-edit"
+  },
+  "rename-saving": {
+    "code": "J26-S14",
+    "eyebrow": "Rename pending",
+    "title": "Saving the group name",
+    "lead": "The logical rename operation is in flight. Another save is disabled.",
+    "facts": [
+      [
+        "Operation",
+        "REN26-A"
+      ],
+      [
+        "Requested name",
+        "Zurich Long Weekend"
+      ],
+      [
+        "Result",
+        "Pending"
+      ]
+    ],
+    "notice": "Leaving this pending screen means the result must be reconciled before retry.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: accepted",
+        "to": "rename-success",
+        "kind": "accent",
+        "q": {
+          "name": "renamed"
+        }
+      },
+      {
+        "label": "Demo: known failure",
+        "to": "rename-failed",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Demo: result unknown",
+        "to": "rename-unknown",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "progress",
+    "role": "owner",
+    "back": "rename-unknown"
+  },
+  "rename-cancelled": {
+    "code": "J26-S15",
+    "eyebrow": "No change made",
+    "title": "Rename cancelled",
+    "lead": "You cancelled before the first effect.",
+    "facts": [
+      [
+        "Current name",
+        "Zurich Weekend"
+      ],
+      [
+        "Operation submitted",
+        "No"
+      ]
+    ],
+    "notice": "Cancelled is a verified no-effect outcome, not a success.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Edit again",
+        "to": "rename-edit",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "neutral",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "rename-failed": {
+    "code": "J26-S16",
+    "eyebrow": "Rename not saved",
+    "title": "The group name is still Zurich Weekend",
+    "lead": "The service rejected the operation before acceptance.",
+    "facts": [
+      [
+        "Operation",
+        "REN26-A"
+      ],
+      [
+        "Effect",
+        "Verified none"
+      ],
+      [
+        "Current name",
+        "Zurich Weekend"
+      ]
+    ],
+    "notice": "Because no effect is verified, retrying the same logical operation is safe.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Retry save",
+        "to": "rename-saving",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "danger",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "rename-unknown": {
+    "code": "J26-S17",
+    "eyebrow": "Result unknown",
+    "title": "Do not save again yet",
+    "lead": "ChopDot cannot currently prove whether REN26-A was accepted.",
+    "facts": [
+      [
+        "Requested name",
+        "Zurich Long Weekend"
+      ],
+      [
+        "Current name",
+        "Unknown until checked"
+      ],
+      [
+        "Retry",
+        "Blocked"
+      ]
+    ],
+    "notice": "Check the exact operation before any new rename effect.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check rename status",
+        "to": "rename-reconciling",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Return while checking",
+        "to": "rename-reconciling",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "rename-reconciling"
+  },
+  "rename-reconciling": {
+    "code": "J26-S18",
+    "eyebrow": "Checking REN26-A",
+    "title": "Reconciling rename",
+    "lead": "The existing operation is checked; no duplicate rename is created.",
+    "facts": [
+      [
+        "Operation",
+        "REN26-A"
+      ],
+      [
+        "New write",
+        "None"
+      ]
+    ],
+    "notice": "Use observed effect/no-effect truth, not the original intent.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Demo: accepted",
+        "to": "rename-success",
+        "kind": "accent",
+        "q": {
+          "name": "renamed"
+        }
+      },
+      {
+        "label": "Demo: verified no effect",
+        "to": "rename-no-effect-retry",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Still unresolved",
+        "to": "recovery-boundary",
+        "kind": "link",
+        "q": {
+          "op": "REN26-A"
+        }
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "rename-reconciling"
+  },
+  "rename-no-effect-retry": {
+    "code": "J26-S19",
+    "eyebrow": "Safe retry",
+    "title": "REN26-A had no effect",
+    "lead": "The exact operation is verified not accepted; the current name remains unchanged.",
+    "facts": [
+      [
+        "Current name",
+        "Zurich Weekend"
+      ],
+      [
+        "Retry identity",
+        "REN26-A"
+      ]
+    ],
+    "notice": "A retry reuses the logical operation instead of creating an unrelated duplicate.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Retry rename",
+        "to": "rename-saving",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "neutral",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "rename-success": {
+    "code": "J26-S20",
+    "eyebrow": "Verified result",
+    "title": "Group renamed",
+    "lead": "Zurich Long Weekend is now the observed display name.",
+    "facts": [
+      [
+        "New name",
+        "Zurich Long Weekend"
+      ],
+      [
+        "Stable group id",
+        "Unchanged"
+      ],
+      [
+        "Balances / history",
+        "Unchanged"
+      ]
+    ],
+    "notice": "Only display identity changed; no money or membership fact moved.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "accent",
+        "q": {
+          "name": "renamed"
+        }
+      },
+      {
+        "label": "Return to Group Home",
+        "to": "group-home-boundary",
+        "kind": "ghost",
+        "q": {
+          "name": "renamed"
+        }
+      }
+    ],
+    "status": "success",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "rename-conflict": {
+    "code": "J26-S21",
+    "eyebrow": "Concurrent edit",
+    "title": "The name changed elsewhere",
+    "lead": "This stale review was not submitted because the observed group version changed.",
+    "facts": [
+      [
+        "Your draft",
+        "Zurich Long Weekend"
+      ],
+      [
+        "Observed name",
+        "Zurich Weekenders"
+      ],
+      [
+        "Write",
+        "Not attempted"
+      ]
+    ],
+    "notice": "Refresh and decide again from current truth.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Refresh rename",
+        "to": "rename-edit",
+        "kind": "accent",
+        "q": {
+          "name": "conflict"
+        }
+      },
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "config-edit": {
+    "code": "J26-S22",
+    "eyebrow": "Future expense default",
+    "title": "Choose a default currency",
+    "lead": "This setting only preselects currency for expenses created after the accepted change.",
+    "facts": [
+      [
+        "Current default",
+        "CHF"
+      ],
+      [
+        "Proposed default",
+        "EUR"
+      ],
+      [
+        "Existing expenses",
+        "Stay in recorded currencies"
+      ]
+    ],
+    "notice": "No balance, settlement or historical amount is converted.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Review default change",
+        "to": "config-review",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Demo: setting changed elsewhere",
+        "to": "config-stale",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Cancel",
+        "to": "config-cancelled",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "config-review": {
+    "code": "J26-S23",
+    "eyebrow": "Review default",
+    "title": "CHF → EUR for future expenses",
+    "lead": "Confirm the narrow configuration effect.",
+    "facts": [
+      [
+        "Existing expenses",
+        "No conversion"
+      ],
+      [
+        "Balances",
+        "No recalculation"
+      ],
+      [
+        "Group version",
+        "G26-V1"
+      ]
+    ],
+    "notice": "This is a future-entry default, not a currency migration.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Save default",
+        "to": "config-saving",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Demo: version changed",
+        "to": "config-stale",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Demo: role changed",
+        "to": "permission-changed",
+        "kind": "link",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Cancel",
+        "to": "config-cancelled",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "",
+    "role": "owner",
+    "back": "config-edit"
+  },
+  "config-saving": {
+    "code": "J26-S24",
+    "eyebrow": "Configuration pending",
+    "title": "Saving future default",
+    "lead": "The stable config operation is in flight; duplicate save is disabled.",
+    "facts": [
+      [
+        "Operation",
+        "CFG26-A"
+      ],
+      [
+        "Requested default",
+        "EUR"
+      ],
+      [
+        "Result",
+        "Pending"
+      ]
+    ],
+    "notice": "An unknown result must be reconciled before retry.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: accepted",
+        "to": "config-success",
+        "kind": "accent",
+        "q": {
+          "currency": "EUR"
+        }
+      },
+      {
+        "label": "Demo: known failure",
+        "to": "config-failed",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Demo: result unknown",
+        "to": "config-unknown",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "progress",
+    "role": "owner",
+    "back": "config-unknown"
+  },
+  "config-failed": {
+    "code": "J26-S25",
+    "eyebrow": "Default not changed",
+    "title": "CHF is still the future default",
+    "lead": "The exact operation is verified not accepted.",
+    "facts": [
+      [
+        "Operation",
+        "CFG26-A"
+      ],
+      [
+        "Current default",
+        "CHF"
+      ],
+      [
+        "Historical records",
+        "Unchanged"
+      ]
+    ],
+    "notice": "Known no-effect means retry is safe.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Retry save",
+        "to": "config-saving",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "danger",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "config-unknown": {
+    "code": "J26-S26",
+    "eyebrow": "Result unknown",
+    "title": "Do not save the default again yet",
+    "lead": "ChopDot cannot prove whether CFG26-A was accepted.",
+    "facts": [
+      [
+        "Requested default",
+        "EUR"
+      ],
+      [
+        "Current default",
+        "Unknown until checked"
+      ],
+      [
+        "Retry",
+        "Blocked"
+      ]
+    ],
+    "notice": "Reconcile the exact operation first.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check config status",
+        "to": "config-reconciling",
+        "kind": "accent",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "config-reconciling"
+  },
+  "config-reconciling": {
+    "code": "J26-S27",
+    "eyebrow": "Checking CFG26-A",
+    "title": "Reconciling configuration",
+    "lead": "No new config write occurs while existing outcome truth is checked.",
+    "facts": [
+      [
+        "Operation",
+        "CFG26-A"
+      ],
+      [
+        "New write",
+        "None"
+      ]
+    ],
+    "notice": "Observed state decides the next action.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Demo: accepted",
+        "to": "config-success",
+        "kind": "accent",
+        "q": {
+          "currency": "EUR"
+        }
+      },
+      {
+        "label": "Demo: verified no effect",
+        "to": "config-no-effect-retry",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Still unresolved",
+        "to": "recovery-boundary",
+        "kind": "link",
+        "q": {
+          "op": "CFG26-A"
+        }
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "config-reconciling"
+  },
+  "config-no-effect-retry": {
+    "code": "J26-S28",
+    "eyebrow": "Safe retry",
+    "title": "CFG26-A had no effect",
+    "lead": "CHF is observed unchanged and the same logical operation may retry.",
+    "facts": [
+      [
+        "Current default",
+        "CHF"
+      ],
+      [
+        "Retry identity",
+        "CFG26-A"
+      ]
+    ],
+    "notice": "Historical expense facts remain unchanged.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Retry config",
+        "to": "config-saving",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "neutral",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "config-success": {
+    "code": "J26-S29",
+    "eyebrow": "Verified result",
+    "title": "Future default is EUR",
+    "lead": "New expense entry may now preselect EUR; old records remain exactly as recorded.",
+    "facts": [
+      [
+        "Future default",
+        "EUR"
+      ],
+      [
+        "Old expenses",
+        "Not converted"
+      ],
+      [
+        "Balances",
+        "Not recalculated"
+      ]
+    ],
+    "notice": "Configuration does not rewrite financial history.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "accent",
+        "q": {
+          "currency": "EUR"
+        }
+      },
+      {
+        "label": "Return to Group Home",
+        "to": "group-home-boundary",
+        "kind": "ghost",
+        "q": {
+          "currency": "EUR"
+        }
+      }
+    ],
+    "status": "success",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "config-stale": {
+    "code": "J26-S30",
+    "eyebrow": "Setting changed",
+    "title": "Review the current default first",
+    "lead": "Another change updated the group/default version before this effect.",
+    "facts": [
+      [
+        "Your proposed default",
+        "EUR"
+      ],
+      [
+        "Observed default",
+        "USD fixture"
+      ],
+      [
+        "Write",
+        "Not attempted"
+      ]
+    ],
+    "notice": "Refresh before deciding again; never overwrite a newer setting silently.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Refresh configuration",
+        "to": "config-edit",
+        "kind": "accent",
+        "q": {
+          "currency": "USD"
+        }
+      },
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "config-cancelled": {
+    "code": "J26-S31",
+    "eyebrow": "No change made",
+    "title": "Default change cancelled",
+    "lead": "You cancelled before the first effect.",
+    "facts": [
+      [
+        "Future default",
+        "CHF"
+      ],
+      [
+        "Operation submitted",
+        "No"
+      ]
+    ],
+    "notice": "No financial or configuration fact changed.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Edit again",
+        "to": "config-edit",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "neutral",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "archive-review": {
+    "code": "J26-S32",
+    "eyebrow": "Archive group",
+    "title": "Retire this group from active use",
+    "lead": "Archive is reversible organization state; it is not settlement or deletion.",
+    "facts": [
+      [
+        "Active list",
+        "Group will be hidden"
+      ],
+      [
+        "New expenses / invites",
+        "Unavailable while archived"
+      ],
+      [
+        "History / positions",
+        "Remain readable"
+      ],
+      [
+        "Outstanding positions",
+        "Remain outstanding"
+      ]
+    ],
+    "notice": "You can restore the group later. Existing money truth is preserved.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Continue to confirmation",
+        "to": "archive-confirm",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Cancel archive",
+        "to": "archive-cancelled",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Demo: role changed",
+        "to": "permission-changed",
+        "kind": "link",
+        "q": {
+          "role": "member"
+        }
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "archive-confirm": {
+    "code": "J26-S33",
+    "eyebrow": "Confirm archive",
+    "title": "Archive Zurich Weekend?",
+    "lead": "One more confirmation separates the impact review from the first effect.",
+    "facts": [
+      [
+        "Group status",
+        "Active → Archived"
+      ],
+      [
+        "Ledger / history",
+        "Unchanged"
+      ],
+      [
+        "Reversible",
+        "Yes"
+      ]
+    ],
+    "notice": "Archiving does not say everyone is square.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Archive group",
+        "to": "archiving",
+        "kind": "danger",
+        "q": {}
+      },
+      {
+        "label": "Cancel",
+        "to": "archive-cancelled",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "archive-review"
+  },
+  "archiving": {
+    "code": "J26-S34",
+    "eyebrow": "Archive pending",
+    "title": "Archiving the group",
+    "lead": "The lifecycle operation is in flight; duplicate archive is disabled.",
+    "facts": [
+      [
+        "Operation",
+        "ARC26-A"
+      ],
+      [
+        "Result",
+        "Pending"
+      ],
+      [
+        "Money effect",
+        "None"
+      ]
+    ],
+    "notice": "If the result becomes unknown, reconcile ARC26-A before retry.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: accepted",
+        "to": "archived",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Demo: known failure",
+        "to": "archive-failed",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Demo: result unknown",
+        "to": "archive-unknown",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "progress",
+    "role": "owner",
+    "back": "archive-unknown"
+  },
+  "archive-cancelled": {
+    "code": "J26-S35",
+    "eyebrow": "No change made",
+    "title": "Archive cancelled",
+    "lead": "You cancelled before the archive effect.",
+    "facts": [
+      [
+        "Group status",
+        "Active"
+      ],
+      [
+        "Operation submitted",
+        "No"
+      ]
+    ],
+    "notice": "Cancelled is neutral no-effect truth, not verified success.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Review archive again",
+        "to": "archive-review",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "neutral",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "archive-failed": {
+    "code": "J26-S36",
+    "eyebrow": "Archive not applied",
+    "title": "The group is still active",
+    "lead": "ARC26-A is verified not accepted.",
+    "facts": [
+      [
+        "Group status",
+        "Active"
+      ],
+      [
+        "Operation",
+        "ARC26-A"
+      ],
+      [
+        "Money / history",
+        "Unchanged"
+      ]
+    ],
+    "notice": "No effect is verified, so retry can reuse the logical operation.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Retry archive",
+        "to": "archiving",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "danger",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "archive-unknown": {
+    "code": "J26-S37",
+    "eyebrow": "Result unknown",
+    "title": "Active or archived is not known yet",
+    "lead": "The UI will not guess the lifecycle status from intent.",
+    "facts": [
+      [
+        "Operation",
+        "ARC26-A"
+      ],
+      [
+        "Status",
+        "Unknown until checked"
+      ],
+      [
+        "Retry",
+        "Blocked"
+      ]
+    ],
+    "notice": "Reconcile before another archive/unarchive write.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check archive status",
+        "to": "archive-reconciling",
+        "kind": "accent",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "archive-reconciling"
+  },
+  "archive-reconciling": {
+    "code": "J26-S38",
+    "eyebrow": "Checking ARC26-A",
+    "title": "Reconciling archive",
+    "lead": "The existing lifecycle operation is checked with no duplicate write.",
+    "facts": [
+      [
+        "Operation",
+        "ARC26-A"
+      ],
+      [
+        "New write",
+        "None"
+      ]
+    ],
+    "notice": "Observed status decides whether to reuse success or permit retry.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Demo: archived",
+        "to": "archived",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Demo: verified no effect",
+        "to": "archive-no-effect-retry",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Still unresolved",
+        "to": "recovery-boundary",
+        "kind": "link",
+        "q": {
+          "op": "ARC26-A"
+        }
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "archive-reconciling"
+  },
+  "archive-no-effect-retry": {
+    "code": "J26-S39",
+    "eyebrow": "Safe retry",
+    "title": "ARC26-A had no effect",
+    "lead": "The group is observed active and the same logical archive may retry.",
+    "facts": [
+      [
+        "Group status",
+        "Active"
+      ],
+      [
+        "Retry identity",
+        "ARC26-A"
+      ]
+    ],
+    "notice": "Nothing was settled, deleted or rewritten.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Retry archive",
+        "to": "archiving",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "neutral",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "archived": {
+    "code": "J26-S40",
+    "eyebrow": "Archived",
+    "title": "Zurich Weekend is out of the active list",
+    "lead": "History and outstanding positions remain readable; new expense/invite creation is unavailable in this fixture.",
+    "facts": [
+      [
+        "Group status",
+        "Archived"
+      ],
+      [
+        "Outstanding positions",
+        "Still true"
+      ],
+      [
+        "History",
+        "Preserved"
+      ],
+      [
+        "Deletion eligibility",
+        "Requires sole member + no open items"
+      ]
+    ],
+    "notice": "Archive is reversible and does not mean settled or deleted.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Restore active status",
+        "to": "unarchive-review",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Review deletion",
+        "to": "delete-review",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Resolve outstanding items",
+        "to": "money-resolution-boundary",
+        "kind": "link",
+        "q": {}
+      },
+      {
+        "label": "Return to Group Home",
+        "to": "group-home-boundary",
+        "kind": "link",
+        "q": {
+          "archived": "1"
+        }
+      }
+    ],
+    "status": "success",
+    "role": "owner",
+    "back": "group-home-boundary"
+  },
+  "unarchive-review": {
+    "code": "J26-S41",
+    "eyebrow": "Restore group",
+    "title": "Make Zurich Weekend active again",
+    "lead": "Restoring active status re-enables future group activity without rewriting history.",
+    "facts": [
+      [
+        "Current status",
+        "Archived"
+      ],
+      [
+        "Target status",
+        "Active"
+      ],
+      [
+        "History / balances",
+        "Unchanged"
+      ]
+    ],
+    "notice": "This is not a restore-from-backup operation; it is a lifecycle status change.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Restore active group",
+        "to": "unarchiving",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Cancel",
+        "to": "unarchive-cancelled",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "",
+    "role": "owner",
+    "back": "archived"
+  },
+  "unarchiving": {
+    "code": "J26-S42",
+    "eyebrow": "Restore pending",
+    "title": "Restoring active status",
+    "lead": "The unarchive operation is in flight; duplicate status changes are disabled.",
+    "facts": [
+      [
+        "Operation",
+        "UNA26-A"
+      ],
+      [
+        "Result",
+        "Pending"
+      ]
+    ],
+    "notice": "Unknown result must be checked before another lifecycle write.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: accepted",
+        "to": "active-restored",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Demo: known failure",
+        "to": "unarchive-failed",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Demo: result unknown",
+        "to": "unarchive-unknown",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "progress",
+    "role": "owner",
+    "back": "unarchive-unknown"
+  },
+  "unarchive-unknown": {
+    "code": "J26-S43",
+    "eyebrow": "Result unknown",
+    "title": "Active status is not known yet",
+    "lead": "ChopDot will not assume the restore worked.",
+    "facts": [
+      [
+        "Operation",
+        "UNA26-A"
+      ],
+      [
+        "Retry",
+        "Blocked"
+      ]
+    ],
+    "notice": "Reconcile the exact unarchive operation.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check restore status",
+        "to": "unarchive-reconciling",
+        "kind": "accent",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "unarchive-reconciling"
+  },
+  "unarchive-reconciling": {
+    "code": "J26-S44",
+    "eyebrow": "Checking UNA26-A",
+    "title": "Reconciling active status",
+    "lead": "No new unarchive operation occurs while the original result is checked.",
+    "facts": [
+      [
+        "Operation",
+        "UNA26-A"
+      ],
+      [
+        "New write",
+        "None"
+      ]
+    ],
+    "notice": "Observed status decides the next safe step.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Demo: active",
+        "to": "active-restored",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Demo: verified no effect",
+        "to": "unarchive-failed",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Still unresolved",
+        "to": "recovery-boundary",
+        "kind": "link",
+        "q": {
+          "op": "UNA26-A"
+        }
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "unarchive-reconciling"
+  },
+  "active-restored": {
+    "code": "J26-S45",
+    "eyebrow": "Verified result",
+    "title": "Zurich Weekend is active again",
+    "lead": "Active-group status is observed; historical facts remain unchanged.",
+    "facts": [
+      [
+        "Group status",
+        "Active"
+      ],
+      [
+        "History / balances",
+        "Unchanged"
+      ],
+      [
+        "New expense/invite entry",
+        "Available through owning journeys"
+      ]
+    ],
+    "notice": "Only lifecycle status changed.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Return to Group Home",
+        "to": "group-home-boundary",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "success",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "unarchive-failed": {
+    "code": "J26-S76",
+    "eyebrow": "Restore not applied",
+    "title": "The group is still archived",
+    "lead": "UNA26-A is verified to have had no effect.",
+    "facts": [
+      [
+        "Group status",
+        "Archived"
+      ],
+      [
+        "Operation",
+        "UNA26-A"
+      ],
+      [
+        "History / balances",
+        "Unchanged"
+      ]
+    ],
+    "notice": "Because no effect is verified, retry is safe.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Retry restore",
+        "to": "unarchiving",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Back to archived group",
+        "to": "archived",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "danger",
+    "role": "owner",
+    "back": "archived"
+  },
+  "unarchive-cancelled": {
+    "code": "J26-S77",
+    "eyebrow": "No change made",
+    "title": "Restore cancelled",
+    "lead": "You cancelled before the unarchive effect.",
+    "facts": [
+      [
+        "Group status",
+        "Archived"
+      ],
+      [
+        "Operation submitted",
+        "No"
+      ]
+    ],
+    "notice": "The archived group remains exactly as it was.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Back to archived group",
+        "to": "archived",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Review restore again",
+        "to": "unarchive-review",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "neutral",
+    "role": "owner",
+    "back": "archived"
+  },
+  "transfer-review": {
+    "code": "J26-S46",
+    "eyebrow": "Ownership",
+    "title": "Transfer ownership",
+    "lead": "Choose an already-active member; roster editing itself remains Manage People.",
+    "facts": [
+      [
+        "Current owner",
+        "You"
+      ],
+      [
+        "Eligible fixture member",
+        "Jeanine"
+      ],
+      [
+        "Balances / history",
+        "Unchanged"
+      ],
+      [
+        "Your role after success",
+        "Member"
+      ]
+    ],
+    "notice": "Transfer changes group ownership only. It does not move money, payment preferences, or account authority.",
+    "tone": "accent",
+    "actions": [
+      {
+        "label": "Review transfer to Jeanine",
+        "to": "transfer-confirm",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Manage eligible members",
+        "to": "manage-people-boundary",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Cancel",
+        "to": "transfer-cancelled",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "transfer-confirm": {
+    "code": "J26-S47",
+    "eyebrow": "Confirm ownership",
+    "title": "Make Jeanine the owner?",
+    "lead": "After verified success you become a regular member of this group.",
+    "facts": [
+      [
+        "Current owner",
+        "You"
+      ],
+      [
+        "New owner",
+        "Jeanine"
+      ],
+      [
+        "Ledger / history",
+        "Unchanged"
+      ]
+    ],
+    "notice": "If the result is unknown, owner truth must be reconciled before leaving/deleting.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Transfer ownership",
+        "to": "transfer-saving",
+        "kind": "danger",
+        "q": {}
+      },
+      {
+        "label": "Cancel",
+        "to": "transfer-cancelled",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "transfer-review"
+  },
+  "transfer-saving": {
+    "code": "J26-S48",
+    "eyebrow": "Transfer pending",
+    "title": "Changing group ownership",
+    "lead": "The stable transfer operation is in flight. No second transfer is allowed.",
+    "facts": [
+      [
+        "Operation",
+        "OWN26-A"
+      ],
+      [
+        "Target owner",
+        "Jeanine"
+      ],
+      [
+        "Result",
+        "Pending"
+      ]
+    ],
+    "notice": "Do not act as member or owner based on intent alone.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: accepted",
+        "to": "transfer-success",
+        "kind": "accent",
+        "q": {
+          "role": "member",
+          "owner": "jeanine"
+        }
+      },
+      {
+        "label": "Demo: known failure",
+        "to": "transfer-failed",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Demo: result unknown",
+        "to": "transfer-unknown",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "progress",
+    "role": "owner",
+    "back": "transfer-unknown"
+  },
+  "transfer-failed": {
+    "code": "J26-S49",
+    "eyebrow": "Transfer not applied",
+    "title": "You are still the owner",
+    "lead": "OWN26-A is verified not accepted.",
+    "facts": [
+      [
+        "Current owner",
+        "You"
+      ],
+      [
+        "Target owner",
+        "Jeanine"
+      ],
+      [
+        "Effect",
+        "Verified none"
+      ]
+    ],
+    "notice": "Retry is safe because owner truth is observed unchanged.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Retry transfer",
+        "to": "transfer-saving",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "danger",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "transfer-unknown": {
+    "code": "J26-S50",
+    "eyebrow": "Result unknown",
+    "title": "Owner identity must be checked",
+    "lead": "ChopDot cannot prove whether OWN26-A was accepted.",
+    "facts": [
+      [
+        "Operation",
+        "OWN26-A"
+      ],
+      [
+        "Owner",
+        "Unknown until checked"
+      ],
+      [
+        "Leave / delete",
+        "Blocked"
+      ]
+    ],
+    "notice": "Reconcile before any authority-dependent action.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check ownership status",
+        "to": "transfer-reconciling",
+        "kind": "accent",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "transfer-reconciling"
+  },
+  "transfer-reconciling": {
+    "code": "J26-S51",
+    "eyebrow": "Checking OWN26-A",
+    "title": "Reconciling ownership",
+    "lead": "No duplicate transfer is created while owner truth is observed.",
+    "facts": [
+      [
+        "Operation",
+        "OWN26-A"
+      ],
+      [
+        "New write",
+        "None"
+      ]
+    ],
+    "notice": "Use the observed owner state, not the requested state.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Demo: Jeanine is owner",
+        "to": "transfer-success",
+        "kind": "accent",
+        "q": {
+          "role": "member",
+          "owner": "jeanine"
+        }
+      },
+      {
+        "label": "Demo: verified no effect",
+        "to": "transfer-failed",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Still unresolved",
+        "to": "recovery-boundary",
+        "kind": "link",
+        "q": {
+          "op": "OWN26-A"
+        }
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "transfer-reconciling"
+  },
+  "transfer-success": {
+    "code": "J26-S52",
+    "eyebrow": "Verified result",
+    "title": "Jeanine is now the owner",
+    "lead": "Your role is now member. Balances, history and payment preferences are unchanged.",
+    "facts": [
+      [
+        "Owner",
+        "Jeanine"
+      ],
+      [
+        "Your role",
+        "Member"
+      ],
+      [
+        "Money / history",
+        "Unchanged"
+      ]
+    ],
+    "notice": "Owner authority changed only after the accepted result was observed.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Continue as member",
+        "to": "settings-overview-member",
+        "kind": "accent",
+        "q": {
+          "role": "member",
+          "owner": "jeanine"
+        }
+      },
+      {
+        "label": "Return to Group Home",
+        "to": "group-home-boundary",
+        "kind": "ghost",
+        "q": {
+          "role": "member",
+          "owner": "jeanine"
+        }
+      }
+    ],
+    "status": "success",
+    "role": "member",
+    "back": "settings-overview-member"
+  },
+  "transfer-cancelled": {
+    "code": "J26-S78",
+    "eyebrow": "No change made",
+    "title": "Ownership transfer cancelled",
+    "lead": "You cancelled before the transfer effect.",
+    "facts": [
+      [
+        "Owner",
+        "You"
+      ],
+      [
+        "Operation submitted",
+        "No"
+      ]
+    ],
+    "notice": "No role or membership changed.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Review transfer again",
+        "to": "transfer-review",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "neutral",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "leave-review": {
+    "code": "J26-S53",
+    "eyebrow": "Leave group",
+    "title": "Check what stays true",
+    "lead": "Leaving removes your future access; it never erases historical attribution or open money facts.",
+    "facts": [
+      [
+        "Your role",
+        "Member"
+      ],
+      [
+        "Open items involving you",
+        "None in primary fixture"
+      ],
+      [
+        "Historical attribution",
+        "Preserved"
+      ]
+    ],
+    "notice": "If open or unresolved items exist, leave is blocked until their owning journey resolves them.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Continue to leave",
+        "to": "leave-confirm",
+        "kind": "accent",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Demo: open items exist",
+        "to": "leave-blocked-open-items",
+        "kind": "ghost",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Cancel",
+        "to": "settings-overview-member",
+        "kind": "link",
+        "q": {
+          "role": "member"
+        }
+      }
+    ],
+    "status": "warn",
+    "role": "member",
+    "back": "settings-overview-member"
+  },
+  "leave-blocked-open-items": {
+    "code": "J26-S54",
+    "eyebrow": "Leave blocked",
+    "title": "Resolve open items first",
+    "lead": "J26 will not clear or forgive an unresolved item to make leaving possible.",
+    "facts": [
+      [
+        "Open item fixture",
+        "Dinner review / CHF position"
+      ],
+      [
+        "Membership",
+        "Still active"
+      ],
+      [
+        "Ledger edit by J26",
+        "None"
+      ]
+    ],
+    "notice": "Resolve the item through its existing owner, then return to current settings truth.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Resolve open items",
+        "to": "money-resolution-boundary",
+        "kind": "accent",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-member",
+        "kind": "ghost",
+        "q": {
+          "role": "member"
+        }
+      }
+    ],
+    "status": "warn",
+    "role": "member",
+    "back": "settings-overview-member"
+  },
+  "leave-owner-blocked": {
+    "code": "J26-S55",
+    "eyebrow": "Owner cannot leave yet",
+    "title": "Transfer ownership first",
+    "lead": "The current owner cannot disappear without an explicit successor.",
+    "facts": [
+      [
+        "Your role",
+        "Owner"
+      ],
+      [
+        "Eligible successor",
+        "Jeanine fixture"
+      ],
+      [
+        "Automatic promotion",
+        "Never"
+      ]
+    ],
+    "notice": "Transfer ownership to an active member, then the new member role can use leave.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Transfer ownership",
+        "to": "transfer-review",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Manage members",
+        "to": "manage-people-boundary",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-owner",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "settings-overview-owner"
+  },
+  "leave-confirm": {
+    "code": "J26-S56",
+    "eyebrow": "Confirm leave",
+    "title": "Leave Zurich Weekend?",
+    "lead": "After verified success this account loses future access to the group.",
+    "facts": [
+      [
+        "Membership",
+        "Will be removed"
+      ],
+      [
+        "Historical attribution",
+        "Preserved"
+      ],
+      [
+        "Ledger facts",
+        "Unchanged"
+      ]
+    ],
+    "notice": "This does not delete the group for other members.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Leave group",
+        "to": "leaving",
+        "kind": "danger",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Cancel",
+        "to": "leave-cancelled",
+        "kind": "ghost",
+        "q": {
+          "role": "member"
+        }
+      }
+    ],
+    "status": "warn",
+    "role": "member",
+    "back": "leave-review"
+  },
+  "leaving": {
+    "code": "J26-S57",
+    "eyebrow": "Leave pending",
+    "title": "Leaving the group",
+    "lead": "The stable leave operation is in flight; duplicate leave is disabled.",
+    "facts": [
+      [
+        "Operation",
+        "LEV26-A"
+      ],
+      [
+        "Result",
+        "Pending"
+      ],
+      [
+        "Ledger mutation",
+        "None"
+      ]
+    ],
+    "notice": "If result is unknown, reconcile before showing or hiding group access as fact.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: accepted",
+        "to": "left-group",
+        "kind": "accent",
+        "q": {
+          "role": "member",
+          "terminal": "left"
+        }
+      },
+      {
+        "label": "Demo: known failure",
+        "to": "leave-failed",
+        "kind": "ghost",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Demo: result unknown",
+        "to": "leave-unknown",
+        "kind": "link",
+        "q": {
+          "role": "member"
+        }
+      }
+    ],
+    "status": "progress",
+    "role": "member",
+    "back": "leave-unknown"
+  },
+  "leave-cancelled": {
+    "code": "J26-S58",
+    "eyebrow": "No change made",
+    "title": "Leave cancelled",
+    "lead": "You cancelled before the leave effect.",
+    "facts": [
+      [
+        "Membership",
+        "Still active"
+      ],
+      [
+        "Operation submitted",
+        "No"
+      ]
+    ],
+    "notice": "Historical and current group access remain unchanged.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-member",
+        "kind": "accent",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Review leave again",
+        "to": "leave-review",
+        "kind": "ghost",
+        "q": {
+          "role": "member"
+        }
+      }
+    ],
+    "status": "neutral",
+    "role": "member",
+    "back": "settings-overview-member"
+  },
+  "leave-failed": {
+    "code": "J26-S59",
+    "eyebrow": "Leave not applied",
+    "title": "You are still a member",
+    "lead": "LEV26-A is verified not accepted.",
+    "facts": [
+      [
+        "Membership",
+        "Active"
+      ],
+      [
+        "Operation",
+        "LEV26-A"
+      ],
+      [
+        "Effect",
+        "Verified none"
+      ]
+    ],
+    "notice": "Retry is safe only because the original operation had no effect.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Retry leave",
+        "to": "leaving",
+        "kind": "accent",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Back to settings",
+        "to": "settings-overview-member",
+        "kind": "ghost",
+        "q": {
+          "role": "member"
+        }
+      }
+    ],
+    "status": "danger",
+    "role": "member",
+    "back": "settings-overview-member"
+  },
+  "leave-unknown": {
+    "code": "J26-S60",
+    "eyebrow": "Result unknown",
+    "title": "Group access must be checked",
+    "lead": "The UI will not guess whether your membership was removed.",
+    "facts": [
+      [
+        "Operation",
+        "LEV26-A"
+      ],
+      [
+        "Membership",
+        "Unknown until checked"
+      ],
+      [
+        "Retry",
+        "Blocked"
+      ]
+    ],
+    "notice": "Reconcile before exposing stale group access or trying to leave again.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check leave status",
+        "to": "leave-reconciling",
+        "kind": "accent",
+        "q": {
+          "role": "member"
+        }
+      }
+    ],
+    "status": "warn",
+    "role": "member",
+    "back": "leave-reconciling"
+  },
+  "leave-reconciling": {
+    "code": "J26-S61",
+    "eyebrow": "Checking LEV26-A",
+    "title": "Reconciling membership",
+    "lead": "No duplicate leave is created while the exact result is checked.",
+    "facts": [
+      [
+        "Operation",
+        "LEV26-A"
+      ],
+      [
+        "Ledger mutation",
+        "None"
+      ]
+    ],
+    "notice": "Observed membership truth decides the next route.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Demo: leave accepted",
+        "to": "left-group",
+        "kind": "accent",
+        "q": {
+          "role": "member",
+          "terminal": "left"
+        }
+      },
+      {
+        "label": "Demo: verified no effect",
+        "to": "leave-failed",
+        "kind": "ghost",
+        "q": {
+          "role": "member"
+        }
+      },
+      {
+        "label": "Still unresolved",
+        "to": "recovery-boundary",
+        "kind": "link",
+        "q": {
+          "role": "member",
+          "op": "LEV26-A"
+        }
+      }
+    ],
+    "status": "warn",
+    "role": "member",
+    "back": "leave-reconciling"
+  },
+  "left-group": {
+    "code": "J26-S62",
+    "eyebrow": "Verified result",
+    "title": "You left Zurich Weekend",
+    "lead": "Future group access is removed for this account; historical attribution and ledger facts remain.",
+    "facts": [
+      [
+        "Membership",
+        "Removed"
+      ],
+      [
+        "Group for other members",
+        "Unchanged"
+      ],
+      [
+        "History / ledger",
+        "Preserved"
+      ]
+    ],
+    "notice": "Back must not re-expose the group after verified leave.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Go Home",
+        "to": "home-boundary",
+        "kind": "accent",
+        "q": {
+          "role": "member",
+          "result": "left"
+        }
+      }
+    ],
+    "status": "success",
+    "role": "member",
+    "back": "home-boundary"
+  },
+  "delete-review": {
+    "code": "J26-S63",
+    "eyebrow": "Delete group",
+    "title": "Deletion has strict prerequisites",
+    "lead": "This effect removes the archived group workspace from this ChopDot working state only.",
+    "facts": [
+      [
+        "Required status",
+        "Archived"
+      ],
+      [
+        "Active members required",
+        "Only current owner"
+      ],
+      [
+        "Open items required",
+        "None"
+      ],
+      [
+        "External copies",
+        "Not claimed erased"
+      ]
+    ],
+    "notice": "Deletion is not settlement, member removal, provider cleanup, or universal erasure.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Other active members remain",
+        "to": "delete-blocked-active-members",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Manage members first",
+        "to": "manage-people-boundary",
+        "kind": "ghost",
+        "q": {
+          "return": "delete"
+        }
+      },
+      {
+        "label": "Open items remain",
+        "to": "delete-blocked-open-items",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Resolve open items",
+        "to": "money-resolution-boundary",
+        "kind": "ghost",
+        "q": {
+          "return": "delete"
+        }
+      },
+      {
+        "label": "Cancel",
+        "to": "archived",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "danger",
+    "role": "owner",
+    "back": "archived"
+  },
+  "delete-blocked-active-members": {
+    "code": "J26-S64",
+    "eyebrow": "Delete blocked",
+    "title": "Other active members remain",
+    "lead": "J26 cannot remove people as a side effect of delete.",
+    "facts": [
+      [
+        "Active members",
+        "4 fixture members"
+      ],
+      [
+        "Delete operation",
+        "Not available"
+      ],
+      [
+        "Ledger / history",
+        "Unchanged"
+      ]
+    ],
+    "notice": "Manage membership through Journey 09, then re-check deletion prerequisites.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Manage members",
+        "to": "manage-people-boundary",
+        "kind": "accent",
+        "q": {
+          "return": "delete"
+        }
+      },
+      {
+        "label": "Back to archived group",
+        "to": "archived",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "archived"
+  },
+  "delete-blocked-open-items": {
+    "code": "J26-S65",
+    "eyebrow": "Delete blocked",
+    "title": "Open items remain",
+    "lead": "Deleting the workspace cannot erase unresolved money or issue truth.",
+    "facts": [
+      [
+        "Open items",
+        "Present fixture"
+      ],
+      [
+        "Delete operation",
+        "Not available"
+      ],
+      [
+        "Ledger edit by J26",
+        "None"
+      ]
+    ],
+    "notice": "Resolve through the owning money/issue journey, then re-check current group truth.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Resolve open items",
+        "to": "money-resolution-boundary",
+        "kind": "accent",
+        "q": {
+          "return": "delete"
+        }
+      },
+      {
+        "label": "Back to archived group",
+        "to": "archived",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "archived"
+  },
+  "delete-type-confirm": {
+    "code": "J26-S66",
+    "eyebrow": "Type to confirm",
+    "title": "Type “Zurich Weekend”",
+    "lead": "The exact group name is required before the separate final review.",
+    "facts": [
+      [
+        "Group status",
+        "Archived"
+      ],
+      [
+        "Active members",
+        "Owner only"
+      ],
+      [
+        "Open items",
+        "None"
+      ]
+    ],
+    "notice": "Typing the name does not delete anything; the first effect is still one screen away.",
+    "tone": "danger",
+    "actions": [],
+    "status": "deleteInput",
+    "role": "owner",
+    "back": "delete-review"
+  },
+  "delete-mismatch": {
+    "code": "J26-S67",
+    "eyebrow": "Name does not match",
+    "title": "Deletion is still locked",
+    "lead": "The typed value did not exactly match Zurich Weekend.",
+    "facts": [
+      [
+        "Delete operation",
+        "Not attempted"
+      ],
+      [
+        "Group status",
+        "Archived"
+      ]
+    ],
+    "notice": "Return and type the exact group name if you still intend to continue.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Try again",
+        "to": "delete-type-confirm",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Cancel deletion",
+        "to": "archived",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "danger",
+    "role": "owner",
+    "back": "delete-type-confirm"
+  },
+  "delete-final-review": {
+    "code": "J26-S68",
+    "eyebrow": "Final review",
+    "title": "Delete Zurich Weekend from this ChopDot state?",
+    "lead": "This is the last screen before the irreversible in-product delete effect.",
+    "facts": [
+      [
+        "Group status",
+        "Archived"
+      ],
+      [
+        "Active members",
+        "Owner only"
+      ],
+      [
+        "Open items",
+        "None"
+      ],
+      [
+        "External/exported copies",
+        "Not erased by this effect"
+      ]
+    ],
+    "notice": "After verified success the group will no longer be available in this working state.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Delete group",
+        "to": "deleting",
+        "kind": "danger",
+        "q": {}
+      },
+      {
+        "label": "Cancel",
+        "to": "delete-cancelled",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "danger",
+    "role": "owner",
+    "back": "delete-type-confirm"
+  },
+  "deleting": {
+    "code": "J26-S69",
+    "eyebrow": "Delete pending",
+    "title": "Deleting the group workspace",
+    "lead": "The stable delete operation is in flight; duplicate delete is disabled.",
+    "facts": [
+      [
+        "Operation",
+        "DEL26-A"
+      ],
+      [
+        "Result",
+        "Pending"
+      ],
+      [
+        "External erasure",
+        "Not claimed"
+      ]
+    ],
+    "notice": "Unknown result must reconcile before retry or before the UI claims the group is gone.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: accepted",
+        "to": "deleted",
+        "kind": "accent",
+        "q": {
+          "terminal": "deleted"
+        }
+      },
+      {
+        "label": "Demo: known failure",
+        "to": "delete-failed",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Demo: result unknown",
+        "to": "delete-unknown",
+        "kind": "link",
+        "q": {}
+      }
+    ],
+    "status": "progress",
+    "role": "owner",
+    "back": "delete-unknown"
+  },
+  "delete-cancelled": {
+    "code": "J26-S70",
+    "eyebrow": "No change made",
+    "title": "Deletion cancelled",
+    "lead": "You cancelled before the delete effect.",
+    "facts": [
+      [
+        "Group status",
+        "Archived"
+      ],
+      [
+        "Operation submitted",
+        "No"
+      ]
+    ],
+    "notice": "The group remains archived. Cancelled is not success.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Back to archived group",
+        "to": "archived",
+        "kind": "accent",
+        "q": {}
+      },
+      {
+        "label": "Review deletion again",
+        "to": "delete-review",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "neutral",
+    "role": "owner",
+    "back": "archived"
+  },
+  "delete-failed": {
+    "code": "J26-S71",
+    "eyebrow": "Delete not applied",
+    "title": "The archived group still exists",
+    "lead": "DEL26-A is verified not accepted.",
+    "facts": [
+      [
+        "Group status",
+        "Archived"
+      ],
+      [
+        "Operation",
+        "DEL26-A"
+      ],
+      [
+        "Effect",
+        "Verified none"
+      ]
+    ],
+    "notice": "Because no effect is verified, safe retry can reuse the logical operation.",
+    "tone": "danger",
+    "actions": [
+      {
+        "label": "Retry delete",
+        "to": "deleting",
+        "kind": "danger",
+        "q": {}
+      },
+      {
+        "label": "Back to archived group",
+        "to": "archived",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "danger",
+    "role": "owner",
+    "back": "archived"
+  },
+  "delete-unknown": {
+    "code": "J26-S72",
+    "eyebrow": "Result unknown",
+    "title": "Do not delete again yet",
+    "lead": "The UI cannot prove whether DEL26-A removed the group workspace.",
+    "facts": [
+      [
+        "Operation",
+        "DEL26-A"
+      ],
+      [
+        "Group presence",
+        "Unknown until checked"
+      ],
+      [
+        "Retry",
+        "Blocked"
+      ]
+    ],
+    "notice": "Reconcile the exact delete operation first.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Check deletion status",
+        "to": "delete-reconciling",
+        "kind": "accent",
+        "q": {}
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "delete-reconciling"
+  },
+  "delete-reconciling": {
+    "code": "J26-S73",
+    "eyebrow": "Checking DEL26-A",
+    "title": "Reconciling deletion",
+    "lead": "No duplicate delete is created while group-presence truth is checked.",
+    "facts": [
+      [
+        "Operation",
+        "DEL26-A"
+      ],
+      [
+        "New write",
+        "None"
+      ]
+    ],
+    "notice": "Observed effect/no-effect truth decides the next action.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Demo: deleted",
+        "to": "deleted",
+        "kind": "accent",
+        "q": {
+          "terminal": "deleted"
+        }
+      },
+      {
+        "label": "Demo: verified no effect",
+        "to": "delete-no-effect-retry",
+        "kind": "ghost",
+        "q": {}
+      },
+      {
+        "label": "Still unresolved",
+        "to": "recovery-boundary",
+        "kind": "link",
+        "q": {
+          "op": "DEL26-A"
+        }
+      }
+    ],
+    "status": "warn",
+    "role": "owner",
+    "back": "delete-reconciling"
+  },
+  "delete-no-effect-retry": {
+    "code": "J26-S74",
+    "eyebrow": "Safe retry",
+    "title": "DEL26-A had no effect",
+    "lead": "The archived group is observed intact, so the same logical delete may retry.",
+    "facts": [
+      [
+        "Group status",
+        "Archived"
+      ],
+      [
+        "Retry identity",
+        "DEL26-A"
+      ],
+      [
+        "External copies",
+        "Unchanged"
+      ]
+    ],
+    "notice": "A retry still does not widen the deletion scope.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Retry delete",
+        "to": "deleting",
+        "kind": "danger",
+        "q": {}
+      },
+      {
+        "label": "Back to archived group",
+        "to": "archived",
+        "kind": "ghost",
+        "q": {}
+      }
+    ],
+    "status": "neutral",
+    "role": "owner",
+    "back": "archived"
+  },
+  "deleted": {
+    "code": "J26-S75",
+    "eyebrow": "Verified result",
+    "title": "Zurich Weekend was deleted here",
+    "lead": "The group workspace is gone from this ChopDot working state.",
+    "facts": [
+      [
+        "This working state",
+        "Group removed"
+      ],
+      [
+        "Other people’s copies",
+        "Not claimed erased"
+      ],
+      [
+        "Exports / backups",
+        "Not claimed erased"
+      ],
+      [
+        "Provider / chain history",
+        "Not claimed erased"
+      ]
+    ],
+    "notice": "Back must not reconstruct or re-expose the deleted group from stale fixture state.",
+    "tone": "success",
+    "actions": [
+      {
+        "label": "Go Home",
+        "to": "home-boundary",
+        "kind": "accent",
+        "q": {
+          "result": "deleted"
+        }
+      }
+    ],
+    "status": "success",
+    "role": "owner",
+    "back": "home-boundary"
+  },
+  "group-home-boundary": {
+    "code": "J26-B01",
+    "eyebrow": "Owner boundary · Journey 08",
+    "title": "Group Home",
+    "lead": "J26 enters from and returns to the approved Group Home context.",
+    "facts": [
+      [
+        "Owned here",
+        "Navigation handoff only"
+      ],
+      [
+        "Lifecycle write",
+        "None in boundary"
+      ]
+    ],
+    "notice": "Preview only: this card does not reimplement Journey 08 or mutate group facts.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Open settings as owner",
+        "to": "settings-entry-owner",
+        "kind": "accent",
+        "q": {
+          "role": "owner"
+        }
+      },
+      {
+        "label": "Open settings as member",
+        "to": "settings-entry-member",
+        "kind": "ghost",
+        "q": {
+          "role": "member"
+        }
+      }
+    ],
+    "status": "boundary",
+    "role": "owner",
+    "back": "settings-entry-owner"
+  },
+  "manage-people-boundary": {
+    "code": "J26-B02",
+    "eyebrow": "Owner boundary · Journey 09",
+    "title": "Manage People",
+    "lead": "Roster changes and member eligibility stay with the existing people journey.",
+    "facts": [
+      [
+        "J26 carries",
+        "Group + prerequisite context"
+      ],
+      [
+        "J09 owns",
+        "Invite/remove/roster management"
+      ]
+    ],
+    "notice": "Preview only: no person is added or removed here. Return with fresh group/member truth.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Return to owner settings",
+        "to": "settings-entry-owner",
+        "kind": "accent",
+        "q": {
+          "role": "owner"
+        }
+      }
+    ],
+    "status": "boundary",
+    "role": "owner",
+    "back": "settings-entry-owner"
+  },
+  "money-resolution-boundary": {
+    "code": "J26-B03",
+    "eyebrow": "Owner boundary · money / issue flow",
+    "title": "Resolve open items",
+    "lead": "J26 cannot edit or forgive ledger facts to satisfy a lifecycle prerequisite.",
+    "facts": [
+      [
+        "J26 carries",
+        "Group + blocking item context"
+      ],
+      [
+        "Owned elsewhere",
+        "Review / settle / issue resolution"
+      ]
+    ],
+    "notice": "Preview only: no payment, settlement, signing or ledger mutation occurs here.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Return as owner",
+        "to": "settings-entry-owner",
+        "kind": "accent",
+        "q": {
+          "role": "owner"
+        }
+      },
+      {
+        "label": "Return as member",
+        "to": "settings-entry-member",
+        "kind": "ghost",
+        "q": {
+          "role": "member"
+        }
+      }
+    ],
+    "status": "boundary",
+    "role": "owner",
+    "back": "settings-entry-owner"
+  },
+  "home-boundary": {
+    "code": "J26-B04",
+    "eyebrow": "Owner boundary · Home",
+    "title": "Home",
+    "lead": "Verified leave/delete exits here because the current account no longer has that group workspace.",
+    "facts": [
+      [
+        "J26 carries",
+        "Verified terminal result"
+      ],
+      [
+        "Group detail",
+        "Not re-opened from stale state"
+      ]
+    ],
+    "notice": "Preview only: Home is not reimplemented in this candidate.",
+    "tone": "",
+    "actions": [
+      {
+        "label": "Demo: another group settings",
+        "to": "group-home-boundary",
+        "kind": "accent",
+        "q": {}
+      }
+    ],
+    "status": "boundary",
+    "role": "member",
+    "back": "group-home-boundary"
+  },
+  "recovery-boundary": {
+    "code": "J26-B05",
+    "eyebrow": "Owner boundary · Journey 28",
+    "title": "Recovery needed",
+    "lead": "J26 reconciliation could not safely establish effect or no-effect for the exact lifecycle operation.",
+    "facts": [
+      [
+        "Operation",
+        "Lifecycle operation"
+      ],
+      [
+        "Retry",
+        "Blocked"
+      ],
+      [
+        "Secrets",
+        "Not carried"
+      ]
+    ],
+    "notice": "Preview only: Journey 28 owns unresolved recovery. This boundary creates no new product authority.",
+    "tone": "warn",
+    "actions": [
+      {
+        "label": "Return to Group Home",
+        "to": "group-home-boundary",
+        "kind": "accent",
+        "q": {}
+      }
+    ],
+    "status": "boundary",
+    "role": "owner",
+    "back": "group-home-boundary"
+  }
+}

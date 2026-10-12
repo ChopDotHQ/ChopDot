@@ -1,0 +1,190 @@
+{
+  "schema_sha": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
+  "certified_task_count": 23,
+  "tasks": [
+    {
+      "id": "TASK-J05-COMMON-EQUAL",
+      "name": "Add common equal-split expense",
+      "source_completion": "success",
+      "suite": "browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J05-CHANGE-PAYER",
+      "name": "Add expense with another payer",
+      "source_completion": "success-marc",
+      "suite": "recovery-browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J05-TWO-PERSON-EQUAL",
+      "name": "Add equal expense for two participants",
+      "source_completion": "success-two",
+      "suite": "recovery-browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J05-EXACT",
+      "name": "Add exact-split expense",
+      "source_completion": "success-exact",
+      "suite": "browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J05-SHARES",
+      "name": "Add shares-based expense",
+      "source_completion": "success-exact",
+      "suite": "browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J05-RECEIPT",
+      "name": "Add expense with receipt",
+      "source_completion": "success-receipt",
+      "suite": "recovery-browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J06-EDIT",
+      "name": "Edit an existing expense",
+      "source_completion": "updated",
+      "suite": "browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J06-DELETE",
+      "name": "Delete an owned expense",
+      "source_completion": "deleted",
+      "suite": "browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J06-VIEW-HISTORY",
+      "name": "Inspect expense history and return",
+      "source_completion": "detail",
+      "suite": "browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J06-VIEW-RECEIPT",
+      "name": "Inspect receipt and return",
+      "source_completion": "detail",
+      "suite": "recovery-browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J06-OTHER-MEMBER-REVIEW-HANDOFF",
+      "name": "Hand another member to expense review",
+      "source_completion": "review-handoff",
+      "suite": "recovery-browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J07-AGREE",
+      "name": "Agree that an expense looks right",
+      "source_completion": "reviewed",
+      "suite": "recovery-browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J07-RAISE-ISSUE",
+      "name": "Raise an issue about your share",
+      "source_completion": "issue-sent-share",
+      "suite": "browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J07-WITHDRAW-ISSUE",
+      "name": "Withdraw a raised issue",
+      "source_completion": "review",
+      "suite": "recovery-browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J07-OWNER-REPLY",
+      "name": "Reply to an expense issue",
+      "source_completion": "reply-sent",
+      "suite": "browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J07-REVIEW-AGAIN",
+      "name": "Agree after an expense changed",
+      "source_completion": "reviewed-again",
+      "suite": "recovery-browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J07-ACCEPT-REPLY",
+      "name": "Accept an owner's reply",
+      "source_completion": "resolved-reply",
+      "suite": "browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J07-STILL-OFF-AFTER-REPLY",
+      "name": "Keep an issue open after owner reply",
+      "source_completion": "issue-sent-share",
+      "suite": "browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J08-OPEN-ADD",
+      "name": "Open Add Expense from Group Home",
+      "source_completion": "add-handoff",
+      "suite": "browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J08-OPEN-REVIEW",
+      "name": "Open review task from Group Home",
+      "source_completion": "review-handoff",
+      "suite": "browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J08-OPEN-BALANCES",
+      "name": "Open balances from Group Home",
+      "source_completion": "balances-handoff",
+      "suite": "recovery-browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J08-OPEN-SETTLE",
+      "name": "Open settlement from Group Home",
+      "source_completion": "settle-handoff",
+      "suite": "recovery-browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    },
+    {
+      "id": "TASK-J08-EMPTY-FIRST-EXPENSE",
+      "name": "Start first expense from empty group",
+      "source_completion": "add-handoff",
+      "suite": "browser-qa.mjs",
+      "verification": "actual browser interactions; see named assertions and screenshot logs",
+      "adaptation": "Dynamic canonical facts replace Golden fixture text; static demo progressions are automatic, outcome receipts are retained. Two-person selection uses real checkboxes instead of the Preview two people demo link."
+    }
+  ]
+}
