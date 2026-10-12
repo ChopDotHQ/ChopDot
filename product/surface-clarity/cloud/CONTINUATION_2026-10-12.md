@@ -7,6 +7,16 @@ behalf. This is delegated agent acceptance, not direct user review or independen
 review. It does not authorize deployments, main merges, real invitations/payments,
 provider selection, or a new product strategy.
 
+## Executor routing
+
+The authoritative batch executor is the Codex Cloud coding task submitted via
+`codex cloud exec` to the existing ChopDot environment. The earlier queued
+ChatGPT Work conversation is a coordination request, not an authorized second
+writer. A Work-chat reader must remain read-only and report the routing change.
+Only the coding task continues J05–J28. Its exact task URL/ID is recorded in the
+local dispatch receipt once the submit response is returned. Do not race another
+executor or overwrite its checkpoints.
+
 ## Portable lane and preflight
 
 Repository: https://github.com/ChopDotHQ/ChopDot (public).
