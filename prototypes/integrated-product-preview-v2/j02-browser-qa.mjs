@@ -47,12 +47,24 @@ try {
     assert.equal((await state()).accountCreated,false);
     record('J02-R03-'+w,'Forward installs the group owner and creates one local group');
     await page.reload(); await home(); await noFixtures();
-    const populated = await state(); await shot('populated-home-'+w);
+    let populated = await state(); await shot('populated-home-'+w);
     const frameBox = await page.locator('#product-frame').boundingBox();
     const navBox = await f().locator('.tabbar').boundingBox();
     assert.ok(navBox && navBox.y>=frameBox.y && navBox.y+navBox.height<=frameBox.y+frameBox.height+1);
     assert.equal(await f().locator('body').evaluate(el=>el.scrollWidth>innerWidth),false);
     record('J02-R04-'+w,'populated Home retains local group and visible mobile navigation');
+    await click('Add expense');
+    await f().getByLabel('Amount',{exact:true}).fill('12.01');
+    await f().getByLabel('Description',{exact:true}).fill('J02 dinner');
+    await f().locator('#entry').getByRole('link',{name:'Save expense',exact:true}).click();
+    await f().locator('#success').getByRole('link',{name:'Back to group',exact:true}).click();
+    await f().locator('.header-title').getByText('J02 weekend',{exact:true}).waitFor();
+    assert.equal((await state()).expenses.length,1);
+    assert.equal((await state()).expenses[0].money.minorUnits,'1201');
+    await shot('expense-return-group-'+w);
+    await f().locator('[href="#home-handoff"][aria-label="Back"]').click(); await home();
+    populated=await state(); await shot('home-after-expense-'+w);
+    record('J02-R04b-'+w,'UX-006 receipt returns to affected Group Home; Home retains exact expense');
     await f().getByRole('link',{name:'People',exact:true}).click();
     await f().getByRole('button',{name:'Back to Home',exact:true}).waitFor();
     await shot('people-boundary-'+w); await click('Back to Home'); await home();
@@ -99,7 +111,7 @@ try {
     await shot('account-people-'+w); await click('Back to Home'); await home();
     record('J02-R11-'+w,'account People directory and root exit');
     await f().getByRole('link',{name:'Activity',exact:true}).click(); await click('Insights');
-    await f().getByText('No accepted spending yet',{exact:true}).waitFor(); await shot('account-insights-'+w);
+    await f().getByText('CHF 12.01',{exact:true}).first().waitFor(); await shot('account-insights-'+w);
     await f().getByRole('button',{name:'Pots',exact:true}).click(); await home();
     sameBusiness(account,await state()); record('J02-R12-'+w,'active Insights Pots uses root Home rather than selected Group Home');
     for(const label of ['Savings','All groups / archived','Payment methods','Wallet','Scan QR','Import / export','Storage & recovery']){

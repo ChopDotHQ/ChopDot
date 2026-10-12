@@ -1052,7 +1052,7 @@ function applyGuestExpenseState(doc) {
     if (href === '#entry' && anchor.closest('#success')) beginAnother();
     if (href === '#group-updated') {
       event.preventDefault();
-      returnToLocalHome();
+      openGateB('#page=group');
     }
   });
   frame.contentWindow?.addEventListener('pagehide', () => { if (editing) persistLocalExpenseDraft(doc); });

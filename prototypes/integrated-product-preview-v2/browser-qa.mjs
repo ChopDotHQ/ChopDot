@@ -42,8 +42,9 @@ async function saveExpense(page, description) {
   await product(page).locator('#success').getByRole('heading', { name: `${description} added.`, exact: true }).waitFor();
 }
 async function returnFromReceipt(page, mode = 'guest') {
-  const integrated = await page.evaluate(() => window.ChopDotPreviewV2.getCurrentJourney() === 'GATE_B');
   await product(page).locator('#success').getByRole('link', { name: 'Back to group', exact: true }).click();
+  const integrated = await page.evaluate(() => window.ChopDotPreviewV2.getCurrentJourney() === 'GATE_B');
+  check(`${mode}: receipt returns to its Group Home owner`, integrated);
   if (integrated) {
     await product(page).locator('[data-golden="active"]').waitFor();
     await product(page).locator('[href="#home-handoff"][aria-label="Back"]').click();
