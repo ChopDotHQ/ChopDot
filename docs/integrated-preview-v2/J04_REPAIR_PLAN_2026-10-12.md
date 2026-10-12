@@ -24,3 +24,6 @@ Actual screens/result before cloud handoff. No frozen edit or new invitation ser
 Docs: J04 receipt/findings and evolving schema-alignment record. No wiki/ADR needed
 for these prototype integration changes. Cloud J05–J28 proceeds sequentially under
 the user's explicit delegated review/acceptance, labelled agent self-review.
+
+Actual-screen inspection found a clipped preparation heading after Add; reset
+focus/scroll on invitation screen transitions and verify the heading is visible.

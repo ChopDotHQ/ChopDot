@@ -45,6 +45,7 @@ function invitation(page){assertOwner(s,currentActor());mount('j04',page);text('
  action('[href="#group-handoff"]',()=>openGroup());
  if(selected){$('.footer').append(button('View invite as recipient (prototype)',()=>{actor('visitor');sessionStorage.setItem('chopdot.membership.invite',selected.id);nav('join',{invite:selected.id});},'btn text'));}
  if(page==='invite-sent'&&selected)notice(inviteUrl(selected));
+ const shown=screen;requestAnimationFrame(()=>{if(screen===shown){shown.focus({preventScroll:true});const content=shown.querySelector('.content');if(content)content.scrollTop=0;}});
 }
 function inviteUrl(i){const u=new URL('../index.html',location.href);u.searchParams.set('createJoin',new URLSearchParams({page:'join',invite:i.id}).toString());if(fixtureMode)u.searchParams.set('fixtures','1');return u.href;}
 function recipient(page){const id=route.invite||sessionStorage.getItem('chopdot.membership.invite');const info=inviteContext(s,id);const i=s.membership.invitations.find(i=>i.id===id);if(currentActor()==='self'||(i.status==='pending'&&!i.redemptions?.includes(currentActor())&&member(s,currentActor()))){actor('visitor');}sessionStorage.setItem('chopdot.membership.invite',id);
