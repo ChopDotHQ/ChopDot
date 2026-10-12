@@ -48,7 +48,7 @@ let resumedEntry = false;
 // subjects, pending requests or model state to recover an interrupted entry.
 function entryIntent(flow, method = '') {
   const url = new URL(location.href);
-  for (const key of ['home', 'guestExpense', 'gateB', 'gateBRoute', 'gateC', 'gateD', 'expansion', 'createJoin']) url.searchParams.delete(key);
+  for (const key of ['home', 'guestCreate', 'guestExpense', 'gateB', 'gateBRoute', 'gateC', 'gateD', 'expansion', 'createJoin']) url.searchParams.delete(key);
   url.searchParams.set('entry', flow);
   if (method) url.searchParams.set('entryMethod', method); else url.searchParams.delete('entryMethod');
   history.replaceState(null, '', url);
@@ -170,7 +170,7 @@ function openHome(entryState = lastEntryState, mode = 'account') {
   currentFlow = mode;
   showFrame();
   const url = new URL(location.href);
-  for (const key of ['guestExpense','gateB','gateBRoute','gateC','gateD','expansion','createJoin','entry','entryMethod']) url.searchParams.delete(key);
+  for (const key of ['guestCreate','guestExpense','gateB','gateBRoute','gateC','gateD','expansion','createJoin','entry','entryMethod']) url.searchParams.delete(key);
   url.searchParams.set('home','1'); history.replaceState(null,'',url);
   frame.src = SOURCES.j02;
 }
@@ -286,15 +286,11 @@ function addLocalHomeCss(doc) {
     .local-empty-title{font-size:14px;font-weight:730}
     .local-empty-sub{font-size:11px;line-height:1.45;color:var(--secondary);margin-top:4px}
     .local-actions{display:grid;gap:10px}
-    .local-action{min-height:46px;border:1px dashed #ccccd2;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:7px;color:var(--secondary);font-size:12px;background:transparent}
+    .local-action{min-height:46px;border:1px solid #ccccd2;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:7px;color:var(--ink);font-size:12px;background:var(--surface,#fff);cursor:pointer}
     .local-action.primary{border-style:solid;border-color:#111;background:#111;color:#fff;font-weight:700}
     .local-action .icon{width:16px;height:16px}
-    .local-home-tools{margin-top:20px;border-top:1px solid var(--border,#e2e2e6);padding-top:12px}
-    .local-home-tools summary{cursor:pointer;list-style-position:inside;color:var(--secondary);font-size:13px;padding:12px 4px;min-height:44px}
-    .local-home-tools summary:focus-visible,.local-home-tool:focus-visible{outline:2px solid #111;outline-offset:2px}
-    .local-home-tools-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding-top:8px}
-    .local-home-tool{min-height:44px;padding:10px;border:1px solid var(--border,#ddd);border-radius:12px;background:var(--surface,#fff);color:var(--ink,#222);font:inherit;font-size:12px;text-align:left;cursor:pointer}
-    @media(max-width:350px){.local-home-tools-grid{grid-template-columns:1fr}}
+    .local-see-all{border:0;background:transparent;color:var(--ink);font:inherit;font-size:12px;min-height:44px;padding:0 4px;cursor:pointer}
+    .local-action:focus-visible,.local-see-all:focus-visible{outline:2px solid #111;outline-offset:2px}
   `;
   doc.head.appendChild(style);
 }
@@ -439,26 +435,12 @@ function renderLocalHomeState(doc, { converted = false } = {}) {
 
   const template=content.querySelector('.card.group');
   if(template){const parent=template.parentElement;for(const g of activeGroups){const card=template.cloneNode(true),count=state.expenses.filter(e=>!e.deleted&&e.groupId===g.id).length;card.querySelector('[data-local-group-name]').textContent=g.name;card.querySelector('[data-local-group-meta]').textContent=g.currency+' · '+groupMembers(state,g).length+(groupMembers(state,g).length===1?' person':' people');card.querySelector('.group-balance').textContent=g.kind==='savings'?'Savings':count+' '+(count===1?'expense':'expenses');card.tabIndex=0;card.setAttribute('role','button');card.setAttribute('aria-label',activeGroups.length===1?'Open group':'Open '+g.name);const open=()=>{saveGuestState({group:g});if(g.kind==='savings')openExpansion('#'+new URLSearchParams({family:'16',page:'home',group:g.id}));else openGateB();};card.addEventListener('click',open);card.addEventListener('keydown',event=>{if(['Enter',' '].includes(event.key)){event.preventDefault();open();}});parent.insertBefore(card,template);}template.remove();}
-  // Keep the primary Home task prominent. Secondary capabilities remain reachable
-  // without presenting eight competing full-width actions on first use.
-  const tools=document.createElement('details');
-  tools.className='local-home-tools';
-  const summary=document.createElement('summary');
-  summary.textContent='More tools';
-  summary.setAttribute('aria-label','Show more ChopDot tools');
-  tools.append(summary);
-  const familyLinks=document.createElement('div');
-  familyLinks.className='local-home-tools-grid';
-  for(const [label,route] of [['Savings','family=16&page=list&group='],['Insights','family=19&page=overview&group='],['All groups / archived','family=26&page=list&group='],['Payment methods','family=20&page=overview&group='],['Wallet','family=21&page=handoff&group='],['Scan QR','family=22&page=entry&group='],['Import / export','family=24&page=entry&group='],['Storage & recovery','family=25&page=entry&group=']]){
-    const b=document.createElement('button');
-    b.type='button';
-    b.className='local-home-tool';
-    b.textContent=label;
-    b.addEventListener('click',()=>openExpansion('#'+route));
-    familyLinks.append(b);
-  }
-  tools.append(familyLinks);
-  content.append(tools);
+  // Payment/data tools live in You; Insights in Activity. Group browsing stays
+  // beside its owning list, rather than becoming a second Home task directory.
+  const seeAll=doc.createElement('button');
+  seeAll.type='button';seeAll.className='local-see-all';seeAll.textContent='See all';
+  seeAll.addEventListener('click',()=>openExpansion('#family=26&page=list&group='));
+  content.querySelector('.section-head')?.append(seeAll);
   const wallet = doc.querySelector('.wallet');
   if (wallet) wallet.style.display = 'none';
 
@@ -1093,23 +1075,46 @@ function enterAuthFormIfNeeded(doc) {
 }
 
 frame.addEventListener('load', () => {
-  if (currentJourney === 'GATE_B') return;
   const doc = frame.contentDocument;
+  if (!doc?.body || frame.contentWindow.location.href === 'about:blank') return;
+  // iframe history is browser history. Back/Forward can restore a different
+  // owner without calling an open* function; dispatch by the loaded source.
+  const child=new URL(frame.contentWindow.location.href);
+  const sourcePath=key=>new URL(SOURCES[key],location.href).pathname;
+  if(child.pathname===sourcePath('j02')){
+    stopMonitor();currentJourney='J02';currentFlow=homeMode;
+    const url=new URL(location.href);
+    for(const key of ['guestCreate','guestExpense','gateB','gateBRoute','gateC','gateD','expansion','createJoin','entry','entryMethod'])url.searchParams.delete(key);
+    url.searchParams.set('home','1');history.replaceState(null,'',url);
+  }else if(child.pathname===sourcePath('j03')){
+    stopMonitor();currentJourney='J03';currentFlow='guest-local-create';
+  }else if(child.pathname===sourcePath('j05')){
+    stopMonitor();currentJourney='J05';currentFlow='guest-local-expense';
+  }else{
+    const owner=['gate-b','gate-c','gate-d','expansion','create-join'].find(owner=>child.pathname===new URL('./'+owner+'/index.html',location.href).pathname||child.pathname===new URL('./'+owner+'/',location.href).pathname);
+    if(owner){stopMonitor();currentJourney=owner==='expansion'?'STAGE_5':owner==='create-join'?'J04':'GATE_B';currentFlow=owner+'-local';return;}
+  }
   applyProductMode(doc);
 
   if (currentJourney === 'J02') {
-    doc.addEventListener('click',event=>{const a=event.target.closest('a,button');if(!a)return;const label=(a.getAttribute('aria-label')||a.textContent).trim();if(['Activity','You','Account','Notifications'].includes(label)){event.preventDefault();event.stopImmediatePropagation();openGateD('#page='+(label==='Activity'?'activity':label==='Notifications'?'notifications':'account-overview'));}},true);
-    if (homeMode === 'guest') renderLocalHomeState(doc, { converted: false });
-    if (homeMode === 'converted') renderLocalHomeState(doc, { converted: true });
+    if(!doc.documentElement.dataset.homeNavigation){
+      doc.documentElement.dataset.homeNavigation='installed';
+      doc.addEventListener('click',event=>{const a=event.target.closest('a,button');if(!a)return;const label=(a.getAttribute('aria-label')||a.textContent).trim();if(['Pots','People','Activity','You','Account','Notifications'].includes(label)){event.preventDefault();event.stopImmediatePropagation();if(label==='Pots')return returnToLocalHome();if(label==='People')return openExpansion('#family=09&page=directory&scope=all&group=');openGateD('#page='+(label==='Activity'?'activity':label==='Notifications'?'notifications':'account-overview'));}},true);
+    }
+    renderLocalHomeState(doc, { converted: homeMode !== 'guest' });
     return;
   }
 
   if (currentJourney === 'J03' && currentFlow === 'guest-local-create') {
+    if(doc.documentElement.dataset.localCreateInstalled)return;
+    doc.documentElement.dataset.localCreateInstalled='true';
     applyGuestCreateGroupState(doc);
     return;
   }
 
   if (currentJourney === 'J05' && currentFlow === 'guest-local-expense') {
+    if(doc.documentElement.dataset.localExpenseInstalled)return;
+    doc.documentElement.dataset.localExpenseInstalled='true';
     applyGuestExpenseState(doc);
     return;
   }

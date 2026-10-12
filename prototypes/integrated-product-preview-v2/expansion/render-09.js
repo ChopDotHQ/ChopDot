@@ -10,7 +10,7 @@ const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
  const status=(title,copy,ic='info',good=false)=>`<div class="mp-status"><div class="state-icon ${good?'good':''}">${icon(ic)}</div><h1 tabindex="-1">${title}</h1><p>${copy}</p></div>`;
  const personRow=(p,group=false)=>`<button class="mp-row" data-action="person" data-person="${esc(p)}"><span class="person-avatar">${esc(M.PEOPLE[p].initials)}</span><span><b>${esc(M.name(p))}</b><span class="sub">${group?(M.owner(s)===p?'Group owner':'Member'):M.visibleGroups(s,p).length+' shared '+(M.visibleGroups(s,p).length===1?'group':'groups')}</span></span>${p===s.viewer?'<span class="mp-badge">You</span>':icon('chev','chevron')}</button>`;
  function screenData(){
-  const p=M.PEOPLE[s.person]||Object.values(M.PEOPLE)[0],who=esc(p.name),g=esc(M.GROUPS[s.group]?.name||'Your groups'),scope=s.scope==='all'?'All shared groups':esc(M.GROUPS[s.scope]?.name||g);
+  const p=M.PEOPLE[s.person]||Object.values(M.PEOPLE)[0]||{name:'You',initials:'Y'},who=esc(p.name),g=esc(M.GROUPS[s.group]?.name||'Your groups'),scope=s.scope==='all'?'All shared groups':esc(M.GROUPS[s.scope]?.name||g);
   let header='People',sub=g,body='',foot='';
   if(!M.canView(s)&&!['access-changed','handoff'].includes(s.route))s.route='access-changed';
   if(s.route==='person'&&s.scope!=='all'&&!s.members[s.scope].includes(s.person))s.route='access-changed';
@@ -27,7 +27,7 @@ const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
   case 'directory':{
    header='Your people';sub='Across your groups';const filtered=M.directory(s);
    body=`<div><div class="eyebrow">Your shared groups</div><h1 class="hero" tabindex="-1">Familiar faces.</h1><p class="mp-meta">Find someone. Pick up where you left off.</p></div><label class="mp-search">${icon('search')}<input id="people-search" aria-label="Search people" value="${esc(s.query)}" placeholder="Search people" autocomplete="off"></label>`;
-   body+=filtered.length?`<section class="card mp-card">${filtered.map(p=>personRow(p)).join('')}</section>`:`<section class="card mp-empty"><h2>No matches.</h2><p>Try another name.</p></section>`;
+   body+=filtered.length?`<section class="card mp-card">${filtered.map(p=>personRow(p)).join('')}</section>`:`<section class="card mp-empty"><h2>${s.query?'No matches.':'No people yet.'}</h2><p>${s.query?'Try another name.':'People from your shared groups will appear here.'}</p></section>`;
    foot=btn('Back to group','members');break;}
   case 'person':{
    header=p.name;sub=scope;const self=s.person===s.viewer;
