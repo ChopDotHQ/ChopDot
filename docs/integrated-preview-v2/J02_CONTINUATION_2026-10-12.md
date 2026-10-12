@@ -1,6 +1,6 @@
 # J02 Home repair — continuation in Codex, 2026-10-12
 
-Status: LOCAL_REPAIR_VERIFIED; awaiting user review. Historical recovery context below is preserved.
+Status: USER_ACCEPTED on 2026-10-12 for runtime c59073cf. Historical recovery context below is preserved.
 Owner: current Codex chat. User request: continue here and recover the considerations before proceeding.
 
 ## Goal and lane
@@ -179,3 +179,5 @@ The user superseded the broad retained-run plan with proportional verification:
 one repair → focused verification → show result → user feedback. No more journeys,
 broader tests or additional evidence tooling before review. User acceptance remains
 pending; original checkout and all completed local work are preserved.
+
+User checkpoint: J02 accepted after the live walkthrough; see the repair ACCEPTANCE.json. Next journey issue/proposal only, with no implementation authorized yet. Historical pending wording above describes earlier checkpoints.

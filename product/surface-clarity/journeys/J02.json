@@ -86,7 +86,7 @@
       "public synthetic account code 123456; local group and CHF 12.01 expense created through UI"
     ],
     "limitations": [
-      "Self-reviewed screenshots; human acceptance pending.",
+      "Self-reviewed screenshots; bounded implementation accepted by user on 2026-10-12. No independent usability study.",
       "No certified J02 V1 task path, physical-device, comprehensive accessibility or human-comprehension qualification.",
       "Unrelated keyboard fixture fails on untouched baseline; no further investigation."
     ]
@@ -324,7 +324,7 @@
       "tradeoff": "Occasional tools move to their owning sections.",
       "authority_boundary": "Frozen semantics and source copies unchanged.",
       "success_evidence": "J02-BROWSER-20261012",
-      "result": "bounded local pass; user review pending"
+      "result": "bounded local pass; user accepted this implementation on 2026-10-12"
     }
   ],
   "hypotheses": [
@@ -332,7 +332,8 @@
       "id": "J02-H01",
       "prediction": "The focused hierarchy makes the next task easier to identify.",
       "evidence_needed": "User review and, if required, neutral cold-person task observations.",
-      "status": "needs_user_review"
+      "status": "accepted_by_user",
+      "result": "User reviewed the live empty/returning and saved-expense walkthrough and stated J02 looks good. Not a cold-person study."
     }
   ],
   "additional_authority": [],
@@ -404,5 +405,16 @@
       ]
     },
     "scope_note": "Imported historical sample only. Checks/scenarios remain unassessed; screenshots in original audit archive."
+  },
+  "acceptance": {
+    "status": "accepted",
+    "accepted_by": "Devinson (user)",
+    "accepted_on": "2026-10-12",
+    "approval_reference": "Current Codex chat: user message \"J02 looks good. Mark it accepted, then show me the next journey\u2019s current issue and proposed bounded repair before implementing anything.\"",
+    "implementation_sha": "c59073cf7efbb48521c0dbd88952fe1b045fa2af",
+    "review_checkpoint_sha": "d8e39798a121e9aa12e54494624c98ad9ef2ebc3",
+    "runtime_digest": "7ef9bee8009b672aa1e5d4d85d780b9fe4ede290a5b040a284287d71b5106479",
+    "scope": "Bounded J02 Home repair: empty/returning Home, People/Activity/You navigation, root/group returns, native history and saved-expense return. The shared UX-006 fix is included, not whole J05/J08 acceptance.",
+    "limitations": "User review acceptance only; no production, hosted/CI, independent-review, physical-device or general human-comprehension qualification. Future runtime changes are not automatically accepted."
   }
 }

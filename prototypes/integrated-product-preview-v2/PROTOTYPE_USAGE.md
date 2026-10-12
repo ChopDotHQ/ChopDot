@@ -28,7 +28,7 @@ Choose a new output directory; packaging refuses an existing directory. Open `ht
 Home, People and the root tabs preserve the current actor's records through Back,
 Forward and reload. An empty entry context returns directly to the front door;
 an entered guest returns to their Home. Explicit group actions retain Group Home.
-The J02 successor is locally verified and awaiting user review; see
+The J02 successor at c59073cf is locally verified and user accepted on 2026-10-12; see
 `product/surface-clarity/evidence/J02-repair-2026-10-12/REPORT.md`. Its retained
 keyboard-fixture failure and global stale review records are documented there.
 Use Surface Clarity as one repair → focused verification → show result → user

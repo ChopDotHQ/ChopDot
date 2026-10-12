@@ -1,7 +1,7 @@
-# J02 Home repair — ready for user review, 2026-10-12
+# J02 Home repair — user accepted, 2026-10-12
 
-The bounded repair is implemented and locally verified. User acceptance is pending.
-Further journeys and broader testing stop here.
+The bounded repair is implemented and locally verified. User accepted this exact runtime on 2026-10-12; see ACCEPTANCE.json.
+Further implementation remains paused; the next repair is proposal-only.
 
 ## Result
 

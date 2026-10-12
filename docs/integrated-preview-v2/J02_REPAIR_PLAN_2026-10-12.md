@@ -83,3 +83,5 @@ Runtime `c59073cf` passed 78 focused checks and final retained Gate A checks.
 The user's final scope replaces step 4's broad run with only relevant verification;
 unrelated baseline failures are recorded, not investigated. See J02 repair REPORT.
 Stop now for user review; no additional journey, testing or evidence-tool expansion.
+
+User accepted runtime c59073cf on 2026-10-12 after reviewing Home, destinations and the saved-expense return. The next repair remains proposal-only.
