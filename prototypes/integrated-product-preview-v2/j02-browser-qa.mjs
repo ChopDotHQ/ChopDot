@@ -109,7 +109,8 @@ try {
       await f().getByRole('link',{name:'Pots',exact:true}).click(); await home();
       sameBusiness(account,await state()); record('J02-R13-'+w+'-'+label,'active retained tool and native Back to its owner');
     }
-    await f().getByRole('link',{name:'You',exact:true}).click(); await shot('account-you-'+w);
+    await f().getByRole('link',{name:'You',exact:true}).click();
+    await f().getByRole('button',{name:'Payment methods',exact:true}).waitFor(); await shot('account-you-'+w);
     await context.close();
   }
   assert.deepEqual(errors,[]); writeFileSync(out+'/results.json',JSON.stringify({status:'PASS',checks,errors},null,2));
