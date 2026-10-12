@@ -1,4 +1,4 @@
-# J03 bounded repair — ready for user review
+# J03 bounded repair — user accepted
 
 Runtime ae19153b73661750852875fdda979f7f0828d529; tree a2d7dd309d81c844accf6ba5510a9005092533e6.
 Currency selection now updates the existing creation draft and returns to entry.
@@ -24,5 +24,5 @@ separate. J02 acceptance stays pinned to c59073cf; not automatically transferred
 
 This is the bounded guest repair, not whole-J03, independent, account/offline/error,
 physical-device, hosted/CI or user-comprehension qualification. Other J03 obligations
-remain unassessed. User review is pending. Stop before J04; J05 remains parked.
+remain unassessed. User accepted this bounded repair on 2026-10-12; see ACCEPTANCE.json. J04 is review/proposal only; J05 remains parked.
 Documentation: J03/finding and brief plan/result updated; no wiki/ADR required.

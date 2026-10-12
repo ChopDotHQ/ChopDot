@@ -1,0 +1,11 @@
+{
+  "status": "accepted",
+  "accepted_by": "Devinson (user)",
+  "accepted_on": "2026-10-12",
+  "approval_reference": "Current Codex chat: \"J03 looks good. Mark it accepted, then review J04\u2019s actual screens and flow and show me any confirmed issue and proposed bounded repair before implementing anything.\"",
+  "implementation_sha": "ae19153b73661750852875fdda979f7f0828d529",
+  "review_checkpoint_sha": "4da869e1408894f82ea8c61e20c9da042f4206d8",
+  "runtime_digest": "bc052a0d54a92b0a83801ad32e389a093be04972855b61a0c45c26d4525013bc",
+  "scope": "Bounded J03 guest repair: explicit creation after CHF/EUR/USD draft choice, draft/history/reload recovery, saved-record preservation and success handoff returns.",
+  "limitations": "User acceptance of this local repair; no whole-account/offline/error, independent review, device, hosted/CI or production qualification. No acceptance automatically transfers to later runtime changes."
+}

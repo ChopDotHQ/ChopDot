@@ -58,4 +58,4 @@ The user accepted the earlier implementation at `d6c85f9e53a3dbb66795c13cb41d615
 J03 guest creation at ae19153b retains the name/currency draft through selection
 and reload; only Create group commits. Its 54 focused checks and reviewed screens
 are in product/surface-clarity/evidence/J03-repair-2026-10-12/REPORT.md. User review
-is pending; J04 work has not started and J05 remains parked.
+was accepted for the bounded J03 repair on 2026-10-12; J04 review/proposal is next, and J05 remains parked.

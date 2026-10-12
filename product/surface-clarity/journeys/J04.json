@@ -4,11 +4,11 @@
   "name": "Invite / Join a Group",
   "binding": {
     "registry_digest": "f5b46bc031ea2235484ebd492e09540bfde23dca1e774591c71b3fa5c18efbda",
-    "runtime_digest": "b73554f66065ce545675ebe56dd0baf79b3fb426b24d724628a7ef30dd4801ab",
+    "runtime_digest": "bc052a0d54a92b0a83801ad32e389a093be04972855b61a0c45c26d4525013bc",
     "schema_commit": "5107e64b1b2a0cb0eddd34f8235dfd6ae1d54013",
     "golden_commit": "4ba456e6595330e4ca8e21366e0d827f17e10881"
   },
-  "status": "not_reviewed",
+  "status": "in_progress",
   "source_binding": {
     "status": "frozen_mapping_available",
     "registry_spec": "journeys/04-invite-join/spec.md",
@@ -48,30 +48,77 @@
     "note": "Related laws are a navigation aid, not an assertion that every law applies in every state. Inspect composition units and approved later impacts too."
   },
   "scope": {
-    "tasks": [],
-    "states": [],
-    "actors": [],
-    "incoming_routes": [],
-    "return_routes": [],
-    "viewports": [],
-    "fixtures": [],
-    "limitations": []
+    "tasks": [
+      "Invite entry and local inviter/recipient main flow"
+    ],
+    "states": [
+      "guest local-name handoff",
+      "account boundary",
+      "simulated owner",
+      "unsupported header route",
+      "invite choices",
+      "local pending invitation",
+      "recipient Not now",
+      "consent",
+      "joined and Group Home"
+    ],
+    "actors": [
+      "self/local guest",
+      "self/simulated account owner",
+      "local fixture recipient guest"
+    ],
+    "incoming_routes": [
+      "create success Add people",
+      "Home Invite",
+      "Group Home header and empty-state Invite",
+      "recipient fixture"
+    ],
+    "return_routes": [
+      "Home",
+      "same Group Home",
+      "View invite",
+      "reopened membership"
+    ],
+    "viewports": [
+      "393x852"
+    ],
+    "fixtures": [
+      "Example email dev@example.com and public code 123456",
+      "Labelled local recipient/inviter-session fixtures; no external sending"
+    ],
+    "limitations": [
+      "Partial actual-screen review; no J04 acceptance.",
+      "No expenses in sample; private-expense isolation not qualified. Expired/offline/account-backed join and full recovery not reviewed.",
+      "Historical UX-010 not reproduced with one added local name; larger lists unreviewed."
+    ]
   },
   "checks": [
     {
       "id": "truth",
-      "result": "unassessed",
-      "expectation": "",
-      "steps": [],
-      "evidence_ids": [],
+      "result": "fail",
+      "expectation": "Invitation routes and status labels match the implemented owner and actual effects.",
+      "steps": [
+        "Compare header and empty-state Invite",
+        "Inspect Joined label on a locally added name without invitation/consent",
+        "Inspect Invite sent confirmation for a local-only pending invitation"
+      ],
+      "evidence_ids": [
+        "J04-BROWSER-20261012"
+      ],
       "reason": ""
     },
     {
       "id": "orientation",
-      "result": "unassessed",
-      "expectation": "",
-      "steps": [],
-      "evidence_ids": [],
+      "result": "fail",
+      "expectation": "Invitation routes and status labels match the implemented owner and actual effects.",
+      "steps": [
+        "Compare header and empty-state Invite",
+        "Inspect Joined label on a locally added name without invitation/consent",
+        "Inspect Invite sent confirmation for a local-only pending invitation"
+      ],
+      "evidence_ids": [
+        "J04-BROWSER-20261012"
+      ],
       "reason": ""
     },
     {
@@ -197,12 +244,70 @@
       "reason": ""
     }
   ],
-  "decisions": [],
+  "decisions": [
+    {
+      "surface": "Group Home header Invite \u2192 J04 owner",
+      "piece_id": "Actual #invite-handoff on Gate B Group Home; individual frozen piece mapping not yet resolved",
+      "operation": "navigation to group.invite owner; no navigation effect",
+      "decision": "CORRECT",
+      "observation": "Header Invite opens unsupported boundary; empty-state Invite people opens the implemented owner.",
+      "prediction": "Both controls open the same invitation task.",
+      "tradeoff": "Retain all owner/account and archived-group guards.",
+      "authority_boundary": "No new domain effect or permission; frozen sources preserved.",
+      "success_evidence": "Pending first bounded repair authorization; status-label issue remains separate",
+      "result": "proposal only; no runtime change"
+    }
+  ],
   "hypotheses": [],
   "additional_authority": [],
-  "evidence": [],
+  "evidence": [
+    {
+      "id": "J04-BROWSER-20261012",
+      "kind": "BROWSER",
+      "implementation_sha": "ae19153b73661750852875fdda979f7f0828d529",
+      "runtime_digest": "bc052a0d54a92b0a83801ad32e389a093be04972855b61a0c45c26d4525013bc",
+      "scope": "Manual 393x852 actual-screen review: local-name handoff; guest invitation boundary/Not now; simulated sign-in; header versus empty-state Invite; local link and named pending invite; fixture recipient Not now/View invite/consent/guest join/Group Home/membership reopen; inviter Done/Open group. Partial review, no external delivery.",
+      "environment": "Codex in-app browser; unchanged ae19153b package on isolated origin 4192; disclosed local fixture recipient/persona controls; no business-state injection.",
+      "artifacts": [
+        {
+          "path": "product/surface-clarity/evidence/J04-review-2026-10-12/header-invite-boundary.jpg",
+          "sha256": "ec3b28759c5cbdf4995cb1c1723ba96c5167ed75505dae1f3a55a7871eb9713d"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J04-review-2026-10-12/invite-local-name-joined.jpg",
+          "sha256": "545c55a1ef44d3598c9650ea22eac46b6c9c9667f6b973262e9acc50e40a70e9"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J04-review-2026-10-12/joined-group-home.jpg",
+          "sha256": "f85d81398a13da72dd6c7295116b424ffb816a76e6a4aa39e046816e9a32c288"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J04-review-2026-10-12/local-person-added.jpg",
+          "sha256": "fc6d80866f725b8ae735eb583462690d9f7b8bc2a3946a1701e96eb8ec1e030d"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J04-review-2026-10-12/local-person-empty.jpg",
+          "sha256": "1f45c816356057ba9c7088812a70a0533113e433d300e2bc3ad9324fd83faab9"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J04-review-2026-10-12/named-local-invite-pending.jpg",
+          "sha256": "81a16a22abb337ee9d93785796e289e5f0d10fdb654f185127bceca0b23dab27"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J04-review-2026-10-12/recipient-before-join.jpg",
+          "sha256": "bc4b997558433d1f6ea9faa5598137f57b7c16e10ec09b688455ad0bf772d89d"
+        },
+        {
+          "path": "product/surface-clarity/evidence/J04-review-2026-10-12/recipient-consent.jpg",
+          "sha256": "d17a7d98dae20d8abc9b1625802b07d2d8b2de48d9c324477aca527c2db40a02"
+        }
+      ]
+    }
+  ],
   "finding_ids": [
-    "UX-010"
+    "UX-010",
+    "SC-J04-001",
+    "SC-J04-002"
   ],
   "historical_sample": {
     "source": "historical-audit/results.json",
@@ -221,5 +326,6 @@
       ]
     },
     "scope_note": "Imported historical sample only. Checks/scenarios remain unassessed; screenshots in original audit archive."
-  }
+  },
+  "historical_evidence": []
 }

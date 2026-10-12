@@ -23,3 +23,5 @@ integration repair; no frozen files changed. Stop for user review before J04.
 Completion checkpoint: ae19153b implements the bounded guest repair. 54 focused
 normal-UI checks pass at both approved mobile sizes. Actual screens inspected;
 see J03-repair-2026-10-12/REPORT.md. User acceptance pending; stop before J04.
+
+User acceptance: ae19153b accepted on 2026-10-12. Next authorized step is J04 actual-screen review and proposal only; no J04 implementation authorized.

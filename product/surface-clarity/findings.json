@@ -510,5 +510,53 @@
     "evidence_ids": [
       "J03-BROWSER-20261012"
     ]
+  },
+  {
+    "id": "SC-J04-001",
+    "priority": "P2",
+    "certainty": "Confirmed actual screens and source correspondence",
+    "journeys": [
+      "J04"
+    ],
+    "principles": [
+      "Truth",
+      "Orientation",
+      "Consequence"
+    ],
+    "title": "Header Invite retains an obsolete unsupported route",
+    "evidence": "Header Invite opens unsupported boundary; empty-state Invite people opens the implemented owner.",
+    "recommendation": "Wire the header to the existing invitation owner with same group and unchanged guards.",
+    "status": "open",
+    "disposition": null,
+    "observed_implementation_sha": "ae19153b73661750852875fdda979f7f0828d529",
+    "observed_runtime_digest": "bc052a0d54a92b0a83801ad32e389a093be04972855b61a0c45c26d4525013bc",
+    "evidence_ids": [
+      "J04-BROWSER-20261012"
+    ],
+    "authority_boundary": "Integration/presentation only; no frozen source, domain or permission change."
+  },
+  {
+    "id": "SC-J04-002",
+    "priority": "P2",
+    "certainty": "Confirmed actual screens and source correspondence",
+    "journeys": [
+      "J04"
+    ],
+    "principles": [
+      "Truth",
+      "Orientation",
+      "Consequence"
+    ],
+    "title": "Local status labels overstate membership and delivery",
+    "evidence": "Local name without invitation/consent displays Joined; a local pending record displays Invite sent without external transmission.",
+    "recommendation": "Distinguish local names, pending invitations and joined participants; describe local preparation without claiming external delivery.",
+    "status": "open",
+    "disposition": null,
+    "observed_implementation_sha": "ae19153b73661750852875fdda979f7f0828d529",
+    "observed_runtime_digest": "bc052a0d54a92b0a83801ad32e389a093be04972855b61a0c45c26d4525013bc",
+    "evidence_ids": [
+      "J04-BROWSER-20261012"
+    ],
+    "authority_boundary": "Integration/presentation only; no frozen source, domain or permission change."
   }
 ]
