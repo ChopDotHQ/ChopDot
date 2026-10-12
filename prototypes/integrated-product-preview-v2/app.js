@@ -494,6 +494,8 @@ function addGuestGroupPeopleCss(doc) {
 }
 
 function returnToLocalHome() {
+  const local=loadGuestState();
+  if(!local.enteredAt&&!local.accountCreated){showFrontDoor();return;}
   const converted = homeMode === 'converted'
     && lastEntryState?.verified === true
     && lastEntryState?.route === 'home-reference';
@@ -1194,7 +1196,7 @@ else if (params.has('gateD'))openGateD(params.get('gateD'));
 else if (params.has('gateC')) openGateC(params.get('gateC'));
 else if (params.has('gateB') && loadGuestState().group) openGateB(params.get('gateBRoute')||'');
 else if(params.has('guestExpense')&&loadGuestState().group)openGuestExpense();
-else if(params.has('home')&&!['signed-out','expired'].includes(loadGuestState().gateD?.session?.status))returnToLocalHome();
+else if(params.has('home')&&loadGuestState().enteredAt&&!['signed-out','expired'].includes(loadGuestState().gateD?.session?.status))returnToLocalHome();
 else if (['create', 'signin', 'convert-create', 'convert-signin'].includes(entryMode))openAuth(entryMode, { resumed: true, method: params.get('entryMethod') === 'wallet' ? 'wallet' : 'email' });
 else if (entryMode === 'invite') openInvite('account', { resumed: params.has('entryMethod'), method: ['email','wallet'].includes(params.get('entryMethod')) ? params.get('entryMethod') : '' });
 else if (entryMode === 'guest-invite') openInvite('guest');
